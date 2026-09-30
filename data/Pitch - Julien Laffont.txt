@@ -1,0 +1,120 @@
+﻿Offre Finalisée — Julien Laffont
+DevOps · Qualité de code & scalabilité pour SaaS — cible CTO
+________________
+
+
+Qui on aide
+Les CTO de SaaS en scaling. Application web ou mobile, équipe de 5 à 20 personnes dont 3 développeurs minimum, passage de quelques dizaines à centaines à plusieurs milliers d'utilisateurs récurrents. 
+Ou de certaines dizaines avant. Peut etre ceux avant (mais les expérimentés qui ont déjà lancé des apps)
+Un bon CTO sait que ça va casser. Il appelle avant.
+Ce qu'il vit :
+* Une fonctionnalité en casse une autre. La régression est devenue normale, et c'est le client qui la découvre.
+* Ses devs font du support au lieu de coder. Un junior support coûte 30 à 40 k€/an, un junior dev 60 à 70 k€. Il paie le double pour un résultat pire.
+* Le testing se fait à la main : deux à trois jours par semaine, chez quelqu'un dont ce n'est pas le métier.
+* L'application n'est pas stable. Les utilisateurs partent.
+* Sur l'infra : « ça tourne avec 50 clients, 150 clients, je suis incapable de dire si ça tient à 5 000. »
+Ce qu'il a déjà tenté, sans succès :
+
+
+* Un freelance devOps exécutant qui n’apporte pas d’expertise (ca parle aux CTOs)
+* Tester à la main, ou via un stagiaire.
+* Installer des outils de test que le dev doit lancer en local et qu'il ne lance jamais.
+* Demander à un dev de monter en compétence : des semaines perdues, un résultat médiocre.
+* Faire développer par des freelances qui codent chacun à leur manière. Chaque départ emporte la connaissance.
+________________
+
+
+La Promesse
+A : En 30 jours, je livre l'infrastructure de qualité qui bloque les régressions avant la prod qui ter permettent de scaler ton infra… analyse du code, pipeline CI, conteneurisation, pour que tes devs arrêtent de faire du support et se remettent à coder.
+B : En 30 jours, je te livre l'infrastructure devOps nécessaire pour que tu puisses scaler ton SaaS.
+C : En 30 jours, je te livre l'infrastructure nécessaire pour que tu puisses scaler ton SaaS, pour que tes devs arrêtent de faire du support et se remettent à coder.
+Tu passes d'un code artisanal à un code industrialisé.
+* Les bugs sont attrapés à la pull request (merge request), pas par ton client
+* Tes devs récupèrent leurs journées
+* Tu fais grossir ton équipe sans craindre qu'un junior casse la prod
+* Tu ajoutes des fonctionnalités sans en casser d'autres
+Ce que je ne fais pas : je n'écris pas les tests. Je livre le système qui les lance, les mesure et bloque ce qui est rouge.
+Ce n'est pas pour :
+* Les boîtes qui ont déjà pipeline CI, application conteneurisée et infra auto-scalable
+* Ce qui n'est pas web ou mobile
+* Les équipes qui refusent 100 à 500 €/mois de services et d'infrastructure
+* Le domaine militaire
+________________
+
+
+La Méthode
+Argument de vente central : chaque bloc est indépendant avec des technologies standard, et adaptable en fonction du système du client. 
+Ex : si besoin serveur écolo
+→ C'est ce qui désamorce la peur n°1 d'un CTO, d’être enfermé avec un prestataire.
+Bloc 1 — Audit du code & pipeline CI
+Une pipeline qui audite le code à chaque modification : tests unitaires, d'intégration et end-to-end lancés automatiquement, lint, analyse statique (SonarQube) sur la maintenabilité, la sécurité et la dette technique. Livré en moins de 14 jours ouvrés. Aucune migration, aucun risque sur la prod.
+→ Mettre un peu plus d’accent sur la sécurité lors de l’analyse du code
+Bloc 2 — Conteneurisation
+L'application devient indépendante de son environnement. Un conteneur ou dix mille, même comportement. 
+Bloc 3 — Infrastructure scalable
+Une infrastructure qui s'adapte à la charge, auto-scaling réellement activé. Deux niveaux : cible intermédiaire Container Serverless pour les volumes moyens, cible Kubernetes quand la charge le justifie.
+Bloc 4 — Observabilité & prévention
+Dashboard de santé en temps réel, alerte immédiate en cas d'incident. 
+________________
+
+
+La Garantie 
+La Garantie Sans Régression
+→ En 30 jours, je te garantis un infrastructure qui te permet d’obtenir taux SLA d’au moins 99 %* 
+Conditions : 
+* Pas de situation extérieur 
+* Ce que les boîtes 
+Ce que j'attends en retour : 
+* 3 mois qui suivent
+* un test écrit pour chaque bug corrigé, 
+* aucun développeur qui bypasse un test au rouge, 
+* l'accès en lecture au repository, et un interlocuteur technique joignable sous 48 h.
+
+
+________________
+
+
+Si tu travailles avec moi, soit…
+Tes bugs sont attrapés avant ta prod. Tes devs recodent au lieu de répondre à des tickets. Tu ajoutes des fonctionnalités sans en casser d'autres, et tu scales ton SaaS les milliers d'utilisateurs sans faire exploser ton support.
+Soit…
+Ton équipe ne libère pas le temps d'écrire les tests, et tu restes où tu es — mais tu gardes une pipeline propre, documentée, aux standards du marché, exploitable dès que tu décides d'y aller. Tu ne perds que ma prestation, jamais l'infrastructure.
+Vois ça comme…
+Le passage de l'atelier artisanal à la chaîne industrielle. Ton application arrête de dépendre de la vigilance d'un homme.
+________________
+
+
+Message court (à choisir)
+* « Passe d'un code à la mano à un code qui scale — en 30 jours »
+* « Arrête de perdre 17 500 € par an en tests manuels »
+* « Tes devs font du support. Ça te coûte 60 k€ par an. »
+* “Scale ton Saas en 30 jours” 
+Message long
+J'aide les CTO de SaaS en scaling à bloquer les régressions avant la prod. En moins de 14 jours, je livre une pipeline d'audit et de tests automatisés qui attrape les bugs à la merge request, pour que tes devs arrêtent de faire du support et se remettent à coder. Garantie Sans Bug : 80 % des bugs interceptés avant ta prod sous 30 jours, ou je continue sans facturer.
+
+
+
+
+—
+
+
+Questions : 
+* Cible : les apps avant lancement ? ou c’est plutot celles qui sont déjà lancées ?
+* Taux SLA des clients 
+  
+
+
+
+Objection
+	Réponse
+	« On n'a pas le temps d'écrire des tests. »
+	Le temps que tu mets dans les tests, c'est celui que tu ne passes pas en debug et en tickets. Tu déplaces ton énergie de la réparation vers la qualité.
+	« Mon app tourne en prod, pourquoi elle casserait ? »
+	À l'industrialisation, tous les micro-détails explosent. Ce qui passe à 150 utilisateurs ne passe pas à 5 000.
+	« Mes devs sont bons. »
+	Justement. Ils n'ont pas le temps de se construire le filet de sécurité qu'ils méritent. Et le jour où l'un part ou qu'un junior arrive, le standard reste.
+	« La conteneurisation ne change rien à mon quotidien. »
+	Exact. Aucune valeur immédiate : c'est la fondation sans laquelle l'infra scalable est impossible.
+	« Ça va tripler ma facture d'infra. »
+	Le socle minimal a un coût. La vraie question, c'est ce que te coûte une prod qui tombe avec 1 800 clients derrière. Et on ne monte de niveau que quand tes volumes le justifient.
+	« Et quand tu n'es plus là ? »
+	Documentation d'exploitation avec les commandes critiques, et 100 % de standards marché. Zéro spécificité. Tu changes de prestataire quand tu veux.
