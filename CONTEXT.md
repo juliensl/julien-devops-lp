@@ -18,6 +18,16 @@ _Evitar_: utilizador, user
 A chamada inicial entre um CTO e Julien, marcada numa ferramenta externa. É a ação que a página procura provocar.
 _Evitar_: reunião, demo, call
 
+**Ferramenta de marcação**:
+O serviço externo onde o CTO marca a conversa com Julien.
+_Evitar_: ferramenta de agendamento, calendário
+
+## Serviço
+
+**Bloco**:
+Cada uma das quatro partes independentes do serviço de Julien: pipeline de CI e auditoria de código, contentorização, infraestrutura escalável, observabilidade.
+_Evitar_: módulo, fase, etapa (os passos da colaboração)
+
 ## Fases da página
 
 **Primeira validação**:
