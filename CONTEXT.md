@@ -37,3 +37,13 @@ _Evitar_: beta, MVP
 **Lançamento comercial**:
 A publicação da página em julienlaffont.com com francês, inglês e português.
 _Evitar_: go-live, lançamento (sem qualificativo)
+
+## Línguas
+
+**Língua por defeito**:
+A língua que o Visitante vê quando abre julienlaffont.com sem escolher nenhuma: o francês.
+_Evitar_: língua principal
+
+**Língua de referência**:
+A língua em que os textos são escritos e validados com Julien antes de serem traduzidos: o português. O francês e o inglês são traduções dela.
+_Evitar_: língua original
