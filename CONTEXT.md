@@ -1,0 +1,29 @@
+# Landing page de Julien Laffont
+
+Página que apresenta os serviços de Julien Laffont, freelancer DevOps, e leva os CTO de SaaS em crescimento a marcar uma conversa com ele.
+
+## Pessoas
+
+**CTO**:
+O público-alvo da página: CTO de um SaaS em crescimento que começa a enfrentar regressões, instabilidade ou limites de desempenho e escala.
+_Evitar_: cliente (só depois de contratar), prospect, lead
+
+**Visitante**:
+Qualquer pessoa que abre a página, seja ou não um CTO.
+_Evitar_: utilizador, user
+
+## Objetivo da página
+
+**Conversa**:
+A chamada inicial entre um CTO e Julien, marcada numa ferramenta externa. É a ação que a página procura provocar.
+_Evitar_: reunião, demo, call
+
+## Fases da página
+
+**Primeira validação**:
+A primeira versão completa da página, só em português, revista com Julien antes do lançamento comercial.
+_Evitar_: beta, MVP
+
+**Lançamento comercial**:
+A publicação da página em julienlaffont.com com francês, inglês e português.
+_Evitar_: go-live, lançamento (sem qualificativo)
