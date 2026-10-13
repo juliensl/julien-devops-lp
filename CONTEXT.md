@@ -61,3 +61,13 @@ _Evitar_: aviso legal, mentions légales (só como título em francês), termos 
 **Política de privacidade**:
 A página que explica que dados pessoais dos Visitantes e dos CTO são tratados, por quem e para quê.
 _Evitar_: política de cookies, RGPD
+
+## Visitas e privacidade
+
+**Origem**:
+O sítio de onde o Visitante chegou à página: LinkedIn, Google, um email, acesso direto ou uma campanha.
+_Evitar_: fonte, referrer, canal
+
+**Aviso de cookies**:
+O pedido de consentimento que aparece ao Visitante antes de a página guardar ou ler informação no navegador dele.
+_Evitar_: banner de cookies, pop-up de consentimento
