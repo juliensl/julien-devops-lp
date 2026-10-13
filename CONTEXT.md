@@ -52,6 +52,16 @@ _Evitar_: língua principal
 A língua em que os textos são escritos e validados com Julien antes de serem traduzidos: o português. O francês e o inglês são traduções dela.
 _Evitar_: língua original
 
+## Páginas legais
+
+**Informação legal**:
+A página que identifica Julien como prestador: nome, estatuto, registo, morada e contactos.
+_Evitar_: aviso legal, mentions légales (só como título em francês), termos e condições
+
+**Política de privacidade**:
+A página que explica que dados pessoais dos Visitantes e dos CTO são tratados, por quem e para quê.
+_Evitar_: política de cookies, RGPD
+
 ## Visitas e privacidade
 
 **Origem**:
