@@ -51,3 +51,13 @@ _Evitar_: língua principal
 **Língua de referência**:
 A língua em que os textos são escritos e validados com Julien antes de serem traduzidos: o português. O francês e o inglês são traduções dela.
 _Evitar_: língua original
+
+## Visitas e privacidade
+
+**Origem**:
+O sítio de onde o Visitante chegou à página: LinkedIn, Google, um email, acesso direto ou uma campanha.
+_Evitar_: fonte, referrer, canal
+
+**Aviso de cookies**:
+O pedido de consentimento que aparece ao Visitante antes de a página guardar ou ler informação no navegador dele.
+_Evitar_: banner de cookies, pop-up de consentimento
