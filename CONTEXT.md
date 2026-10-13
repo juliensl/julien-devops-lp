@@ -22,6 +22,10 @@ _Evitar_: reunião, demo, call
 O serviço externo onde o CTO marca a conversa com Julien.
 _Evitar_: ferramenta de agendamento, calendário
 
+**Página de marcação**:
+A página da ferramenta de marcação onde o CTO escolhe a hora da conversa. Há uma por língua.
+_Evitar_: tipo de evento, evento, link do Calendly
+
 ## Serviço
 
 **Bloco**:
