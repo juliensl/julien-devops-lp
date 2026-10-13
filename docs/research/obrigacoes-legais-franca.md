@@ -2,7 +2,7 @@
 
 > Pesquisa do ticket [#28](https://github.com/juliensl/julien-devops-lp/issues/28) (mapa [#4](https://github.com/juliensl/julien-devops-lp/issues/4)). Substitui a premissa de [#13](https://github.com/juliensl/julien-devops-lp/issues/13), que partia de um freelancer estabelecido em Portugal. Fontes consultadas a **13/10/2026**.
 > **Isto é pesquisa, não aconselhamento jurídico.** Resume o que dizem as fontes oficiais e assinala o que ficou por confirmar. Em caso de dúvida, o Julien deve confirmar com o contabilista ou com um advogado.
-> Este documento **não decide**. As decisões ficam para os tickets seguintes, sobretudo "Medimos as visitas? Com que ferramenta?" ([#14](https://github.com/juliensl/julien-devops-lp/issues/14)) e "Que páginas legais criamos e com que conteúdo?" ([#23](https://github.com/juliensl/julien-devops-lp/issues/23)), validados pelo Julien.
+> Este documento **não decide**. As decisões ficam para os tickets seguintes, sobretudo "Que páginas legais criamos e com que conteúdo?" ([#23](https://github.com/juliensl/julien-devops-lp/issues/23)), validados pelo Julien. As estatísticas já foram decididas em [#14](https://github.com/juliensl/julien-devops-lp/issues/14).
 
 ## Pergunta
 
@@ -15,7 +15,7 @@ Contexto considerado:
 - **Clientes:** só empresas (CTO de SaaS). Mercado principal França; também Portugal e mercados de língua inglesa.
 - **Página:** estática, em julienlaffont.com (francês, inglês e português), alojada no Hébergement Web da Infomaniak (Suíça). Não tem contas, loja, pagamentos nem formulários próprios.
 - **Marcação da Conversa:** ligação simples para a Página de marcação do Calendly, sem incorporação nem JavaScript de terceiros.
-- **Estatísticas:** por decidir.
+- **Estatísticas:** decididas em [#14](https://github.com/juliensl/julien-devops-lp/issues/14) e validadas pelo Julien: só o painel "Statistiques" da Infomaniak, feito a partir dos logs do servidor, sem script nem cookies [R2]. Aqui só se confirma se isso dispensa consentimento e quais são as condições da CNIL para uma futura ferramenta no navegador.
 
 **Fora do âmbito:** as consequências fiscais e de segurança social de viver em Portugal com uma micro-entreprise francesa (incluindo saber se o Julien precisa de número de IVA intracomunitário). Ficam para o contabilista. Os códigos NAF também não foram pesquisados.
 
@@ -25,7 +25,8 @@ Contexto considerado:
 - **Número de registo e menção "EI": dependem do registo.** Se a micro-entreprise estiver no **RCS** (atividade comercial), o site tem de mostrar o SIREN, "RCS" com a cidade do greffe, o lugar da sede e o nome com "EI" [F4 art. R123-237]. Se estiver só no **RNE** como atividade liberal, a LCEN não exige o número, mas mostrá-lo é boa prática. A menção "EI" continua exigida nos documentos profissionais [F4 art. R526-27][F15].
 - **Morada: zona cinzenta.** Três textos usam três palavras: "domicile" (LCEN), "l'adresse où elle est établie" (art. 19) e "lieu de son siège social" (RCS). Lido à letra, o "domicile" de quem vive em Portugal é a casa em Portugal [F17]. Com a sede registada noutro estabelecimento, o mais simples é pôr o registo de acordo com a realidade. Não encontrei fonte oficial que diga se um endereço de domiciliação substitui o "domicile".
 - **Política de privacidade: obrigatória na prática.** O que #13 concluiu sobre o RGPD mantém-se. Mudam a autoridade (CNIL) e a via de reclamação. A lei francesa acrescenta uma informação: o direito de deixar diretivas sobre os dados para depois da morte [F6 art. 48].
-- **Estatísticas: a CNIL dispensa o consentimento para a medição de audiência, com condições estritas.** A ferramenta só pode servir o Julien, produzir estatísticas anónimas, não seguir a pessoa noutros sites e não cruzar nem passar dados a terceiros [F7][F8]. A CNIL **já não publica uma lista** de ferramentas: substituiu-a por uma auto-avaliação feita pelo fornecedor, com uma ferramenta de julho de 2025 [F9][F10]. O Google Analytics não cumpre [F11].
+- **Estatísticas a partir dos logs (a decisão de #14): muito provavelmente sem consentimento.** Nada é lido nem escrito no navegador, e as diretrizes da CNIL tratam dessas operações [F7 § 9]. Mesmo na leitura mais exigente do EDPB, estatísticas agregadas só para o Julien devem caber na isenção da medição de audiência, se cumprirem as condições da secção 4 [F7][U3]. Continuam a exigir informação na política de privacidade [F10].
+- **Para uma futura ferramenta no navegador, a CNIL dispensa o consentimento com condições estritas.** A ferramenta só pode servir o Julien, produzir estatísticas anónimas, não seguir a pessoa noutros sites e não cruzar nem passar dados a terceiros [F7][F8]. A CNIL **já não publica uma lista** de ferramentas: substituiu-a por uma auto-avaliação feita pelo fornecedor, com uma ferramenta de julho de 2025 [F9][F10]. O Google Analytics não cumpre [F11].
 - **Obrigações só para consumidores não se aplicam a um B2B puro:** mediador de consumo, CGV no site, ligação à plataforma europeia de litígios [F5][F13][F14][U4]. Dizer na página que os serviços são só para profissionais é boa prática, mas não tem base legal.
 - **Viver em Portugal: zona cinzenta real.** Para a Diretiva 2000/31, conta onde a atividade é **efetivamente exercida** numa instalação fixa, não onde está o registo [U1][F1 art. 14][P1 art. 4.º]. Se o Julien trabalha todos os dias a partir de casa em Portugal, pode estar estabelecido em Portugal. Então aplica-se o DL 7/2004 (com NIF) e volta a dúvida do Livro de Reclamações Eletrónico. Uma só Informação legal pode cumprir as duas leis, porque as listas não se contradizem.
 
@@ -51,7 +52,7 @@ As linhas partem do princípio de que o Julien está estabelecido **em França**
 | Registo das atividades de tratamento | **Obrigatório se…** | Se o tratamento não for ocasional | [U2] art. 30.º, n.º 5; [R1] |
 | Consentimento prévio para cookies e outros rastreadores | **Obrigatório se…** | Só para rastreadores que não sejam estritamente necessários nem estejam isentos | [F6] art. 82; [F7] |
 | Consentimento para estatísticas de visitas | **Obrigatório se…** | Se a ferramenta não cumprir as condições da CNIL (por exemplo, Google Analytics) | [F7] §§ 50–51; [F8][F9][F11] |
-| Estatísticas a partir dos logs do servidor: precisam de consentimento? | **Zona cinzenta** (provavelmente não) | Nada é lido nem escrito no navegador; se o EDPB as considerar abrangidas, a isenção da CNIL pode aplicar-se | [F7] § 9; [U3] §§ 42–43 e 54–56 |
+| Estatísticas a partir dos logs do servidor: precisam de consentimento? | **Zona cinzenta** (muito provavelmente não) | É a opção decidida em #14. Nada é lido nem escrito no navegador; se o EDPB as considerar abrangidas, a isenção da CNIL pode aplicar-se | [F7] § 9; [U3] §§ 42–43 e 54–56 |
 | Informar sobre as estatísticas e permitir a oposição | **Obrigatório se…** | Se houver estatísticas que tratem dados pessoais, mesmo isentas de consentimento | [F8]; [F9] critério "opposition"; [F10] pergunta 10 |
 | Mediador de consumo (contactos e ligação) | **Não se aplica** | Só para litígios com consumidores | [F5] arts. L611-1, L612-1 e L616-1; [F14] |
 | CGV publicadas no site | **Não se aplica** | Obrigatórias no site só para clientes particulares; entre profissionais, basta enviá-las a pedido | [F13] |
@@ -151,7 +152,7 @@ As linhas partem do princípio de que o Julien está estabelecido **em França**
 - **Já não há lista oficial de ferramentas.** "La CNIL a remplacé son programme d'évaluation des solutions de mesure d'audience, qui conduisait au recensement des solutions retenues sur son site web, par la mise à disposition d'un outil d'auto-évaluation" [F10 pergunta 12]. O fornecedor pode dizer "D'après notre auto-évaluation, la solution XXX est conforme aux critères établis par la CNIL", mas não pode apresentá-la como "certifiée" ou "validée par la CNIL" [F8]. Quem escolhe deve pedir ao fornecedor esse documento e as instruções de configuração [F8]. A responsabilidade continua a ser do Julien em caso de controlo [F8].
 - **Google Analytics fica de fora.** A CNIL lembra que as ofertas cujos fornecedores reutilizam os dados para si não cabem na isenção, e cita o Google Analytics [F11].
 - **Estatísticas "sem cookies" (JavaScript).** Um script que manda o navegador enviar informação está abrangido pelo art. 82, com ou sem cookies [U3 § 33]. Não precisa de consentimento se cumprir as condições acima [F9].
-- **Estatísticas a partir dos logs do servidor (sem nada no navegador).**
+- **Estatísticas a partir dos logs do servidor (sem nada no navegador).** É a opção decidida em #14: o painel "Statistiques" da Infomaniak conta visitas, páginas, países e domínios de origem a partir dos logs [R2].
   - As diretrizes da CNIL aplicam-se a operações de leitura ou escrita no equipamento do Visitante [F7 § 9]. Um log regista o pedido que o navegador faz de qualquer forma para ver a página.
   - O EDPB admite que usar o IP ou os cabeçalhos HTTP para seguir a navegação pode cair no art. 5.º, n.º 3, da Diretiva ePrivacy [U3 §§ 42–43 e 54–55]. Também lembra que estar abrangido "does not systematically mean that consent needs to be collected" [U3 § 56].
   - Conclusão: mesmo na leitura mais exigente, estatísticas de logs que cumpram as condições da CNIL ficam isentas. Não encontrei uma posição expressa da CNIL sobre logs.
@@ -212,11 +213,10 @@ Esta secção não decide. Mostra o que cada decisão futura implica.
   - A **Política de privacidade** muda face a #13: CNIL como autoridade, ligação para a queixa em linha e a frase sobre as diretivas para depois da morte. Pode mencionar também o direito de reclamar no país de residência.
   - Para cobrir o cenário Portugal, somam-se o NIF e, se o Julien quiser, a ligação ao Livro de Reclamações Eletrónico.
   - Tudo nas três línguas do Lançamento comercial. O francês não é obrigatório entre profissionais, mas o site já o tem.
-- **"Medimos as visitas? Com que ferramenta?" ([#14](https://github.com/juliensl/julien-devops-lp/issues/14)).**
-  - **Sem estatísticas:** nada a fazer.
-  - **Estatísticas a partir dos logs do servidor:** sem banner na leitura da CNIL; menor risco também no cenário Portugal. Exigem informação na política de privacidade e forma de oposição.
-  - **Ferramenta sem cookies ou com cookie próprio, configurada segundo a CNIL** (IP truncado, sem UTM, sem partilha, DPA): sem banner em França. É preciso pedir ao fornecedor a auto-avaliação da CNIL. No cenário Portugal, a CNPD pede consentimento [R1].
-  - **Google Analytics ou equivalente:** banner e consentimento obrigatórios.
+- **Estatísticas ([#14](https://github.com/juliensl/julien-devops-lp/issues/14), já decidido: painel da Infomaniak a partir dos logs).**
+  - **Com a decisão tomada:** sem aviso de cookies na leitura da CNIL; continua a ser a opção de menor risco também no cenário Portugal. A Política de privacidade deve falar dos logs e das estatísticas (finalidade, prazo, Infomaniak como subcontratante) e dizer como se opor, por exemplo por email.
+  - **Se mais tarde se passar a uma ferramenta no navegador, sem cookies ou com cookie próprio, configurada segundo a CNIL** (IP truncado, sem UTM, referrer só com o domínio, sem partilha, DPA): sem aviso de cookies em França. É preciso pedir ao fornecedor a auto-avaliação da CNIL; segundo [R2], só a Matomo a publica. No cenário Portugal, a CNPD pede consentimento [R1].
+  - **Google Analytics ou equivalente:** aviso de cookies e consentimento obrigatórios.
 - **Marcação (ticket #10):** a ligação simples para o Calendly continua a ser a opção sem cookies na página. O DPA do Calendly continua necessário [R1].
 
 **Informação que o Julien tem de fornecer ou confirmar:**
@@ -237,7 +237,8 @@ Esta secção não decide. Mostra o que cada decisão futura implica.
 - **Se um endereço de domiciliação satisfaz o "domicile"** do art. 1-1 da LCEN. Não há texto oficial que o diga.
 - **Se a inscrição do Julien é no RCS ou só no RNE.** Muda a lista de dados (ver tabela). É um facto a pedir ao Julien.
 - **Onde o Julien está estabelecido** para efeitos da Diretiva 2000/31 e do RGPD. Não encontrei decisão sobre um empresário individual registado num Estado que trabalha a partir de casa noutro.
-- **Se a CNIL aceita expressamente estatísticas de logs sem consentimento.** A conclusão "provavelmente sim" é um raciocínio a partir das diretrizes da CNIL e do EDPB.
+- **Se a CNIL aceita expressamente estatísticas de logs sem consentimento.** A conclusão "muito provavelmente sim" é um raciocínio a partir das diretrizes da CNIL e do EDPB.
+- **Se o painel "Statistiques" da Infomaniak cumpre todas as condições da CNIL** (por exemplo, se a Infomaniak não reutiliza os dados para si). Não foi verificado aqui.
 - **Se o Livro de Reclamações Eletrónico se aplica** a um EI registado em França que vive em Portugal. O acórdão de 2025 trata de uma empresa sem presença em Portugal.
 - **Montantes exatos** da contravenção de 4.ª classe do art. R123-237 e da multa de 1 500 € citada pelo service-public: não li o Código Penal francês.
 - **Telefone da Infomaniak:** só nos dados estruturados da página inicial.
@@ -302,6 +303,7 @@ Esta secção não decide. Mostra o que cada decisão futura implica.
 - [V1] Infomaniak, "Legal information": <https://www.infomaniak.com/en/legal/legal-notice>
 - [V2] Infomaniak, página inicial (dados estruturados com o telefone): <https://www.infomaniak.com/en>
 
-**Pesquisa anterior**
+**Pesquisas anteriores**
 
 - [R1] Pesquisa de #13, "Que obrigações legais e de privacidade tem o site?" (premissa de estabelecimento em Portugal). Reaproveitada para o RGPD, os DPA, as transferências, o caso Fashion ID, os logs da Infomaniak, o Livro de Reclamações, a plataforma ODR, o Ato Europeu da Acessibilidade e a posição da CNPD: <https://github.com/juliensl/julien-devops-lp/blob/research/obrigacoes-legais/docs/research/obrigacoes-legais.md>
+- [R2] Pesquisa de #14, "Medimos as visitas? Com que ferramenta?" (ferramentas, painel "Statistiques" da Infomaniak, auto-avaliações CNIL publicadas): <https://github.com/juliensl/julien-devops-lp/blob/research/estatisticas-visitas/docs/research/estatisticas-visitas.md>
