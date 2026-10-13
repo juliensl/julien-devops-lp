@@ -143,7 +143,7 @@ As linhas partem do princípio de que o Julien está estabelecido **em França**
   - no máximo três tipos de eventos: presença numa página, uso de uma funcionalidade (clique), tempos de carregamento, deslocação ou permanência;
   - cabeçalhos HTTP minimizados (por exemplo, só a versão principal do navegador);
   - o fornecedor é subcontratante, com DPA; não junta dados de vários clientes; não reutiliza dados para si "quelle que soit la finalité";
-  - sem importação de dados externos: nada de identificadores de cliente, UTM ou identificadores de campanha nos URL; o "referrer" fica só pelo domínio;
+  - sem importação de dados externos: nada de identificadores de cliente, UTM ou identificadores de campanha nos URL; a Origem (o cabeçalho HTTP "referrer") fica só pelo domínio;
   - cookie, se houver, "first-party";
   - IP usado só para localizar à escala da cidade e depois truncado, "en enlevant au moins le dernier octet";
   - "fingerprinting" só com uma componente própria do site e uma componente temporal;
@@ -215,7 +215,7 @@ Esta secção não decide. Mostra o que cada decisão futura implica.
   - Tudo nas três línguas do Lançamento comercial. O francês não é obrigatório entre profissionais, mas o site já o tem.
 - **Estatísticas ([#14](https://github.com/juliensl/julien-devops-lp/issues/14), já decidido: painel da Infomaniak a partir dos logs).**
   - **Com a decisão tomada:** sem aviso de cookies na leitura da CNIL; continua a ser a opção de menor risco também no cenário Portugal. A Política de privacidade deve falar dos logs e das estatísticas (finalidade, prazo, Infomaniak como subcontratante) e dizer como se opor, por exemplo por email.
-  - **Se mais tarde se passar a uma ferramenta no navegador, sem cookies ou com cookie próprio, configurada segundo a CNIL** (IP truncado, sem UTM, referrer só com o domínio, sem partilha, DPA): sem aviso de cookies em França. É preciso pedir ao fornecedor a auto-avaliação da CNIL; segundo [R2], só a Matomo a publica. No cenário Portugal, a CNPD pede consentimento [R1].
+  - **Se mais tarde se passar a uma ferramenta no navegador, sem cookies ou com cookie próprio, configurada segundo a CNIL** (IP truncado, sem UTM, Origem só com o domínio, sem partilha, DPA): sem aviso de cookies em França. É preciso pedir ao fornecedor a auto-avaliação da CNIL; segundo [R2], só a Matomo a publica. No cenário Portugal, a CNPD pede consentimento [R1].
   - **Google Analytics ou equivalente:** aviso de cookies e consentimento obrigatórios.
 - **Marcação (ticket #10):** a ligação simples para o Calendly continua a ser a opção sem cookies na página. O DPA do Calendly continua necessário [R1].
 
