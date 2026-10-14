@@ -32,6 +32,10 @@ _Evitar_: tipo de evento, evento, link do Calendly
 Cada uma das quatro partes independentes do serviço de Julien: pipeline de CI e auditoria de código, contentorização, infraestrutura escalável, observabilidade.
 _Evitar_: módulo, fase, etapa (os passos da colaboração)
 
+**Promessa**:
+A frase principal da página: o resultado que Julien entrega ao CTO e em quanto tempo.
+_Evitar_: slogan, tagline, mensagem curta
+
 ## Fases da página
 
 **Primeira validação**:
