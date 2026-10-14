@@ -23,7 +23,7 @@ O serviço externo onde o CTO marca a conversa com Julien.
 _Evitar_: ferramenta de agendamento, calendário
 
 **Página de marcação**:
-A página da ferramenta de marcação onde o CTO escolhe a hora da conversa. Há uma por língua.
+A página da ferramenta de marcação onde o CTO escolhe a hora da conversa. Há uma só, em francês, para as três línguas.
 _Evitar_: tipo de evento, evento, link do Calendly
 
 ## Serviço
