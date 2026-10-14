@@ -48,6 +48,14 @@ _Evitar_: Garantie Sans Régression, Garantie Sans Bug
 A percentagem do tempo em que a infraestrutura entregue por Julien está a funcionar, medida mês a mês.
 _Evitar_: SLA (o contrato entre o SaaS do CTO e os seus utilizadores), uptime
 
+**Etapa**:
+Cada um dos passos de uma colaboração com Julien, por esta ordem: Conversa, Diagnóstico, Proposta de intervenção, Implementação, Entrega e transferência.
+_Evitar_: fase (as fases da página), bloco
+
+**Diagnóstico**:
+A Etapa em que Julien analisa o sistema do CTO, depois da Conversa e antes da Proposta de intervenção.
+_Evitar_: auditoria, audit (a auditoria de código faz parte do primeiro Bloco)
+
 ## Fases da página
 
 **Primeira validação**:
