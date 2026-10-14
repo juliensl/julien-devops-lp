@@ -58,6 +58,10 @@ _Evitar_: beta, MVP
 A publicação da página em julienlaffont.com com francês, inglês e português.
 _Evitar_: go-live, lançamento (sem qualificativo)
 
+**Publicação**:
+O envio do site construído para o alojamento da Infomaniak, que o põe online em julienlaffont.com. Acontece depois de cada merge na `main`.
+_Evitar_: deploy, upload, lançamento
+
 ## Línguas
 
 **Língua por defeito**:
