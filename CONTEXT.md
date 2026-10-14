@@ -36,6 +36,14 @@ _Evitar_: módulo, fase, etapa (os passos da colaboração)
 A frase principal da página: o resultado que Julien entrega ao CTO e em quanto tempo.
 _Evitar_: slogan, tagline, mensagem curta
 
+**Garantia**:
+O compromisso de Julien sobre a Disponibilidade da infraestrutura que entrega, com as condições que o cliente cumpre e o que Julien faz se falhar.
+_Evitar_: Garantie Sans Régression, Garantie Sans Bug
+
+**Disponibilidade**:
+A percentagem do tempo em que a infraestrutura entregue por Julien está a funcionar, medida mês a mês.
+_Evitar_: SLA (o contrato entre o SaaS do CTO e os seus utilizadores), uptime
+
 ## Fases da página
 
 **Primeira validação**:
