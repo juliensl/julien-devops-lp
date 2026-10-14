@@ -29,7 +29,7 @@ _Evitar_: tipo de evento, evento, link do Calendly
 ## Serviço
 
 **Bloco**:
-Cada uma das quatro partes independentes do serviço de Julien: pipeline de CI e auditoria de código, contentorização, infraestrutura escalável, observabilidade.
+Cada uma das quatro partes do serviço de Julien, que o CTO pode contratar em separado ou juntas: pipeline de CI e auditoria de código, contentorização, infraestrutura escalável, observabilidade.
 _Evitar_: módulo, fase, etapa (os passos da colaboração)
 
 **Promessa**:
@@ -55,6 +55,10 @@ _Evitar_: fase (as fases da página), bloco
 **Diagnóstico**:
 A Etapa em que Julien analisa o sistema do CTO, depois da Conversa e antes da Proposta de intervenção.
 _Evitar_: auditoria, audit (a auditoria de código faz parte do primeiro Bloco)
+
+**Proposta de intervenção**:
+A Etapa em que Julien, depois do Diagnóstico, diz ao CTO que Blocos faz, em que prazo e por que preço fixo.
+_Evitar_: orçamento, devis, proposta comercial
 
 ## Fases da página
 
