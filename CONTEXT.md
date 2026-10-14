@@ -36,6 +36,10 @@ _Evitar_: módulo, fase, etapa (os passos da colaboração)
 A frase principal da página: o resultado que Julien entrega ao CTO e em quanto tempo.
 _Evitar_: slogan, tagline, mensagem curta
 
+**Designação**:
+A frase curta, ao lado do nome de Julien, que diz o que ele faz e para quem. Há uma por língua. Não é a Promessa.
+_Evitar_: título, subtítulo, tagline, slogan
+
 **Garantia**:
 O compromisso de Julien sobre a Disponibilidade da infraestrutura que entrega, com as condições que o cliente cumpre e o que Julien faz se falhar.
 _Evitar_: Garantie Sans Régression, Garantie Sans Bug
