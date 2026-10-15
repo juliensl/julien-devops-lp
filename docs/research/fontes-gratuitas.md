@@ -46,7 +46,7 @@ Verificado no HTML e no CSS de cada site a 15/10/2026 [R1]–[R8].
 | Serifa + mono | Geoffrey Dorne | **Avara** Bold (títulos) e **Sligoil** Micro (mono), as duas da fundição Velvetyne, mais uma fonte de ícones [R2]. | Sim (OFL) [L4][L5] |
 | Sans + mono | Oxide | Suisse Intl (300, 400, 400 itálico, 500) e GT America Mono (400) [R4]. | Não. Licenças à venda [L7][L8]. |
 | Sans + mono | Axiom | Geist e Berkeley Mono (variável) [R5]. | Geist sim; Berkeley Mono não [S1]. |
-| Sans + mono | Arkoder | Segundo o contexto do ticket: Noto Sans e JetBrains Mono. O único site com este nome que encontrei (arkoder.com) pede Inter, Space Grotesk e JetBrains Mono ao Google Fonts [R8]. | Sim (OFL) |
+| Sans + mono | Arkoder | Noto Sans e JetBrains Mono, as duas variáveis (`wght`), em 2 woff2 alojados no próprio site com os nomes do Fontsource (`noto-sans-latin-wght-normal`, `jetbrains-mono-latin-wght-normal`) [R8]. | Sim (OFL) |
 | Sans + mono | OpenStatus | **Commit Mono** (o mono usado em todo o site), Inter (variável) e Cal Sans [R6]. | Sim (OFL) [L3] |
 | Serifa calma + sans/mono | Krista Berlincourt | **Bona Nova** (títulos, incluindo o `h1`), Inter e Inter Display, Fragment Mono, AR One Sans e Poppins. Site Framer; Bona Nova, Fragment Mono, AR One Sans e Poppins vêm do Google Fonts [R7]. | Sim (OFL) |
 
@@ -180,7 +180,7 @@ Com só 2 ficheiros:
 |---|---|---|---|
 | **A. Geist + Geist Mono** | duas variáveis (`wght`) | 52,5 KB (13 %) | 48,5 KB |
 | **B. Inter + JetBrains Mono** | duas variáveis (`wght`) | 88,7 KB (22 %) | 77,6 KB |
-| B com Noto Sans (Arkoder, segundo o ticket) | Noto Sans `wght` + JetBrains Mono | 76,2 KB (19 %) | 70,7 KB |
+| B com Noto Sans (como a Arkoder) | Noto Sans `wght` + JetBrains Mono | 76,2 KB (19 %) | 70,7 KB |
 | **C. Instrument Sans + Commit Mono** | Instrument Sans `wght` + Commit Mono variável (subconjunto próprio) | 78,2 KB (20 %) com a Commit Mono do Fontsource | 45,6 KB |
 | Só mono (como a OpenStatus) | Commit Mono variável com `ital` + fonte do sistema para o texto | — | 23,1 KB (1 ficheiro) |
 
@@ -369,7 +369,6 @@ Fiz builds com o Astro 7.3.7 instalado, num projeto descartável fora do reposit
   - Não medi o CLS nem corri o Lighthouse.
   - Não testei as fontes de recurso em Android nem em Linux.
 - **Licenças.** Li o texto da OFL de cada fonte e a FAQ da OFL. Não é um parecer jurídico. As fontes da Antithesis não foram verificadas.
-- **Arkoder.** Não encontrei o site com Noto Sans referido no ticket.
 - **Berkeley Mono.** O preço vem de uma fonte secundária [S1].
 
 ## Pontos em aberto para «Qual a direção visual?»
@@ -446,7 +445,7 @@ Todas consultadas a 15/10/2026.
 - [R5] Axiom: <https://axiom.co/>
 - [R6] OpenStatus: <https://www.openstatus.dev/> (CSS `_next/static/immutable/chunks/11dgrltiqy-5v.css`)
 - [R7] Krista Berlincourt: <https://www.kristaberlincourt.com/>
-- [R8] Arkoder: <https://arkoder.com/>
+- [R8] Arkoder: <https://arkoder.dev/> (pedidos de fontes medidos com Playwright a 15/10/2026)
 
 **Web e acessibilidade**
 
