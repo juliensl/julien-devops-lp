@@ -361,58 +361,215 @@ export const matriz: Record<string, Record<string, Celula>> = {
 };
 
 // ---------- Ecologia ----------
-export type ValorEco = { valor: number | null; texto?: string; ano?: number; ambito?: string; fonte?: string; estado: Estado; nota?: string };
-export type MetricaEco = { id: string; nome: string; unidade: string; melhor: 'menor' | 'maior' | null; explica: string; aviso: string };
+// Valores publicados: pesquisa «Que dados ambientais publicam os fornecedores cloud?» (#44),
+// consultada a 16/10/2026. Nenhum valor é uma classificação.
+export type ValorEco = { valor: number | null; texto?: string; ano?: string; ambito?: string; fonte?: string; estado: Estado; nota?: string };
+export type MetricaEco = {
+	id: string;
+	nome: string;
+	unidade: string;
+	tipo: 'numero' | 'texto';
+	min?: number;
+	max?: number;
+	marcas?: number[];
+	explica: string;
+	aviso: string;
+};
 export const metricasEco: MetricaEco[] = [
 	{
 		id: 'pue',
 		nome: 'PUE',
 		unidade: '',
-		melhor: 'menor',
+		tipo: 'numero',
+		min: 1,
+		max: 1.5,
+		marcas: [1, 1.1, 1.2, 1.3, 1.4, 1.5],
 		explica: 'Energia total do centro de dados a dividir pela energia dos servidores. 1,0 seria o ideal.',
-		aviso: 'Âmbitos diferentes: média da frota, de uma região ou de um centro de dados; anos diferentes.',
+		aviso: 'Cada fornecedor conta centros diferentes (só os próprios, os geridos ou todos os usados) e o ano não é o mesmo.',
 	},
 	{
 		id: 'renovavel',
 		nome: 'Eletricidade renovável',
 		unidade: '%',
-		melhor: 'maior',
+		tipo: 'numero',
+		min: 0,
+		max: 100,
+		marcas: [0, 25, 50, 75, 100],
 		explica: 'Parte da eletricidade coberta por fontes renováveis, segundo o método de cada fornecedor.',
-		aviso: 'Métodos diferentes: correspondência anual por certificados não é o mesmo que correspondência hora a hora.',
+		aviso: 'Quase todos dizem 100 %, com métodos diferentes. A correspondência anual não garante renovável a cada hora: medida hora a hora, a Google fica nos 65 %.',
+	},
+	{
+		id: 'agua',
+		nome: 'Água (WUE)',
+		unidade: 'L/kWh',
+		tipo: 'numero',
+		min: 0,
+		max: 0.4,
+		marcas: [0, 0.1, 0.2, 0.3, 0.4],
+		explica: 'Litros de água por kWh consumido pelos servidores.',
+		aviso: 'Uns contam a água retirada, outros só a de arrefecimento; os anos também mudam.',
+	},
+	{
+		id: 'emissoes',
+		nome: 'Emissões publicadas',
+		unidade: '',
+		tipo: 'texto',
+		explica: 'O que cada fornecedor publica sobre as suas emissões de gases com efeito de estufa.',
+		aviso: 'A AWS, a Google e a Microsoft só publicam o total da empresa inteira. Um total maior não diz nada sobre a pegada de cada cliente.',
+	},
+	{
+		id: 'ferramenta',
+		nome: 'Ferramenta para clientes',
+		unidade: '',
+		tipo: 'texto',
+		explica: 'Ferramenta onde o cliente vê a pegada da sua própria infraestrutura.',
+		aviso: 'Os métodos e os âmbitos das ferramentas são diferentes entre si.',
 	},
 ];
 
-// DEMONSTRAÇÃO até chegar a pesquisa «Que dados ambientais publicam os fornecedores cloud?» (#44).
-const de = (valor: number | null): ValorEco => ({ valor, estado: 'demo' });
+const F = {
+	aws: 'https://sustainability.aboutamazon.com/2025-aws-summary.pdf',
+	awsRen: 'https://sustainability.aboutamazon.com/2025-renewable-energy-assurance.pdf',
+	awsRel: 'https://sustainability.aboutamazon.com/2025-amazon-sustainability-report.pdf',
+	awsFer: 'https://docs.aws.amazon.com/sustainability/latest/userguide/',
+	gcp: 'https://sustainability.google/files/1699a2e19277e478b38a659f00cb38398a836e8c/download-1699a2e1.pdf',
+	gcpFer: 'https://cloud.google.com/carbon-footprint/docs/methodology',
+	azure: 'https://aka.ms/SustainabilityReport2026',
+	azureFicha: 'https://aka.ms/SustainabilityFactsheet2026',
+	azureFer: 'https://learn.microsoft.com/en-us/azure/carbon-optimization/view-emissions',
+	ovh: 'https://corporate.ovhcloud.com/sites/default/files/2025-11/ovh_urd_2025_en_mel_25_11_14.pdf',
+	ovhFer: 'https://corporate.ovhcloud.com/sites/default/files/2025-10/methodology_-_environmental_impact_tracker.pdf',
+	scw: 'https://www-uploads.scaleway.com/Impact_Report2025_22ee3a8232.pdf',
+	scwRen: 'https://www.scaleway.com/en/environmental-leadership/',
+	scwFer: 'https://www.scaleway.com/en/docs/environmental-footprint/additional-content/environmental-footprint-calculator/',
+	ik: 'https://www.infomaniak.com/en/impact-report',
+	ikRel: 'https://www.infomaniak.com/documents/impact-report/impact_report_2024_en.pdf',
+	ikGee: 'https://news.infomaniak.com/wp-content/uploads/2026/10/Bilan_gaz_a_effet_de_serre_2024.pdf',
+	ikFer: 'https://www.infomaniak.com/en/support/faq/1160/discover-eco-design-to-reduce-your-carbon-footprint',
+	clever: 'https://www.clever.cloud/cloud-and-green-it/',
+};
+const pb = (valor: number | null, ano: string, ambito: string, fonte: string, nota?: string): ValorEco => ({
+	valor,
+	ano,
+	ambito,
+	fonte,
+	nota,
+	estado: 'publicado',
+});
+const tx = (texto: string, fonte?: string, ano?: string): ValorEco => ({ valor: null, texto, fonte, ano, estado: 'publicado' });
+
 export const dadosEco: Record<string, Record<string, ValorEco>> = {
-	aws: { pue: de(1.2), renovavel: de(100) },
-	clever: { pue: de(null), renovavel: de(null) },
-	gcp: { pue: de(1.1), renovavel: de(64) },
-	infomaniak: { pue: de(1.1), renovavel: de(100) },
-	azure: { pue: de(1.2), renovavel: de(100) },
-	ovh: { pue: de(1.3), renovavel: de(80) },
-	scaleway: { pue: de(1.3), renovavel: de(100) },
+	aws: {
+		pue: pb(1.14, '2025', 'Centros da AWS, global', F.aws, 'Na Europa: 1,11'),
+		renovavel: pb(100, '2025', 'Toda a Amazon, não só a AWS', F.awsRen, 'Correspondência anual em volume'),
+		agua: pb(0.12, '2025', 'Centros da AWS, global; água retirada', F.aws, 'Na Europa: 0,05'),
+		emissoes: tx('Só o total da Amazon: 80,85 Mt CO2e (market-based). Scope 2: 21,82 Mt location-based contra 3,74 Mt market-based.', F.awsRel, '2025'),
+		ferramenta: tx('AWS Sustainability console: por região, serviço e conta.', F.awsFer, '2026'),
+	},
+	clever: {
+		pue: { valor: null, texto: '«<1,2» em alguns centros, sem dizer quais', fonte: F.clever, estado: 'publicado', nota: 'Sem ano nem método: não comparável' },
+		renovavel: { valor: null, estado: 'publicado', texto: 'Sem percentagem publicada', fonte: F.clever },
+		agua: { valor: null, estado: 'publicado', texto: 'Não encontrado' },
+		emissoes: tx('Não publicado.'),
+		ferramenta: tx('Nenhuma encontrada.'),
+	},
+	gcp: {
+		pue: pb(1.09, '2025', 'Campus geridos pela Google, global', F.gcp),
+		renovavel: pb(100, '2025', 'Toda a Google', F.gcp, 'Correspondência anual; hora a hora (CFE): 65 %'),
+		agua: { valor: null, estado: 'publicado', texto: 'WUE de 2025 não publicado (só o consumo total)', fonte: F.gcp },
+		emissoes: tx('Só o total da Alphabet: 18,85 Mt CO2e (scope 2 market-based). Scope 2: 15,15 Mt location-based contra 2,82 Mt market-based.', F.gcp, '2025'),
+		ferramenta: tx('Google Cloud Carbon Footprint: por projeto, serviço e região.', F.gcpFer, '2026'),
+	},
+	infomaniak: {
+		pue: pb(1.085, '2024', 'Centros próprios em Genebra', F.ik),
+		renovavel: pb(100, '2024', 'Infomaniak', F.ikRel, 'Produtos certificados do distribuidor (SIG) e solar própria'),
+		agua: pb(0.0145, '2023', 'Infomaniak', F.ikRel),
+		emissoes: tx('Total: 2 124,8 t CO2e (myclimate, ISO 14069).', F.ikGee, '2024'),
+		ferramenta: tx('CO2 anual na fatura, só para alojamento web e email.', F.ikFer, '2024'),
+	},
+	azure: {
+		pue: pb(1.17, 'FY2025 (jul. 2024 a jun. 2025)', 'Centros próprios da Microsoft, global', F.azure, 'Na EMEA: 1,16'),
+		renovavel: pb(100, 'FY2025', 'Toda a Microsoft', F.azureFicha, 'Renovável «direta» anual, sem certificados avulsos; 78 % em FY2024'),
+		agua: pb(0.27, 'FY2025', 'Centros próprios, global; água de arrefecimento e humidificação', F.azure, 'Na EMEA: 0,03'),
+		emissoes: tx('Só o total da Microsoft: 21,12 Mt CO2e (scope 2 market-based).', F.azureFicha, 'FY2025'),
+		ferramenta: tx('Azure carbon optimization: por subscrição, recurso e região.', F.azureFer, '2026'),
+	},
+	ovh: {
+		pue: pb(1.24, 'FY2025 (set. 2024 a ago. 2025)', '9 centros geridos pela OVHcloud', F.ovh),
+		renovavel: pb(100, 'FY2025', 'Centros geridos pela OVHcloud', F.ovh, 'ISO/IEC 30134-3: PPA e certificados; 92 % em FY2024'),
+		agua: pb(0.34, 'FY2025', 'Centros geridos; toda a água retirada conta como consumida', F.ovh),
+		emissoes: tx('Total do grupo: 112 863 t CO2e market-based ou 158 748 t location-based.', F.ovh, 'FY2025'),
+		ferramenta: tx('Environmental Impact Tracker: mensal, por servidor.', F.ovhFer, '2026'),
+	},
+	scaleway: {
+		pue: pb(1.375, '2024', 'Todos os centros usados, incluindo os de terceiros', F.scw),
+		renovavel: pb(100, '2024', 'Energia dos centros de dados', F.scwRen, 'Garantias de origem; PPA não contados'),
+		agua: pb(0.222, '2024', 'Média de 4 centros franceses e AMS1', F.scw),
+		emissoes: tx('Total: 18 284 t CO2e, só location-based.', F.scw, '2024'),
+		ferramenta: tx('Environmental Footprint Calculator: diário, por projeto e zona.', F.scwFer, '2026'),
+	},
 };
 
-export type Regiao = { id: string; nome: string; g: number; estado: Estado; ano?: number; fonte?: string };
-// gCO2e/kWh: DEMONSTRAÇÃO até à pesquisa #44.
+export type Regiao = { id: string; nome: string; g: number; estado: Estado; ano?: string; fonte?: string };
+// Intensidade carbónica média da produção de eletricidade (gCO2e/kWh, ciclo de vida), Ember, 2025.
+const EMBER = 'https://files.ember-energy.org/public-downloads/generation/outputs/release_generation_yearly_global.csv';
+const r = (id: string, nome: string, g: number): Regiao => ({ id, nome, g, estado: 'publicado', ano: '2025', fonte: EMBER });
 export const regioes: Regiao[] = [
-	{ id: 'fr', nome: 'França', g: 50, estado: 'demo' },
-	{ id: 'se', nome: 'Suécia', g: 40, estado: 'demo' },
-	{ id: 'ch', nome: 'Suíça', g: 40, estado: 'demo' },
-	{ id: 'es', nome: 'Espanha', g: 150, estado: 'demo' },
-	{ id: 'be', nome: 'Bélgica', g: 150, estado: 'demo' },
-	{ id: 'it', nome: 'Itália', g: 300, estado: 'demo' },
-	{ id: 'ie', nome: 'Irlanda', g: 300, estado: 'demo' },
-	{ id: 'nl', nome: 'Países Baixos', g: 300, estado: 'demo' },
-	{ id: 'de', nome: 'Alemanha', g: 350, estado: 'demo' },
-	{ id: 'pl', nome: 'Polónia', g: 650, estado: 'demo' },
+	r('no', 'Noruega', 28.1),
+	r('se', 'Suécia', 35.4),
+	r('ch', 'Suíça', 39.1),
+	r('fr', 'França', 41.2),
+	r('fi', 'Finlândia', 57.2),
+	r('dk', 'Dinamarca', 99.9),
+	r('at', 'Áustria', 116.6),
+	r('be', 'Bélgica', 151.3),
+	r('es', 'Espanha', 153.5),
+	r('uk', 'Reino Unido', 218.2),
+	r('nl', 'Países Baixos', 253.7),
+	r('ie', 'Irlanda', 263.3),
+	r('it', 'Itália', 284.4),
+	r('de', 'Alemanha', 334.1),
+	r('pl', 'Polónia', 590.8),
 ];
 
-// Coeficientes do estimador (W por vCPU com 0 % e 100 % de utilização). DEMONSTRAÇÃO até à pesquisa #44.
-export const coeficientes = { wMin: 0.7, wMax: 3.5, estado: 'demo' as Estado, fonte: '', pueDefeito: 1.4 };
+// Países onde cada fornecedor tem regiões (pesquisa #45).
+export const paisesFornecedor: Record<string, string[]> = {
+	aws: ['de', 'ie', 'it', 'fr', 'es', 'se', 'uk', 'ch'],
+	clever: ['fr', 'pl', 'uk'],
+	gcp: ['fi', 'se', 'pl', 'es', 'be', 'de', 'nl', 'it', 'fr', 'uk', 'ch'],
+	infomaniak: ['ch'],
+	azure: ['at', 'be', 'dk', 'fr', 'de', 'it', 'ie', 'pl', 'es', 'se', 'nl', 'no', 'ch', 'uk'],
+	ovh: ['fr', 'de', 'it', 'pl', 'uk'],
+	scaleway: ['fr', 'nl', 'pl', 'it'],
+};
 
-export const fontesEco: { n: string; titulo: string; url: string }[] = [];
+// Watts por vCPU com 0 % e 100 % de utilização: código do Cloud Carbon Footprint (commit f584c549ee).
+// O CCF só tem valores para a AWS, a Google Cloud e o Azure; os outros usam os da AWS, como hipótese.
+const CCF = 'https://github.com/cloud-carbon-footprint/cloud-carbon-footprint/tree/f584c549ee/packages';
+export type Coef = { wMin: number; wMax: number; estado: Estado; nota: string; fonte?: string };
+export const coeficientesCcf: Record<string, Coef> = {
+	aws: { wMin: 0.74, wMax: 3.5, estado: 'publicado', nota: 'CCF, AWS, processador desconhecido', fonte: `${CCF}/aws` },
+	gcp: { wMin: 0.68, wMax: 4.11, estado: 'publicado', nota: 'CCF, Google Cloud, processador desconhecido', fonte: `${CCF}/gcp` },
+	azure: { wMin: 0.74, wMax: 3.54, estado: 'publicado', nota: 'CCF, Azure, processador desconhecido', fonte: `${CCF}/azure` },
+};
+export const coeficientePadrao: Coef = {
+	wMin: 0.74,
+	wMax: 3.5,
+	estado: 'hipotese',
+	nota: 'O CCF não tem valores para este fornecedor: usa os da AWS',
+};
+export const utilizacaoCcf = 50;
+
+export const fontesEco: { n: string; titulo: string; url: string }[] = [
+	{
+		n: '1',
+		titulo: 'Pesquisa «Que dados ambientais publicam os fornecedores cloud?» (16/10/2026), com todas as fontes',
+		url: 'https://github.com/juliensl/julien-devops-lp/blob/research/dados-ambientais-cloud/docs/research/dados-ambientais-cloud.md',
+	},
+	{ n: '2', titulo: 'Ember, produção de eletricidade anual por país (intensidade carbónica, 2025)', url: EMBER },
+	{ n: '3', titulo: 'Cloud Carbon Footprint, metodologia', url: 'https://www.cloudcarbonfootprint.org/docs/methodology/' },
+];
+
 export const fontesCloud: { n: string; titulo: string; url: string }[] = [
 	{
 		n: '1',
