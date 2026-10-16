@@ -1,0 +1,278 @@
+---
+// PROTÓTIPO · Barra flutuante para mudar de direção (← →) e ver a ficha de cada uma:
+// fontes e peso, paleta com contraste sobre o fundo, nome, cursor, gráfico e topo.
+import { direcoes, contraste } from './conteudo';
+
+const total = (d: (typeof direcoes)[number]) => d.fontes.reduce((s, f) => s + f.kb, 0).toLocaleString('pt-PT');
+const num = (n: number) => n.toLocaleString('pt-PT', { maximumFractionDigits: 1 });
+---
+
+<div class="comutador" role="region" aria-label="Protótipo: mudar de direção visual">
+	<button type="button" class="seta" data-dir="-1" aria-label="Direção anterior">←</button>
+	<p class="rotulo">
+		<span class="tag">Protótipo</span>
+		<strong data-letra>A</strong>
+		<span data-nome>{direcoes[0].nome}</span>
+	</p>
+	<button type="button" class="seta" data-dir="1" aria-label="Direção seguinte">→</button>
+	<button type="button" class="ficha-botao" aria-expanded="false" aria-controls="ficha-proto">Ficha</button>
+</div>
+
+<div id="ficha-proto" class="ficha" hidden>
+	{
+		direcoes.map((d) => (
+			<section data-ficha={d.letra} hidden={d.letra !== 'a'}>
+				<h2>
+					{d.letra.toUpperCase()} · {d.nome}
+				</h2>
+				<dl>
+					<div>
+						<dt>Fontes</dt>
+						<dd>
+							{d.fontes.map((f) => `${f.nome} (${f.uso}, ${num(f.kb)} KB)`).join(' + ')} = {total(d)} KB
+						</dd>
+					</div>
+					<div>
+						<dt>Nome</dt>
+						<dd>{d.nomeTratamento}</dd>
+					</div>
+					<div>
+						<dt>Estrutura</dt>
+						<dd>{d.estrutura}</dd>
+					</div>
+					<div>
+						<dt>Gráfico</dt>
+						<dd>{d.grafico}</dd>
+					</div>
+					<div>
+						<dt>Cursor</dt>
+						<dd>{d.cursor}</dd>
+					</div>
+					<div>
+						<dt>Detalhe no topo</dt>
+						<dd>{d.topo}</dd>
+					</div>
+				</dl>
+				<ul class="cores">
+					{d.cores.map((c) => {
+						const base = c.sobre ?? d.fundo;
+						const r = contraste(c.hex, base);
+						return (
+							<li>
+								<span class="amostra" style={`background:${c.hex}`} />
+								<span>
+									{c.nome}
+									<br />
+									<code>{c.hex}</code>
+									{c.hex !== d.fundo && !c.fundo && (
+										<small>
+											{' '}
+											· {num(r)}:1 {c.sobre ? 'com texto branco' : 'sobre o fundo'}
+										</small>
+									)}
+								</span>
+							</li>
+						);
+					})}
+				</ul>
+			</section>
+		))
+	}
+	<p class="pe">AA: 4,5:1 para texto normal, 3:1 para texto grande e componentes.</p>
+</div>
+
+<script>
+	import { direcoes } from './conteudo';
+	const letras = direcoes.map((d) => d.letra);
+	const barra = document.querySelector('.comutador')!;
+	const ficha = document.getElementById('ficha-proto')!;
+	const botaoFicha = barra.querySelector<HTMLButtonElement>('.ficha-botao')!;
+	let atual = 'a';
+
+	function secaoVisivel(): string | null {
+		const el = document.getElementById(`variante-${atual}`);
+		if (!el) return null;
+		const secoes = [...el.querySelectorAll<HTMLElement>('[data-secao]')];
+		const alvo = secoes.find((s) => s.getBoundingClientRect().bottom > window.innerHeight * 0.35);
+		return alvo?.dataset.secao?.split(' ')[0] ?? null;
+	}
+
+	function mostra(letra: string, manterSecao = true) {
+		if (!letras.includes(letra as never)) letra = 'a';
+		const secao = manterSecao ? secaoVisivel() : null;
+		atual = letra;
+		for (const l of letras) document.getElementById(`variante-${l}`)!.hidden = l !== letra;
+		for (const s of ficha.querySelectorAll<HTMLElement>('[data-ficha]')) s.hidden = s.dataset.ficha !== letra;
+		const d = direcoes.find((x) => x.letra === letra)!;
+		barra.querySelector('[data-letra]')!.textContent = letra.toUpperCase();
+		barra.querySelector('[data-nome]')!.textContent = d.nome;
+		try {
+			if (location.hash !== `#${letra}`) history.replaceState(null, '', `#${letra}`);
+		} catch {
+			// a cópia publicada corre numa moldura que pode recusar mudar o endereço
+		}
+		if (secao) {
+			const alvo = document.querySelector<HTMLElement>(`#variante-${letra} [data-secao~="${secao}"]`);
+			if (alvo && secao !== 'hero') alvo.scrollIntoView({ block: 'start' });
+			else window.scrollTo(0, 0);
+		}
+	}
+
+	function anda(dir: number) {
+		const i = letras.indexOf(atual as never);
+		mostra(letras[(i + dir + letras.length) % letras.length]);
+	}
+
+	barra.querySelectorAll<HTMLButtonElement>('.seta').forEach((b) =>
+		b.addEventListener('click', () => anda(Number(b.dataset.dir))),
+	);
+	botaoFicha.addEventListener('click', () => {
+		const abre = ficha.hidden;
+		ficha.hidden = !abre;
+		botaoFicha.setAttribute('aria-expanded', String(abre));
+	});
+	document.addEventListener('keydown', (e) => {
+		if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+		const t = e.target as HTMLElement;
+		if (t.closest('input, textarea, select, [contenteditable]')) return;
+		if (e.key === 'ArrowLeft') anda(-1);
+		if (e.key === 'ArrowRight') anda(1);
+		if (e.key === 'Escape' && !ficha.hidden) botaoFicha.click();
+	});
+	window.addEventListener('hashchange', () => {
+		const l = location.hash.slice(1);
+		if (letras.includes(l as never) && l !== atual) mostra(l);
+	});
+	mostra(location.hash.slice(1) || 'a', false);
+</script>
+
+<style>
+	.comutador {
+		position: fixed;
+		left: 50%;
+		bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+		transform: translateX(-50%);
+		z-index: 50;
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+		padding: 0.3rem;
+		border-radius: 999px;
+		background: #ffffff;
+		color: #111111;
+		box-shadow:
+			0 6px 24px rgb(0 0 0 / 0.45),
+			0 0 0 1px rgb(0 0 0 / 0.1);
+		font: 500 0.875rem/1.2 system-ui, -apple-system, 'Segoe UI', sans-serif;
+		max-width: calc(100vw - 32px);
+	}
+	.seta,
+	.ficha-botao {
+		font: inherit;
+		min-width: 40px;
+		min-height: 40px;
+		border: 0;
+		border-radius: 999px;
+		background: #f0f0f0;
+		color: #111111;
+		cursor: pointer;
+	}
+	.ficha-botao {
+		padding: 0 0.9rem;
+		background: #111111;
+		color: #ffffff;
+		margin-left: 0.25rem;
+	}
+	.seta:hover {
+		background: #e2e2e2;
+	}
+	.seta:focus-visible,
+	.ficha-botao:focus-visible {
+		outline: 2px solid #1a56db;
+		outline-offset: 2px;
+	}
+	.rotulo {
+		margin: 0;
+		padding-inline: 0.6rem;
+		display: flex;
+		align-items: center;
+		gap: 0.45rem;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.tag {
+		font-size: 0.6875rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		padding: 0.15rem 0.45rem;
+		border-radius: 4px;
+		background: #fff3c4;
+		color: #5c4400;
+	}
+	@media (max-width: 480px) {
+		.tag {
+			display: none;
+		}
+	}
+	.ficha {
+		position: fixed;
+		right: calc(16px + env(safe-area-inset-right, 0px));
+		bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+		z-index: 50;
+		width: min(26rem, calc(100vw - 32px));
+		max-height: calc(100vh - 140px);
+		overflow-y: auto;
+		padding: 1rem 1.1rem;
+		border-radius: 14px;
+		background: #ffffff;
+		color: #111111;
+		box-shadow: 0 10px 40px rgb(0 0 0 / 0.5);
+		font: 400 0.8125rem/1.45 system-ui, -apple-system, 'Segoe UI', sans-serif;
+	}
+	.ficha h2 {
+		font-size: 1rem;
+		margin: 0 0 0.5rem;
+	}
+	.ficha dl {
+		margin: 0;
+		display: grid;
+		gap: 0.4rem;
+	}
+	.ficha dt {
+		font-weight: 700;
+	}
+	.ficha dd {
+		margin: 0;
+		color: #333333;
+	}
+	.cores {
+		list-style: none;
+		padding: 0;
+		margin: 0.85rem 0 0;
+		display: grid;
+		gap: 0.45rem;
+	}
+	.cores li {
+		display: grid;
+		grid-template-columns: 28px 1fr;
+		gap: 0.6rem;
+		align-items: center;
+	}
+	.amostra {
+		width: 28px;
+		height: 28px;
+		border-radius: 6px;
+		box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.15);
+	}
+	.cores code {
+		font-size: 0.75rem;
+	}
+	.cores small {
+		color: #555555;
+	}
+	.pe {
+		margin: 0.85rem 0 0;
+		color: #555555;
+	}
+</style>

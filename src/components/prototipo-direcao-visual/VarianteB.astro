@@ -1,0 +1,1319 @@
+---
+// PROTÓTIPO · Direção B «Painel acolhedor»: grelha de cartões arredondados,
+// Fraunces suave + Instrument Sans, azul-violeta perto da Scaleway sem néon.
+import { Image } from 'astro:assets';
+import foto from '../../../data/IMG_2030.png';
+import {
+	calendly,
+	textos,
+	blocos,
+	notaBlocos,
+	stack,
+	niveis,
+	notaStack,
+	escalas,
+	faq,
+	rodape,
+} from './conteudo';
+
+const promessaH1 = textos.promessa.replace('entrego-te', '<span style="white-space:nowrap">entrego-te</span>');
+
+const marcas = Array.from({ length: 40 });
+const dias = Array.from({ length: 30 });
+const curtos = ['Pré-lançamento', 'Dezenas', 'Centenas', 'Milhares'];
+const inicial = 2;
+const classe = (e: string) => (e === 'Essencial' ? 'ess' : e === 'Recomendado' ? 'rec' : 'esp');
+---
+
+<div class="vb" id="variante-b" data-variante="b" hidden>
+	<div class="riscas" aria-hidden="true"></div>
+
+	<header class="topo">
+		<div class="dentro">
+			<span class="nome"><span class="cx">J</span>ulien <span class="cx">L</span>affont</span>
+			<nav class="linguas" aria-label="Língua">
+				<span>FR</span><span>EN</span><span aria-current="true">PT</span>
+			</nav>
+			<a class="botao" href={calendly}>{textos.cta}</a>
+		</div>
+	</header>
+
+	<main>
+		<section class="faixa hero" data-secao="hero">
+			<div class="hero-texto">
+				<p class="chip"><span class="ponto"></span>{textos.designacao}</p>
+				<h1 set:html={promessaH1} />
+				<p class="lead">{textos.subPromessa}</p>
+				<div class="acao">
+					<a class="botao grande" href={calendly}>{textos.cta}</a>
+					<span class="nota">{textos.notaCta}</span>
+				</div>
+			</div>
+			<div class="hero-lado">
+				<div class="pr" role="img" aria-label="Exemplo: um pull request com uma falha de segurança fica bloqueado pela pipeline">
+					<div class="pr-topo">
+						<span class="pr-num">Pull request #128</span>
+						<span class="pr-titulo">Nova página de faturação</span>
+					</div>
+					<ul>
+						<li class="ok" style="--d:0">
+							<svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7"></path></svg>Testes unitários<span>passou</span>
+						</li>
+						<li class="ok" style="--d:1">
+							<svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7"></path></svg>Testes de integração<span>passou</span>
+						</li>
+						<li class="ok" style="--d:2">
+							<svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7"></path></svg>Lint<span>passou</span>
+						</li>
+						<li class="ko" style="--d:3">
+							<svg viewBox="0 0 16 16"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7"></path></svg>Análise de segurança<span
+								>1 dependência com falha conhecida</span
+							>
+						</li>
+					</ul>
+					<p class="pr-fim">Merge bloqueado até corrigir</p>
+				</div>
+				<p class="nota-proto">Exemplo ilustrativo do bloco 1, animado uma vez ao abrir.</p>
+			</div>
+		</section>
+
+		<section class="faixa" data-secao="problema cursor">
+			<h2>Onde está o teu SaaS?</h2>
+			<div class="painel">
+				<div class="painel-esq">
+					<label class="rotulo" for="escala-b">Escala do teu SaaS</label>
+					<div class="regua">
+						<output for="escala-b" class="valor" style={`--p:${inicial / 3}`}>{escalas[inicial].nome}</output>
+						<div class="marcas" aria-hidden="true">
+							{marcas.map(() => <span />)}
+						</div>
+						<input
+							type="range"
+							id="escala-b"
+							min="0"
+							max={escalas.length - 1}
+							step="1"
+							value={inicial}
+							data-escalas={JSON.stringify(escalas)}
+						/>
+						<div class="rotulos" aria-hidden="true">
+							{curtos.map((c) => <span>{c}</span>)}
+						</div>
+					</div>
+					<p class="sinal" aria-live="polite">{escalas[inicial].sinal}</p>
+				</div>
+				<div class="painel-dir">
+					<p class="rotulo">Que blocos</p>
+					<ul class="estados">
+						{
+							blocos.map((b, i) => (
+								<li>
+									<span>
+										<span class="bn">Bloco {b.n}</span> {b.nome}
+									</span>
+									<span class={`estado ${classe(escalas[inicial].blocos[i])}`} data-i={i}>
+										{escalas[inicial].blocos[i]}
+									</span>
+								</li>
+							))
+						}
+					</ul>
+				</div>
+			</div>
+			<p class="nota-proto">
+				Afirmações novas: o Julien valida o que costuma acontecer em cada escala e que blocos recomenda.
+			</p>
+		</section>
+
+		<section class="faixa" data-secao="metodo">
+			<h2>Quatro blocos, os que precisares.</h2>
+			<p class="intro">{notaBlocos}</p>
+			<div class="cartoes">
+				<article class="cartao">
+					<svg class="diag d1" viewBox="0 0 240 96" aria-hidden="true">
+						<line x1="24" y1="40" x2="216" y2="40" class="trilho"></line>
+						<circle cx="24" cy="40" r="7" class="no"></circle>
+						<circle cx="88" cy="40" r="7" class="no"></circle>
+						<rect x="145" y="25" width="14" height="30" rx="4" class="portao"></rect>
+						<circle cx="216" cy="40" r="7" class="no"></circle>
+						<circle cx="24" cy="40" r="5" class="bola ok"></circle>
+						<circle cx="24" cy="40" r="5" class="bola ko"></circle>
+						<text x="24" y="78">commit</text>
+						<text x="88" y="78">testes</text>
+						<text x="152" y="78">segurança</text>
+						<text x="216" y="78">produção</text>
+					</svg>
+					<p class="bn">Bloco 1</p>
+					<h3>{blocos[0].nome}</h3>
+					<p>{blocos[0].texto}</p>
+					<p class="ferr">{blocos[0].ferramentas.map((f) => <span>{f}</span>)}</p>
+				</article>
+				<article class="cartao">
+					<svg class="diag d2" viewBox="0 0 240 96" aria-hidden="true">
+						{
+							[0, 1, 2, 3, 4, 5].map((k) => (
+								<g class="caixa" style={`--k:${k}`}>
+									<rect x={42 + (k % 3) * 56} y={k < 3 ? 10 : 50} width="44" height="32" rx="8" />
+									<line x1={52 + (k % 3) * 56} y1={k < 3 ? 22 : 62} x2={76 + (k % 3) * 56} y2={k < 3 ? 22 : 62} />
+									<line x1={52 + (k % 3) * 56} y1={k < 3 ? 30 : 70} x2={68 + (k % 3) * 56} y2={k < 3 ? 30 : 70} />
+								</g>
+							))
+						}
+					</svg>
+					<p class="bn">Bloco 2</p>
+					<h3>{blocos[1].nome}</h3>
+					<p>{blocos[1].texto}</p>
+					<p class="ferr">{blocos[1].ferramentas.map((f) => <span>{f}</span>)}</p>
+				</article>
+				<article class="cartao">
+					<svg class="diag d3" viewBox="0 0 240 96" aria-hidden="true">
+						<line x1="20" y1="84" x2="220" y2="84" class="trilho"></line>
+						{
+							[0, 1, 2, 3, 4, 5, 6].map((k) => (
+								<rect class="coluna" style={`--k:${k}`} x={30 + k * 27} y="14" width="18" height="70" rx="5" />
+							))
+						}
+					</svg>
+					<p class="bn">Bloco 3</p>
+					<h3>{blocos[2].nome}</h3>
+					<p>{blocos[2].texto}</p>
+					<p class="ferr">{blocos[2].ferramentas.map((f) => <span>{f}</span>)}</p>
+				</article>
+				<article class="cartao">
+					<svg class="diag d4" viewBox="0 0 240 96" aria-hidden="true">
+						<polyline
+							class="pulso"
+							points="10,56 50,56 62,56 72,30 84,76 96,56 140,56 150,56 160,20 172,80 184,56 230,56"></polyline>
+						<circle cx="160" cy="20" r="5" class="alerta"></circle>
+						<rect x="172" y="6" width="56" height="20" rx="10" class="selo"></rect>
+						<text x="200" y="20">alerta</text>
+					</svg>
+					<p class="bn">Bloco 4</p>
+					<h3>{blocos[3].nome}</h3>
+					<p>{blocos[3].texto}</p>
+					<p class="ferr">{blocos[3].ferramentas.map((f) => <span>{f}</span>)}</p>
+				</article>
+			</div>
+		</section>
+
+		<section class="faixa" data-secao="stack">
+			<h2>A stack, por nível de domínio.</h2>
+			<p class="nota-proto">{notaStack}</p>
+			<div class="painel-stack">
+				<div class="ps-topo">
+					<span class="rotulo">Ferramentas em produção</span>
+					<div class="legenda" aria-hidden="true">
+						<span><i class="n3"></i>{niveis[3]}</span>
+						<span><i class="n2"></i>{niveis[2]}</span>
+						<span><i class="n1"></i>{niveis[1]}</span>
+					</div>
+				</div>
+				<div class="colunas">
+					{
+						stack.map((g) => (
+							<div class="grupo">
+								<ul class="barras">
+									{g.ferramentas.map((f) => (
+										<li class:list={[`n${f.nivel}`, { confirmar: f.aConfirmar }]} style={`--h:${f.nivel / 3}`}>
+											<span class="area-col">
+												<span class="col" />
+											</span>
+											<span class="rot">
+												{f.nome}
+												{f.aConfirmar && <em>a confirmar</em>}
+											</span>
+											<span class="sr">{niveis[f.nivel]}</span>
+										</li>
+									))}
+								</ul>
+								<p class="area">{g.area}</p>
+							</div>
+						))
+					}
+				</div>
+			</div>
+		</section>
+
+		<section class="faixa" data-secao="garantia">
+			<div class="garantia">
+				<div>
+					<p class="rotulo">A garantia</p>
+					<p class="garantia-num">99&nbsp;%</p>
+					<p class="sub">de disponibilidade em cada mês</p>
+				</div>
+				<div class="garantia-texto">
+					<div class="dias" aria-hidden="true">
+						{dias.map((_, k) => <span style={`--k:${k}`} />)}
+					</div>
+					<p>{textos.garantia}</p>
+					<p class="condicao">{textos.garantiaCondicao}</p>
+				</div>
+			</div>
+		</section>
+
+		<section class="faixa" data-secao="quem">
+			<h2>Quem é o Julien</h2>
+			<div class="quem">
+				<Image src={foto} alt={textos.fotoAlt} width={560} format="avif" quality={55} loading="lazy" class="foto" />
+				<div class="quem-dir">
+					<p class="quem-texto">{textos.quem}</p>
+					<figure class="testemunho">
+						<blockquote>«Lugar para um testemunho de um CTO, com duas ou três frases.»</blockquote>
+						<figcaption>Nome · Cargo · Empresa</figcaption>
+					</figure>
+					<p class="nota-proto">Os testemunhos chegam mais tarde.</p>
+				</div>
+			</div>
+		</section>
+
+		<section class="faixa" data-secao="faq">
+			<h2>Perguntas frequentes</h2>
+			<div class="faq">
+				{
+					faq.map((q) => (
+						<details>
+							<summary>{q.p}</summary>
+							<p>{q.r}</p>
+						</details>
+					))
+				}
+			</div>
+		</section>
+
+		<section class="faixa" data-secao="final">
+			<div class="final">
+				<h2>{textos.finalTitulo}</h2>
+				<p class="intro">{textos.finalTexto}</p>
+				<a class="botao grande" href={calendly}>{textos.cta}</a>
+				<p class="nota">{textos.notaLingua}</p>
+			</div>
+		</section>
+	</main>
+
+	<footer class="rodape">
+		<div class="faixa">
+			<span class="nome pequeno"><span class="cx">J</span>ulien <span class="cx">L</span>affont</span>
+			<span>{rodape.marca}</span>
+			<span>{rodape.email}</span>
+			{rodape.ligacoes.map((l) => <span class="lig">{l}</span>)}
+		</div>
+	</footer>
+</div>
+
+<script>
+	type Escala = { nome: string; sinal: string; blocos: string[] };
+	const raiz = document.getElementById('variante-b')!;
+	const input = raiz.querySelector<HTMLInputElement>('#escala-b')!;
+	const escalas: Escala[] = JSON.parse(input.dataset.escalas!);
+	const valor = raiz.querySelector<HTMLElement>('.valor')!;
+	const sinal = raiz.querySelector('.sinal')!;
+	const estados = [...raiz.querySelectorAll<HTMLElement>('.estado')];
+	const marcas = [...raiz.querySelectorAll<HTMLElement>('.marcas span')];
+	const classe = (e: string) => (e === 'Essencial' ? 'ess' : e === 'Recomendado' ? 'rec' : 'esp');
+
+	function atualiza() {
+		const i = Number(input.value);
+		const e = escalas[i];
+		const pos = i / (escalas.length - 1);
+		valor.textContent = e.nome;
+		valor.style.setProperty('--p', String(pos));
+		sinal.textContent = e.sinal;
+		input.setAttribute('aria-valuetext', e.nome);
+		estados.forEach((el, k) => {
+			el.textContent = e.blocos[k];
+			el.className = `estado ${classe(e.blocos[k])}`;
+		});
+		marcas.forEach((m, k) => {
+			const d = Math.abs(k / (marcas.length - 1) - pos);
+			const perto = Math.max(0, 1 - d * 8);
+			m.style.setProperty('--h', String(0.25 + perto * 0.75));
+			m.classList.toggle('ativa', perto > 0.35);
+		});
+	}
+	input.addEventListener('input', atualiza);
+	atualiza();
+</script>
+
+<style>
+	.vb {
+		--bg: #141729;
+		--surface: #1c2036;
+		--surface-2: #232845;
+		--panel: #0f1224;
+		--line: #30365a;
+		--text: #eceaf6;
+		--muted: #a6a8c3;
+		--violet: #b89bfb;
+		--btn: #7a55e0;
+		--green: #5cc493;
+		--red: #f08f86;
+		--n3: #b89bfb;
+		--n2: #8d74d8;
+		--n1: #6f5fae;
+		--serif: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+		--sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+		position: relative;
+		background: var(--bg);
+		color: var(--text);
+		font: 400 1.0625rem/1.6 var(--sans);
+		padding-bottom: 6rem;
+	}
+	.riscas {
+		position: fixed;
+		inset: 0 0 auto;
+		height: 220px;
+		pointer-events: none;
+		z-index: 0;
+		background: repeating-linear-gradient(to bottom, rgb(184 155 251 / 0.16) 0 1px, transparent 1px 9px);
+		mask-image: linear-gradient(#000, transparent);
+	}
+	.topo {
+		position: sticky;
+		top: env(safe-area-inset-top, 0px);
+		z-index: 5;
+		background: rgb(20 23 41 / 0.85);
+		border-bottom: 1px solid var(--line);
+	}
+	.dentro {
+		max-width: 72rem;
+		margin: 0 auto;
+		display: flex;
+		align-items: center;
+		gap: 1.25rem;
+		padding-block: 0.75rem;
+		padding-left: max(16px, env(safe-area-inset-left, 0px));
+		padding-right: max(16px, env(safe-area-inset-right, 0px));
+	}
+	h1,
+	h2,
+	h3,
+	.nome,
+	.quem-texto,
+	.garantia-num,
+	summary {
+		font-family: var(--serif);
+		font-variation-settings: 'SOFT' 100, 'WONK' 0;
+	}
+	.nome {
+		font-size: 1.45rem;
+		font-weight: 560;
+		letter-spacing: -0.005em;
+		white-space: nowrap;
+	}
+	.cx {
+		display: inline-block;
+		border: 1.5px solid var(--violet);
+		border-radius: 0.3em;
+		padding: 0 0.12em;
+		margin-right: 0.04em;
+		line-height: 1.15;
+	}
+	.nome.pequeno {
+		font-size: 1.15rem;
+	}
+	.linguas {
+		margin-left: auto;
+		display: flex;
+		gap: 0.75rem;
+		font-size: 0.8125rem;
+		letter-spacing: 0.06em;
+		color: var(--muted);
+	}
+	.linguas span {
+		display: inline-flex;
+		align-items: center;
+		min-height: 24px;
+		min-width: 24px;
+	}
+	.linguas [aria-current] {
+		color: var(--text);
+		text-decoration: underline;
+		text-underline-offset: 4px;
+	}
+	.botao {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 44px;
+		padding: 0 1.15rem;
+		border-radius: 12px;
+		background: var(--btn);
+		color: #fff;
+		font-weight: 600;
+		font-size: 0.9375rem;
+		text-decoration: none;
+		white-space: nowrap;
+	}
+	.botao:hover {
+		background: #6a46d3;
+	}
+	.botao:focus-visible,
+	summary:focus-visible,
+	input:focus-visible {
+		outline: 2px solid var(--green);
+		outline-offset: 3px;
+	}
+	.botao.grande {
+		min-height: 52px;
+		padding: 0 1.5rem;
+		font-size: 1.0625rem;
+	}
+	main {
+		position: relative;
+		z-index: 1;
+	}
+	.faixa {
+		max-width: 72rem;
+		margin: 0 auto;
+		padding-block: 4.5rem 0;
+		padding-left: max(16px, env(safe-area-inset-left, 0px));
+		padding-right: max(16px, env(safe-area-inset-right, 0px));
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
+	}
+	h1,
+	h2,
+	h3 {
+		margin: 0;
+		text-wrap: balance;
+	}
+	h1 {
+		font-size: clamp(2.4rem, 5.6vw, 3.9rem);
+		line-height: 1.06;
+		font-weight: 600;
+		letter-spacing: -0.015em;
+	}
+	h2 {
+		font-size: clamp(1.9rem, 4vw, 2.6rem);
+		line-height: 1.1;
+		font-weight: 560;
+	}
+	h3 {
+		font-size: 1.3rem;
+		line-height: 1.2;
+		font-weight: 560;
+	}
+	p {
+		margin: 0;
+	}
+	.lead,
+	.intro {
+		color: var(--muted);
+		max-width: 40rem;
+	}
+	.lead {
+		font-size: 1.1875rem;
+	}
+	.nota {
+		font-size: 0.875rem;
+		color: var(--muted);
+	}
+	.hero {
+		display: grid;
+		grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+		gap: 3rem;
+		align-items: center;
+		padding-top: 5rem;
+	}
+	.hero-texto {
+		display: grid;
+		gap: 1.25rem;
+		justify-items: start;
+	}
+	.hero-lado {
+		display: grid;
+		gap: 0.75rem;
+	}
+	.chip {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.3rem 0.8rem;
+		border: 1px solid var(--line);
+		border-radius: 999px;
+		background: var(--surface);
+		font-size: 0.875rem;
+		color: var(--muted);
+	}
+	.ponto {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: var(--green);
+	}
+	.acao {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.75rem 1.25rem;
+	}
+	.pr {
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: 20px;
+		padding: 1.25rem;
+		display: grid;
+		gap: 1rem;
+	}
+	.pr-topo {
+		display: grid;
+		gap: 0.15rem;
+	}
+	.pr-num {
+		font-size: 0.8125rem;
+		color: var(--muted);
+	}
+	.pr-titulo {
+		font-weight: 600;
+	}
+	.pr ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: grid;
+		gap: 0.5rem;
+	}
+	.pr li {
+		display: grid;
+		grid-template-columns: 22px 1fr;
+		column-gap: 0.6rem;
+		align-items: center;
+		padding: 0.55rem 0.75rem;
+		border-radius: 12px;
+		background: var(--surface-2);
+		font-size: 0.9375rem;
+		animation: entra 0.5s ease both;
+		animation-delay: calc(var(--d) * 0.45s + 0.2s);
+	}
+	.pr li span {
+		grid-column: 2;
+		font-size: 0.8125rem;
+		color: var(--muted);
+	}
+	.pr svg {
+		grid-row: span 2;
+		width: 22px;
+		height: 22px;
+		padding: 3px;
+		border-radius: 50%;
+		fill: none;
+		stroke-width: 2;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+	.pr .ok svg {
+		stroke: var(--panel);
+		background: var(--green);
+	}
+	.pr .ko svg {
+		stroke: var(--panel);
+		background: var(--red);
+	}
+	.pr .ko span {
+		color: var(--red);
+	}
+	.pr-fim {
+		font-size: 0.875rem;
+		font-weight: 600;
+		color: var(--red);
+		animation: entra 0.5s ease both;
+		animation-delay: 2.1s;
+	}
+	@keyframes entra {
+		from {
+			opacity: 0.3;
+			transform: translateY(4px);
+		}
+		to {
+			opacity: 1;
+			transform: none;
+		}
+	}
+	.rotulo {
+		font-size: 0.75rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--muted);
+	}
+	.painel {
+		display: grid;
+		grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+		border: 1px solid var(--line);
+		border-radius: 20px;
+		background: var(--surface);
+		overflow: hidden;
+	}
+	.painel-esq,
+	.painel-dir {
+		padding: 1.5rem;
+		display: grid;
+		gap: 1rem;
+		align-content: start;
+		min-width: 0;
+	}
+	.painel-dir {
+		border-left: 1px solid var(--line);
+		background: var(--panel);
+	}
+	.regua {
+		position: relative;
+		padding-top: 2.75rem;
+		display: grid;
+		gap: 0.25rem;
+	}
+	.valor {
+		position: absolute;
+		top: 0;
+		left: calc(11px + var(--p) * (100% - 22px));
+		transform: translateX(calc(var(--p) * -100%));
+		padding: 0.25rem 0.75rem;
+		border: 1px solid var(--violet);
+		border-radius: 999px;
+		font-size: 0.875rem;
+		color: var(--violet);
+		white-space: nowrap;
+		transition: left 0.15s ease;
+	}
+	.marcas {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-end;
+		height: 30px;
+		padding-inline: 11px;
+	}
+	.marcas span {
+		width: 2px;
+		height: calc(var(--h, 0.25) * 100%);
+		background: var(--line);
+		border-radius: 2px;
+		transition: height 0.18s ease;
+	}
+	.marcas span.ativa {
+		background: var(--violet);
+	}
+	input[type='range'] {
+		width: 100%;
+		margin: 0;
+		height: 24px;
+		background: transparent;
+		-webkit-appearance: none;
+		appearance: none;
+		accent-color: var(--btn);
+	}
+	input[type='range']::-webkit-slider-runnable-track {
+		height: 4px;
+		border-radius: 4px;
+		background: var(--muted);
+	}
+	input[type='range']::-moz-range-track {
+		height: 4px;
+		border-radius: 4px;
+		background: var(--muted);
+	}
+	input[type='range']::-webkit-slider-thumb {
+		-webkit-appearance: none;
+		width: 22px;
+		height: 22px;
+		margin-top: -9px;
+		border-radius: 50%;
+		background: var(--violet);
+		border: 3px solid var(--surface);
+		box-shadow: 0 0 0 1px var(--violet);
+	}
+	input[type='range']::-moz-range-thumb {
+		width: 16px;
+		height: 16px;
+		border-radius: 50%;
+		background: var(--violet);
+		border: 3px solid var(--surface);
+		box-shadow: 0 0 0 1px var(--violet);
+	}
+	.rotulos {
+		display: flex;
+		justify-content: space-between;
+		font-size: 0.75rem;
+		color: var(--muted);
+	}
+	.sinal {
+		font-size: 1.0625rem;
+		min-height: 3.4em;
+	}
+	.estados {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: grid;
+	}
+	.estados li {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 1rem;
+		padding-block: 0.8rem;
+		border-top: 1px solid var(--line);
+		font-size: 0.9375rem;
+	}
+	.bn {
+		font-size: 0.75rem;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--violet);
+	}
+	.estados .bn {
+		display: block;
+	}
+	.estado {
+		flex: none;
+		font-size: 0.8125rem;
+		padding: 0.2rem 0.65rem;
+		border-radius: 999px;
+		border: 1px solid currentColor;
+	}
+	.estado.ess {
+		color: var(--panel);
+		background: var(--green);
+		border-color: var(--green);
+	}
+	.estado.rec {
+		color: var(--violet);
+	}
+	.estado.esp {
+		color: var(--muted);
+		border-style: dashed;
+	}
+	.cartoes {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 15.5rem), 1fr));
+		gap: 1rem;
+	}
+	.cartao {
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: 20px;
+		padding: 1.25rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.6rem;
+	}
+	.cartao > p:not(.bn):not(.ferr) {
+		color: var(--muted);
+		font-size: 0.9375rem;
+	}
+	.ferr {
+		margin-top: auto;
+		padding-top: 0.5rem;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem;
+	}
+	.ferr span {
+		font-size: 0.8125rem;
+		padding: 0.15rem 0.6rem;
+		border-radius: 8px;
+		background: var(--surface-2);
+		color: var(--green);
+	}
+	.diag {
+		width: 100%;
+		height: auto;
+		background: var(--panel);
+		border-radius: 14px;
+		margin-bottom: 0.5rem;
+	}
+	.diag text {
+		font: 500 10px var(--sans);
+		fill: var(--muted);
+		text-anchor: middle;
+	}
+	.trilho {
+		stroke: var(--line);
+		stroke-width: 2;
+	}
+	.no {
+		fill: var(--surface-2);
+		stroke: var(--muted);
+		stroke-width: 1.5;
+	}
+	.portao {
+		fill: var(--surface-2);
+		stroke: var(--muted);
+		stroke-width: 1.5;
+		animation: portao 4s ease-in-out infinite 2s;
+	}
+	.bola {
+		fill: var(--green);
+	}
+	.bola.ok {
+		animation: passa 4s linear infinite;
+	}
+	.bola.ko {
+		opacity: 0;
+		animation: bloqueia 4s linear infinite 2s;
+	}
+	@keyframes passa {
+		0% {
+			transform: translateX(0);
+			opacity: 0;
+		}
+		8%,
+		88% {
+			opacity: 1;
+		}
+		100% {
+			transform: translateX(192px);
+			opacity: 0;
+		}
+	}
+	@keyframes bloqueia {
+		0% {
+			transform: translateX(0);
+			opacity: 0;
+			fill: var(--green);
+		}
+		8% {
+			opacity: 1;
+		}
+		50% {
+			transform: translateX(110px);
+			fill: var(--green);
+		}
+		58%,
+		88% {
+			transform: translateX(110px);
+			fill: var(--red);
+			opacity: 1;
+		}
+		100% {
+			transform: translateX(110px);
+			fill: var(--red);
+			opacity: 0;
+		}
+	}
+	@keyframes portao {
+		0%,
+		48% {
+			stroke: var(--muted);
+		}
+		56%,
+		90% {
+			stroke: var(--red);
+			fill: rgb(240 143 134 / 0.25);
+		}
+		100% {
+			stroke: var(--muted);
+		}
+	}
+	.caixa rect {
+		fill: var(--surface-2);
+		stroke: var(--violet);
+		stroke-width: 1.5;
+	}
+	.caixa line {
+		stroke: var(--muted);
+		stroke-width: 2;
+		stroke-linecap: round;
+	}
+	.caixa {
+		transform-box: fill-box;
+		transform-origin: center;
+		animation: surge 4.8s ease-in-out infinite;
+		animation-delay: calc(var(--k) * 0.35s);
+	}
+	@keyframes surge {
+		0%,
+		8% {
+			opacity: 0.2;
+			transform: scale(0.85);
+		}
+		22%,
+		80% {
+			opacity: 1;
+			transform: scale(1);
+		}
+		100% {
+			opacity: 0.2;
+			transform: scale(0.85);
+		}
+	}
+	.coluna {
+		fill: var(--n2);
+		transform-box: fill-box;
+		transform-origin: bottom;
+		animation: carga 3.2s ease-in-out infinite;
+		animation-delay: calc(var(--k) * -0.4s);
+	}
+	@keyframes carga {
+		0%,
+		100% {
+			transform: scaleY(0.3);
+			fill: var(--n1);
+		}
+		50% {
+			transform: scaleY(1);
+			fill: var(--n3);
+		}
+	}
+	.pulso {
+		fill: none;
+		stroke: var(--green);
+		stroke-width: 2.5;
+		stroke-linejoin: round;
+		stroke-linecap: round;
+		stroke-dasharray: 340;
+		animation: traca 3.6s linear infinite;
+	}
+	@keyframes traca {
+		from {
+			stroke-dashoffset: 340;
+		}
+		to {
+			stroke-dashoffset: 0;
+		}
+	}
+	.alerta {
+		fill: var(--red);
+		animation: pisca 3.6s ease infinite;
+	}
+	.d4 .selo {
+		fill: rgb(240 143 134 / 0.18);
+		stroke: var(--red);
+		animation: pisca 3.6s ease infinite;
+	}
+	.d4 text {
+		fill: var(--red);
+		animation: pisca 3.6s ease infinite;
+	}
+	@keyframes pisca {
+		0%,
+		55% {
+			opacity: 0.25;
+		}
+		62%,
+		90% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0.25;
+		}
+	}
+	.painel-stack {
+		border-radius: 20px;
+		border: 1px solid var(--line);
+		padding: 1.5rem;
+		background-color: var(--panel);
+		background-image:
+			linear-gradient(rgb(48 54 90 / 0.45) 1px, transparent 1px),
+			linear-gradient(90deg, rgb(48 54 90 / 0.45) 1px, transparent 1px);
+		background-size: 24px 24px;
+		display: grid;
+		gap: 1.5rem;
+	}
+	.ps-topo {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: 0.75rem;
+	}
+	.legenda {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1rem;
+		font-size: 0.8125rem;
+		color: var(--muted);
+	}
+	.legenda i {
+		display: inline-block;
+		width: 12px;
+		height: 12px;
+		border-radius: 3px;
+		margin-right: 0.4rem;
+		vertical-align: -1px;
+	}
+	.legenda .n3,
+	li.n3 .col {
+		background: var(--n3);
+	}
+	.legenda .n2,
+	li.n2 .col {
+		background: var(--n2);
+	}
+	.legenda .n1,
+	li.n1 .col {
+		background: var(--n1);
+	}
+	.colunas {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 2rem 1.75rem;
+	}
+	.grupo {
+		display: grid;
+		gap: 0.5rem;
+		align-content: start;
+	}
+	.barras {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: flex;
+		gap: 8px;
+		align-items: flex-start;
+	}
+	.barras li {
+		width: 84px;
+		display: grid;
+		gap: 0.5rem;
+	}
+	.area-col {
+		height: 180px;
+		display: flex;
+		align-items: flex-end;
+	}
+	.col {
+		width: 100%;
+		height: calc(var(--h) * 100%);
+		border-radius: 10px 10px 4px 4px;
+	}
+	.confirmar .col {
+		background: transparent !important;
+		border: 1.5px dashed var(--n2);
+	}
+	.rot {
+		font-size: 0.8125rem;
+		line-height: 1.3;
+		text-align: center;
+	}
+	.rot em {
+		display: block;
+		font-style: normal;
+		font-size: 0.6875rem;
+		color: var(--muted);
+	}
+	.area {
+		font-size: 0.75rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--muted);
+		border-top: 1px solid var(--line);
+		padding-top: 0.5rem;
+	}
+	.garantia {
+		display: grid;
+		grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr);
+		gap: 2rem;
+		padding: 2rem;
+		border-radius: 20px;
+		border: 1px solid var(--line);
+		background: var(--surface);
+	}
+	.garantia-num {
+		font-size: clamp(3.5rem, 9vw, 5.5rem);
+		font-weight: 600;
+		line-height: 1;
+		color: var(--green);
+	}
+	.sub {
+		color: var(--muted);
+	}
+	.garantia-texto {
+		display: grid;
+		gap: 1rem;
+		min-width: 0;
+	}
+	.dias {
+		display: flex;
+		gap: 3px;
+		height: 32px;
+	}
+	.dias span {
+		flex: 1;
+		border-radius: 3px;
+		background: var(--green);
+		opacity: 0.85;
+	}
+	.condicao {
+		font-size: 0.9375rem;
+		color: var(--violet);
+	}
+	.quem {
+		display: grid;
+		grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);
+		gap: 2.5rem;
+		align-items: start;
+	}
+	.foto {
+		width: 100%;
+		aspect-ratio: 4 / 5;
+		object-fit: cover;
+		border-radius: 20px;
+	}
+	.quem-dir {
+		display: grid;
+		gap: 1.5rem;
+		min-width: 0;
+	}
+	.quem-texto {
+		font-size: clamp(1.35rem, 2.6vw, 1.75rem);
+		line-height: 1.35;
+		font-weight: 450;
+	}
+	.testemunho {
+		margin: 0;
+		padding: 1.25rem;
+		border-radius: 16px;
+		background: var(--surface);
+		border: 1px solid var(--line);
+	}
+	.testemunho blockquote {
+		margin: 0;
+		color: var(--muted);
+	}
+	.testemunho figcaption {
+		margin-top: 0.5rem;
+		font-size: 0.8125rem;
+		color: var(--muted);
+	}
+	.faq {
+		display: grid;
+		gap: 0.6rem;
+		max-width: 48rem;
+	}
+	details {
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: 14px;
+		padding-inline: 1.15rem;
+	}
+	summary {
+		cursor: pointer;
+		list-style: none;
+		padding-block: 1rem;
+		font-size: 1.15rem;
+		font-weight: 520;
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+	}
+	summary::-webkit-details-marker {
+		display: none;
+	}
+	summary::after {
+		content: '+';
+		color: var(--violet);
+		font-family: var(--sans);
+	}
+	details[open] summary::after {
+		content: '–';
+	}
+	details p {
+		padding-bottom: 1rem;
+		color: var(--muted);
+	}
+	.final {
+		display: grid;
+		gap: 1.25rem;
+		justify-items: start;
+		padding: clamp(1.5rem, 5vw, 3.5rem);
+		border-radius: 24px;
+		border: 1px solid var(--line);
+		background: linear-gradient(140deg, #232849, #181b31 60%);
+	}
+	.final h2 {
+		font-size: clamp(2.2rem, 5vw, 3.4rem);
+	}
+	.rodape {
+		position: relative;
+		z-index: 1;
+		margin-top: 4.5rem;
+		border-top: 1px solid var(--line);
+		font-size: 0.875rem;
+		color: var(--muted);
+	}
+	.rodape .faixa {
+		padding-block: 2rem;
+		flex-direction: row;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.75rem 1.5rem;
+	}
+	.lig {
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+	@media (max-width: 860px) {
+		.hero,
+		.painel,
+		.garantia,
+		.quem {
+			grid-template-columns: 1fr;
+		}
+		.painel-dir {
+			border-left: 0;
+			border-top: 1px solid var(--line);
+		}
+		.foto {
+			max-width: 18rem;
+		}
+	}
+	@media (max-width: 640px) {
+		.dentro {
+			flex-wrap: wrap;
+			row-gap: 0.25rem;
+			padding-block: 0.4rem 0.6rem;
+		}
+		.linguas {
+			order: -1;
+			width: 100%;
+			justify-content: flex-end;
+		}
+		.topo .botao {
+			margin-left: auto;
+			padding: 0 0.9rem;
+			font-size: 0.875rem;
+		}
+		.nome {
+			font-size: 1.25rem;
+		}
+		.colunas {
+			display: grid;
+			gap: 1.25rem;
+		}
+		.barras {
+			flex-direction: column;
+			align-items: stretch;
+			gap: 0.4rem;
+		}
+		.barras li {
+			width: auto;
+			grid-template-columns: 9rem 1fr;
+			align-items: center;
+		}
+		.area-col {
+			order: 2;
+			height: 12px;
+		}
+		.col {
+			height: 100%;
+			width: calc(var(--h) * 100%);
+			border-radius: 999px;
+		}
+		.rot {
+			text-align: left;
+		}
+		.rot em {
+			display: inline;
+			margin-left: 0.35rem;
+		}
+		.grupo .area {
+			order: -1;
+			border-top: 0;
+			border-bottom: 1px solid var(--line);
+			padding: 0 0 0.5rem;
+		}
+		.rotulos span:nth-child(2),
+		.rotulos span:nth-child(3) {
+			visibility: hidden;
+		}
+	}
+</style>

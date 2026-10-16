@@ -1,0 +1,855 @@
+---
+// PROTÓTIPO · Direção A «Editorial noturno»: uma coluna central, títulos grandes
+// em Instrument Serif, texto em Geist, ameixa quase preto com lilás e verde-salva.
+import { Image } from 'astro:assets';
+import foto from '../../../data/IMG_2030.png';
+import {
+	calendly,
+	textos,
+	factos,
+	problemas,
+	blocos,
+	notaBlocos,
+	stack,
+	niveis,
+	notaStack,
+	disponibilidades,
+	faq,
+	rodape,
+} from './conteudo';
+
+const promessaH1 = textos.promessa.replace('entrego-te', '<span style="white-space:nowrap">entrego-te</span>');
+
+const rotulosEscala = new Set([95, 99, 99.9, 99.99]);
+const fmt = (p: number) => p.toLocaleString('pt-PT') + ' %';
+const marcas = Array.from({ length: 48 });
+---
+
+<div class="va" id="variante-a" data-variante="a">
+	<div class="pontos" aria-hidden="true"></div>
+
+	<header class="topo">
+		<div class="dentro">
+			<span class="nome">Julien <span class="pilula">Laffont</span></span>
+			<nav class="linguas" aria-label="Língua">
+				<span>FR</span><span>EN</span><span aria-current="true">PT</span>
+			</nav>
+			<a class="botao" href={calendly}>{textos.cta}</a>
+		</div>
+	</header>
+
+	<main>
+		<section class="hero coluna" data-secao="hero">
+			<p class="etiqueta">{textos.designacao}</p>
+			<h1 set:html={promessaH1} />
+			<p class="lead">{textos.subPromessa}</p>
+			<div class="acao">
+				<a class="botao grande" href={calendly}>{textos.cta}</a>
+				<span class="nota">{textos.notaCta}</span>
+			</div>
+			<ul class="factos">
+				{factos.map((f) => <li>{f}</li>)}
+			</ul>
+		</section>
+
+		<section class="coluna" data-secao="problema">
+			<p class="etiqueta">O problema</p>
+			<h2>Funciona hoje. Amanhã, ninguém sabe.</h2>
+			<ul class="problemas">
+				{
+					problemas.map((p) => (
+						<li>
+							<strong>{p.titulo}</strong> {p.texto}
+						</li>
+					))
+				}
+			</ul>
+		</section>
+
+		<section class="coluna" data-secao="metodo">
+			<p class="etiqueta">O método</p>
+			<h2>Quatro blocos. Escolhes os que precisas.</h2>
+			<p class="intro">{notaBlocos}</p>
+			<ol class="blocos">
+				{
+					blocos.map((b) => (
+						<li>
+							<span class="num">Bloco {b.n}</span>
+							<div>
+								<h3>{b.nome}</h3>
+								<p>{b.texto}</p>
+								<p class="ferramentas">{b.ferramentas.join(' · ')}</p>
+							</div>
+						</li>
+					))
+				}
+			</ol>
+		</section>
+
+		<section class="coluna larga" data-secao="stack">
+			<p class="etiqueta">As ferramentas</p>
+			<h2>A stack, por nível de domínio.</h2>
+			<p class="nota-proto">{notaStack}</p>
+			<div class="legenda" aria-hidden="true">
+				<span><i class="n3"></i>{niveis[3]}</span>
+				<span><i class="n2"></i>{niveis[2]}</span>
+				<span><i class="n1"></i>{niveis[1]}</span>
+			</div>
+			<div class="grupos">
+				{
+					stack.map((g) => (
+						<div class="grupo">
+							<h3>{g.area}</h3>
+							<ul>
+								{g.ferramentas.map((f) => (
+									<li class:list={['linha', { confirmar: f.aConfirmar }]}>
+										<span class="ferr">
+											{f.nome}
+											{f.aConfirmar && <em> (a confirmar)</em>}
+										</span>
+										<span class="pista">
+											<span class={`barra n${f.nivel}`} style={`--w:${f.nivel * 33.333}%`} />
+										</span>
+										<span class="nivel">{niveis[f.nivel]}</span>
+									</li>
+								))}
+							</ul>
+						</div>
+					))
+				}
+			</div>
+		</section>
+
+		<section class="coluna" data-secao="cursor garantia">
+			<p class="etiqueta">A garantia</p>
+			<h2>Disponível pelo menos 99&nbsp;% do tempo.</h2>
+			<p class="intro">{textos.garantia}</p>
+			<p class="condicao">{textos.garantiaCondicao}</p>
+
+			<div class="disp">
+				<label for="disp-a">O que quer dizer cada percentagem? Arrasta para comparar.</label>
+				<div class="marcas" aria-hidden="true">
+					{marcas.map(() => <span />)}
+				</div>
+				<input
+					type="range"
+					id="disp-a"
+					min="0"
+					max={disponibilidades.length - 1}
+					step="1"
+					value="3"
+					data-valores={JSON.stringify(disponibilidades)}
+				/>
+				<div class="escala" aria-hidden="true">
+					{
+						disponibilidades.map((p, i) => (
+							<span style={`--i:${i / (disponibilidades.length - 1)}`} class:list={{ visivel: rotulosEscala.has(p) }}>
+								{fmt(p)}
+							</span>
+						))
+					}
+				</div>
+				<output for="disp-a" class="resultado" aria-live="polite">
+					<span class="pct">99&nbsp;%</span>
+					<span class="grande">7 h 18 min</span>
+					<span class="sub">de paragem por mês, no máximo</span>
+					<span class="ano">cerca de 3 dias e 15 h por ano</span>
+					<span class="selo">É aqui que começa a Garantia</span>
+				</output>
+			</div>
+			<p class="nota-proto">
+				Cálculo num mês médio (30,4 dias). Os valores além de 99 % são números novos: o Julien decide se aparecem.
+			</p>
+		</section>
+
+		<section class="coluna quem" data-secao="quem">
+			<p class="etiqueta">Quem é o Julien</p>
+			<div class="quem-grelha">
+				<Image src={foto} alt={textos.fotoAlt} width={560} format="avif" quality={55} loading="lazy" class="foto" />
+				<div>
+					<p class="quem-texto">{textos.quem}</p>
+					<figure class="testemunho">
+						<blockquote>«Lugar para um testemunho de um CTO, com duas ou três frases.»</blockquote>
+						<figcaption>Nome · Cargo · Empresa</figcaption>
+					</figure>
+					<p class="nota-proto">Os testemunhos chegam mais tarde.</p>
+				</div>
+			</div>
+		</section>
+
+		<section class="coluna" data-secao="faq">
+			<p class="etiqueta">Perguntas</p>
+			<h2>O que os CTO perguntam.</h2>
+			<div class="faq">
+				{
+					faq.map((q) => (
+						<details>
+							<summary>{q.p}</summary>
+							<p>{q.r}</p>
+						</details>
+					))
+				}
+			</div>
+		</section>
+
+		<section class="coluna final" data-secao="final">
+			<h2>{textos.finalTitulo}</h2>
+			<p class="intro">{textos.finalTexto}</p>
+			<div class="acao">
+				<a class="botao grande" href={calendly}>{textos.cta}</a>
+				<span class="nota">{textos.notaLingua}</span>
+			</div>
+		</section>
+	</main>
+
+	<footer class="rodape">
+		<div class="coluna">
+			<span class="nome pequeno">Julien <span class="pilula">Laffont</span></span>
+			<span>{rodape.marca}</span>
+			<span>{rodape.email}</span>
+			{rodape.ligacoes.map((l) => <span class="lig">{l}</span>)}
+		</div>
+	</footer>
+</div>
+
+<script>
+	const raiz = document.getElementById('variante-a')!;
+	const input = raiz.querySelector<HTMLInputElement>('#disp-a')!;
+	const valores: number[] = JSON.parse(input.dataset.valores!);
+	const out = raiz.querySelector('.resultado')!;
+	const marcas = [...raiz.querySelectorAll<HTMLElement>('.marcas span')];
+	const MES_MIN = 30.4375 * 24 * 60;
+
+	const duracao = (min: number) => {
+		if (min < 60) return `${Math.round(min)} min`;
+		const h = Math.floor(min / 60);
+		const m = Math.round(min % 60);
+		if (h < 24) return m ? `${h} h ${m} min` : `${h} h`;
+		const d = Math.floor(h / 24);
+		const hr = h % 24;
+		return hr ? `${d} ${d === 1 ? 'dia' : 'dias'} e ${hr} h` : `${d} dias`;
+	};
+	const pct = (p: number) => p.toLocaleString('pt-PT') + ' %';
+
+	function atualiza() {
+		const i = Number(input.value);
+		const p = valores[i];
+		const minMes = (1 - p / 100) * MES_MIN;
+		const minAno = minMes * 12;
+		out.querySelector('.pct')!.textContent = pct(p);
+		out.querySelector('.grande')!.textContent = duracao(minMes);
+		out.querySelector('.ano')!.textContent = `cerca de ${duracao(minAno)} por ano`;
+		out.classList.toggle('garantido', p >= 99);
+		out.querySelector<HTMLElement>('.selo')!.hidden = p !== 99;
+		input.setAttribute('aria-valuetext', `${pct(p)}: até ${duracao(minMes)} de paragem por mês`);
+		const pos = i / (valores.length - 1);
+		marcas.forEach((m, k) => {
+			const d = Math.abs(k / (marcas.length - 1) - pos);
+			const perto = Math.max(0, 1 - d * 9);
+			m.style.setProperty('--h', String(0.25 + perto * 0.75));
+			m.classList.toggle('ativa', perto > 0.35);
+		});
+	}
+	input.addEventListener('input', atualiza);
+	atualiza();
+</script>
+
+<style>
+	.va {
+		--bg: #18121f;
+		--surface: #221a2c;
+		--line: #3b3148;
+		--text: #f1ebe4;
+		--muted: #b4a9bf;
+		--violet: #c3a6ff;
+		--green: #8ccfa6;
+		--n3: #c3a6ff;
+		--n2: #9a83d6;
+		--n1: #7d6ca6;
+		--serif: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+		--sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+		position: relative;
+		background: var(--bg);
+		color: var(--text);
+		font: 400 1.0625rem/1.65 var(--sans);
+		padding-bottom: 6rem;
+	}
+	.pontos {
+		position: fixed;
+		inset: 0 0 auto;
+		height: 280px;
+		pointer-events: none;
+		z-index: 0;
+		background-image:
+			radial-gradient(circle, rgb(140 207 166 / 0.75) 1.4px, transparent 2px),
+			radial-gradient(circle, rgb(195 166 255 / 0.3) 1px, transparent 1.6px);
+		background-size:
+			168px 120px,
+			24px 24px;
+		background-position:
+			84px 36px,
+			0 0;
+		mask-image: linear-gradient(#000 30%, transparent);
+	}
+	.topo {
+		position: sticky;
+		top: env(safe-area-inset-top, 0px);
+		z-index: 5;
+		background: rgb(24 18 31 / 0.82);
+		border-bottom: 1px solid var(--line);
+	}
+	.dentro {
+		max-width: 64rem;
+		margin: 0 auto;
+		display: flex;
+		align-items: center;
+		gap: 1.25rem;
+		padding-block: 0.75rem;
+		padding-left: max(16px, env(safe-area-inset-left, 0px));
+		padding-right: max(16px, env(safe-area-inset-right, 0px));
+	}
+	.nome {
+		font: 400 1.6rem/1 var(--serif);
+		letter-spacing: 0.005em;
+		white-space: nowrap;
+	}
+	.pilula {
+		display: inline-block;
+		border: 1px solid var(--violet);
+		border-radius: 999px;
+		padding: 0.08em 0.42em 0.12em;
+		margin-left: 0.05em;
+	}
+	.nome.pequeno {
+		font-size: 1.25rem;
+	}
+	.linguas {
+		margin-left: auto;
+		display: flex;
+		gap: 0.75rem;
+		font-size: 0.8125rem;
+		letter-spacing: 0.08em;
+		color: var(--muted);
+	}
+	.linguas [aria-current] {
+		color: var(--text);
+		text-decoration: underline;
+		text-underline-offset: 4px;
+	}
+	.botao {
+		display: inline-flex;
+		align-items: center;
+		min-height: 44px;
+		padding: 0 1.1rem;
+		border-radius: 999px;
+		background: var(--violet);
+		color: var(--bg);
+		font-weight: 600;
+		font-size: 0.9375rem;
+		text-decoration: none;
+		white-space: nowrap;
+	}
+	.botao:hover {
+		background: #d5c2ff;
+	}
+	.botao:focus-visible,
+	summary:focus-visible,
+	input:focus-visible {
+		outline: 2px solid var(--green);
+		outline-offset: 3px;
+	}
+	.botao.grande {
+		min-height: 52px;
+		padding: 0 1.6rem;
+		font-size: 1.0625rem;
+	}
+	main {
+		position: relative;
+		z-index: 1;
+	}
+	.coluna {
+		max-width: 46rem;
+		margin: 0 auto;
+		padding-block: 4.5rem 0;
+		padding-left: max(16px, env(safe-area-inset-left, 0px));
+		padding-right: max(16px, env(safe-area-inset-right, 0px));
+		display: flex;
+		flex-direction: column;
+		gap: 1.25rem;
+	}
+	.coluna.larga {
+		max-width: 64rem;
+	}
+	.etiqueta {
+		margin: 0;
+		font-size: 0.75rem;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--green);
+	}
+	h1,
+	h2,
+	h3 {
+		font-family: var(--serif);
+		font-weight: 400;
+		margin: 0;
+		text-wrap: balance;
+	}
+	h1 {
+		font-size: clamp(2.6rem, 7.5vw, 4.9rem);
+		line-height: 1.02;
+		letter-spacing: -0.012em;
+	}
+	h2 {
+		font-size: clamp(2rem, 5vw, 3.1rem);
+		line-height: 1.05;
+	}
+	h3 {
+		font-size: 1.55rem;
+		line-height: 1.15;
+	}
+	p {
+		margin: 0;
+	}
+	.lead,
+	.intro {
+		color: var(--muted);
+		max-width: 38rem;
+	}
+	.lead {
+		font-size: 1.1875rem;
+	}
+	.hero {
+		padding-top: 5.5rem;
+	}
+	.acao {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.75rem 1.25rem;
+		margin-top: 0.5rem;
+	}
+	.nota {
+		font-size: 0.875rem;
+		color: var(--muted);
+	}
+	.factos {
+		list-style: none;
+		padding: 1.25rem 0 0;
+		margin: 1.5rem 0 0;
+		border-top: 1px solid var(--line);
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem 2rem;
+		font-size: 0.9375rem;
+	}
+	.factos li::before {
+		content: '';
+		display: inline-block;
+		width: 7px;
+		height: 7px;
+		border-radius: 50%;
+		background: var(--green);
+		margin-right: 0.55rem;
+		vertical-align: 0.12em;
+	}
+	.problemas {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: grid;
+		gap: 0;
+	}
+	.problemas li {
+		padding-block: 1rem;
+		border-top: 1px solid var(--line);
+		color: var(--muted);
+	}
+	.problemas strong {
+		color: var(--text);
+		font-weight: 600;
+	}
+	.blocos {
+		list-style: none;
+		padding: 0;
+		margin: 0.5rem 0 0;
+		display: grid;
+	}
+	.blocos li {
+		display: grid;
+		grid-template-columns: 6.5rem 1fr;
+		gap: 1rem;
+		padding-block: 1.5rem;
+		border-top: 1px solid var(--line);
+	}
+	.blocos li > div {
+		display: grid;
+		gap: 0.5rem;
+		min-width: 0;
+	}
+	.blocos p {
+		color: var(--muted);
+	}
+	.num {
+		font-size: 0.75rem;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--violet);
+		padding-top: 0.45rem;
+	}
+	.blocos .ferramentas {
+		font-size: 0.875rem;
+		color: var(--green);
+	}
+	.legenda {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1.25rem;
+		font-size: 0.8125rem;
+		color: var(--muted);
+	}
+	.legenda i {
+		display: inline-block;
+		width: 12px;
+		height: 12px;
+		border-radius: 3px;
+		margin-right: 0.45rem;
+		vertical-align: -1px;
+	}
+	.legenda .n3,
+	.barra.n3 {
+		background: var(--n3);
+	}
+	.legenda .n2,
+	.barra.n2 {
+		background: var(--n2);
+	}
+	.legenda .n1,
+	.barra.n1 {
+		background: var(--n1);
+	}
+	.grupos {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 26rem), 1fr));
+		gap: 2rem 3rem;
+	}
+	.grupo h3 {
+		font-family: var(--sans);
+		font-size: 0.75rem;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--muted);
+		padding-bottom: 0.5rem;
+		border-bottom: 1px solid var(--line);
+		margin-bottom: 0.5rem;
+	}
+	.grupo ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: grid;
+		gap: 0.35rem;
+	}
+	.linha {
+		display: grid;
+		grid-template-columns: minmax(7rem, 9.5rem) 1fr 6.5rem;
+		align-items: center;
+		gap: 0.75rem;
+		font-size: 0.9375rem;
+	}
+	.linha em {
+		font-style: normal;
+		font-size: 0.75rem;
+		color: var(--muted);
+	}
+	.pista {
+		height: 10px;
+		border-radius: 999px;
+		background: var(--surface);
+	}
+	.barra {
+		display: block;
+		height: 100%;
+		width: var(--w);
+		border-radius: 999px;
+	}
+	.confirmar .barra {
+		background: transparent;
+		border: 1.5px dashed var(--n2);
+	}
+	.nivel {
+		font-size: 0.8125rem;
+		color: var(--muted);
+	}
+	.condicao {
+		font-size: 0.9375rem;
+		color: var(--green);
+	}
+	.disp {
+		margin-top: 1rem;
+		padding: 1.5rem;
+		border: 1px solid var(--line);
+		border-radius: 20px;
+		background: var(--surface);
+		display: grid;
+		gap: 0.5rem;
+	}
+	.disp label {
+		font-size: 0.9375rem;
+		color: var(--muted);
+		margin-bottom: 1rem;
+	}
+	.marcas {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-end;
+		height: 34px;
+		padding-inline: 11px;
+	}
+	.marcas span {
+		width: 2px;
+		height: calc(var(--h, 0.25) * 100%);
+		background: var(--line);
+		border-radius: 2px;
+		transition: height 0.18s ease;
+	}
+	.marcas span.ativa {
+		background: var(--violet);
+	}
+	input[type='range'] {
+		width: 100%;
+		margin: 0;
+		accent-color: var(--violet);
+		height: 24px;
+		background: transparent;
+		-webkit-appearance: none;
+		appearance: none;
+	}
+	input[type='range']::-webkit-slider-runnable-track {
+		height: 4px;
+		border-radius: 4px;
+		background: var(--muted);
+	}
+	input[type='range']::-moz-range-track {
+		height: 4px;
+		border-radius: 4px;
+		background: var(--muted);
+	}
+	input[type='range']::-webkit-slider-thumb {
+		-webkit-appearance: none;
+		width: 22px;
+		height: 22px;
+		margin-top: -9px;
+		border-radius: 50%;
+		background: var(--violet);
+		border: 3px solid var(--bg);
+		box-shadow: 0 0 0 1px var(--violet);
+	}
+	input[type='range']::-moz-range-thumb {
+		width: 16px;
+		height: 16px;
+		border-radius: 50%;
+		background: var(--violet);
+		border: 3px solid var(--bg);
+		box-shadow: 0 0 0 1px var(--violet);
+	}
+	.escala {
+		position: relative;
+		height: 1.25rem;
+		margin-inline: 11px;
+		font-size: 0.75rem;
+		color: var(--muted);
+		font-variant-numeric: tabular-nums;
+	}
+	.escala span {
+		position: absolute;
+		left: calc(var(--i) * 100%);
+		transform: translateX(-50%);
+		white-space: nowrap;
+		visibility: hidden;
+	}
+	.escala span.visivel {
+		visibility: visible;
+	}
+	.escala span:last-child {
+		transform: translateX(-85%);
+	}
+	.resultado {
+		display: grid;
+		gap: 0.15rem;
+		margin-top: 1rem;
+		padding-top: 1rem;
+		border-top: 1px solid var(--line);
+	}
+	.resultado .pct {
+		font-size: 0.875rem;
+		color: var(--muted);
+		font-variant-numeric: tabular-nums;
+	}
+	.resultado .grande {
+		font: 400 clamp(2.4rem, 7vw, 3.4rem) / 1.05 var(--serif);
+		font-variant-numeric: tabular-nums;
+	}
+	.resultado.garantido .grande {
+		color: var(--green);
+	}
+	.resultado .sub {
+		color: var(--text);
+	}
+	.resultado .ano {
+		font-size: 0.875rem;
+		color: var(--muted);
+	}
+	.selo {
+		justify-self: start;
+		margin-top: 0.5rem;
+		font-size: 0.8125rem;
+		padding: 0.2rem 0.7rem;
+		border: 1px solid var(--green);
+		border-radius: 999px;
+		color: var(--green);
+	}
+	.quem-grelha {
+		display: grid;
+		grid-template-columns: minmax(0, 15rem) 1fr;
+		gap: 2rem;
+		align-items: start;
+	}
+	.quem-grelha > div {
+		display: grid;
+		gap: 1.25rem;
+		min-width: 0;
+	}
+	.foto {
+		width: 100%;
+		border-radius: 18px;
+		aspect-ratio: 4 / 5;
+		object-fit: cover;
+	}
+	.quem-texto {
+		font: 400 1.6rem/1.3 var(--serif);
+	}
+	.testemunho {
+		margin: 0;
+		padding-left: 1rem;
+		border-left: 2px solid var(--violet);
+	}
+	.testemunho blockquote {
+		margin: 0;
+		color: var(--muted);
+		font-style: italic;
+	}
+	.testemunho figcaption {
+		font-size: 0.8125rem;
+		color: var(--muted);
+		margin-top: 0.35rem;
+	}
+	.faq {
+		display: grid;
+	}
+	details {
+		border-top: 1px solid var(--line);
+	}
+	details:last-child {
+		border-bottom: 1px solid var(--line);
+	}
+	summary {
+		cursor: pointer;
+		padding-block: 1rem;
+		font: 400 1.4rem/1.25 var(--serif);
+		list-style: none;
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+	}
+	summary::-webkit-details-marker {
+		display: none;
+	}
+	summary::after {
+		content: '+';
+		font-family: var(--sans);
+		color: var(--violet);
+	}
+	details[open] summary::after {
+		content: '–';
+	}
+	details p {
+		padding-bottom: 1rem;
+		color: var(--muted);
+	}
+	.final {
+		padding-top: 6rem;
+	}
+	.final h2 {
+		font-size: clamp(2.4rem, 6.5vw, 4rem);
+	}
+	.rodape {
+		position: relative;
+		z-index: 1;
+		margin-top: 5rem;
+		border-top: 1px solid var(--line);
+		font-size: 0.875rem;
+		color: var(--muted);
+	}
+	.rodape .coluna {
+		padding-block: 2rem;
+		flex-direction: row;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.75rem 1.5rem;
+	}
+	.lig {
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+	.linguas span {
+		display: inline-flex;
+		align-items: center;
+		min-height: 24px;
+		min-width: 24px;
+	}
+	@media (max-width: 640px) {
+		.dentro {
+			flex-wrap: wrap;
+			row-gap: 0.25rem;
+			padding-block: 0.4rem 0.6rem;
+		}
+		.linguas {
+			order: -1;
+			width: 100%;
+			justify-content: flex-end;
+		}
+		.topo .botao {
+			margin-left: auto;
+			padding: 0 0.9rem;
+			font-size: 0.875rem;
+		}
+		.nome {
+			font-size: 1.35rem;
+		}
+		.blocos li {
+			grid-template-columns: 1fr;
+			gap: 0.35rem;
+		}
+		.num {
+			padding-top: 0;
+		}
+		.linha {
+			grid-template-columns: 1fr 5.5rem;
+			row-gap: 0.25rem;
+		}
+		.linha .pista {
+			grid-column: 1 / -1;
+			grid-row: 2;
+		}
+		.linha .nivel {
+			text-align: right;
+		}
+		.quem-grelha {
+			grid-template-columns: 1fr;
+		}
+		.foto {
+			max-width: 18rem;
+		}
+	}
+</style>

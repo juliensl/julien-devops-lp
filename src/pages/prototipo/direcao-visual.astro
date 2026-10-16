@@ -1,0 +1,128 @@
+---
+// PROTÓTIPO DESCARTÁVEL do ticket «Qual a direção visual?» (#8).
+// Três direções visuais na mesma rota, escolhidas por #a, #b ou #c no endereço
+// (o hash funciona também na cópia publicada como artifact, a query string não).
+// Fica no ramo prototipo/direcao-visual e nunca entra na main, por isso a barra
+// do protótipo não é escondida no build.
+import VarianteA from '../../components/prototipo-direcao-visual/VarianteA.astro';
+import VarianteB from '../../components/prototipo-direcao-visual/VarianteB.astro';
+import VarianteC from '../../components/prototipo-direcao-visual/VarianteC.astro';
+import Comutador from '../../components/prototipo-direcao-visual/Comutador.astro';
+---
+
+<html lang="pt-PT">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<meta name="robots" content="noindex" />
+		<title>Direção visual Julien Laffont</title>
+	</head>
+	<body>
+		<VarianteA />
+		<VarianteB />
+		<VarianteC />
+		<Comutador />
+	</body>
+</html>
+
+<style is:global>
+	@font-face {
+		font-family: 'Instrument Serif';
+		src: url('/prototipo-direcao-visual/fonts/instrument-serif-400.woff2') format('woff2');
+		font-weight: 400;
+		font-display: swap;
+	}
+	@font-face {
+		font-family: 'Geist';
+		src: url('/prototipo-direcao-visual/fonts/geist-wght.woff2') format('woff2');
+		font-weight: 100 900;
+		font-display: swap;
+	}
+	@font-face {
+		font-family: 'Fraunces';
+		src: url('/prototipo-direcao-visual/fonts/fraunces-soft.woff2') format('woff2');
+		font-weight: 100 900;
+		font-display: swap;
+	}
+	@font-face {
+		font-family: 'Instrument Sans';
+		src: url('/prototipo-direcao-visual/fonts/instrument-sans-wght.woff2') format('woff2');
+		font-weight: 400 700;
+		font-display: swap;
+	}
+	@font-face {
+		font-family: 'Bona Nova';
+		src: url('/prototipo-direcao-visual/fonts/bona-nova-400.woff2') format('woff2');
+		font-weight: 400;
+		font-display: swap;
+	}
+	@font-face {
+		font-family: 'Inter';
+		src: url('/prototipo-direcao-visual/fonts/inter-wght.woff2') format('woff2');
+		font-weight: 100 900;
+		font-display: swap;
+	}
+
+	:root {
+		color-scheme: dark;
+	}
+	html {
+		-webkit-text-size-adjust: 100%;
+	}
+	body {
+		margin: 0;
+		background: #18121f;
+		color: #f1ebe4;
+	}
+	body:has(#variante-b:not([hidden])) {
+		background: #141729;
+	}
+	body:has(#variante-c:not([hidden])) {
+		background: #1e1528;
+	}
+	[hidden] {
+		display: none !important;
+	}
+	*,
+	*::before,
+	*::after {
+		box-sizing: border-box;
+	}
+	img {
+		max-width: 100%;
+		height: auto;
+	}
+	[data-secao] {
+		scroll-margin-top: 96px;
+	}
+	.sr {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+	}
+	/* Notas do protótipo: não fazem parte do design. */
+	.nota-proto {
+		font: 500 0.8125rem/1.45 system-ui, sans-serif;
+		color: #fff6d6;
+		background: #3d3416;
+		border: 1px dashed #d9c27a;
+		border-radius: 6px;
+		padding: 0.5rem 0.75rem;
+		max-width: 60ch;
+	}
+	.nota-proto::before {
+		content: 'Nota do protótipo · ';
+		font-weight: 700;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		*,
+		*::before,
+		*::after {
+			animation: none !important;
+			transition: none !important;
+		}
+	}
+</style>
