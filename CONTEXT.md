@@ -60,6 +60,10 @@ _Evitar_: auditoria, audit (a auditoria de código faz parte do primeiro Bloco)
 A Etapa em que Julien, depois do Diagnóstico, diz ao CTO que Blocos faz, em que prazo e por que preço fixo.
 _Evitar_: orçamento, devis, proposta comercial
 
+**Alojamento com menor impacto ambiental**:
+Um fornecedor de cloud ou de alojamento que Julien pode propor ao CTO por gastar menos energia ou recursos do que os outros. Nenhum alojamento tem impacto nulo.
+_Evitar_: servidor ecológico, alojamento verde, alojamento responsável
+
 ## Fases da página
 
 **Primeira validação**:
