@@ -235,7 +235,7 @@ export const criterios: Criterio[] = [
 	{ id: 'paas', nome: 'PaaS simples', tipo: 'facto', explica: 'Publica a aplicação a partir do código, sem montar infraestrutura.' },
 	{ id: 'europa', nome: 'Sede na Europa', tipo: 'facto', explica: 'A empresa tem sede num país europeu.' },
 	{ id: 'secnum', nome: 'Oferta SecNumCloud', tipo: 'facto', explica: 'Tem pelo menos uma oferta qualificada pela ANSSI.' },
-	{ id: 'regioes', nome: 'Várias regiões na UE', tipo: 'facto', explica: 'Mais de uma região dentro da União Europeia.' },
+	{ id: 'regioes', nome: 'Regiões na UE', tipo: 'facto', explica: 'Pelo menos duas regiões dentro da União Europeia; uma só conta como parcial.' },
 	{ id: 'catalogo', nome: 'Catálogo de serviços geridos', tipo: 'opiniao', explica: 'Amplitude dos serviços geridos (bases de dados, filas, IA…).' },
 	{ id: 'fatura', nome: 'Fatura previsível', tipo: 'opiniao', explica: 'Facilidade em prever a fatura mensal.' },
 ];
@@ -259,7 +259,7 @@ export const cenarios: Cenario[] = [
 		id: 'dados-ue',
 		nome: 'Dados na UE',
 		descricao: 'Os dados têm de ficar na União Europeia, ou o setor é regulado.',
-		pesos: { europa: 3, secnum: 2, regioes: 2 },
+		pesos: { regioes: 3, europa: 2, secnum: 2 },
 	},
 	{
 		id: 'picos',
@@ -283,17 +283,81 @@ export const cenarios: Cenario[] = [
 
 /** Valor de um fornecedor num critério: 1 sim, 0.5 em parte, 0 não, null desconhecido. */
 export type Celula = { v: 1 | 0.5 | 0 | null; estado: Estado; nota?: string };
-// DEMONSTRAÇÃO até chegar a pesquisa «Que factos distinguem os fornecedores cloud…» (#45).
-const d = (v: Celula['v'], nota?: string): Celula => ({ v, estado: 'demo', nota });
-const o = (v: Celula['v']): Celula => ({ v, estado: 'a-validar' });
+// Factos: pesquisa «Que factos distinguem os fornecedores cloud para cada tipo de empresa?» (#45),
+// consultada a 16/10/2026. Catálogo e fatura são opinião, a validar pelo Julien.
+const f = (v: Celula['v'], nota?: string): Celula => ({ v, estado: 'publicado', nota });
+const o = (v: Celula['v'], nota?: string): Celula => ({ v, estado: 'a-validar', nota });
 export const matriz: Record<string, Record<string, Celula>> = {
-	aws: { k8s: d(1), serverless: d(1), paas: d(0.5), europa: d(0), secnum: d(0), regioes: d(1), catalogo: o(1), fatura: o(0) },
-	clever: { k8s: d(null), serverless: d(1), paas: d(1), europa: d(1), secnum: d(null), regioes: d(0.5), catalogo: o(0.5), fatura: o(1) },
-	gcp: { k8s: d(1), serverless: d(1), paas: d(0.5), europa: d(0), secnum: d(0), regioes: d(1), catalogo: o(1), fatura: o(0) },
-	infomaniak: { k8s: d(null), serverless: d(null), paas: d(0.5), europa: d(1), secnum: d(0), regioes: d(0), catalogo: o(0), fatura: o(1) },
-	azure: { k8s: d(1), serverless: d(1), paas: d(0.5), europa: d(0), secnum: d(0), regioes: d(1), catalogo: o(1), fatura: o(0) },
-	ovh: { k8s: d(1), serverless: d(null), paas: d(0.5), europa: d(1), secnum: d(1), regioes: d(1), catalogo: o(0.5), fatura: o(1) },
-	scaleway: { k8s: d(1), serverless: d(1), paas: d(0.5), europa: d(1), secnum: d(null), regioes: d(1), catalogo: o(0.5), fatura: o(0.5) },
+	aws: {
+		k8s: f(1, 'Amazon EKS'),
+		serverless: f(1, 'AWS Fargate'),
+		paas: f(1, 'Elastic Beanstalk (o App Runner fechou a novos clientes em 30/04/2026)'),
+		europa: f(0, 'Sede em Seattle, EUA; oferta European Sovereign Cloud na Alemanha'),
+		secnum: f(0, 'Não está no catálogo da ANSSI'),
+		regioes: f(1, '6 regiões na UE'),
+		catalogo: o(1),
+		fatura: o(0, 'Facto relacionado: 100 GB/mês de saída grátis, depois 0,09 USD/GB'),
+	},
+	clever: {
+		k8s: f(0.5, 'Clever Kubernetes Engine, em beta pública'),
+		serverless: f(1, 'Aplicações Docker com escala automática'),
+		paas: f(1, 'Deploy por git push (produto principal)'),
+		europa: f(1, 'Sede em Nantes, França'),
+		secnum: f(0.5, 'Própria em curso; zona na Cloud Temple (qualificada) a pedido'),
+		regioes: f(1, '8 zonas na UE (7 em França e Varsóvia), várias em datacenters de outros fornecedores'),
+		catalogo: o(0.5),
+		fatura: o(0.5, 'Facto relacionado: sem taxa de saída nas aplicações; sem preço fixo mensal'),
+	},
+	gcp: {
+		k8s: f(1, 'Google Kubernetes Engine (GKE)'),
+		serverless: f(1, 'Cloud Run'),
+		paas: f(1, 'Cloud Run a partir do código; App Engine'),
+		europa: f(0, 'Sede em Mountain View, EUA'),
+		secnum: f(0.5, 'Através da S3NS (Thales), qualificada desde 17/12/2025'),
+		regioes: f(1, '11 regiões na UE'),
+		catalogo: o(1),
+		fatura: o(0, 'Facto relacionado: sem saída grátis a partir da Europa no escalão predefinido'),
+	},
+	infomaniak: {
+		k8s: f(1, 'Kubernetes Service'),
+		serverless: f(0.5, 'Sem serverless; o Jelastic Cloud escala contentores Docker'),
+		paas: f(1, 'Jelastic Cloud (deploy por Git)'),
+		europa: f(1, 'Sede em Genebra, Suíça (fora da UE)'),
+		secnum: f(0, 'Não está no catálogo da ANSSI'),
+		regioes: f(0, '0 regiões na UE; 2 na Suíça'),
+		catalogo: o(0, 'Facto relacionado: PostgreSQL gerido ainda «available soon»'),
+		fatura: o(1, 'Facto relacionado: tráfego de saída incluído; VPS a preço fixo'),
+	},
+	azure: {
+		k8s: f(1, 'Azure Kubernetes Service (AKS)'),
+		serverless: f(1, 'Azure Container Apps'),
+		paas: f(1, 'Azure App Service'),
+		europa: f(0, 'Sede em Redmond, EUA; parceiros Bleu (França) e Delos (Alemanha)'),
+		secnum: f(0, 'A Bleu está em qualificação; não qualificada'),
+		regioes: f(1, '13 regiões na UE (2 de acesso restrito)'),
+		catalogo: o(1),
+		fatura: o(0, 'Facto relacionado: 100 GB/mês de saída grátis, depois 0,087 USD/GB'),
+	},
+	ovh: {
+		k8s: f(1, 'Managed Kubernetes Service'),
+		serverless: f(0, 'Serverless «coming soon»'),
+		paas: f(0, 'O Web PaaS fechou a 31/01/2025'),
+		europa: f(1, 'Sede em Roubaix, França'),
+		secnum: f(1, '3 ofertas IaaS qualificadas, incluindo a SNC Cloud Platform'),
+		regioes: f(1, '7 regiões na UE'),
+		catalogo: o(0.5),
+		fatura: o(1, 'Facto relacionado: tráfego de saída incluído; VPS a preço fixo'),
+	},
+	scaleway: {
+		k8s: f(1, 'Kubernetes Kapsule'),
+		serverless: f(1, 'Serverless Containers'),
+		paas: f(0, 'Não encontrado; o mais próximo são as Serverless Functions'),
+		europa: f(1, 'Sede em Paris, França'),
+		secnum: f(0, 'Em qualificação; não qualificada'),
+		regioes: f(1, '4 regiões na UE'),
+		catalogo: o(0.5),
+		fatura: o(1, 'Facto relacionado: tráfego de saída incluído nas instâncias'),
+	},
 };
 
 // ---------- Ecologia ----------
@@ -349,4 +413,15 @@ export const regioes: Regiao[] = [
 export const coeficientes = { wMin: 0.7, wMax: 3.5, estado: 'demo' as Estado, fonte: '', pueDefeito: 1.4 };
 
 export const fontesEco: { n: string; titulo: string; url: string }[] = [];
-export const fontesCloud: { n: string; titulo: string; url: string }[] = [];
+export const fontesCloud: { n: string; titulo: string; url: string }[] = [
+	{
+		n: '1',
+		titulo: 'Pesquisa «Que factos distinguem os fornecedores cloud para cada tipo de empresa?» (16/10/2026)',
+		url: 'https://github.com/juliensl/julien-devops-lp/blob/research/factos-fornecedores-cloud/docs/research/factos-fornecedores-cloud.md',
+	},
+	{
+		n: '2',
+		titulo: 'ANSSI, catálogo de serviços qualificados (SecNumCloud), atualizado a 16/10/2026',
+		url: 'https://messervices.cyber.gouv.fr/visas/catalogue-produits-services-profils-de-protection-sites-certifies-qualifies-agrees-anssi.pdf',
+	},
+]

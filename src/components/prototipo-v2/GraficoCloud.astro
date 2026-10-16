@@ -3,7 +3,7 @@
 // cenário de empresa. Barras empilhadas por critério (o que pesa e porquê),
 // por ordem alfabética para não sugerir uma classificação. Factos da pesquisa #45;
 // pesos e critérios de opinião a validar pelo Julien.
-import { fornecedores, criterios, cenarios, matriz, nomesEstado, type P, type Celula } from './dados';
+import { fornecedores, criterios, cenarios, matriz, nomesEstado, fontesCloud, type P, type Celula } from './dados';
 
 interface Props {
 	p: P;
@@ -100,19 +100,25 @@ const temDemo = Object.values(matriz).some((f) => Object.values(f).some((c) => c
 			</table>
 		</div>
 		<p class="gc-chave">
-			<span class="selo demo">Demonstração</span> valor de exemplo, a substituir pela pesquisa ·
-			<span class="selo publicado">Publicado</span> facto com fonte ·
+			{temDemo && <><span class="selo demo">Demonstração</span> valor de exemplo ·</>}
+			<span class="selo publicado">Publicado</span> facto com fonte (passa o rato por cima para ver qual) ·
 			<span class="selo a-validar">A validar</span> opinião do Julien
 		</p>
+		<ol class="gc-fontes">
+			{
+				fontesCloud.map((f) => (
+					<li>
+						[{f.n}] <a href={f.url}>{f.titulo}</a>
+					</li>
+				))
+			}
+		</ol>
 	</details>
-	{
-		temDemo && (
-			<p class="nota-proto">
-				Os valores marcados como demonstração são exemplos até chegarem os factos da pesquisa. Os pesos de cada
-				cenário e os critérios de opinião são uma proposta, a validar pelo Julien.
-			</p>
-		)
-	}
+	<p class="nota-proto">
+		Os factos vêm de fontes oficiais consultadas a 16/10/2026. Os pesos de cada cenário, os limiares («A considerar»,
+		«Possível», «Pouco indicado») e os critérios «Catálogo» e «Fatura previsível» são uma proposta, a validar pelo
+		Julien.
+	</p>
 	<script type="application/json" data-dados set:html={JSON.stringify(dados)} />
 </section>
 
@@ -198,7 +204,7 @@ const temDemo = Object.values(matriz).some((f) => Object.values(f).some((c) => c
 					.map(
 						(s) => `<li><i style="background:${s.cor}"></i><span>${nomes[s.cid].nome}</span>
 						<b class="v v${String(s.cel.v).replace('.', '')}">${txt(s.cel.v)}</b>
-						<span class="selo ${s.cel.estado}">${nomeEstado[s.cel.estado] ?? s.cel.estado}</span></li>`,
+						<span class="dt-nota"><span class="selo ${s.cel.estado}">${nomeEstado[s.cel.estado] ?? s.cel.estado}</span>${s.cel.nota ? ' ' + s.cel.nota : ''}</span></li>`,
 					)
 					.join('')}</ul>
 				${r.falta > 0 ? '<p class="dt-falta">Há critérios por confirmar: a barra tracejada mostra o que pode mudar.</p>' : ''}`;
@@ -444,9 +450,26 @@ const temDemo = Object.values(matriz).some((f) => Object.values(f).some((c) => c
 		gap: 0.15rem 0.35rem;
 		align-items: center;
 	}
-	.gc-detalhe :global(li .selo) {
+	.gc-detalhe :global(.dt-nota) {
 		grid-column: 2 / -1;
-		justify-self: start;
+		font-size: 0.75rem;
+		color: var(--muted);
+		line-height: 1.4;
+	}
+	.gc-detalhe :global(.dt-nota .selo) {
+		margin-right: 0.35rem;
+	}
+	.gc-fontes {
+		margin: 0.5rem 0 0;
+		padding: 0;
+		list-style: none;
+		font-size: 0.8125rem;
+		color: var(--muted);
+		display: grid;
+		gap: 0.25rem;
+	}
+	.gc-fontes a {
+		color: var(--verde);
 	}
 	.gc-detalhe :global(.v) {
 		font-weight: 600;
