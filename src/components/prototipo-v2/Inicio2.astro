@@ -1,0 +1,687 @@
+---
+// PROTÓTIPO v2 · 2 «Painel aberto» (evolução da B). Cartões numa grelha de
+// tamanhos variados que ocupa a largura toda; Hero em duas metades com o pull
+// request do bloco 1, que corre uma vez e se pode repetir; mini-diagramas melhorados.
+import { Image } from 'astro:assets';
+import foto from '../../../data/IMG_2030.png';
+import Folha from './Folha.astro';
+import DiagramaBloco from './DiagramaBloco.astro';
+import GraficoCloud from './GraficoCloud.astro';
+import GarantiaAnual from './GarantiaAnual.astro';
+import FaqResumo from './FaqResumo.astro';
+import { calendly, textos, problemas, paraQuem, blocos, notaBlocos, etapas, type Modo } from './dados';
+import { ligacao } from './temas';
+
+interface Props {
+	modo: Modo;
+}
+const { modo } = Astro.props;
+const promessaH1 = textos.promessa.replace('entrego-te', '<span style="white-space:nowrap">entrego-te</span>');
+const passos = [
+	{ nome: 'Testes unitários', estado: 'ok' },
+	{ nome: 'Testes de integração', estado: 'ok' },
+	{ nome: 'Lint', estado: 'ok' },
+	{ nome: 'Análise de segurança', estado: 'ko' },
+];
+---
+
+<div class="i2">
+	<section class="largura hero" id="p2-topo">
+		<div class="hero-texto">
+			<p class="chip-desig"><span class="ponto"></span>{textos.designacao}</p>
+			<h1 set:html={promessaH1} />
+			<p class="lead">{textos.subPromessa}</p>
+			<div class="acao">
+				<a class="botao grande" href={calendly}>{textos.cta}</a>
+				<span class="nota">{textos.notaCta}</span>
+			</div>
+		</div>
+		<div class="hero-lado">
+			<div class="pr" data-pr>
+				<div class="pr-topo">
+					<span class="pr-num">Pull request #128 · exemplo</span>
+					<span class="pr-titulo">Nova página de faturação</span>
+				</div>
+				<ol>
+					{
+						passos.map((s, i) => (
+							<li class={s.estado} style={`--d:${i}`}>
+								<span class="ic" aria-hidden="true" />
+								<span>{s.nome}</span>
+								<span class="res">{s.estado === 'ok' ? 'passou' : '1 dependência com falha conhecida'}</span>
+							</li>
+						))
+					}
+				</ol>
+				<div class="pr-fim">
+					<p>Merge bloqueado até corrigir</p>
+					<button type="button" class="repetir" data-repetir>Repetir</button>
+				</div>
+			</div>
+			<p class="legenda-pr">O bloco 1 em ação: a falha é apanhada no pull request, não pelo cliente.</p>
+		</div>
+	</section>
+
+	<section class="largura bento-topo">
+		<article class="cartao para-quem">
+			<p class="etiqueta">Para quem é</p>
+			<ul>
+				{paraQuem.map((x) => <li>{x}</li>)}
+			</ul>
+		</article>
+		<article class="cartao problemas">
+			<p class="etiqueta">O que costuma acontecer</p>
+			<ul>
+				{
+					problemas.map((p) => (
+						<li>
+							<strong>{p.titulo}</strong> {p.texto}
+						</li>
+					))
+				}
+			</ul>
+		</article>
+		<article class="cartao numero">
+			<p class="grande">30</p>
+			<p>dias, no máximo, para qualquer combinação de blocos</p>
+		</article>
+	</section>
+
+	<section class="largura servicos" id="p2-servicos">
+		<div class="cab-seccao">
+			<h2>Quatro blocos, os que precisares.</h2>
+			<p class="intro">{notaBlocos}</p>
+		</div>
+		<div class="bento">
+			{
+				blocos.map((b) => (
+					<article class={`cartao bloco b${b.n}`}>
+						<DiagramaBloco n={b.n as 1 | 2 | 3 | 4} />
+						<div class="bloco-texto">
+							<p class="num">Bloco {b.n}</p>
+							<h3>{b.nome}</h3>
+							<p>{b.texto}</p>
+							<p class="ferr">
+								{b.ferramentas.map((f) => (
+									<span>{f}</span>
+								))}
+							</p>
+						</div>
+					</article>
+				))
+			}
+		</div>
+	</section>
+
+	<section class="largura etapas" id="p2-etapas">
+		<h2 class="h-pequeno">Do primeiro contacto à entrega</h2>
+		<ol>
+			{
+				etapas.map((e, i) => (
+					<li class="cartao">
+						<span class="num">Etapa {i + 1}</span>
+						<strong>{e.nome}</strong>
+						<span>{e.texto}</span>
+					</li>
+				))
+			}
+		</ol>
+	</section>
+
+	<section class="largura" id="p2-garantia">
+		<div class="cartao garantia">
+			<GarantiaAnual p={2} formato="linha" />
+		</div>
+	</section>
+
+	<section class="largura">
+		<GraficoCloud p={2} />
+	</section>
+
+	<section class="largura quem" id="p2-quem">
+		<div class="cartao quem-cartao">
+			<Image src={foto} alt={textos.fotoAlt} width={560} format="avif" quality={55} loading="lazy" class="foto" />
+			<div class="quem-texto">
+				<h2 class="h-pequeno">Quem é o Julien</h2>
+				<p class="frase">{textos.quem}</p>
+			</div>
+		</div>
+		<figure class="cartao testemunho">
+			<p class="selo a-validar">Testemunhos a chegar</p>
+			<blockquote>Lugar para o testemunho de um CTO. Fica vazio até haver um real.</blockquote>
+			<figcaption>Nome · Cargo · Empresa</figcaption>
+		</figure>
+		<a class="cartao eco" href={ligacao(modo, 2, 'ecologia')}>
+			<Folha tamanho={26} />
+			<strong>Ecologia e infraestrutura</strong>
+			<span>Compara o que os fornecedores publicam e estima o impacto de uma carga.</span>
+		</a>
+	</section>
+
+	<section class="largura" id="p2-faq">
+		<FaqResumo p={2} modo={modo} />
+	</section>
+
+	<section class="largura">
+		<div class="cartao final">
+			<h2>{textos.finalTitulo}</h2>
+			<p class="intro">{textos.finalTexto}</p>
+			<div class="acao">
+				<a class="botao grande" href={calendly}>{textos.cta}</a>
+				<span class="nota">{textos.notaLingua}</span>
+			</div>
+		</div>
+	</section>
+</div>
+
+<script>
+	// O pull request corre uma vez ao abrir; «Repetir» volta a corrê-lo.
+	for (const pr of document.querySelectorAll<HTMLElement>('[data-pr]')) {
+		pr.querySelector('[data-repetir]')!.addEventListener('click', () => {
+			pr.classList.remove('corre');
+			void pr.offsetWidth;
+			pr.classList.add('corre');
+		});
+		pr.classList.add('corre');
+	}
+</script>
+
+<style>
+	.i2 > section {
+		padding-block: 3.5rem 0;
+	}
+	h1 {
+		font-size: clamp(2.3rem, 4.1vw, 3.6rem);
+		line-height: 1.05;
+	}
+	h2 {
+		font-size: clamp(2rem, 4vw, 2.8rem);
+		line-height: 1.08;
+	}
+	.h-pequeno {
+		font-size: clamp(1.6rem, 3vw, 2.1rem);
+	}
+	h3 {
+		font-size: 1.35rem;
+		line-height: 1.2;
+	}
+	.lead,
+	.intro {
+		color: var(--muted);
+		max-width: 38rem;
+	}
+	.lead {
+		font-size: 1.1875rem;
+	}
+	.nota {
+		font-size: 0.875rem;
+		color: var(--muted);
+	}
+	.cartao {
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: var(--raio);
+		padding: 1.5rem;
+		--fundo-ga: var(--surface);
+	}
+	.num {
+		font-size: 0.75rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--acento);
+	}
+	/* Hero */
+	.hero {
+		display: grid;
+		grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+		gap: 3rem 4rem;
+		align-items: center;
+		padding-top: 4.5rem !important;
+	}
+	.hero-texto {
+		display: grid;
+		gap: 1.25rem;
+		justify-items: start;
+	}
+	.chip-desig {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.35rem 0.85rem;
+		border-radius: 999px;
+		border: 1px solid var(--line);
+		background: var(--surface);
+		font-size: 0.875rem;
+		color: var(--muted);
+	}
+	.ponto {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: var(--verde);
+	}
+	.acao {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.75rem 1.25rem;
+	}
+	.hero-lado {
+		display: grid;
+		gap: 0.75rem;
+	}
+	.pr {
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: var(--raio);
+		padding: 1.25rem;
+		display: grid;
+		gap: 1rem;
+	}
+	.pr-topo {
+		display: grid;
+	}
+	.pr-num {
+		font-size: 0.8125rem;
+		color: var(--muted);
+	}
+	.pr-titulo {
+		font-weight: 600;
+	}
+	.pr ol {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		gap: 0.45rem;
+	}
+	.pr li {
+		display: grid;
+		grid-template-columns: 22px 1fr;
+		column-gap: 0.6rem;
+		align-items: center;
+		padding: 0.55rem 0.75rem;
+		border-radius: 12px;
+		background: var(--surface-2);
+		font-size: 0.9375rem;
+	}
+	.pr .res {
+		grid-column: 2;
+		font-size: 0.8125rem;
+		color: var(--muted);
+	}
+	.ic {
+		grid-row: span 2;
+		width: 22px;
+		height: 22px;
+		border-radius: 50%;
+		background: var(--verde);
+		position: relative;
+	}
+	.ic::after {
+		content: '';
+		position: absolute;
+		left: 7px;
+		top: 4px;
+		width: 6px;
+		height: 10px;
+		border-right: 2px solid var(--bg);
+		border-bottom: 2px solid var(--bg);
+		transform: rotate(45deg);
+	}
+	.ko .ic {
+		background: #f08f86;
+	}
+	.ko .ic::after {
+		left: 10px;
+		top: 4px;
+		width: 0;
+		height: 14px;
+		border-bottom: 0;
+		transform: rotate(45deg);
+		box-shadow: none;
+	}
+	.ko .ic::before {
+		content: '';
+		position: absolute;
+		left: 10px;
+		top: 4px;
+		height: 14px;
+		border-right: 2px solid var(--bg);
+		transform: rotate(-45deg);
+	}
+	.ko .res {
+		color: #f4a49c;
+	}
+	.pr-fim {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 1rem;
+		font-size: 0.875rem;
+		font-weight: 600;
+		color: #f4a49c;
+	}
+	.repetir {
+		font: inherit;
+		font-weight: 500;
+		font-size: 0.8125rem;
+		min-height: 36px;
+		padding: 0 0.85rem;
+		border-radius: 999px;
+		border: 1px solid var(--line-forte);
+		background: transparent;
+		color: var(--text);
+		cursor: pointer;
+	}
+	.repetir:hover {
+		border-color: var(--verde);
+	}
+	/* Corre uma vez: cada passo aparece por ordem e a falha chega no fim. */
+	.corre li {
+		animation: entra 0.5s ease both;
+		animation-delay: calc(var(--d) * 0.5s + 0.2s);
+	}
+	.corre .pr-fim p {
+		animation: entra 0.5s ease both;
+		animation-delay: 2.3s;
+	}
+	@keyframes entra {
+		from {
+			opacity: 0.25;
+			transform: translateY(4px);
+		}
+		to {
+			opacity: 1;
+			transform: none;
+		}
+	}
+	.legenda-pr {
+		font-size: 0.875rem;
+		color: var(--muted);
+	}
+	/* Faixa de cartões */
+	.bento-topo {
+		display: grid;
+		grid-template-columns: minmax(0, 4fr) minmax(0, 6fr) minmax(0, 3fr);
+		gap: 1rem;
+	}
+	.bento-topo ul {
+		list-style: none;
+		margin: 0.75rem 0 0;
+		padding: 0;
+		display: grid;
+		gap: 0.5rem;
+	}
+	.para-quem li::before {
+		content: '';
+		display: inline-block;
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: var(--verde);
+		margin-right: 0.55rem;
+		vertical-align: 0.1em;
+	}
+	.problemas ul {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0.75rem 1.5rem;
+	}
+	.problemas li {
+		color: var(--muted);
+		font-size: 0.9375rem;
+	}
+	.problemas strong {
+		display: block;
+		color: var(--text);
+		font-weight: 600;
+	}
+	.numero {
+		background: var(--surface-verde);
+		border-color: var(--verde-forte);
+		display: grid;
+		align-content: center;
+		gap: 0.25rem;
+	}
+	.numero .grande {
+		font: 400 4.5rem/1 var(--serif);
+		color: var(--verde);
+	}
+	/* Serviços */
+	.servicos {
+		display: grid;
+		gap: 1.75rem;
+	}
+	.cab-seccao {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		gap: 0.75rem 3rem;
+		align-items: end;
+	}
+	.bento {
+		display: grid;
+		grid-template-columns: repeat(6, minmax(0, 1fr));
+		gap: 1rem;
+	}
+	.bloco {
+		display: grid;
+		gap: 1rem;
+		align-content: start;
+	}
+	.b1 {
+		grid-column: span 4;
+		grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+		align-items: center;
+	}
+	.b2 {
+		grid-column: span 2;
+	}
+	.b3 {
+		grid-column: span 2;
+	}
+	.b4 {
+		grid-column: span 4;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+		align-items: center;
+	}
+	.b4 :global(.diag) {
+		order: 2;
+	}
+	.bloco-texto {
+		display: grid;
+		gap: 0.5rem;
+	}
+	.bloco-texto > p:not(.num):not(.ferr) {
+		color: var(--muted);
+		font-size: 0.9375rem;
+	}
+	.ferr {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem;
+		margin-top: 0.25rem;
+	}
+	.ferr span {
+		font-size: 0.8125rem;
+		padding: 0.15rem 0.6rem;
+		border-radius: 8px;
+		background: var(--surface-2);
+		color: var(--verde);
+	}
+	/* Etapas */
+	.etapas {
+		display: grid;
+		gap: 1.25rem;
+	}
+	.etapas ol {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		grid-template-columns: repeat(5, minmax(0, 1fr));
+		gap: 0.75rem;
+		counter-reset: etapa;
+	}
+	.etapas li {
+		display: grid;
+		gap: 0.35rem;
+		align-content: start;
+		padding: 1.1rem;
+		position: relative;
+	}
+	.etapas li:not(:last-child)::after {
+		content: '';
+		position: absolute;
+		right: -0.75rem;
+		top: 50%;
+		width: 0.75rem;
+		height: 2px;
+		background: var(--verde);
+	}
+	.etapas li span:last-child {
+		color: var(--muted);
+		font-size: 0.875rem;
+	}
+	.garantia {
+		padding: clamp(1.25rem, 3vw, 2.25rem);
+	}
+	/* Quem */
+	.quem {
+		display: grid;
+		grid-template-columns: minmax(0, 6fr) minmax(0, 3fr) minmax(0, 3fr);
+		gap: 1rem;
+	}
+	.quem-cartao {
+		display: grid;
+		grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr);
+		gap: 1.5rem;
+		align-items: center;
+	}
+	.foto {
+		width: 100%;
+		aspect-ratio: 4 / 5;
+		object-fit: cover;
+		border-radius: calc(var(--raio) - 6px);
+	}
+	.quem-texto {
+		display: grid;
+		gap: 0.75rem;
+	}
+	.frase {
+		font: 400 1.25rem/1.4 var(--serif);
+	}
+	.testemunho {
+		margin: 0;
+		display: grid;
+		gap: 0.75rem;
+		align-content: start;
+		justify-items: start;
+		border-style: dashed;
+	}
+	.testemunho blockquote {
+		margin: 0;
+		color: var(--muted);
+	}
+	.testemunho figcaption {
+		font-size: 0.8125rem;
+		color: var(--muted);
+	}
+	.eco {
+		display: grid;
+		gap: 0.6rem;
+		align-content: start;
+		text-decoration: none;
+		color: var(--verde);
+		background:
+			radial-gradient(circle, rgb(146 214 173 / 0.22) 1px, transparent 1.6px) 0 0 / 16px 16px,
+			var(--surface-verde);
+		border-color: var(--verde-forte);
+		transition: transform 0.15s ease;
+	}
+	.eco:hover {
+		transform: translateY(-3px);
+	}
+	.eco strong {
+		font: 400 1.35rem/1.15 var(--serif);
+		color: var(--text);
+	}
+	.eco span {
+		color: var(--text);
+		font-size: 0.9375rem;
+	}
+	/* Final */
+	.final {
+		display: grid;
+		gap: 1.25rem;
+		justify-items: start;
+		padding: clamp(1.5rem, 5vw, 3.5rem);
+		background:
+			radial-gradient(circle at 85% 20%, rgb(146 214 173 / 0.14), transparent 45%),
+			linear-gradient(140deg, var(--surface-2), var(--surface) 65%);
+	}
+	.final h2 {
+		font-size: clamp(2.3rem, 5vw, 3.6rem);
+	}
+	@media (max-width: 1080px) {
+		.bento-topo {
+			grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		}
+		.problemas {
+			grid-column: 1 / -1;
+			grid-row: 1;
+		}
+		.quem {
+			grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		}
+		.quem-cartao {
+			grid-column: 1 / -1;
+		}
+	}
+	@media (max-width: 960px) {
+		.hero,
+		.cab-seccao {
+			grid-template-columns: 1fr;
+		}
+		.bento {
+			grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		}
+		.b1,
+		.b4 {
+			grid-column: 1 / -1;
+		}
+		.b2,
+		.b3 {
+			grid-column: span 1;
+		}
+		.etapas ol {
+			grid-template-columns: 1fr;
+		}
+		.etapas li:not(:last-child)::after {
+			right: auto;
+			left: 1.5rem;
+			top: auto;
+			bottom: -0.75rem;
+			width: 2px;
+			height: 0.75rem;
+		}
+	}
+	@media (max-width: 640px) {
+		.bento-topo,
+		.bento,
+		.quem,
+		.quem-cartao,
+		.problemas ul {
+			grid-template-columns: 1fr;
+		}
+		.b1,
+		.b4 {
+			grid-template-columns: 1fr;
+		}
+		.b4 :global(.diag) {
+			order: 0;
+		}
+		.foto {
+			max-width: 18rem;
+		}
+	}
+</style>

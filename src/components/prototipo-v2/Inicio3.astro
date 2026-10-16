@@ -1,0 +1,598 @@
+---
+// PROTÓTIPO v2 · 3 «Estratos verdes». O verde é estrutural: fundos, superfícies,
+// gráficos e linhas de contorno. Os 4 blocos aparecem como camadas de uma
+// infraestrutura que se abrem uma de cada vez; o lilás fica como acento.
+import { Image } from 'astro:assets';
+import foto from '../../../data/IMG_2030.png';
+import Folha from './Folha.astro';
+import GraficoCloud from './GraficoCloud.astro';
+import GarantiaAnual from './GarantiaAnual.astro';
+import FaqResumo from './FaqResumo.astro';
+import { calendly, textos, problemas, depois, paraQuem, blocos, notaBlocos, etapas, type Modo } from './dados';
+import { ligacao } from './temas';
+
+interface Props {
+	modo: Modo;
+}
+const { modo } = Astro.props;
+const promessaH1 = textos.promessa.replace('entrego-te', '<span style="white-space:nowrap">entrego-te</span>');
+const resumos = [
+	'Os bugs ficam no pull request.',
+	'A aplicação corre igual em todo o lado.',
+	'A infraestrutura acompanha a carga.',
+	'Vês os problemas antes dos clientes.',
+];
+---
+
+<div class="i3">
+	<section class="hero" id="p3-topo">
+		<div class="largura hero-dentro">
+			<p class="etiqueta">{textos.designacao}</p>
+			<h1 set:html={promessaH1} />
+			<div class="hero-linha">
+				<p class="lead">{textos.subPromessa}</p>
+				<div class="acao">
+					<a class="botao grande" href={calendly}>{textos.cta}</a>
+					<span class="nota">{textos.notaCta}</span>
+				</div>
+				<ul class="para-quem" aria-label="Para quem é">
+					{paraQuem.map((x) => <li>{x}</li>)}
+				</ul>
+			</div>
+		</div>
+	</section>
+
+	<section class="largura estratos" id="p3-servicos">
+		<div class="titulo-col">
+			<p class="etiqueta">Serviços</p>
+			<h2>Quatro camadas da tua infraestrutura.</h2>
+			<p class="intro">{notaBlocos}</p>
+		</div>
+		<div class="camadas" data-camadas>
+			{
+				blocos.map((b, i) => (
+					<div class:list={['camada', `c${b.n}`]} style={`--i:${i}`}>
+						<h3>
+							<button
+								type="button"
+								aria-expanded={i === 0 ? 'true' : 'false'}
+								aria-controls={`p3-camada-${b.n}`}
+								id={`p3-camada-btn-${b.n}`}
+							>
+								<span class="num">Bloco {b.n}</span>
+								<span class="nome-camada">{b.nome}</span>
+								<span class="resumo">{resumos[i]}</span>
+								<span class="mais" aria-hidden="true" />
+							</button>
+						</h3>
+						<div
+							class="painel"
+							id={`p3-camada-${b.n}`}
+							role="region"
+							aria-labelledby={`p3-camada-btn-${b.n}`}
+							hidden={i !== 0}
+						>
+							<p>{b.texto}</p>
+							<p class="ferr">
+								{b.ferramentas.map((f) => (
+									<span>{f}</span>
+								))}
+							</p>
+						</div>
+					</div>
+				))
+			}
+		</div>
+	</section>
+
+	<section class="largura caminhos" id="p3-problema">
+		<div class="caminho hoje">
+			<p class="etiqueta">Hoje</p>
+			<ul>
+				{
+					problemas.map((p) => (
+						<li>
+							<strong>{p.titulo}</strong> {p.texto}
+						</li>
+					))
+				}
+			</ul>
+		</div>
+		<div class="caminho depois">
+			<p class="etiqueta">Depois</p>
+			<ul>
+				{depois.map((d) => <li>{d}</li>)}
+			</ul>
+		</div>
+	</section>
+
+	<section class="largura etapas" id="p3-etapas">
+		<h2 class="h-pequeno">Cinco etapas, sempre pela mesma ordem.</h2>
+		<ol>
+			{
+				etapas.map((e, i) => (
+					<li style={`--i:${i}`}>
+						<span class="num">{i + 1}</span>
+						<strong>{e.nome}</strong>
+						<span class="txt">{e.texto}</span>
+					</li>
+				))
+			}
+		</ol>
+	</section>
+
+	<section class="largura eco" id="p3-eco">
+		<div class="eco-texto">
+			<p class="etiqueta"><Folha tamanho={16} /> Ecologia</p>
+			<h2>A infraestrutura também tem pegada.</h2>
+			<p>
+				Onde a aplicação corre, quanto corre e com que eficiência mudam o impacto ambiental. A página de ecologia compara
+				o que cada fornecedor publica e deixa-te estimar uma carga, separando dados publicados, hipóteses e cálculos.
+			</p>
+			<a class="botao" href={ligacao(modo, 3, 'ecologia')}><Folha tamanho={18} /> Abrir a página de ecologia</a>
+		</div>
+		<ul class="eco-estados" aria-label="Como os dados aparecem">
+			<li><span class="selo publicado">Publicado</span> valor de um relatório oficial, com ano e fonte</li>
+			<li><span class="selo hipotese">Hipótese</span> pressuposto escolhido, visível e editável</li>
+			<li><span class="selo calculado">Calculado</span> resultado das duas coisas acima</li>
+			<li><span class="selo demo">Demonstração</span> exemplo, enquanto falta a fonte</li>
+		</ul>
+	</section>
+
+	<section class="largura" id="p3-garantia">
+		<GarantiaAnual p={3} formato="trimestres" />
+	</section>
+
+	<section class="largura">
+		<GraficoCloud p={3} />
+	</section>
+
+	<section class="quem" id="p3-quem">
+		<div class="largura quem-dentro">
+			<Image src={foto} alt={textos.fotoAlt} width={560} format="avif" quality={55} loading="lazy" class="foto" />
+			<div class="quem-texto">
+				<p class="etiqueta">Quem é o Julien</p>
+				<p class="frase">{textos.quem}</p>
+				<figure class="testemunho">
+					<p class="selo a-validar">Testemunhos a chegar</p>
+					<blockquote>Lugar para o testemunho de um CTO. Fica vazio até haver um real.</blockquote>
+					<figcaption>Nome · Cargo · Empresa</figcaption>
+				</figure>
+			</div>
+		</div>
+	</section>
+
+	<section class="largura" id="p3-faq">
+		<FaqResumo p={3} modo={modo} />
+	</section>
+
+	<section class="largura final">
+		<h2>{textos.finalTitulo}</h2>
+		<p class="intro">{textos.finalTexto}</p>
+		<a class="botao grande" href={calendly}>{textos.cta}</a>
+		<p class="nota">{textos.notaLingua}</p>
+	</section>
+</div>
+
+<script>
+	// Camadas: uma aberta de cada vez (acordeão com botões e aria-expanded).
+	for (const raiz of document.querySelectorAll<HTMLElement>('[data-camadas]')) {
+		const botoes = [...raiz.querySelectorAll<HTMLButtonElement>('button[aria-controls]')];
+		for (const b of botoes) {
+			b.addEventListener('click', () => {
+				const abrir = b.getAttribute('aria-expanded') !== 'true';
+				for (const x of botoes) {
+					const sim = x === b && abrir;
+					x.setAttribute('aria-expanded', String(sim));
+					document.getElementById(x.getAttribute('aria-controls')!)!.hidden = !sim;
+				}
+			});
+		}
+	}
+</script>
+
+<style>
+	.i3 > section {
+		padding-block: 4.5rem 0;
+	}
+	h1 {
+		font-size: clamp(2.7rem, 6.6vw, 5.6rem);
+		line-height: 1.02;
+		letter-spacing: -0.012em;
+		max-width: 22ch;
+	}
+	h2 {
+		font-size: clamp(2rem, 4vw, 2.9rem);
+		line-height: 1.08;
+	}
+	.h-pequeno {
+		font-size: clamp(1.6rem, 3vw, 2.1rem);
+	}
+	.lead,
+	.intro {
+		color: var(--muted);
+	}
+	.lead {
+		font-size: 1.125rem;
+	}
+	.nota {
+		font-size: 0.875rem;
+		color: var(--muted);
+	}
+	/* Hero em toda a largura, com linhas de contorno */
+	.hero {
+		padding-top: 0 !important;
+		background:
+			repeating-radial-gradient(ellipse at 78% 12%, transparent 0 30px, rgb(143 224 176 / 0.07) 30px 31px),
+			linear-gradient(180deg, var(--surface) 0%, var(--bg) 100%);
+		border-bottom: 1px solid var(--line);
+	}
+	.hero-dentro {
+		display: grid;
+		gap: 1.5rem;
+		padding-block: 5rem 4rem;
+	}
+	.hero-linha {
+		display: grid;
+		grid-template-columns: minmax(0, 5fr) minmax(0, 3fr) minmax(0, 4fr);
+		gap: 2rem 3rem;
+		align-items: start;
+		margin-top: 1rem;
+		padding-top: 1.5rem;
+		border-top: 1px solid var(--line-forte);
+	}
+	.acao {
+		display: grid;
+		gap: 0.6rem;
+		justify-items: start;
+	}
+	.para-quem {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		gap: 0.4rem;
+		font-size: 0.9375rem;
+	}
+	.para-quem li::before {
+		content: '';
+		display: inline-block;
+		width: 8px;
+		height: 8px;
+		border-radius: 2px;
+		background: var(--verde);
+		margin-right: 0.55rem;
+		vertical-align: 0.1em;
+	}
+	/* Estratos */
+	.estratos {
+		display: grid;
+		grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+		gap: 2rem 4rem;
+		align-items: start;
+	}
+	.titulo-col {
+		display: grid;
+		gap: 1rem;
+		position: sticky;
+		top: 96px;
+	}
+	.camadas {
+		display: grid;
+		gap: 0;
+	}
+	.camada {
+		margin-left: calc(var(--i) * 18px);
+		border: 1px solid var(--line);
+		border-bottom-width: 0;
+		background: color-mix(in srgb, var(--surface-2) calc(100% - var(--i) * 18%), var(--surface-verde));
+		transition: background 0.2s ease;
+	}
+	.camada:first-child {
+		border-radius: var(--raio) var(--raio) 0 0;
+	}
+	.camada:last-child {
+		border-bottom-width: 1px;
+		border-radius: 0 0 var(--raio) var(--raio);
+	}
+	.camada h3 {
+		font: inherit;
+	}
+	.camada button {
+		all: unset;
+		box-sizing: border-box;
+		width: 100%;
+		display: grid;
+		grid-template-columns: 5.5rem minmax(0, 1.2fr) minmax(0, 1fr) 24px;
+		gap: 0.5rem 1rem;
+		align-items: center;
+		padding: 1.15rem 1.25rem;
+		cursor: pointer;
+	}
+	.camada button:hover {
+		background: rgb(143 224 176 / 0.06);
+	}
+	.camada button:focus-visible {
+		outline: 2px solid var(--acento);
+		outline-offset: -2px;
+	}
+	.num {
+		font-size: 0.75rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--acento);
+	}
+	.nome-camada {
+		font: 400 1.35rem/1.2 var(--serif);
+	}
+	.resumo {
+		color: var(--verde);
+		font-size: 0.9375rem;
+	}
+	.mais {
+		width: 24px;
+		height: 24px;
+		border-radius: 50%;
+		border: 1px solid var(--line-forte);
+		position: relative;
+	}
+	.mais::before,
+	.mais::after {
+		content: '';
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		width: 10px;
+		height: 1.5px;
+		background: var(--text);
+		transform: translate(-50%, -50%);
+		transition: transform 0.2s ease;
+	}
+	.mais::after {
+		transform: translate(-50%, -50%) rotate(90deg);
+	}
+	[aria-expanded='true'] .mais::after {
+		transform: translate(-50%, -50%) rotate(0deg);
+	}
+	.painel {
+		padding: 0 1.25rem 1.25rem calc(5.5rem + 2.25rem);
+		display: grid;
+		gap: 0.75rem;
+		color: var(--muted);
+	}
+	.ferr {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem;
+	}
+	.ferr span {
+		font-size: 0.8125rem;
+		padding: 0.15rem 0.6rem;
+		border-radius: 6px;
+		border: 1px solid var(--verde-forte);
+		color: var(--verde);
+	}
+	/* Hoje / Depois */
+	.caminhos {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		gap: 0;
+	}
+	.caminho {
+		padding: 2rem;
+		display: grid;
+		gap: 0.75rem;
+		align-content: start;
+	}
+	.hoje {
+		background: var(--surface);
+		border-radius: var(--raio) 0 0 var(--raio);
+	}
+	.hoje .etiqueta {
+		color: var(--muted);
+	}
+	.depois {
+		background: var(--surface-verde);
+		border-radius: 0 var(--raio) var(--raio) 0;
+	}
+	.caminho ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+	}
+	.caminho li {
+		padding-block: 0.8rem;
+		border-top: 1px solid var(--line);
+	}
+	.hoje li {
+		color: var(--muted);
+	}
+	.hoje strong {
+		color: var(--text);
+		font-weight: 600;
+	}
+	/* Etapas em degraus */
+	.etapas {
+		display: grid;
+		gap: 1.5rem;
+	}
+	.etapas ol {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		grid-template-columns: repeat(5, minmax(0, 1fr));
+		gap: 0.75rem;
+		align-items: end;
+	}
+	.etapas li {
+		display: grid;
+		gap: 0.35rem;
+		align-content: start;
+		padding: 1rem;
+		padding-bottom: calc(1rem + var(--i) * 14px);
+		border-top: 3px solid var(--verde);
+		background: linear-gradient(180deg, var(--surface-2), transparent);
+		border-radius: 4px 4px 0 0;
+	}
+	.etapas .num {
+		font: 400 1.6rem/1 var(--serif);
+		color: var(--verde);
+		letter-spacing: 0;
+		text-transform: none;
+	}
+	.etapas .txt {
+		color: var(--muted);
+		font-size: 0.875rem;
+	}
+	/* Ecologia em destaque */
+	.eco {
+		display: grid;
+		grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+		gap: 2rem 4rem;
+		align-items: center;
+	}
+	.eco-texto {
+		display: grid;
+		gap: 1rem;
+		justify-items: start;
+	}
+	.eco-texto .etiqueta {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+	}
+	.eco-texto > p:not(.etiqueta) {
+		color: var(--muted);
+		max-width: 38rem;
+	}
+	.eco-estados {
+		list-style: none;
+		margin: 0;
+		padding: 1.5rem;
+		display: grid;
+		gap: 0.85rem;
+		border-radius: var(--raio);
+		background: var(--surface);
+		border: 1px solid var(--line);
+		font-size: 0.9375rem;
+		color: var(--muted);
+	}
+	.eco-estados li {
+		display: grid;
+		grid-template-columns: 8.5rem 1fr;
+		gap: 0.75rem;
+		align-items: center;
+	}
+	/* Quem: faixa verde */
+	.quem {
+		margin-top: 4.5rem;
+		padding-block: 4rem !important;
+		background: var(--surface-verde);
+	}
+	.quem-dentro {
+		display: grid;
+		grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+		gap: 2.5rem 4rem;
+		align-items: center;
+	}
+	.foto {
+		width: 100%;
+		aspect-ratio: 4 / 5;
+		object-fit: cover;
+		border-radius: 999px 999px 14px 14px;
+	}
+	.quem-texto {
+		display: grid;
+		gap: 1.25rem;
+	}
+	.frase {
+		font: 400 clamp(1.4rem, 2.6vw, 1.9rem) / 1.35 var(--serif);
+	}
+	.testemunho {
+		margin: 0;
+		padding-top: 1rem;
+		border-top: 1px solid var(--line-forte);
+		display: grid;
+		gap: 0.6rem;
+		justify-items: start;
+	}
+	.testemunho blockquote {
+		margin: 0;
+		color: var(--muted);
+	}
+	.testemunho figcaption {
+		font-size: 0.8125rem;
+		color: var(--muted);
+	}
+	.final {
+		display: grid;
+		gap: 1.1rem;
+		justify-items: start;
+		padding-top: 6rem !important;
+	}
+	.final h2 {
+		font-size: clamp(2.4rem, 6vw, 4.4rem);
+	}
+	.final .intro {
+		max-width: 40rem;
+	}
+	@media (max-width: 960px) {
+		.hero-linha,
+		.estratos,
+		.eco,
+		.quem-dentro {
+			grid-template-columns: 1fr;
+		}
+		.titulo-col {
+			position: static;
+		}
+		.etapas ol {
+			grid-template-columns: 1fr;
+		}
+		.etapas li {
+			padding-bottom: 1rem;
+			margin-left: calc(var(--i) * 12px);
+		}
+		.foto {
+			max-width: 18rem;
+		}
+	}
+	@media (max-width: 640px) {
+		.camada {
+			margin-left: calc(var(--i) * 8px);
+		}
+		.camada button {
+			grid-template-columns: minmax(0, 1fr) 24px;
+		}
+		.camada .num,
+		.camada .nome-camada,
+		.camada .resumo {
+			grid-column: 1;
+		}
+		.mais {
+			grid-column: 2;
+			grid-row: 1 / span 3;
+		}
+		.painel {
+			padding-left: 1.25rem;
+		}
+		.caminhos {
+			grid-template-columns: 1fr;
+		}
+		.hoje {
+			border-radius: var(--raio) var(--raio) 0 0;
+		}
+		.depois {
+			border-radius: 0 0 var(--raio) var(--raio);
+		}
+		.caminho {
+			padding: 1.25rem;
+		}
+		.eco-estados li {
+			grid-template-columns: 1fr;
+			gap: 0.25rem;
+		}
+	}
+</style>

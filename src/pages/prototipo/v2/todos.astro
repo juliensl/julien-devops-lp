@@ -1,0 +1,57 @@
+---
+// PROTÓTIPO v2 · As 9 vistas (3 protótipos × 3 páginas) numa só página, trocadas
+// pelo hash do endereço (#p1, #p2-ecologia, #p3-perguntas…). Serve para a cópia
+// publicada como artifact, onde só o hash chega à página.
+import PrototipoV2 from '../../../layouts/PrototipoV2.astro';
+import Vista from '../../../components/prototipo-v2/Vista.astro';
+import Inicio1 from '../../../components/prototipo-v2/Inicio1.astro';
+import Inicio2 from '../../../components/prototipo-v2/Inicio2.astro';
+import Inicio3 from '../../../components/prototipo-v2/Inicio3.astro';
+import Ecologia from '../../../components/prototipo-v2/Ecologia.astro';
+import Perguntas from '../../../components/prototipo-v2/Perguntas.astro';
+import type { P } from '../../../components/prototipo-v2/dados';
+
+const ps: P[] = [1, 2, 3];
+---
+
+<PrototipoV2 titulo="Direção visual v2">
+	{
+		ps.map((p) => (
+			<>
+				<Vista p={p} pagina="inicio" modo="hash" oculta={p !== 1}>
+					{p === 1 && <Inicio1 modo="hash" />}
+					{p === 2 && <Inicio2 modo="hash" />}
+					{p === 3 && <Inicio3 modo="hash" />}
+				</Vista>
+				<Vista p={p} pagina="ecologia" modo="hash" oculta>
+					<Ecologia p={p} modo="hash" />
+				</Vista>
+				<Vista p={p} pagina="perguntas" modo="hash" oculta>
+					<Perguntas p={p} modo="hash" />
+				</Vista>
+			</>
+		))
+	}
+</PrototipoV2>
+
+<script>
+	// Mostra a vista do hash; se o hash for uma secção, mostra a vista dela e desce até lá.
+	const vistas = [...document.querySelectorAll<HTMLElement>('[data-vista]')];
+	let atual = '';
+	function aplica() {
+		const h = decodeURIComponent(location.hash.slice(1)) || 'p1';
+		let alvo = document.getElementById(h);
+		let vista = alvo?.closest<HTMLElement>('[data-vista]') ?? null;
+		if (!vista) {
+			vista = document.getElementById('p1')!;
+			alvo = null;
+		}
+		const mudou = vista.id !== atual;
+		atual = vista.id;
+		vistas.forEach((v) => (v.hidden = v !== vista));
+		if (alvo && alvo !== vista) requestAnimationFrame(() => alvo!.scrollIntoView());
+		else if (mudou) window.scrollTo(0, 0);
+	}
+	window.addEventListener('hashchange', aplica);
+	aplica();
+</script>

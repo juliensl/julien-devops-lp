@@ -1,0 +1,19 @@
+---
+// PROTÓTIPO v2 · Página de perguntas de cada protótipo: /prototipo/v2/N/perguntas/.
+import PrototipoV2 from '../../../../layouts/PrototipoV2.astro';
+import Vista from '../../../../components/prototipo-v2/Vista.astro';
+import Perguntas from '../../../../components/prototipo-v2/Perguntas.astro';
+import { temas } from '../../../../components/prototipo-v2/temas';
+import type { P } from '../../../../components/prototipo-v2/dados';
+
+export function getStaticPaths() {
+	return ['1', '2', '3'].map((p) => ({ params: { p } }));
+}
+const p = Number(Astro.params.p) as P;
+---
+
+<PrototipoV2 titulo={`Perguntas · Protótipo ${p} · ${temas[p - 1].nome}`}>
+	<Vista p={p} pagina="perguntas" modo="rotas">
+		<Perguntas p={p} modo="rotas" />
+	</Vista>
+</PrototipoV2>

@@ -1,0 +1,824 @@
+---
+// PROTÓTIPO v2 · Página de ecologia (corpo), partilhada pelos três protótipos
+// com o tema de cada um. Duas ferramentas: o que cada fornecedor publica (com ano,
+// âmbito e fonte) e um estimador de uma carga em várias regiões. Distingue
+// sempre dados publicados, hipóteses, cálculos e dados de demonstração.
+import Folha from './Folha.astro';
+import {
+	fornecedores,
+	metricasEco,
+	dadosEco,
+	regioes,
+	coeficientes,
+	fontesEco,
+	nomesEstado,
+	calendly,
+	textos,
+	type P,
+	type Modo,
+} from './dados';
+import { ligacao } from './temas';
+
+interface Props {
+	p: P;
+	modo: Modo;
+}
+const { p, modo } = Astro.props;
+const dados = { fornecedores, metricasEco, dadosEco, regioes, coeficientes };
+const temDemo =
+	Object.values(dadosEco).some((f) => Object.values(f).some((v) => v.estado === 'demo')) ||
+	regioes.some((r) => r.estado === 'demo') ||
+	coeficientes.estado === 'demo';
+const pre = `p${p}-eco`;
+---
+
+<div class:list={['eco', `eco-p${p}`]} data-eco>
+	<section class="largura eco-hero">
+		<div class="eco-hero-texto">
+			<p class="etiqueta"><Folha tamanho={16} /> Ecologia e infraestrutura</p>
+			<h1>As escolhas de infraestrutura também têm consequências ambientais.</h1>
+			<p class="lead">
+				Onde a aplicação corre, quanto tempo corre e com que eficiência mudam a energia que consome e as emissões que
+				gera. Aqui comparas o que cada fornecedor publica e estimas o impacto de uma carga. Não há um vencedor: os dados
+				têm métodos, anos e âmbitos diferentes.
+			</p>
+		</div>
+		<ul class="legenda-estados" aria-label="Como ler os dados desta página">
+			<li><span class="selo publicado">{nomesEstado.publicado}</span> valor de um relatório ou de uma base de dados pública, com ano e fonte</li>
+			<li><span class="selo hipotese">{nomesEstado.hipotese}</span> pressuposto escolhido para o cálculo, que podes mudar</li>
+			<li><span class="selo calculado">{nomesEstado.calculado}</span> resultado de valores publicados e hipóteses</li>
+			<li><span class="selo demo">{nomesEstado.demo}</span> exemplo, enquanto não há fonte; não é um facto</li>
+		</ul>
+	</section>
+
+	<section class="largura bloco-eco" id={`${pre}-comparar`}>
+		<div class="cab-bloco">
+			<div>
+				<p class="etiqueta">1 · O que cada fornecedor publica</p>
+				<h2>Comparar com cuidado.</h2>
+			</div>
+			<div class="separadores" role="tablist" aria-label="Indicador">
+				{
+					metricasEco.map((m, i) => (
+						<button
+							type="button"
+							role="tab"
+							id={`${pre}-tab-${m.id}`}
+							aria-selected={i === 0 ? 'true' : 'false'}
+							aria-controls={`${pre}-painel`}
+							tabindex={i === 0 ? 0 : -1}
+							data-metrica={m.id}
+						>
+							{m.nome}
+						</button>
+					))
+				}
+			</div>
+		</div>
+		<div class="comparador" id={`${pre}-painel`} role="tabpanel" aria-labelledby={`${pre}-tab-${metricasEco[0].id}`}>
+			<div class="comp-topo">
+				<p class="comp-explica" data-explica></p>
+				<p class="comp-aviso" data-aviso></p>
+			</div>
+			<div class="escala-comp" aria-hidden="true" data-escala></div>
+			<ul class="linhas" data-linhas></ul>
+		</div>
+	</section>
+
+	<section class="largura bloco-eco" id={`${pre}-estimar`}>
+		<div class="cab-bloco">
+			<div>
+				<p class="etiqueta">2 · Estimar uma carga</p>
+				<h2>A mesma aplicação, em sítios diferentes.</h2>
+			</div>
+			<p class="intro">
+				Escolhe a carga e a região. O cálculo segue o método aberto do Cloud Carbon Footprint: energia dos
+				processadores × eficiência do centro de dados × intensidade carbónica da eletricidade do país.
+			</p>
+		</div>
+		<div class="estimador">
+			<form class="controlos" data-controlos>
+				<div class="campo">
+					<label for={`${pre}-vcpu`}>Processadores virtuais (vCPU) <output data-o="vcpu">8</output></label>
+					<input type="range" id={`${pre}-vcpu`} name="vcpu" min="1" max="64" step="1" value="8" />
+				</div>
+				<div class="campo">
+					<label for={`${pre}-uso`}>Utilização média <output data-o="uso">50 %</output></label>
+					<input type="range" id={`${pre}-uso`} name="uso" min="5" max="100" step="5" value="50" />
+					<span class="dica"><span class="selo hipotese">Hipótese</span> 50 % é um valor de exemplo</span>
+				</div>
+				<div class="campo">
+					<label for={`${pre}-horas`}>Horas por dia <output data-o="horas">24 h</output></label>
+					<input type="range" id={`${pre}-horas`} name="horas" min="1" max="24" step="1" value="24" />
+				</div>
+				<div class="campo">
+					<label for={`${pre}-pue`}>Eficiência do centro de dados (PUE)</label>
+					<select id={`${pre}-pue`} name="pue">
+						<option value="hipotese">Hipótese: {String(coeficientes.pueDefeito).replace('.', ',')}</option>
+						{
+							fornecedores.map((f) => {
+								const v = dadosEco[f.id]?.pue;
+								return v && v.valor !== null ? (
+									<option value={f.id}>
+										{f.nome}: {String(v.valor).replace('.', ',')}
+										{v.estado === 'demo' ? ' (demonstração)' : v.ano ? ` (${v.ano})` : ''}
+									</option>
+								) : (
+									<option value={f.id} disabled>
+										{f.nome}: não publicado
+									</option>
+								);
+							})
+						}
+					</select>
+				</div>
+				<div class="campo">
+					<label for={`${pre}-regiao`}>País da região</label>
+					<select id={`${pre}-regiao`} name="regiao">
+						{regioes.map((r) => <option value={r.id}>{r.nome}</option>)}
+					</select>
+				</div>
+			</form>
+
+			<div class="resultado" aria-live="polite">
+				<div class="numeros">
+					<p>
+						<span class="selo calculado">Calculado</span>
+						<span class="valor" data-r="kwh">0</span>
+						<span class="unidade">kWh por mês</span>
+					</p>
+					<p>
+						<span class="selo calculado">Calculado</span>
+						<span class="valor" data-r="kg">0</span>
+						<span class="unidade">kg CO2e por mês</span>
+					</p>
+				</div>
+				<div class="pontos-co2" data-pontos aria-hidden="true"></div>
+				<p class="escala-pontos" data-r="escala"></p>
+				<details class="formula" open>
+					<summary>Ver o cálculo</summary>
+					<p data-r="formula"></p>
+				</details>
+			</div>
+		</div>
+
+		<div class="regioes">
+			<p class="regioes-tit">A mesma carga em cada país <span class="selo calculado">Calculado</span></p>
+			<ul data-regioes></ul>
+			<p class="regioes-nota">
+				Só faz sentido para os países onde o fornecedor tem uma região. A intensidade carbónica é uma média anual do
+				país; a hora do dia e os contratos de energia do fornecedor mudam o valor real.
+			</p>
+		</div>
+	</section>
+
+	<section class="largura bloco-eco alavancas">
+		<div class="cab-bloco">
+			<div>
+				<p class="etiqueta">3 · O que a infraestrutura pode mudar</p>
+				<h2>Medir primeiro, depois ajustar.</h2>
+			</div>
+			<span class="selo a-validar">Texto a validar pelo Julien</span>
+		</div>
+		<ul class="cartoes-alav">
+			<li>
+				<strong>Escalar para baixo</strong>
+				<span>Uma infraestrutura que acompanha a carga (bloco 3) também reduz as instâncias quando a carga desce.</span>
+			</li>
+			<li>
+				<strong>Escolher a região</strong>
+				<span>Com o mesmo fornecedor, o país da região muda a intensidade carbónica da eletricidade.</span>
+			</li>
+			<li>
+				<strong>Ver o que se gasta</strong>
+				<span>A observabilidade (bloco 4) mostra o que está sobredimensionado.</span>
+			</li>
+			<li>
+				<strong>Alojamento com menor impacto ambiental</strong>
+				<span>Quando o orçamento e as necessidades o permitem, é uma das opções que proponho.</span>
+			</li>
+		</ul>
+	</section>
+
+	<section class="largura bloco-eco fontes" id={`${pre}-fontes`}>
+		<h2 class="h-pequeno">Fontes e limites</h2>
+		{
+			fontesEco.length > 0 ? (
+				<ol class="lista-fontes">
+					{fontesEco.map((f) => (
+						<li>
+							<span class="n">[{f.n}]</span> <a href={f.url}>{f.titulo}</a>
+						</li>
+					))}
+				</ol>
+			) : (
+				<p class="intro">As fontes aparecem aqui quando a pesquisa terminar.</p>
+			)
+		}
+		<ul class="limites">
+			<li>Os indicadores não são comparáveis entre si sem ler o ano, o âmbito e o método de cada um.</li>
+			<li>O estimador só conta a energia dos processadores. Memória, armazenamento, rede e fabrico ficam de fora.</li>
+			<li>Nenhum valor desta página é uma classificação dos fornecedores.</li>
+		</ul>
+		{
+			temDemo && (
+				<p class="nota-proto">
+					Esta versão ainda tem valores de demonstração. A pesquisa «Que dados ambientais publicam os fornecedores
+					cloud?» substitui-os por valores publicados, com fonte.
+				</p>
+			)
+		}
+		<div class="volta">
+			<a class="ligacao-seta" href={ligacao(modo, p, 'inicio')}>Voltar à página principal</a>
+			<a class="botao" href={calendly}>{textos.cta}</a>
+		</div>
+	</section>
+
+	<script type="application/json" data-dados-eco set:html={JSON.stringify(dados)} />
+</div>
+
+<script>
+	type ValorEco = { valor: number | null; texto?: string; ano?: number; ambito?: string; fonte?: string; estado: string; nota?: string };
+	type Dados = {
+		fornecedores: { id: string; nome: string }[];
+		metricasEco: { id: string; nome: string; unidade: string; melhor: string | null; explica: string; aviso: string }[];
+		dadosEco: Record<string, Record<string, ValorEco>>;
+		regioes: { id: string; nome: string; g: number; estado: string; ano?: number; fonte?: string }[];
+		coeficientes: { wMin: number; wMax: number; estado: string; fonte: string; pueDefeito: number };
+	};
+	const nomeEstado: Record<string, string> = {
+		publicado: 'Publicado',
+		demo: 'Demonstração',
+		calculado: 'Calculado',
+		hipotese: 'Hipótese',
+		'a-validar': 'A validar',
+	};
+	const num = (n: number, casas = 1) => n.toLocaleString('pt-PT', { maximumFractionDigits: casas });
+
+	for (const raiz of document.querySelectorAll<HTMLElement>('[data-eco]')) {
+		const d: Dados = JSON.parse(raiz.querySelector('[data-dados-eco]')!.textContent!);
+
+		// ---------- 1. Comparador ----------
+		const tabs = [...raiz.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+		const painel = raiz.querySelector<HTMLElement>('[role="tabpanel"]')!;
+		function mostraMetrica(id: string) {
+			const m = d.metricasEco.find((x) => x.id === id)!;
+			tabs.forEach((t) => {
+				const sel = t.dataset.metrica === id;
+				t.setAttribute('aria-selected', String(sel));
+				t.tabIndex = sel ? 0 : -1;
+				if (sel) painel.setAttribute('aria-labelledby', t.id);
+			});
+			raiz.querySelector('[data-explica]')!.textContent = m.explica;
+			raiz.querySelector('[data-aviso]')!.textContent = m.aviso;
+			const valores = d.fornecedores.map((f) => d.dadosEco[f.id]?.[id]).filter((v) => v && v.valor !== null) as ValorEco[];
+			const max = m.unidade === '%' ? 100 : Math.max(2, ...valores.map((v) => v.valor!));
+			const min = m.unidade === '%' ? 0 : 1;
+			const pos = (v: number) => ((v - min) / (max - min)) * 100;
+			const marcas = m.unidade === '%' ? [0, 25, 50, 75, 100] : [1, 1.25, 1.5, 1.75, 2].filter((x) => x <= max);
+			raiz.querySelector('[data-escala]')!.innerHTML = marcas
+				.map((x) => `<span style="left:${pos(x)}%">${num(x, 2)}${m.unidade === '%' ? ' %' : ''}</span>`)
+				.join('');
+			raiz.querySelector('[data-linhas]')!.innerHTML = d.fornecedores
+				.map((f) => {
+					const v = d.dadosEco[f.id]?.[id];
+					const tem = v && v.valor !== null;
+					const meta = v
+						? [v.ano, v.ambito].filter(Boolean).join(' · ') + (v.fonte ? ` · <a href="${v.fonte}">fonte</a>` : '')
+						: '';
+					return `<li class="linha ${tem ? '' : 'vazia'}">
+						<span class="ln-nome">${f.nome}</span>
+						<span class="ln-pista">${
+							tem
+								? `<span class="ln-ponto ${v!.estado}" style="left:${pos(v!.valor!)}%"></span>`
+								: '<span class="ln-falta">não publicado ou não encontrado</span>'
+						}</span>
+						<span class="ln-valor">${tem ? num(v!.valor!, 2) + (m.unidade === '%' ? ' %' : '') : '–'}</span>
+						<span class="ln-meta"><span class="selo ${v?.estado ?? 'demo'}">${nomeEstado[v?.estado ?? 'demo']}</span> ${meta}${v?.nota ? ` · ${v.nota}` : ''}</span>
+					</li>`;
+				})
+				.join('');
+		}
+		tabs.forEach((t, i) => {
+			t.addEventListener('click', () => mostraMetrica(t.dataset.metrica!));
+			t.addEventListener('keydown', (e) => {
+				if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+				e.preventDefault();
+				const prox = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+				prox.focus();
+				mostraMetrica(prox.dataset.metrica!);
+			});
+		});
+		mostraMetrica(d.metricasEco[0].id);
+
+		// ---------- 2. Estimador ----------
+		const form = raiz.querySelector<HTMLFormElement>('[data-controlos]')!;
+		const r = (k: string) => raiz.querySelector<HTMLElement>(`[data-r="${k}"]`)!;
+		const o = (k: string) => raiz.querySelector<HTMLElement>(`[data-o="${k}"]`)!;
+		const pontos = raiz.querySelector<HTMLElement>('[data-pontos]')!;
+		const listaRegioes = raiz.querySelector<HTMLElement>('[data-regioes]')!;
+		const kwhMes = (vcpu: number, uso: number, horas: number, pue: number) => {
+			const w = d.coeficientes.wMin + (uso / 100) * (d.coeficientes.wMax - d.coeficientes.wMin);
+			return (vcpu * w * horas * 30.4375 * pue) / 1000;
+		};
+		function calcula() {
+			const f = new FormData(form);
+			const vcpu = Number(f.get('vcpu'));
+			const uso = Number(f.get('uso'));
+			const horas = Number(f.get('horas'));
+			const pueEsc = String(f.get('pue'));
+			const pueV = pueEsc === 'hipotese' ? null : d.dadosEco[pueEsc]?.pue;
+			const pue = pueV?.valor ?? d.coeficientes.pueDefeito;
+			const reg = d.regioes.find((x) => x.id === f.get('regiao'))!;
+			o('vcpu').textContent = String(vcpu);
+			o('uso').textContent = `${uso} %`;
+			o('horas').textContent = `${horas} h`;
+			const kwh = kwhMes(vcpu, uso, horas, pue);
+			const kg = (kwh * reg.g) / 1000;
+			r('kwh').textContent = num(kwh, kwh < 10 ? 1 : 0);
+			r('kg').textContent = num(kg, kg < 10 ? 1 : 0);
+			// Pontos: cada ponto vale uma unidade escolhida para nunca passar de 200 pontos.
+			const unidades = [0.1, 1, 10, 100, 1000];
+			const u = unidades.find((x) => kg / x <= 200) ?? 1000;
+			const n = Math.max(1, Math.round(kg / u));
+			pontos.style.setProperty('--n', String(n));
+			pontos.innerHTML = '<i></i>'.repeat(n);
+			r('escala').textContent = `Cada ponto vale cerca de ${num(u, 1)} kg CO2e (${n} pontos)`;
+			const estadoPue = pueV ? nomeEstado[pueV.estado] : 'Hipótese';
+			r('formula').innerHTML =
+				`${vcpu} vCPU × (${num(d.coeficientes.wMin, 2)} W + ${uso} % × (${num(d.coeficientes.wMax, 2)} − ${num(d.coeficientes.wMin, 2)}) W) ` +
+				`<span class="selo ${d.coeficientes.estado}">${nomeEstado[d.coeficientes.estado]}</span> × ${horas} h × 30,4 dias ` +
+				`× PUE ${num(pue, 2)} <span class="selo ${pueV?.estado ?? 'hipotese'}">${estadoPue}</span> = ${num(kwh, 1)} kWh. ` +
+				`${num(kwh, 1)} kWh × ${reg.g} g/kWh (${reg.nome}) <span class="selo ${reg.estado}">${nomeEstado[reg.estado]}</span> = ${num(kg, 1)} kg CO2e.`;
+			const maxKg = Math.max(...d.regioes.map((x) => (kwh * x.g) / 1000));
+			listaRegioes.innerHTML = [...d.regioes]
+				.sort((a, b) => a.g - b.g)
+				.map((x) => {
+					const v = (kwh * x.g) / 1000;
+					return `<li class="${x.id === reg.id ? 'atual' : ''}"><span class="rg-nome">${x.nome}</span>
+					<span class="rg-pista"><span class="rg-barra ${x.estado}" style="width:${Math.max(1, (v / maxKg) * 100)}%"></span></span>
+					<span class="rg-valor">${num(v, v < 10 ? 1 : 0)} kg</span></li>`;
+				})
+				.join('');
+		}
+		form.addEventListener('input', calcula);
+		form.addEventListener('submit', (e) => e.preventDefault());
+		calcula();
+	}
+</script>
+
+<style>
+	.eco > section {
+		padding-block: 4rem 0;
+	}
+	h1 {
+		font-size: clamp(2.4rem, 5vw, 4.2rem);
+		line-height: 1.05;
+		max-width: 20ch;
+	}
+	h2 {
+		font-size: clamp(1.9rem, 3.6vw, 2.6rem);
+		line-height: 1.1;
+	}
+	.h-pequeno {
+		font-size: clamp(1.5rem, 3vw, 2rem);
+	}
+	.lead,
+	.intro {
+		color: var(--muted);
+		max-width: 40rem;
+	}
+	.lead {
+		font-size: 1.125rem;
+	}
+	.etiqueta {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+	}
+	.eco-hero {
+		display: grid;
+		grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+		gap: 2rem 4rem;
+		align-items: end;
+		padding-top: 4.5rem !important;
+	}
+	.eco-hero-texto {
+		display: grid;
+		gap: 1.25rem;
+	}
+	.legenda-estados {
+		list-style: none;
+		margin: 0;
+		padding: 1.25rem;
+		display: grid;
+		gap: 0.75rem;
+		border-radius: var(--raio);
+		border: 1px solid var(--line);
+		background: var(--surface);
+		font-size: 0.875rem;
+		color: var(--muted);
+	}
+	.legenda-estados li {
+		display: grid;
+		grid-template-columns: 8.5rem 1fr;
+		gap: 0.75rem;
+		align-items: center;
+	}
+	.bloco-eco {
+		display: grid;
+		gap: 1.5rem;
+	}
+	.cab-bloco {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		align-items: end;
+		gap: 1rem 3rem;
+	}
+	.cab-bloco > div {
+		display: grid;
+		gap: 0.5rem;
+	}
+	.separadores {
+		flex: none;
+		max-width: 100%;
+		flex-wrap: wrap;
+		display: inline-flex;
+		padding: 4px;
+		gap: 4px;
+		border-radius: 999px;
+		border: 1px solid var(--line-forte);
+	}
+	.separadores button {
+		font: inherit;
+		font-size: 0.875rem;
+		min-height: 40px;
+		padding: 0 1rem;
+		border: 0;
+		border-radius: 999px;
+		background: transparent;
+		color: var(--muted);
+		cursor: pointer;
+		white-space: nowrap;
+	}
+	.separadores button[aria-selected='true'] {
+		background: var(--verde);
+		color: var(--bg);
+		font-weight: 600;
+	}
+	.comparador {
+		border-radius: var(--raio);
+		border: 1px solid var(--line);
+		padding: clamp(1rem, 3vw, 1.75rem);
+		background-color: color-mix(in srgb, var(--surface-verde) 70%, var(--bg));
+		background-image: radial-gradient(circle, var(--ponto-a) 1px, transparent 1.5px);
+		background-size: 22px 22px;
+		display: grid;
+		gap: 1rem;
+	}
+	.comp-topo {
+		display: grid;
+		gap: 0.35rem;
+		max-width: 52rem;
+	}
+	.comp-aviso {
+		font-size: 0.875rem;
+		color: #fff1c2;
+	}
+	.comp-aviso::before {
+		content: 'Atenção · ';
+		font-weight: 700;
+	}
+	.escala-comp {
+		position: relative;
+		height: 1.25rem;
+		margin-left: calc(9rem + 1rem);
+		margin-right: calc(5rem + 1rem);
+		font-size: 0.75rem;
+		color: var(--muted);
+		font-variant-numeric: tabular-nums;
+	}
+	.escala-comp :global(span) {
+		position: absolute;
+		transform: translateX(-50%);
+	}
+	.linhas {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+	}
+	.linhas :global(.linha) {
+		display: grid;
+		grid-template-columns: 9rem minmax(0, 1fr) 5rem;
+		grid-template-areas: 'nome pista valor' '. meta meta';
+		gap: 0.2rem 1rem;
+		align-items: center;
+		padding-block: 0.7rem;
+		border-top: 1px solid var(--line);
+	}
+	.linhas :global(.ln-nome) {
+		grid-area: nome;
+		font-weight: 600;
+	}
+	.linhas :global(.ln-pista) {
+		grid-area: pista;
+		position: relative;
+		height: 14px;
+		background: linear-gradient(var(--line-forte), var(--line-forte)) center / 100% 1px no-repeat;
+	}
+	.linhas :global(.ln-ponto) {
+		position: absolute;
+		top: 50%;
+		width: 14px;
+		height: 14px;
+		border-radius: 50%;
+		transform: translate(-50%, -50%);
+		background: var(--verde);
+		transition: left 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+	}
+	.linhas :global(.ln-ponto.demo) {
+		background: repeating-linear-gradient(135deg, #d9c27a 0 3px, #8a7a3a 3px 6px);
+	}
+	.linhas :global(.ln-falta) {
+		font-size: 0.8125rem;
+		color: var(--muted);
+		background: var(--bg);
+		padding-right: 0.5rem;
+	}
+	.linhas :global(.ln-valor) {
+		grid-area: valor;
+		text-align: right;
+		font-variant-numeric: tabular-nums;
+		font-weight: 600;
+	}
+	.linhas :global(.ln-meta) {
+		grid-area: meta;
+		font-size: 0.8125rem;
+		color: var(--muted);
+	}
+	.linhas :global(.ln-meta a) {
+		color: var(--verde);
+	}
+	.estimador {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+		gap: 1.5rem;
+	}
+	.controlos {
+		display: grid;
+		gap: 1.25rem;
+		padding: 1.5rem;
+		border-radius: var(--raio);
+		border: 1px solid var(--line);
+		background: var(--surface);
+	}
+	.campo {
+		display: grid;
+		gap: 0.4rem;
+	}
+	.campo label {
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+		font-size: 0.9375rem;
+	}
+	.campo output {
+		font-variant-numeric: tabular-nums;
+		color: var(--verde);
+		font-weight: 600;
+	}
+	.dica {
+		font-size: 0.8125rem;
+		color: var(--muted);
+		display: flex;
+		gap: 0.5rem;
+		align-items: center;
+	}
+	input[type='range'] {
+		width: 100%;
+		accent-color: var(--verde);
+		min-height: 24px;
+	}
+	select {
+		font: inherit;
+		font-size: 0.9375rem;
+		min-height: 44px;
+		padding: 0 0.75rem;
+		border-radius: 10px;
+		border: 1px solid var(--line-forte);
+		background: var(--bg);
+		color: var(--text);
+	}
+	.resultado {
+		display: grid;
+		gap: 1rem;
+		align-content: start;
+		padding: 1.5rem;
+		border-radius: var(--raio);
+		border: 1px solid var(--verde-forte);
+		background: var(--surface-verde);
+	}
+	.numeros {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 1rem;
+	}
+	.numeros p {
+		display: grid;
+		gap: 0.2rem;
+		justify-items: start;
+	}
+	.valor {
+		font: 400 clamp(2.2rem, 5vw, 3.2rem) / 1 var(--serif);
+		color: var(--verde);
+		font-variant-numeric: tabular-nums;
+	}
+	.unidade {
+		font-size: 0.875rem;
+		color: var(--muted);
+	}
+	.pontos-co2 {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px;
+		min-height: 24px;
+	}
+	.pontos-co2 :global(i) {
+		width: 9px;
+		height: 9px;
+		border-radius: 50%;
+		background: var(--verde);
+		animation: surge 0.35s ease both;
+	}
+	@keyframes surge {
+		from {
+			transform: scale(0);
+		}
+	}
+	.escala-pontos {
+		font-size: 0.8125rem;
+		color: var(--muted);
+	}
+	.formula summary {
+		cursor: pointer;
+		color: var(--verde);
+		font-weight: 600;
+		min-height: 36px;
+		display: inline-flex;
+		align-items: center;
+	}
+	.formula p {
+		font-size: 0.875rem;
+		line-height: 1.9;
+		color: var(--text);
+	}
+	.regioes {
+		display: grid;
+		gap: 0.75rem;
+		padding: 1.5rem;
+		border-radius: var(--raio);
+		border: 1px solid var(--line);
+		background: var(--surface);
+	}
+	.regioes-tit {
+		display: flex;
+		gap: 0.75rem;
+		align-items: center;
+		font-weight: 600;
+	}
+	.regioes ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		gap: 0.35rem;
+	}
+	.regioes :global(li) {
+		display: grid;
+		grid-template-columns: 8rem minmax(0, 1fr) 4.5rem;
+		gap: 0.75rem;
+		align-items: center;
+		font-size: 0.875rem;
+		padding: 0.15rem 0.35rem;
+		border-radius: 6px;
+	}
+	.regioes :global(li.atual) {
+		background: color-mix(in srgb, var(--verde) 14%, transparent);
+		font-weight: 600;
+	}
+	.regioes :global(.rg-pista) {
+		height: 10px;
+		border-radius: 999px;
+		background: var(--surface-2);
+	}
+	.regioes :global(.rg-barra) {
+		display: block;
+		height: 100%;
+		border-radius: 999px;
+		background: var(--verde);
+		transition: width 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+	}
+	.regioes :global(.rg-barra.demo) {
+		background: repeating-linear-gradient(135deg, var(--verde) 0 5px, var(--verde-forte) 5px 10px);
+	}
+	.regioes :global(.rg-valor) {
+		text-align: right;
+		font-variant-numeric: tabular-nums;
+	}
+	.regioes-nota {
+		font-size: 0.8125rem;
+		color: var(--muted);
+	}
+	.cartoes-alav {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 1rem;
+	}
+	.cartoes-alav li {
+		display: grid;
+		gap: 0.5rem;
+		align-content: start;
+		padding: 1.25rem;
+		border-radius: var(--raio);
+		border-top: 3px solid var(--verde);
+		background: var(--surface);
+	}
+	.cartoes-alav strong {
+		font: 400 1.25rem/1.2 var(--serif);
+	}
+	.cartoes-alav span {
+		color: var(--muted);
+		font-size: 0.9375rem;
+	}
+	.lista-fontes {
+		margin: 0;
+		padding-left: 1.25rem;
+		display: grid;
+		gap: 0.35rem;
+		font-size: 0.875rem;
+		color: var(--muted);
+	}
+	.lista-fontes a {
+		color: var(--verde);
+	}
+	.limites {
+		margin: 0;
+		padding-left: 1.25rem;
+		display: grid;
+		gap: 0.35rem;
+		color: var(--muted);
+		font-size: 0.9375rem;
+	}
+	.volta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1rem 2rem;
+		align-items: center;
+		margin-top: 1rem;
+	}
+	/* Cada tema dá à página uma expressão própria. */
+	.eco-p3 .eco-hero {
+		background: repeating-radial-gradient(ellipse at 90% 10%, transparent 0 28px, rgb(143 224 176 / 0.08) 28px 29px);
+	}
+	.eco-p2 .comparador,
+	.eco-p2 .resultado,
+	.eco-p2 .controlos,
+	.eco-p2 .regioes {
+		border-radius: 20px;
+	}
+	@media (max-width: 960px) {
+		.eco-hero,
+		.estimador {
+			grid-template-columns: 1fr;
+		}
+		.cartoes-alav {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+	@media (max-width: 640px) {
+		.legenda-estados li {
+			grid-template-columns: 1fr;
+			gap: 0.25rem;
+		}
+		.escala-comp {
+			margin-left: 0;
+			margin-right: 0;
+		}
+		.linhas :global(.linha) {
+			grid-template-columns: minmax(0, 1fr) 4rem;
+			grid-template-areas: 'nome valor' 'pista pista' 'meta meta';
+		}
+		.cartoes-alav,
+		.numeros {
+			grid-template-columns: 1fr;
+		}
+		.regioes :global(li) {
+			grid-template-columns: 6.5rem minmax(0, 1fr) 4rem;
+		}
+	}
+</style>

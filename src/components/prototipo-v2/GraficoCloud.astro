@@ -1,0 +1,580 @@
+---
+// PROTÓTIPO v2 · Gráfico interativo: que fornecedores cloud considerar em cada
+// cenário de empresa. Barras empilhadas por critério (o que pesa e porquê),
+// por ordem alfabética para não sugerir uma classificação. Factos da pesquisa #45;
+// pesos e critérios de opinião a validar pelo Julien.
+import { fornecedores, criterios, cenarios, matriz, nomesEstado, type P, type Celula } from './dados';
+
+interface Props {
+	p: P;
+}
+const { p } = Astro.props;
+const inicial = 'crescimento';
+const dados = { fornecedores, criterios, cenarios, matriz };
+
+const textoValor = (c: Celula) => (c.v === 1 ? 'Sim' : c.v === 0.5 ? 'Em parte' : c.v === 0 ? 'Não' : '?');
+const temDemo = Object.values(matriz).some((f) => Object.values(f).some((c) => c.estado === 'demo'));
+---
+
+<section class="gc" id={`p${p}-cloud`} data-grafico-cloud>
+	<div class="gc-cab">
+		<div class="gc-titulo">
+			<p class="etiqueta">Fornecedores cloud</p>
+			<h2>Que cloud para que empresa?</h2>
+			<p class="gc-intro">
+				Escolhe um cenário. Cada barra mostra que critérios desse cenário o fornecedor cumpre. É uma orientação
+				para a Conversa, não uma classificação: não há um fornecedor ideal para todas as empresas.
+			</p>
+		</div>
+		<fieldset class="gc-cenarios">
+			<legend class="sr">Cenário de empresa</legend>
+			{
+				cenarios.map((c) => (
+					<label class="chip">
+						<input type="radio" name={`cenario-p${p}`} value={c.id} checked={c.id === inicial} />
+						<span>{c.nome}</span>
+					</label>
+				))
+			}
+		</fieldset>
+	</div>
+
+	<div class="gc-painel">
+		<div class="gc-topo">
+			<p class="gc-desc" data-desc></p>
+			<ul class="gc-legenda" data-legenda></ul>
+		</div>
+		<div class="gc-barras" data-barras>
+			{
+				fornecedores.map((f) => (
+					<div class="gc-col" data-col={f.id}>
+						<span class="gc-rotulo" data-rotulo />
+						<span class="gc-area">
+							<button type="button" class="gc-barra" data-f={f.id} aria-pressed="false">
+								<span class="sr" data-sr />
+								<span class="gc-pilha" data-pilha />
+							</button>
+						</span>
+						<span class="gc-nome">{f.nome}</span>
+					</div>
+				))
+			}
+		</div>
+		<div class="gc-detalhe" data-detalhe aria-live="polite"></div>
+	</div>
+
+	<details class="gc-tabela">
+		<summary>Ver os critérios de cada fornecedor</summary>
+		<div class="gc-rolar">
+			<table>
+				<thead>
+					<tr>
+						<th scope="col">Fornecedor</th>
+						{
+							criterios.map((c) => (
+								<th scope="col">
+									{c.nome}
+									<small>{c.tipo === 'facto' ? 'facto' : 'opinião'}</small>
+								</th>
+							))
+						}
+					</tr>
+				</thead>
+				<tbody>
+					{
+						fornecedores.map((f) => (
+							<tr>
+								<th scope="row">{f.nome}</th>
+								{criterios.map((c) => {
+									const cel = matriz[f.id][c.id];
+									return (
+										<td class={`e-${cel.estado}`} title={cel.nota ?? nomesEstado[cel.estado]}>
+											{textoValor(cel)}
+										</td>
+									);
+								})}
+							</tr>
+						))
+					}
+				</tbody>
+			</table>
+		</div>
+		<p class="gc-chave">
+			<span class="selo demo">Demonstração</span> valor de exemplo, a substituir pela pesquisa ·
+			<span class="selo publicado">Publicado</span> facto com fonte ·
+			<span class="selo a-validar">A validar</span> opinião do Julien
+		</p>
+	</details>
+	{
+		temDemo && (
+			<p class="nota-proto">
+				Os valores marcados como demonstração são exemplos até chegarem os factos da pesquisa. Os pesos de cada
+				cenário e os critérios de opinião são uma proposta, a validar pelo Julien.
+			</p>
+		)
+	}
+	<script type="application/json" data-dados set:html={JSON.stringify(dados)} />
+</section>
+
+<script>
+	type Celula = { v: 1 | 0.5 | 0 | null; estado: string; nota?: string };
+	type Dados = {
+		fornecedores: { id: string; nome: string }[];
+		criterios: { id: string; nome: string; tipo: string; explica: string }[];
+		cenarios: { id: string; nome: string; descricao: string; pesos: Record<string, number> }[];
+		matriz: Record<string, Record<string, Celula>>;
+	};
+	const cores = ['var(--s1)', 'var(--s2)', 'var(--s3)', 'var(--s4)'];
+	const nomeEstado: Record<string, string> = { demo: 'Demonstração', publicado: 'Publicado', 'a-validar': 'A validar' };
+	const txt = (v: Celula['v']) => (v === 1 ? 'Sim' : v === 0.5 ? 'Em parte' : v === 0 ? 'Não' : 'Por confirmar');
+
+	for (const raiz of document.querySelectorAll<HTMLElement>('[data-grafico-cloud]')) {
+		const d: Dados = JSON.parse(raiz.querySelector('[data-dados]')!.textContent!);
+		const radios = [...raiz.querySelectorAll<HTMLInputElement>('input[type="radio"]')];
+		const botoes = [...raiz.querySelectorAll<HTMLButtonElement>('.gc-barra')];
+		const detalhe = raiz.querySelector<HTMLElement>('[data-detalhe]')!;
+		let escolhido: string | null = null;
+
+		function calcula(cen: Dados['cenarios'][number], fid: string) {
+			const ordem = Object.entries(cen.pesos)
+				.filter(([, w]) => w > 0)
+				.sort((a, b) => b[1] - a[1]);
+			const total = ordem.reduce((s, [, w]) => s + w, 0);
+			const segs = ordem.map(([cid, w], i) => {
+				const cel = d.matriz[fid][cid];
+				return { cid, w, cel, cor: cores[Math.min(i, 3)], parte: ((cel.v ?? 0) * w) / total, falta: cel.v === null ? w / total : 0 };
+			});
+			const score = segs.reduce((s, x) => s + x.parte, 0);
+			const falta = segs.reduce((s, x) => s + x.falta, 0);
+			return { segs, score, falta, total };
+		}
+		const rotulo = (s: number) => (s >= 0.7 ? 'A considerar' : s >= 0.4 ? 'Possível' : 'Pouco indicado');
+
+		function desenha() {
+			const cen = d.cenarios.find((c) => c.id === radios.find((r) => r.checked)!.value)!;
+			const nomes = Object.fromEntries(d.criterios.map((c) => [c.id, c]));
+			const primeiro = calcula(cen, d.fornecedores[0].id);
+			raiz.querySelector('[data-desc]')!.textContent = `${cen.nome}: ${cen.descricao}`;
+			raiz.querySelector('[data-legenda]')!.innerHTML = primeiro.segs
+				.map(
+					(s) =>
+						`<li><i style="background:${s.cor}"></i>${nomes[s.cid].nome}<small> · peso ${s.w}${nomes[s.cid].tipo === 'opiniao' ? ' · opinião' : ''}</small></li>`,
+				)
+				.join('');
+			const resultados = d.fornecedores.map((f) => ({ f, r: calcula(cen, f.id) }));
+			for (const { f, r } of resultados) {
+				const col = raiz.querySelector<HTMLElement>(`[data-col="${f.id}"]`)!;
+				col.style.setProperty('--score', String(r.score));
+				col.style.setProperty('--falta', String(r.falta));
+				col.querySelector('[data-rotulo]')!.textContent = rotulo(r.score) + (r.falta > 0 ? ' ?' : '');
+				col.dataset.nivel = r.score >= 0.7 ? 'alto' : r.score >= 0.4 ? 'medio' : 'baixo';
+				const pilha = col.querySelector<HTMLElement>('[data-pilha]')!;
+				pilha.innerHTML =
+					r.segs
+						.filter((s) => s.parte > 0)
+						.map((s) => `<i class="seg${s.cel.estado === 'demo' ? ' demo' : ''}" style="flex-grow:${s.parte};background:${s.cor}"></i>`)
+						.join('') + (r.falta > 0 ? `<i class="seg falta" style="flex-grow:${r.falta}"></i>` : '');
+				col.querySelector('[data-sr]')!.textContent =
+					`${f.nome}: ${rotulo(r.score)}. ` +
+					r.segs.map((s) => `${nomes[s.cid].nome}: ${txt(s.cel.v)}`).join('; ');
+			}
+			if (!escolhido) {
+				const melhor = resultados.reduce((a, b) => (b.r.score > a.r.score ? b : a));
+				escolhido = melhor.f.id;
+			}
+			mostra(escolhido, cen);
+		}
+
+		function mostra(fid: string, cen?: Dados['cenarios'][number]) {
+			escolhido = fid;
+			cen ??= d.cenarios.find((c) => c.id === radios.find((r) => r.checked)!.value)!;
+			const f = d.fornecedores.find((x) => x.id === fid)!;
+			const r = calcula(cen, fid);
+			const nomes = Object.fromEntries(d.criterios.map((c) => [c.id, c]));
+			botoes.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.f === fid)));
+			detalhe.innerHTML = `
+				<p class="dt-cab"><strong>${f.nome}</strong> no cenário «${cen.nome}»: <span class="dt-rot">${rotulo(r.score)}</span></p>
+				<ul>${r.segs
+					.map(
+						(s) => `<li><i style="background:${s.cor}"></i><span>${nomes[s.cid].nome}</span>
+						<b class="v v${String(s.cel.v).replace('.', '')}">${txt(s.cel.v)}</b>
+						<span class="selo ${s.cel.estado}">${nomeEstado[s.cel.estado] ?? s.cel.estado}</span></li>`,
+					)
+					.join('')}</ul>
+				${r.falta > 0 ? '<p class="dt-falta">Há critérios por confirmar: a barra tracejada mostra o que pode mudar.</p>' : ''}`;
+		}
+
+		radios.forEach((r) => r.addEventListener('change', () => desenha()));
+		botoes.forEach((b) => b.addEventListener('click', () => mostra(b.dataset.f!)));
+		desenha();
+	}
+</script>
+
+<style>
+	.gc {
+		display: grid;
+		gap: 1.5rem;
+	}
+	.gc-cab {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+		gap: 1.5rem 3rem;
+		align-items: end;
+	}
+	.gc-titulo {
+		display: grid;
+		gap: 0.75rem;
+	}
+	.gc h2 {
+		font-size: clamp(2rem, 4vw, 2.9rem);
+		line-height: 1.08;
+	}
+	.gc-intro {
+		color: var(--muted);
+		max-width: 36rem;
+	}
+	.gc-cenarios {
+		border: 0;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		justify-content: flex-end;
+	}
+	.chip {
+		position: relative;
+		cursor: pointer;
+	}
+	.chip input {
+		position: absolute;
+		opacity: 0;
+		inset: 0;
+		margin: 0;
+		cursor: pointer;
+	}
+	.chip span {
+		display: inline-flex;
+		align-items: center;
+		min-height: 40px;
+		padding: 0 0.95rem;
+		border-radius: 999px;
+		border: 1px solid var(--line-forte);
+		color: var(--muted);
+		font-size: 0.875rem;
+		transition:
+			background 0.15s ease,
+			color 0.15s ease,
+			border-color 0.15s ease;
+	}
+	.chip:hover span {
+		color: var(--text);
+		border-color: var(--verde);
+	}
+	.chip input:checked + span {
+		background: var(--verde);
+		border-color: var(--verde);
+		color: var(--bg);
+		font-weight: 600;
+	}
+	.chip input:focus-visible + span {
+		outline: 2px solid var(--acento);
+		outline-offset: 3px;
+	}
+	.gc-painel {
+		border: 1px solid var(--line);
+		border-radius: var(--raio);
+		padding: clamp(1rem, 2.5vw, 1.75rem);
+		background-color: color-mix(in srgb, var(--bg) 60%, #000);
+		background-image: radial-gradient(circle, var(--ponto-a) 1px, transparent 1.5px);
+		background-size: 22px 22px;
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 17rem);
+		grid-template-areas:
+			'topo topo'
+			'barras detalhe';
+		gap: 1.5rem 2rem;
+	}
+	.gc-topo {
+		grid-area: topo;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: 0.75rem 2rem;
+	}
+	.gc-desc {
+		font-size: 0.9375rem;
+		max-width: 32rem;
+	}
+	.gc-legenda {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.35rem 1rem;
+		font-size: 0.8125rem;
+		color: var(--muted);
+	}
+	.gc-legenda :global(i),
+	.gc-detalhe :global(li i) {
+		display: inline-block;
+		width: 10px;
+		height: 10px;
+		border-radius: 3px;
+		margin-right: 0.4rem;
+		vertical-align: 0;
+	}
+	.gc-legenda :global(small) {
+		opacity: 0.85;
+	}
+	.gc-barras {
+		grid-area: barras;
+		display: grid;
+		grid-template-columns: repeat(7, minmax(0, 1fr));
+		gap: 0.75rem;
+		align-items: end;
+	}
+	.gc-col {
+		display: grid;
+		gap: 0.5rem;
+		justify-items: center;
+		text-align: center;
+	}
+	.gc-rotulo {
+		font-size: 0.75rem;
+		color: var(--muted);
+		min-height: 2.4em;
+		display: flex;
+		align-items: flex-end;
+		line-height: 1.2;
+	}
+	.gc-col[data-nivel='alto'] .gc-rotulo {
+		color: var(--verde);
+		font-weight: 600;
+	}
+	.gc-area {
+		height: 220px;
+		width: 100%;
+		display: flex;
+		align-items: flex-end;
+		justify-content: center;
+		border-bottom: 1px solid var(--line-forte);
+	}
+	.gc-barra {
+		width: min(56px, 100%);
+		height: calc((var(--score, 0) + var(--falta, 0)) * 100% + 6px);
+		min-height: 6px;
+		padding: 0;
+		border: 0;
+		border-radius: 10px 10px 3px 3px;
+		background: transparent;
+		cursor: pointer;
+		transition:
+			height 0.5s cubic-bezier(0.2, 0.8, 0.2, 1),
+			transform 0.15s ease;
+		display: flex;
+	}
+	.gc-barra:hover {
+		transform: translateY(-3px);
+	}
+	.gc-barra[aria-pressed='true'] {
+		outline: 2px solid var(--text);
+		outline-offset: 3px;
+	}
+	.gc-pilha {
+		flex: 1;
+		display: flex;
+		flex-direction: column-reverse;
+		border-radius: inherit;
+		overflow: hidden;
+		gap: 2px;
+	}
+	.gc-pilha :global(.seg) {
+		display: block;
+		flex-basis: 0;
+		min-height: 3px;
+		transition: flex-grow 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+	}
+	.gc-pilha :global(.seg.demo) {
+		background-image: repeating-linear-gradient(135deg, rgb(0 0 0 / 0.18) 0 4px, transparent 4px 8px) !important;
+		background-blend-mode: multiply;
+	}
+	.gc-pilha :global(.seg.falta) {
+		background: transparent !important;
+		border: 1.5px dashed var(--line-forte);
+		border-radius: 8px 8px 0 0;
+	}
+	.gc-nome {
+		font-size: 0.8125rem;
+		line-height: 1.25;
+		min-height: 2.5em;
+	}
+	.gc-detalhe {
+		grid-area: detalhe;
+		align-self: stretch;
+		padding: 1rem;
+		border-radius: calc(var(--raio) - 4px);
+		background: var(--surface);
+		border: 1px solid var(--line);
+		font-size: 0.875rem;
+		display: grid;
+		align-content: start;
+		gap: 0.75rem;
+	}
+	.gc-detalhe :global(.dt-cab strong) {
+		font-family: var(--serif);
+		font-weight: 400;
+		font-size: 1.2rem;
+	}
+	.gc-detalhe :global(.dt-rot) {
+		color: var(--verde);
+		font-weight: 600;
+	}
+	.gc-detalhe :global(ul) {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		gap: 0.5rem;
+	}
+	.gc-detalhe :global(li) {
+		display: grid;
+		grid-template-columns: 14px 1fr auto;
+		gap: 0.15rem 0.35rem;
+		align-items: center;
+	}
+	.gc-detalhe :global(li .selo) {
+		grid-column: 2 / -1;
+		justify-self: start;
+	}
+	.gc-detalhe :global(.v) {
+		font-weight: 600;
+	}
+	.gc-detalhe :global(.v1) {
+		color: var(--verde);
+	}
+	.gc-detalhe :global(.v0) {
+		color: var(--muted);
+	}
+	.gc-detalhe :global(.vnull) {
+		color: #fff1c2;
+	}
+	.gc-detalhe :global(.dt-falta) {
+		color: var(--muted);
+		font-size: 0.8125rem;
+	}
+	.gc-tabela summary {
+		cursor: pointer;
+		color: var(--verde);
+		font-weight: 600;
+		min-height: 44px;
+		display: inline-flex;
+		align-items: center;
+	}
+	.gc-rolar {
+		overflow-x: auto;
+		margin-top: 0.75rem;
+		border: 1px solid var(--line);
+		border-radius: var(--raio);
+	}
+	table {
+		border-collapse: collapse;
+		width: 100%;
+		min-width: 860px;
+		font-size: 0.8125rem;
+	}
+	th,
+	td {
+		padding: 0.55rem 0.65rem;
+		border-bottom: 1px solid var(--line);
+		text-align: left;
+		vertical-align: top;
+	}
+	thead th {
+		font-weight: 600;
+		background: var(--surface);
+	}
+	thead small {
+		display: block;
+		font-weight: 400;
+		color: var(--muted);
+	}
+	tbody th {
+		font-weight: 600;
+		white-space: nowrap;
+	}
+	td.e-demo {
+		background-image: repeating-linear-gradient(135deg, rgb(217 194 122 / 0.12) 0 6px, transparent 6px 12px);
+	}
+	td.e-a-validar {
+		color: #fff1c2;
+	}
+	.gc-chave {
+		margin-top: 0.75rem !important;
+		font-size: 0.8125rem;
+		color: var(--muted);
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem;
+		align-items: center;
+	}
+	@media (max-width: 960px) {
+		.gc-cab {
+			grid-template-columns: 1fr;
+		}
+		.gc-cenarios {
+			justify-content: flex-start;
+		}
+		.gc-painel {
+			grid-template-columns: 1fr;
+			grid-template-areas: 'topo' 'barras' 'detalhe';
+		}
+	}
+	@media (max-width: 640px) {
+		.gc-barras {
+			grid-template-columns: 1fr;
+			gap: 0.6rem;
+		}
+		.gc-col {
+			grid-template-columns: 6.5rem 1fr;
+			grid-template-areas: 'nome area' 'nome rotulo';
+			justify-items: stretch;
+			text-align: left;
+			gap: 0.15rem 0.75rem;
+		}
+		.gc-nome {
+			grid-area: nome;
+			min-height: 0;
+			align-self: center;
+		}
+		.gc-rotulo {
+			grid-area: rotulo;
+			min-height: 0;
+		}
+		.gc-area {
+			grid-area: area;
+			height: 26px;
+			border-bottom: 0;
+			justify-content: flex-start;
+			align-items: stretch;
+			background: var(--surface);
+			border-radius: 8px;
+		}
+		.gc-barra {
+			height: 100%;
+			width: calc((var(--score, 0) + var(--falta, 0)) * 100% + 6px);
+			border-radius: 8px;
+			transition: width 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+		}
+		.gc-barra:hover {
+			transform: none;
+		}
+		.gc-pilha {
+			flex-direction: row;
+		}
+		.gc-pilha :global(.seg.falta) {
+			border-radius: 0 8px 8px 0;
+		}
+	}
+</style>

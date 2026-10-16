@@ -1,0 +1,58 @@
+---
+// PROTÓTIPO v2 · Rodapé: email, LinkedIn, ecologia e páginas legais.
+import Folha from './Folha.astro';
+import { rodape, type P, type Modo } from './dados';
+import { ligacao } from './temas';
+
+interface Props {
+	p: P;
+	modo: Modo;
+}
+const { p, modo } = Astro.props;
+---
+
+<footer class="rodape">
+	<div class="largura dentro">
+		<span class="marca">Julien Laffont</span>
+		<span>{rodape.marca}</span>
+		<span>{rodape.email}</span>
+		<span class="lig">LinkedIn</span>
+		<a class="eco" href={ligacao(modo, p, 'ecologia')}><Folha tamanho={16} /> Ecologia</a>
+		<span class="lig">Informação legal</span>
+		<span class="lig">Política de privacidade</span>
+	</div>
+</footer>
+
+<style>
+	.rodape {
+		position: relative;
+		z-index: 1;
+		margin-top: 5rem;
+		border-top: 1px solid var(--line);
+		font-size: 0.875rem;
+		color: var(--muted);
+	}
+	.dentro {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.75rem 1.5rem;
+		padding-block: 2rem;
+	}
+	.marca {
+		font-family: var(--serif);
+		font-size: 1.15rem;
+		color: var(--text);
+	}
+	.lig {
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+	.eco {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+		color: var(--verde);
+		min-height: 24px;
+	}
+</style>

@@ -1,0 +1,159 @@
+---
+// PROTÓTIPO v2 · FAQ da página principal: as perguntas gerais e atalhos para
+// as perguntas de cada público, que vivem na página «Perguntas».
+import { perguntas, publicos, type P, type Modo } from './dados';
+import { ligacao } from './temas';
+
+interface Props {
+	p: P;
+	modo: Modo;
+}
+const { p, modo } = Astro.props;
+const especificos = publicos.filter((x) => x.id !== 'gerais');
+---
+
+<div class="faq-resumo">
+	<div class="gerais">
+		<p class="etiqueta">Perguntas</p>
+		<h2>O essencial, antes da Conversa.</h2>
+		<div class="lista">
+			{
+				perguntas.gerais.map((q) => (
+					<details>
+						<summary>{q.p}</summary>
+						<p>{q.r}</p>
+					</details>
+				))
+			}
+		</div>
+	</div>
+	<aside class="perfis" aria-label="Perguntas por perfil">
+		<p class="perfis-titulo">Perguntas para o teu perfil</p>
+		<ul>
+			{
+				especificos.map((pub) => (
+					<li>
+						<a href={ligacao(modo, p, 'perguntas', `perguntas-${pub.id}`)}>
+							<span class="perfil">{pub.curto}</span>
+							<span class="desc">{pub.descricao}</span>
+							<span class="exemplo">«{perguntas[pub.id][0].p}»</span>
+							<span class="n">{perguntas[pub.id].length} perguntas</span>
+						</a>
+					</li>
+				))
+			}
+		</ul>
+	</aside>
+</div>
+
+<style>
+	.faq-resumo {
+		display: grid;
+		grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+		gap: 2.5rem 4rem;
+		align-items: start;
+	}
+	.gerais {
+		display: grid;
+		gap: 1rem;
+	}
+	h2 {
+		font-size: clamp(2rem, 4vw, 2.8rem);
+		line-height: 1.08;
+	}
+	.lista {
+		display: grid;
+		margin-top: 0.5rem;
+	}
+	details {
+		border-top: 1px solid var(--line);
+	}
+	details:last-child {
+		border-bottom: 1px solid var(--line);
+	}
+	summary {
+		cursor: pointer;
+		list-style: none;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 1rem;
+		min-height: 56px;
+		font: 400 1.25rem/1.25 var(--serif);
+	}
+	summary::-webkit-details-marker {
+		display: none;
+	}
+	summary::after {
+		content: '+';
+		font-family: var(--sans);
+		color: var(--verde);
+		font-size: 1.25rem;
+		transition: transform 0.2s ease;
+	}
+	details[open] summary::after {
+		transform: rotate(45deg);
+	}
+	details p {
+		padding-bottom: 1rem;
+		color: var(--muted);
+		max-width: 44rem;
+	}
+	.perfis {
+		display: grid;
+		gap: 0.75rem;
+		position: sticky;
+		top: 96px;
+	}
+	.perfis-titulo {
+		font-size: 0.8125rem;
+		color: var(--muted);
+	}
+	.perfis ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		gap: 0.75rem;
+	}
+	.perfis a {
+		display: grid;
+		gap: 0.3rem;
+		padding: 1rem 1.1rem;
+		border: 1px solid var(--line);
+		border-radius: var(--raio);
+		background: var(--surface);
+		text-decoration: none;
+		transition:
+			border-color 0.15s ease,
+			transform 0.15s ease;
+	}
+	.perfis a:hover {
+		border-color: var(--verde);
+		transform: translateX(4px);
+	}
+	.perfil {
+		font: 400 1.35rem/1.1 var(--serif);
+	}
+	.desc {
+		font-size: 0.875rem;
+		color: var(--muted);
+	}
+	.exemplo {
+		font-size: 0.875rem;
+		color: var(--text);
+	}
+	.n {
+		font-size: 0.8125rem;
+		color: var(--verde);
+		font-weight: 600;
+	}
+	@media (max-width: 900px) {
+		.faq-resumo {
+			grid-template-columns: 1fr;
+		}
+		.perfis {
+			position: static;
+		}
+	}
+</style>

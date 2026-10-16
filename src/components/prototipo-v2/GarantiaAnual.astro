@@ -1,0 +1,255 @@
+---
+// PROTÓTIPO v2 · A Garantia com o ano como referência visual principal.
+// 12 meses; cada mês é um quadrado de 100 pontos e cada ponto é 1 % do mês
+// (cerca de 7 h). A Garantia deixa no máximo 1 ponto vazio por mês.
+// O texto do compromisso não muda; a equivalência anual fica marcada a validar.
+import { textos, garantia, type P } from './dados';
+
+interface Props {
+	p: P;
+	formato: 'grelha' | 'linha' | 'trimestres';
+}
+const { formato } = Astro.props;
+const meses = Array.from({ length: 12 }, (_, i) => i + 1);
+---
+
+<div class:list={['ga', formato]} data-garantia>
+	<div class="ga-texto">
+		<p class="etiqueta">A garantia</p>
+		<h2>Disponível pelo menos 99&nbsp;% do tempo.</h2>
+		<p class="ga-num">
+			<span class="ga-grande">{garantia.porAno}</span>
+			<span class="ga-sub">de paragem num ano, no máximo</span>
+		</p>
+		<p class="ga-base">
+			Equivale a 99&nbsp;% em cada mês: no máximo cerca de {garantia.porMes} de paragem por mês.
+			<span class="selo a-validar">Equivalência anual a validar</span>
+		</p>
+		<p class="ga-compromisso">{textos.garantia}</p>
+		<p class="ga-condicao">{textos.garantiaCondicao}</p>
+		<div class="ga-modo" role="group" aria-label="Período mostrado no quadro">
+			<button type="button" aria-pressed="true" data-modo="ano">Um ano</button>
+			<button type="button" aria-pressed="false" data-modo="garantia">Período da Garantia (3 meses)</button>
+		</div>
+	</div>
+	<figure class="ga-quadro">
+		<div class="ga-meses" role="img" aria-label="12 meses de 100 pontos cada; em cada mês, no máximo 1 ponto sem serviço">
+			{
+				meses.map((m) => (
+					<div class:list={['mes', { garantido: m <= garantia.mesesGarantia }]} data-mes={m}>
+						<span class="quad" />
+						<span class="mes-nome">{formato === 'trimestres' && m % 3 === 1 ? `T${(m + 2) / 3} · ` : ''}Mês {m}</span>
+					</div>
+				))
+			}
+		</div>
+		<figcaption>
+			<span><i class="pt cheio"></i> 1 % do mês com serviço</span>
+			<span><i class="pt livre"></i> margem máxima sem serviço (cerca de {garantia.porMes})</span>
+		</figcaption>
+		<p class="nota-proto" data-nota-garantia hidden>
+			A Garantia validada cobre 3 meses depois da entrega. Os meses 4 a 12 só aparecem na leitura anual.
+		</p>
+	</figure>
+</div>
+
+<script>
+	for (const raiz of document.querySelectorAll<HTMLElement>('[data-garantia]')) {
+		const botoes = [...raiz.querySelectorAll<HTMLButtonElement>('[data-modo]')];
+		const nota = raiz.querySelector<HTMLElement>('[data-nota-garantia]')!;
+		for (const b of botoes) {
+			b.addEventListener('click', () => {
+				botoes.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+				const soGarantia = b.dataset.modo === 'garantia';
+				raiz.classList.toggle('so-garantia', soGarantia);
+				nota.hidden = !soGarantia;
+			});
+		}
+	}
+</script>
+
+<style>
+	.ga {
+		display: grid;
+		grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+		gap: 2.5rem 4rem;
+		align-items: center;
+	}
+	.ga-texto {
+		display: grid;
+		gap: 1rem;
+		justify-items: start;
+	}
+	.ga h2 {
+		font-size: clamp(2rem, 4vw, 2.9rem);
+		line-height: 1.08;
+	}
+	.ga-num {
+		display: grid;
+		gap: 0.1rem;
+	}
+	.ga-grande {
+		font: 400 clamp(2.8rem, 6vw, 4.4rem) / 1 var(--serif);
+		color: var(--verde);
+	}
+	.ga-sub {
+		font-size: 1.0625rem;
+	}
+	.ga-base {
+		color: var(--muted);
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		align-items: center;
+	}
+	.ga-compromisso {
+		color: var(--muted);
+		max-width: 34rem;
+	}
+	.ga-condicao {
+		font-size: 0.9375rem;
+		color: var(--acento);
+	}
+	.ga-modo {
+		display: inline-flex;
+		padding: 4px;
+		border-radius: 999px;
+		border: 1px solid var(--line-forte);
+		gap: 2px;
+	}
+	.ga-modo button {
+		font: inherit;
+		font-size: 0.8125rem;
+		min-height: 36px;
+		padding: 0 0.85rem;
+		border: 0;
+		border-radius: 999px;
+		background: transparent;
+		color: var(--muted);
+		cursor: pointer;
+		transition:
+			background 0.15s ease,
+			color 0.15s ease;
+	}
+	.ga-modo button[aria-pressed='true'] {
+		background: var(--verde);
+		color: var(--bg);
+		font-weight: 600;
+	}
+	.ga-quadro {
+		margin: 0;
+		display: grid;
+		gap: 1rem;
+	}
+	.ga-meses {
+		display: grid;
+		grid-template-columns: repeat(6, minmax(0, 1fr));
+		gap: 1rem 0.75rem;
+	}
+	.mes {
+		display: grid;
+		gap: 0.35rem;
+		transition: opacity 0.3s ease;
+	}
+	.quad {
+		position: relative;
+		display: block;
+		aspect-ratio: 1;
+		max-width: 100%;
+		border-radius: 6px;
+		background-image: radial-gradient(circle, var(--verde) 34%, transparent 38%);
+		background-size: 10% 10%;
+	}
+	.quad::after {
+		/* o 100.º ponto: margem máxima sem serviço */
+		content: '';
+		position: absolute;
+		right: 0;
+		bottom: 0;
+		width: 10%;
+		height: 10%;
+		background:
+			radial-gradient(circle, transparent 26%, var(--s3) 28% 36%, transparent 38%),
+			var(--fundo-ga, var(--bg));
+	}
+	.mes-nome {
+		font-size: 0.6875rem;
+		color: var(--muted);
+		font-variant-numeric: tabular-nums;
+	}
+	.so-garantia .mes:not(.garantido) {
+		opacity: 0.18;
+	}
+	.so-garantia .mes.garantido .quad {
+		outline: 1.5px solid var(--verde);
+		outline-offset: 4px;
+	}
+	figcaption {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem 1.5rem;
+		font-size: 0.8125rem;
+		color: var(--muted);
+	}
+	.pt {
+		display: inline-block;
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		vertical-align: -1px;
+		margin-right: 0.3rem;
+	}
+	.pt.cheio {
+		background: var(--verde);
+	}
+	.pt.livre {
+		border: 2px solid var(--s3);
+	}
+	/* Linha: os 12 meses numa só fila (protótipo 2). */
+	.linha {
+		grid-template-columns: 1fr;
+	}
+	.linha .ga-texto {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		column-gap: 3rem;
+		align-items: start;
+	}
+	.linha .ga-texto > :is(.etiqueta, h2, .ga-num) {
+		grid-column: 1;
+	}
+	.linha .ga-texto > :is(.ga-base, .ga-compromisso, .ga-condicao, .ga-modo) {
+		grid-column: 2;
+	}
+	.linha .ga-texto > .ga-base {
+		grid-row: 1 / span 2;
+		align-self: end;
+	}
+	.linha .ga-meses {
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+	}
+	/* Trimestres: 4 filas de 3 meses (protótipo 3). */
+	.trimestres .ga-meses {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		max-width: 26rem;
+		justify-self: center;
+	}
+	@media (max-width: 960px) {
+		.ga,
+		.linha .ga-texto {
+			grid-template-columns: 1fr;
+		}
+		.linha .ga-texto > * {
+			grid-column: 1 !important;
+			grid-row: auto !important;
+		}
+		.linha .ga-meses {
+			grid-template-columns: repeat(6, minmax(0, 1fr));
+		}
+	}
+	@media (max-width: 480px) {
+		.ga-meses,
+		.linha .ga-meses {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+		}
+	}
+</style>

@@ -1,0 +1,23 @@
+---
+// PROTÓTIPO v2 · Página principal de cada protótipo: /prototipo/v2/1/, /2/, /3/.
+import PrototipoV2 from '../../../../layouts/PrototipoV2.astro';
+import Vista from '../../../../components/prototipo-v2/Vista.astro';
+import Inicio1 from '../../../../components/prototipo-v2/Inicio1.astro';
+import Inicio2 from '../../../../components/prototipo-v2/Inicio2.astro';
+import Inicio3 from '../../../../components/prototipo-v2/Inicio3.astro';
+import { temas } from '../../../../components/prototipo-v2/temas';
+import type { P } from '../../../../components/prototipo-v2/dados';
+
+export function getStaticPaths() {
+	return ['1', '2', '3'].map((p) => ({ params: { p } }));
+}
+const p = Number(Astro.params.p) as P;
+---
+
+<PrototipoV2 titulo={`Protótipo ${p} · ${temas[p - 1].nome}`}>
+	<Vista p={p} pagina="inicio" modo="rotas">
+		{p === 1 && <Inicio1 modo="rotas" />}
+		{p === 2 && <Inicio2 modo="rotas" />}
+		{p === 3 && <Inicio3 modo="rotas" />}
+	</Vista>
+</PrototipoV2>

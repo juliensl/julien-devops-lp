@@ -1,0 +1,127 @@
+---
+// PROTÓTIPO v2 · Índice para comparar os três protótipos.
+import PrototipoV2 from '../../../layouts/PrototipoV2.astro';
+import { temas, nomesPagina } from '../../../components/prototipo-v2/temas';
+import type { Pagina } from '../../../components/prototipo-v2/dados';
+
+const paginas: Pagina[] = ['inicio', 'ecologia', 'perguntas'];
+const url = (p: number, pg: Pagina) => `/prototipo/v2/${p}/` + (pg === 'inicio' ? '' : `${pg}/`);
+---
+
+<PrototipoV2 titulo="Direção visual v2 · índice">
+	<div class="vista p1 indice">
+		<main class="largura">
+			<p class="etiqueta">Protótipo descartável · «Qual a direção visual?»</p>
+			<h1>Três direções para comparar.</h1>
+			<p class="lead">
+				Cada protótipo tem uma página principal, uma página de ecologia e uma página de perguntas. Dentro de cada um,
+				a barra branca em baixo muda de protótipo sem mudar de página (também com as setas ← →).
+			</p>
+			<ul class="cartoes">
+				{
+					temas.map((t) => (
+						<li class={`p${t.p}`}>
+							<p class="n">{t.p}</p>
+							<h2>{t.nome}</h2>
+							<p>{t.resumo}</p>
+							<p class="fontes">{t.fontes.map((f) => f.nome).join(' + ')}</p>
+							<ul class="cores">
+								{t.cores.map((c) => (
+									<li style={`background:${c.hex}`} title={`${c.nome} ${c.hex}`} />
+								))}
+							</ul>
+							<nav aria-label={`Páginas do protótipo ${t.p}`}>
+								{paginas.map((pg) => (
+									<a href={url(t.p, pg)}>{nomesPagina[pg]}</a>
+								))}
+							</nav>
+						</li>
+					))
+				}
+			</ul>
+		</main>
+	</div>
+</PrototipoV2>
+
+<style>
+	.indice main {
+		display: grid;
+		gap: 1.25rem;
+		padding-block: 4rem;
+	}
+	h1 {
+		font-size: clamp(2.4rem, 5vw, 3.8rem);
+	}
+	.lead {
+		color: var(--muted);
+		max-width: 44rem;
+	}
+	.cartoes {
+		list-style: none;
+		margin: 1rem 0 0;
+		padding: 0;
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 1rem;
+	}
+	.cartoes > li {
+		display: grid;
+		gap: 0.75rem;
+		align-content: start;
+		padding: 1.5rem;
+		border-radius: var(--raio);
+		background: var(--bg);
+		color: var(--text);
+		border: 1px solid var(--line);
+		font-family: var(--sans);
+	}
+	.n {
+		font: 400 3rem/1 var(--serif);
+		color: var(--verde);
+	}
+	.cartoes h2 {
+		font-size: 1.8rem;
+	}
+	.cartoes p {
+		color: var(--muted);
+	}
+	.fontes {
+		font-size: 0.875rem;
+	}
+	.cores {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		gap: 6px;
+	}
+	.cores li {
+		width: 26px;
+		height: 26px;
+		border-radius: 6px;
+		box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.15);
+	}
+	nav {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+	nav a {
+		display: inline-flex;
+		align-items: center;
+		min-height: 40px;
+		padding: 0 0.9rem;
+		border-radius: 999px;
+		border: 1px solid var(--line-forte);
+		text-decoration: none;
+		font-size: 0.875rem;
+	}
+	nav a:hover {
+		border-color: var(--verde);
+	}
+	@media (max-width: 900px) {
+		.cartoes {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>
