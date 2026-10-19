@@ -90,8 +90,11 @@ const porValidar = Object.values(perguntas).reduce((s, l) => s + l.filter((q) =>
 
 	<section class="largura perg-final">
 		<p class="nota-proto">
-			{porValidar} de {total} respostas ainda precisam da validação do Julien. As respostas validadas vêm das decisões
-			já registadas; nenhuma promessa nova foi acrescentada.
+			{
+				porValidar
+					? `${porValidar} de ${total} respostas ainda precisam da validação do Julien. As respostas validadas vêm das decisões já registadas;`
+					: `As ${total} respostas estão validadas pelo Julien e vêm das decisões já registadas;`
+			} nenhuma promessa nova foi acrescentada.
 		</p>
 		<div class="perg-cta">
 			<h2>Não encontras a tua pergunta?</h2>

@@ -120,9 +120,8 @@ export const perguntas: Record<Publico, Pergunta[]> = {
 		},
 		{
 			p: 'De que acessos precisas?',
-			r: 'No Diagnóstico, acesso de leitura ao repositório. À cloud (métricas e logs) só se o problema for de infraestrutura, desempenho, custos ou disponibilidade. Nunca passwords, chaves privadas nem permissões de administrador.',
+			r: 'No Diagnóstico, acesso de leitura ao repositório. À cloud (métricas e logs) só se o problema for de infraestrutura, desempenho, custos ou disponibilidade. Nunca passwords, chaves privadas nem permissões de administrador. Na Implementação, preciso de acesso de escrita ao repositório e de uma conta na tua cloud com as permissões necessárias para criar a infraestrutura dos blocos contratados. Retiras esses acessos na Entrega e transferência.',
 			estado: 'validado',
-			nota: 'A Implementação pede mais acessos; quais exatamente fica por validar.',
 		},
 		{
 			p: 'Como funciona a Garantia de disponibilidade?',
@@ -149,8 +148,7 @@ export const perguntas: Record<Publico, Pergunta[]> = {
 		{
 			p: 'E os custos da infraestrutura?',
 			r: 'Além do preço fixo, a infraestrutura e as ferramentas têm um custo mensal próprio, que pagas diretamente aos fornecedores, nas tuas contas. O serviço pressupõe um orçamento de 100 a 500 € por mês para estes custos.',
-			estado: 'a-validar',
-			nota: 'Formulação aprovada; falta o Julien confirmar quem paga e se os 100 a 500 € são o total por mês.',
+			estado: 'validado',
 		},
 		{
 			p: 'Ficamos dependentes de ti?',
