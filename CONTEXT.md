@@ -64,6 +64,10 @@ _Evitar_: orçamento, devis, proposta comercial
 Um fornecedor de cloud ou de alojamento que Julien pode propor ao CTO por gastar menos energia ou recursos do que os outros. Nenhum alojamento tem impacto nulo.
 _Evitar_: servidor ecológico, alojamento verde, alojamento responsável
 
+**Soberania dos dados**:
+A exigência de um CTO de que os dados fiquem na União Europeia, com um fornecedor europeu, ou num serviço qualificado SecNumCloud quando o setor o exige. Vai além do sítio onde os dados ficam guardados.
+_Evitar_: dados na UE (só diz onde os dados ficam), cloud soberana (rótulo comercial dos fornecedores)
+
 ## Fases da página
 
 **Primeira validação**:
