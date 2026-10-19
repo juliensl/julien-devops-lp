@@ -225,7 +225,7 @@ export type Criterio = { id: string; nome: string; tipo: 'facto' | 'opiniao'; ex
 export const criterios: Criterio[] = [
 	{ id: 'k8s', nome: 'Kubernetes gerido', tipo: 'facto', explica: 'O fornecedor gere o cluster Kubernetes.' },
 	{ id: 'serverless', nome: 'Contentores com escala automática', tipo: 'facto', explica: 'Corre contentores sem gerir servidores e escala com a carga.' },
-	{ id: 'paas', nome: 'PaaS simples', tipo: 'facto', explica: 'Publica a aplicação a partir do código, sem montar infraestrutura.' },
+	{ id: 'paas', nome: 'PaaS', tipo: 'facto', explica: 'Publica a aplicação a partir do código, sem montar infraestrutura.' },
 	{ id: 'europa', nome: 'Sede na Europa', tipo: 'facto', explica: 'A empresa tem sede num país europeu.' },
 	{ id: 'secnum', nome: 'Oferta SecNumCloud', tipo: 'facto', explica: 'Tem pelo menos uma oferta qualificada pela ANSSI.' },
 	{ id: 'regioes', nome: 'Regiões na UE', tipo: 'facto', explica: 'Pelo menos duas regiões dentro da União Europeia; uma só conta como parcial.' },
@@ -233,12 +233,14 @@ export const criterios: Criterio[] = [
 		id: 'custos',
 		nome: 'Visibilidade e controlo dos custos',
 		tipo: 'opiniao',
-		explica: 'Ferramentas e modelo de preços que ajudam a ver e a controlar os custos de infraestrutura.',
+		explica:
+			'Ferramentas do fornecedor para ver os custos (painel, divisão por projeto e por etiqueta, previsão) e para os controlar (alertas, tetos, ações automáticas).',
 	},
 ];
 
 export type Cenario = { id: string; nome: string; descricao: string; pesos: Record<string, number> };
-// Pesos e limiares: proposta, a validar pelo Julien antes de o gráfico servir de comparação.
+// Pesos e limiares validados pelo Julien a 19/10/2026 («Que pesos e limiares usa o gráfico de
+// fornecedores cloud?», #46). Antes de publicar, quem ficar a menos de 0,05 de um limiar volta ao Julien.
 export const cenarios: Cenario[] = [
 	{
 		id: 'arranque',
@@ -249,13 +251,13 @@ export const cenarios: Cenario[] = [
 	{
 		id: 'crescimento',
 		nome: 'SaaS em crescimento',
-		descricao: 'De centenas para milhares de utilizadores, com uma equipa de 5 a 20 pessoas.',
+		descricao: 'O produto já tem clientes e a equipa está a crescer.',
 		pesos: { k8s: 2, serverless: 2, regioes: 1, custos: 1 },
 	},
 	{
-		id: 'dados-ue',
-		nome: 'Dados na UE',
-		descricao: 'Os dados têm de ficar na União Europeia, ou o setor é regulado.',
+		id: 'soberania',
+		nome: 'Soberania dos dados',
+		descricao: 'Os dados têm de ficar na UE, com um fornecedor europeu, ou o setor exige SecNumCloud.',
 		pesos: { regioes: 3, europa: 2, secnum: 2 },
 	},
 	{
@@ -275,9 +277,11 @@ export const cenarios: Cenario[] = [
 /** Valor de um fornecedor num critério: 1 sim, 0.5 em parte, 0 não, null desconhecido. */
 export type Celula = { v: 1 | 0.5 | 0 | null; estado: Estado; nota?: string };
 // Factos: pesquisa «Que factos distinguem os fornecedores cloud para cada tipo de empresa?» (#45),
-// consultada a 16/10/2026. «Visibilidade e controlo dos custos» é opinião, a validar pelo Julien.
+// consultada a 16/10/2026. «Visibilidade e controlo dos custos» é opinião do Julien (validada a 19/10/2026,
+// #46): «sim» se ver e controlar estão completos, «em parte» se falta parte de um dos lados. Factos da pesquisa
+// «Que ferramentas dão os fornecedores cloud para ver e controlar os custos?» (19/10/2026).
 const f = (v: Celula['v'], nota?: string): Celula => ({ v, estado: 'publicado', nota });
-const o = (v: Celula['v'], nota?: string): Celula => ({ v, estado: 'a-validar', nota });
+const o = (v: Celula['v'], nota?: string): Celula => ({ v, estado: 'validado', nota });
 export const matriz: Record<string, Record<string, Celula>> = {
 	aws: {
 		k8s: f(1, 'Amazon EKS'),
@@ -286,7 +290,7 @@ export const matriz: Record<string, Record<string, Celula>> = {
 		europa: f(0, 'Sede em Seattle, EUA; oferta European Sovereign Cloud na Alemanha'),
 		secnum: f(0, 'Não está no catálogo da ANSSI'),
 		regioes: f(1, '6 regiões na UE'),
-		custos: o(0.5, 'Factos relacionados: AWS Budgets com alertas e ações; saída paga depois de 100 GB/mês'),
+		custos: o(1, 'Cost Explorer por conta e etiqueta, com previsão; AWS Budgets com alertas e ações automáticas. Tráfego de saída pago depois de 100 GB/mês'),
 	},
 	gcp: {
 		k8s: f(1, 'Google Kubernetes Engine (GKE)'),
@@ -295,7 +299,7 @@ export const matriz: Record<string, Record<string, Celula>> = {
 		europa: f(0, 'Sede em Mountain View, EUA'),
 		secnum: f(0.5, 'Através da S3NS (Thales), qualificada desde 17/12/2025'),
 		regioes: f(1, '11 regiões na UE'),
-		custos: o(0.5, 'Factos relacionados: orçamentos com alertas e tetos que param alguns serviços; saída paga'),
+		custos: o(1, 'Billing Reports por projeto e etiqueta, com previsão; orçamentos com alertas e tetos que param alguns serviços. Tráfego de saída pago'),
 	},
 	infomaniak: {
 		k8s: f(1, 'Kubernetes Service'),
@@ -304,7 +308,7 @@ export const matriz: Record<string, Record<string, Celula>> = {
 		europa: f(1, 'Sede em Genebra, Suíça (fora da UE)'),
 		secnum: f(0, 'Não está no catálogo da ANSSI'),
 		regioes: f(0, '0 regiões na UE; 2 na Suíça'),
-		custos: o(1, 'Factos relacionados: quotas por projeto; tráfego de saída incluído; VPS a preço fixo'),
+		custos: o(0.5, 'Sem painel de custos documentado (só API) e sem alertas; quotas de recursos por projeto. Tráfego de saída incluído'),
 	},
 	azure: {
 		k8s: f(1, 'Azure Kubernetes Service (AKS)'),
@@ -313,7 +317,7 @@ export const matriz: Record<string, Record<string, Celula>> = {
 		europa: f(0, 'Sede em Redmond, EUA; parceiros Bleu (França) e Delos (Alemanha)'),
 		secnum: f(0, 'A Bleu está em qualificação; não qualificada'),
 		regioes: f(1, '13 regiões na UE (2 de acesso restrito)'),
-		custos: o(0.5, 'Factos relacionados: orçamentos só com alertas; saída paga depois de 100 GB/mês'),
+		custos: o(0.5, 'Cost Management por subscrição, recurso e etiqueta, com previsão; orçamentos só com alertas. Tráfego de saída pago depois de 100 GB/mês'),
 	},
 	ovh: {
 		k8s: f(1, 'Managed Kubernetes Service'),
@@ -322,7 +326,7 @@ export const matriz: Record<string, Record<string, Celula>> = {
 		europa: f(1, 'Sede em Roubaix, França'),
 		secnum: f(1, '3 ofertas IaaS qualificadas, incluindo a SNC Cloud Platform'),
 		regioes: f(1, '7 regiões na UE'),
-		custos: o(1, 'Factos relacionados: alerta de previsão de consumo; tráfego de saída incluído; VPS a preço fixo'),
+		custos: o(0.5, 'Consumo por projeto e por recurso, com previsão; etiquetas não encontradas; alerta sobre a previsão, sem limite. Tráfego de saída incluído'),
 	},
 	scaleway: {
 		k8s: f(1, 'Kubernetes Kapsule'),
@@ -331,7 +335,7 @@ export const matriz: Record<string, Record<string, Celula>> = {
 		europa: f(1, 'Sede em Paris, França'),
 		secnum: f(0, 'Em qualificação; não qualificada'),
 		regioes: f(1, '4 regiões na UE'),
-		custos: o(1, 'Factos relacionados: alertas de faturação; tráfego de saída incluído nas instâncias'),
+		custos: o(0.5, 'Cost Manager por projeto e produto; etiquetas e previsão não encontradas; os alertas só avisam. Tráfego de saída incluído nas instâncias'),
 	},
 };
 
@@ -393,5 +397,10 @@ export const fontesCloud: { n: string; titulo: string; url: string }[] = [
 		n: '2',
 		titulo: 'ANSSI, catálogo de serviços qualificados (SecNumCloud), atualizado a 16/10/2026',
 		url: 'https://messervices.cyber.gouv.fr/visas/catalogue-produits-services-profils-de-protection-sites-certifies-qualifies-agrees-anssi.pdf',
+	},
+	{
+		n: '3',
+		titulo: 'Pesquisa «Que ferramentas dão os fornecedores cloud para ver e controlar os custos?» (19/10/2026)',
+		url: 'https://github.com/juliensl/julien-devops-lp/blob/research/custos-fornecedores-cloud/docs/research/custos-fornecedores-cloud.md',
 	},
 ]

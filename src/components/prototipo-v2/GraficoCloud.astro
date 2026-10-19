@@ -1,8 +1,8 @@
 ---
 // PROTÓTIPO v2 · Gráfico interativo: que fornecedores cloud considerar em cada
 // cenário de empresa (6 fornecedores; sem a Clever Cloud nesta fase). Barras empilhadas por critério (o que pesa e porquê),
-// por ordem alfabética para não sugerir uma classificação. Factos da pesquisa #45;
-// pesos e critérios de opinião a validar pelo Julien.
+// por ordem alfabética para não sugerir uma classificação. Factos das pesquisas #45 e #46;
+// pesos, limiares e critério de opinião validados pelo Julien a 19/10/2026 (#46).
 import { fornecedores, criterios, cenarios, matriz, nomesEstado, fontesCloud, type P, type Celula } from './dados';
 
 interface Props {
@@ -102,7 +102,7 @@ const temDemo = Object.values(matriz).some((f) => Object.values(f).some((c) => c
 		<p class="gc-chave">
 			{temDemo && <><span class="selo demo">Demonstração</span> valor de exemplo ·</>}
 			<span class="selo publicado">Publicado</span> facto com fonte (passa o rato por cima para ver qual) ·
-			<span class="selo a-validar">A validar</span> opinião do Julien
+			<span class="selo validado">Validado pelo Julien</span> opinião do Julien
 		</p>
 		<ol class="gc-fontes">
 			{
@@ -115,9 +115,9 @@ const temDemo = Object.values(matriz).some((f) => Object.values(f).some((c) => c
 		</ol>
 	</details>
 	<p class="nota-proto">
-		Os factos vêm de fontes oficiais consultadas a 16/10/2026. Os pesos de cada cenário, os limiares («A considerar»,
-		«Possível», «Pouco indicado») e o critério «Visibilidade e controlo dos custos» são uma proposta: o gráfico só serve
-		de comparação depois de o Julien validar os valores.
+		Os factos vêm de fontes oficiais consultadas a 16/10/2026 e 19/10/2026. Os pesos de cada cenário, os limiares («A
+		considerar» a partir de 0,7, «Possível» a partir de 0,4) e o critério «Visibilidade e controlo dos custos» foram
+		validados pelo Julien a 19/10/2026. Antes de publicar, quem ficar a menos de 0,05 de um limiar volta ao Julien.
 	</p>
 	<script type="application/json" data-dados set:html={JSON.stringify(dados)} />
 </section>
@@ -131,7 +131,12 @@ const temDemo = Object.values(matriz).some((f) => Object.values(f).some((c) => c
 		matriz: Record<string, Record<string, Celula>>;
 	};
 	const cores = ['var(--s1)', 'var(--s2)', 'var(--s3)', 'var(--s4)'];
-	const nomeEstado: Record<string, string> = { demo: 'Demonstração', publicado: 'Publicado', 'a-validar': 'A validar' };
+	const nomeEstado: Record<string, string> = {
+		demo: 'Demonstração',
+		publicado: 'Publicado',
+		validado: 'Validado pelo Julien',
+		'a-validar': 'A validar',
+	};
 	const txt = (v: Celula['v']) => (v === 1 ? 'Sim' : v === 0.5 ? 'Em parte' : v === 0 ? 'Não' : 'Por confirmar');
 
 	for (const raiz of document.querySelectorAll<HTMLElement>('[data-grafico-cloud]')) {
@@ -184,11 +189,9 @@ const temDemo = Object.values(matriz).some((f) => Object.values(f).some((c) => c
 					`${f.nome}: ${rotulo(r.score)}. ` +
 					r.segs.map((s) => `${nomes[s.cid].nome}: ${txt(s.cel.v)}`).join('; ');
 			}
-			if (!escolhido) {
-				const melhor = resultados.reduce((a, b) => (b.r.score > a.r.score ? b : a));
-				escolhido = melhor.f.id;
-			}
-			mostra(escolhido, cen);
+			// Sem fornecedor escolhido à partida, para não sugerir uma classificação.
+			if (escolhido) mostra(escolhido, cen);
+			else detalhe.innerHTML = '<p class="dt-vazio">Clica numa barra para ver os factos.</p>';
 		}
 
 		function mostra(fid: string, cen?: Dados['cenarios'][number]) {
@@ -430,6 +433,10 @@ const temDemo = Object.values(matriz).some((f) => Object.values(f).some((c) => c
 		font-family: var(--serif);
 		font-weight: 400;
 		font-size: 1.2rem;
+	}
+	.gc-detalhe :global(.dt-vazio) {
+		margin: 0;
+		color: var(--muted);
 	}
 	.gc-detalhe :global(.dt-rot) {
 		color: var(--verde);
