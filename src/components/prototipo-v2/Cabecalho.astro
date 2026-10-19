@@ -1,10 +1,10 @@
 ---
-// PROTÓTIPO v2 · Cabeçalho fixo com as secções, as perguntas por público,
-// a ligação à página de ecologia (folha), a língua e o botão de marcação.
-// No telemóvel e no tablet, as ligações passam para um menu <details> (sem JS
-// para abrir; o JS só fecha ao clicar fora, com Escape ou depois de escolher).
+// PROTÓTIPO v2 · Cabeçalho fixo sem menu de âncoras (validado pelo Julien): só ligações
+// às páginas (perguntas por público e ecologia, com a folha), a língua e o botão.
+// No telemóvel, as perguntas e a língua passam para um menu <details> (sem JS para
+// abrir; o JS só fecha ao clicar fora, com Escape ou depois de escolher).
 import Folha from './Folha.astro';
-import { calendly, seccoes, publicos, type P, type Pagina, type Modo } from './dados';
+import { calendly, publicos, type P, type Pagina, type Modo } from './dados';
 import { ligacao } from './temas';
 
 interface Props {
@@ -39,17 +39,8 @@ const todas = ligacao(modo, p, 'perguntas');
 			}
 		</a>
 
-		<nav class="nav" aria-label="Secções">
+		<nav class="nav" aria-label="Páginas">
 			<ul>
-				{
-					seccoes.map((s) => (
-						<li>
-							<a href={ligacao(modo, p, 'inicio', s.id)} data-seccao={`p${p}-${s.id}`}>
-								{s.nome}
-							</a>
-						</li>
-					))
-				}
 				<li>
 					<details class="sub" data-fecha>
 						<summary aria-current={pagina === 'perguntas' ? 'page' : undefined}>
@@ -98,16 +89,6 @@ const todas = ligacao(modo, p, 'perguntas');
 			</summary>
 			<div class="menu-painel">
 				<nav aria-label="Menu">
-					<p class="grupo">Página principal</p>
-					<ul>
-						{
-							seccoes.map((s) => (
-								<li>
-									<a href={ligacao(modo, p, 'inicio', s.id)}>{s.nome}</a>
-								</li>
-							))
-						}
-					</ul>
 					<p class="grupo">Perguntas</p>
 					<ul>
 						{
@@ -144,23 +125,6 @@ const todas = ligacao(modo, p, 'perguntas');
 			d.querySelector('summary')?.focus();
 		}
 	});
-
-	// Marca na navegação a secção que está à vista.
-	const ligacoes = [...document.querySelectorAll<HTMLAnchorElement>('.cab a[data-seccao]')];
-	const observador = new IntersectionObserver(
-		(entradas) => {
-			for (const en of entradas) {
-				if (!en.isIntersecting) continue;
-				const id = en.target.id;
-				for (const a of ligacoes) a.classList.toggle('ativa', a.dataset.seccao === id);
-			}
-		},
-		{ rootMargin: '-40% 0px -55% 0px' },
-	);
-	for (const id of new Set(ligacoes.map((a) => a.dataset.seccao!))) {
-		const el = document.getElementById(id);
-		if (el) observador.observe(el);
-	}
 </script>
 
 <style>
@@ -440,7 +404,7 @@ const todas = ligacao(modo, p, 'perguntas');
 	.linguas-menu {
 		padding: 0.5rem 0.25rem 0;
 	}
-	@media (max-width: 1180px) {
+	@media (max-width: 760px) {
 		.nav,
 		.linguas {
 			display: none;

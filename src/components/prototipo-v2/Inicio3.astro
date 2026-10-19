@@ -1,12 +1,14 @@
 ---
 // PROTÓTIPO v2 · 3 «Estratos verdes». O verde é estrutural: fundos, superfícies,
 // gráficos e linhas de contorno. Os 4 blocos aparecem como camadas de uma
-// infraestrutura que se abrem uma de cada vez; o lilás fica como acento.
+// infraestrutura que se abrem uma de cada vez, com o mini-diagrama animado do bloco;
+// o lilás fica como acento.
 import { Image } from 'astro:assets';
 import foto from '../../../data/IMG_2030.png';
 import Folha from './Folha.astro';
 import GraficoCloud from './GraficoCloud.astro';
-import GarantiaAnual from './GarantiaAnual.astro';
+import Garantia from './Garantia.astro';
+import DiagramaBloco from './DiagramaBloco.astro';
 import FaqResumo from './FaqResumo.astro';
 import { calendly, textos, problemas, depois, paraQuem, blocos, notaBlocos, etapas, type Modo } from './dados';
 import { ligacao } from './temas';
@@ -72,12 +74,15 @@ const resumos = [
 							aria-labelledby={`p3-camada-btn-${b.n}`}
 							hidden={i !== 0}
 						>
-							<p>{b.texto}</p>
-							<p class="ferr">
-								{b.ferramentas.map((f) => (
-									<span>{f}</span>
-								))}
-							</p>
+							<DiagramaBloco n={b.n as 1 | 2 | 3 | 4} />
+							<div class="painel-texto">
+								<p>{b.texto}</p>
+								<p class="ferr">
+									{b.ferramentas.map((f) => (
+										<span>{f}</span>
+									))}
+								</p>
+							</div>
 						</div>
 					</div>
 				))
@@ -126,8 +131,8 @@ const resumos = [
 			<p class="etiqueta"><Folha tamanho={16} /> Ecologia</p>
 			<h2>A infraestrutura também tem pegada.</h2>
 			<p>
-				Onde a aplicação corre, quanto corre e com que eficiência mudam o impacto ambiental. A página de ecologia compara
-				o que cada fornecedor publica e deixa-te estimar uma carga, separando dados publicados, hipóteses e cálculos.
+				Onde a aplicação corre, quanto corre e com que eficiência mudam o impacto ambiental. A página de ecologia deixa-te
+				estimar uma carga conforme o país onde corre, separando dados publicados, hipóteses e cálculos.
 			</p>
 			<a class="botao" href={ligacao(modo, 3, 'ecologia')}><Folha tamanho={18} /> Abrir a página de ecologia</a>
 		</div>
@@ -135,12 +140,11 @@ const resumos = [
 			<li><span class="selo publicado">Publicado</span> valor de um relatório oficial, com ano e fonte</li>
 			<li><span class="selo hipotese">Hipótese</span> pressuposto escolhido, visível e editável</li>
 			<li><span class="selo calculado">Calculado</span> resultado das duas coisas acima</li>
-			<li><span class="selo demo">Demonstração</span> exemplo, enquanto falta a fonte</li>
 		</ul>
 	</section>
 
 	<section class="largura" id="p3-garantia">
-		<GarantiaAnual p={3} formato="trimestres" />
+		<Garantia formato="faixa" />
 	</section>
 
 	<section class="largura">
@@ -357,8 +361,14 @@ const resumos = [
 	.painel {
 		padding: 0 1.25rem 1.25rem calc(5.5rem + 2.25rem);
 		display: grid;
-		gap: 0.75rem;
+		grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
+		gap: 1.25rem;
+		align-items: center;
 		color: var(--muted);
+	}
+	.painel-texto {
+		display: grid;
+		gap: 0.75rem;
 	}
 	.ferr {
 		display: flex;
@@ -577,6 +587,7 @@ const resumos = [
 		}
 		.painel {
 			padding-left: 1.25rem;
+			grid-template-columns: 1fr;
 		}
 		.caminhos {
 			grid-template-columns: 1fr;

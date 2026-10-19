@@ -1,6 +1,6 @@
 ---
 // PROTÓTIPO v2 · Gráfico interativo: que fornecedores cloud considerar em cada
-// cenário de empresa. Barras empilhadas por critério (o que pesa e porquê),
+// cenário de empresa (6 fornecedores; sem a Clever Cloud nesta fase). Barras empilhadas por critério (o que pesa e porquê),
 // por ordem alfabética para não sugerir uma classificação. Factos da pesquisa #45;
 // pesos e critérios de opinião a validar pelo Julien.
 import { fornecedores, criterios, cenarios, matriz, nomesEstado, fontesCloud, type P, type Celula } from './dados';
@@ -116,8 +116,8 @@ const temDemo = Object.values(matriz).some((f) => Object.values(f).some((c) => c
 	</details>
 	<p class="nota-proto">
 		Os factos vêm de fontes oficiais consultadas a 16/10/2026. Os pesos de cada cenário, os limiares («A considerar»,
-		«Possível», «Pouco indicado») e os critérios «Catálogo» e «Fatura previsível» são uma proposta, a validar pelo
-		Julien.
+		«Possível», «Pouco indicado») e o critério «Visibilidade e controlo dos custos» são uma proposta: o gráfico só serve
+		de comparação depois de o Julien validar os valores.
 	</p>
 	<script type="application/json" data-dados set:html={JSON.stringify(dados)} />
 </section>
@@ -292,8 +292,6 @@ const temDemo = Object.values(matriz).some((f) => Object.values(f).some((c) => c
 		border-radius: var(--raio);
 		padding: clamp(1rem, 2.5vw, 1.75rem);
 		background-color: color-mix(in srgb, var(--bg) 60%, #000);
-		background-image: radial-gradient(circle, var(--ponto-a) 1px, transparent 1.5px);
-		background-size: 22px 22px;
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) minmax(0, 17rem);
 		grid-template-areas:
@@ -337,7 +335,7 @@ const temDemo = Object.values(matriz).some((f) => Object.values(f).some((c) => c
 	.gc-barras {
 		grid-area: barras;
 		display: grid;
-		grid-template-columns: repeat(7, minmax(0, 1fr));
+		grid-template-columns: repeat(6, minmax(0, 1fr));
 		gap: 0.75rem;
 		align-items: end;
 	}

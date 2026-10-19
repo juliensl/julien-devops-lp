@@ -15,7 +15,7 @@ export const temas: Tema[] = [
 	{
 		p: 1,
 		nome: 'Noite com pontos',
-		resumo: 'Evolução da A: ameixa e lilás, com o verde como segunda cor estrutural e pontos em movimento.',
+		resumo: 'Evolução da A: ameixa e lilás, com o verde como segunda cor estrutural e pontos em movimento no topo.',
 		fontes: [
 			{ nome: 'Bona Nova', uso: 'títulos', kb: 26.9 },
 			{ nome: 'Inter', uso: 'texto, dados e interface', kb: 48.3 },
@@ -31,9 +31,8 @@ export const temas: Tema[] = [
 		],
 		decisoes: [
 			'Grelha de 12 colunas: o Hero divide-se entre a Promessa e os 30 dias desenhados em pontos.',
-			'Serviços como uma pipeline horizontal: os 4 blocos ligados por uma linha de pontos em movimento.',
-			'Garantia num ano de 12 quadrados de 100 pontos (cada ponto é 1 % de um mês).',
-			'Sem animação de pull request: o movimento vem só dos pontos.',
+			'Serviços como uma pipeline horizontal: os 4 blocos, com os mini-diagramas animados, ligados por uma linha.',
+			'Garantia em 3 quadrados de 100 pontos, um por mês (cada ponto é 1 % do mês).',
 		],
 	},
 	{
@@ -54,10 +53,9 @@ export const temas: Tema[] = [
 			{ nome: 'Verde', hex: '#92d6ad' },
 		],
 		decisoes: [
-			'Hero em duas metades: a Promessa e o pull request do bloco 1, que corre uma vez e se pode repetir.',
-			'Serviços numa grelha de cartões de tamanhos diferentes, com os mini-diagramas melhorados (só animam quando estão à vista).',
-			'As 5 etapas numa linha horizontal de cartões.',
-			'Garantia com o ano numa linha de 12 meses.',
+			'Hero em duas metades: a Promessa e as 5 etapas da colaboração.',
+			'Serviços numa grelha de cartões de tamanhos diferentes, com os mini-diagramas animados (só animam quando estão à vista).',
+			'Garantia num cartão com os 3 meses à esquerda.',
 		],
 	},
 	{
@@ -79,8 +77,8 @@ export const temas: Tema[] = [
 		],
 		decisoes: [
 			'Título do Hero em toda a largura, sobre linhas de contorno.',
-			'Os 4 blocos como camadas empilhadas que se abrem (código, contentores, infraestrutura, observação).',
-			'Garantia por trimestres, com o período de 3 meses destacado.',
+			'Os 4 blocos como camadas empilhadas que se abrem, cada uma com o seu mini-diagrama animado.',
+			'Garantia com os 3 meses ao lado do texto.',
 			'O verde é estrutural (fundos, superfícies, gráficos) e o lilás fica como acento.',
 		],
 	},

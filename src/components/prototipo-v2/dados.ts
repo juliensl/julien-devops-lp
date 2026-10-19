@@ -7,11 +7,22 @@ export {
 	problemas,
 	depois,
 	paraQuem,
-	blocos,
 	notaBlocos,
 	rodape,
 	contraste,
 } from '../prototipo-direcao-visual/conteudo';
+import { blocos as blocosV1 } from '../prototipo-direcao-visual/conteudo';
+
+// Bloco 4: Grafana e Prometheus passam a ser nomeados (validado pelo Julien a 19/10/2026).
+export const blocos = blocosV1.map((b) =>
+	b.n === 4
+		? {
+				...b,
+				texto: 'Um painel de saúde em tempo real e um alerta imediato quando há um incidente, com ferramentas standard ou as da tua cloud.',
+				ferramentas: ['Grafana', 'Prometheus'],
+			}
+		: b,
+);
 
 export type P = 1 | 2 | 3;
 export type Pagina = 'inicio' | 'ecologia' | 'perguntas';
@@ -37,14 +48,6 @@ export const etapas = [
 ];
 
 export const factosHero = ['No máximo 30 dias', 'Diagnóstico gratuito', 'Preço fixo'];
-
-// ---------- Navegação ----------
-export const seccoes = [
-	{ id: 'servicos', nome: 'Serviços' },
-	{ id: 'garantia', nome: 'Garantia' },
-	{ id: 'cloud', nome: 'Cloud' },
-	{ id: 'quem', nome: 'Quem é o Julien' },
-];
 
 // ---------- Perguntas por público ----------
 export type Publico = 'gerais' | 'cto' | 'ceo' | 'equipa';
@@ -114,7 +117,6 @@ export const perguntas: Record<Publico, Pergunta[]> = {
 			p: 'Com que stack e clouds trabalhas?',
 			r: 'CI: GitHub Actions, GitLab CI, Azure DevOps e Google Cloud Build. Cloud: AWS, Google Cloud, Microsoft Azure, OVHcloud, Scaleway e Infomaniak. A escolha depende das necessidades e do orçamento, e pode incluir um alojamento com menor impacto ambiental.',
 			estado: 'validado',
-			nota: 'A Clever Cloud, que aparece no gráfico, não está nesta lista validada.',
 		},
 		{
 			p: 'De que acessos precisas?',
@@ -129,9 +131,8 @@ export const perguntas: Record<Publico, Pergunta[]> = {
 		},
 		{
 			p: 'Que ferramentas usas na observabilidade?',
-			r: 'Ferramentas standard ou as da tua cloud.',
-			estado: 'a-validar',
-			nota: 'Falta saber se se nomeiam Grafana e Prometheus.',
+			r: 'Ferramentas standard, como Grafana e Prometheus, ou as da tua cloud.',
+			estado: 'validado',
 		},
 		{
 			p: 'Como trabalhamos juntos?',
@@ -164,9 +165,9 @@ export const perguntas: Record<Publico, Pergunta[]> = {
 		},
 		{
 			p: 'Que retorno posso esperar?',
-			r: 'Resposta a definir com o Julien.',
-			estado: 'a-validar',
-			nota: 'Os números do pitch (custos de suporte, testes manuais) não foram validados para publicação. Não inventar valores.',
+			r: 'Menos tempo a corrigir problemas. Mais tempo a desenvolver o produto. Ajudamos equipas SaaS a automatizar testes e entregas, detetar regressões mais cedo e melhorar a fiabilidade da infraestrutura, para que possam crescer com mais confiança.',
+			estado: 'validado',
+			nota: 'Texto do Julien. Falta confirmar «Ajudamos»: o resto da página fala na primeira pessoa do singular.',
 		},
 		{
 			p: 'Em que línguas e países trabalhas?',
@@ -176,10 +177,9 @@ export const perguntas: Record<Publico, Pergunta[]> = {
 	],
 	equipa: [
 		{
-			p: 'Vamos ter de mudar a forma como trabalhamos?',
-			r: 'A pipeline bloqueia o que está a vermelho, e ninguém passa à frente de um teste a falhar. Com a Garantia, cada bug corrigido leva um teste.',
-			estado: 'a-validar',
-			nota: 'As regras vêm das condições da Garantia; falta o Julien dizer o que muda no dia a dia sem ela.',
+			p: 'O que muda no dia a dia da equipa?',
+			r: 'O objetivo é reduzir o tempo perdido em tarefas manuais e problemas recorrentes, facilitar a deteção de regressões e tornar as entregas mais fiáveis. A equipa ganha processos mais claros, maior visibilidade sobre a infraestrutura e mais tempo para se concentrar no desenvolvimento do produto. Os resultados dependem do contexto e do estado inicial de cada projeto.',
+			estado: 'validado',
 		},
 		{
 			p: 'Quem mantém a pipeline depois?',
@@ -198,29 +198,22 @@ export const perguntas: Record<Publico, Pergunta[]> = {
 		},
 		{
 			p: 'Que ferramentas vamos usar?',
-			r: 'Bloco 1: SonarQube e Trivy. Bloco 2: Docker. Bloco 3: Kubernetes e Terraform. Bloco 4: ferramentas standard ou as da vossa cloud.',
+			r: 'Bloco 1: SonarQube e Trivy. Bloco 2: Docker. Bloco 3: Kubernetes e Terraform. Bloco 4: Grafana e Prometheus, ou as ferramentas da vossa cloud.',
 			estado: 'validado',
 		},
 	],
 };
 
 // ---------- Garantia ----------
-export const garantia = {
-	pct: 99,
-	mesesGarantia: 3,
-	// 1 % de um mês médio (30,4375 dias) ≈ 7 h 18 min; 12 × isso ≈ 3 dias e 15 h.
-	porMes: '7 h 18 min',
-	porAno: '3 dias e 15 h',
-	questao:
-		'A Garantia validada é mensal e dura 3 meses. O valor anual é só uma equivalência (12 × o máximo de cada mês). Para o publicar como referência, o Julien tem de dizer se a Garantia passa a 12 meses ou se o ano aparece só como leitura.',
-};
+// Pelo menos 99 % em cada mês, nos 3 meses seguintes à entrega. Sem equivalência anual
+// (validado pelo Julien a 19/10/2026).
+export const garantia = { pct: 99, meses: 3 };
 
 // ---------- Fornecedores cloud ----------
 export type Fornecedor = { id: string; nome: string; curto: string };
 // Ordem alfabética, para não sugerir uma classificação.
 export const fornecedores: Fornecedor[] = [
 	{ id: 'aws', nome: 'AWS', curto: 'AWS' },
-	{ id: 'clever', nome: 'Clever Cloud', curto: 'Clever Cloud' },
 	{ id: 'gcp', nome: 'Google Cloud', curto: 'Google Cloud' },
 	{ id: 'infomaniak', nome: 'Infomaniak', curto: 'Infomaniak' },
 	{ id: 'azure', nome: 'Microsoft Azure', curto: 'Azure' },
@@ -236,24 +229,28 @@ export const criterios: Criterio[] = [
 	{ id: 'europa', nome: 'Sede na Europa', tipo: 'facto', explica: 'A empresa tem sede num país europeu.' },
 	{ id: 'secnum', nome: 'Oferta SecNumCloud', tipo: 'facto', explica: 'Tem pelo menos uma oferta qualificada pela ANSSI.' },
 	{ id: 'regioes', nome: 'Regiões na UE', tipo: 'facto', explica: 'Pelo menos duas regiões dentro da União Europeia; uma só conta como parcial.' },
-	{ id: 'catalogo', nome: 'Catálogo de serviços geridos', tipo: 'opiniao', explica: 'Amplitude dos serviços geridos (bases de dados, filas, IA…).' },
-	{ id: 'fatura', nome: 'Fatura previsível', tipo: 'opiniao', explica: 'Facilidade em prever a fatura mensal.' },
+	{
+		id: 'custos',
+		nome: 'Visibilidade e controlo dos custos',
+		tipo: 'opiniao',
+		explica: 'Ferramentas e modelo de preços que ajudam a ver e a controlar os custos de infraestrutura.',
+	},
 ];
 
 export type Cenario = { id: string; nome: string; descricao: string; pesos: Record<string, number> };
-// Pesos: opinião a validar pelo Julien.
+// Pesos e limiares: proposta, a validar pelo Julien antes de o gráfico servir de comparação.
 export const cenarios: Cenario[] = [
 	{
 		id: 'arranque',
 		nome: 'Antes do lançamento',
 		descricao: 'Equipa pequena, sem tempo para operar servidores.',
-		pesos: { paas: 3, serverless: 2, fatura: 2, catalogo: 1 },
+		pesos: { paas: 3, serverless: 2, custos: 2 },
 	},
 	{
 		id: 'crescimento',
 		nome: 'SaaS em crescimento',
 		descricao: 'De centenas para milhares de utilizadores, com uma equipa de 5 a 20 pessoas.',
-		pesos: { k8s: 2, serverless: 2, catalogo: 2, regioes: 1, fatura: 1 },
+		pesos: { k8s: 2, serverless: 2, regioes: 1, custos: 1 },
 	},
 	{
 		id: 'dados-ue',
@@ -265,26 +262,20 @@ export const cenarios: Cenario[] = [
 		id: 'picos',
 		nome: 'Carga muito variável',
 		descricao: 'Picos fortes e períodos calmos.',
-		pesos: { serverless: 3, k8s: 2, catalogo: 1 },
+		pesos: { serverless: 3, k8s: 2 },
 	},
 	{
-		id: 'complexa',
-		nome: 'Muitos serviços geridos',
-		descricao: 'Arquitetura com bases de dados, filas, pesquisa e IA geridas.',
-		pesos: { catalogo: 3, k8s: 2, regioes: 1 },
-	},
-	{
-		id: 'orcamento',
-		nome: 'Orçamento previsível',
-		descricao: 'A fatura mensal tem de ser fácil de prever.',
-		pesos: { fatura: 3, paas: 1, serverless: 1 },
+		id: 'custos',
+		nome: 'Custos sob controlo',
+		descricao: 'Ver e controlar os custos de infraestrutura à medida que o SaaS cresce.',
+		pesos: { custos: 3, paas: 1, serverless: 1 },
 	},
 ];
 
 /** Valor de um fornecedor num critério: 1 sim, 0.5 em parte, 0 não, null desconhecido. */
 export type Celula = { v: 1 | 0.5 | 0 | null; estado: Estado; nota?: string };
 // Factos: pesquisa «Que factos distinguem os fornecedores cloud para cada tipo de empresa?» (#45),
-// consultada a 16/10/2026. Catálogo e fatura são opinião, a validar pelo Julien.
+// consultada a 16/10/2026. «Visibilidade e controlo dos custos» é opinião, a validar pelo Julien.
 const f = (v: Celula['v'], nota?: string): Celula => ({ v, estado: 'publicado', nota });
 const o = (v: Celula['v'], nota?: string): Celula => ({ v, estado: 'a-validar', nota });
 export const matriz: Record<string, Record<string, Celula>> = {
@@ -295,18 +286,7 @@ export const matriz: Record<string, Record<string, Celula>> = {
 		europa: f(0, 'Sede em Seattle, EUA; oferta European Sovereign Cloud na Alemanha'),
 		secnum: f(0, 'Não está no catálogo da ANSSI'),
 		regioes: f(1, '6 regiões na UE'),
-		catalogo: o(1),
-		fatura: o(0, 'Facto relacionado: 100 GB/mês de saída grátis, depois 0,09 USD/GB'),
-	},
-	clever: {
-		k8s: f(0.5, 'Clever Kubernetes Engine, em beta pública'),
-		serverless: f(1, 'Aplicações Docker com escala automática'),
-		paas: f(1, 'Deploy por git push (produto principal)'),
-		europa: f(1, 'Sede em Nantes, França'),
-		secnum: f(0.5, 'Própria em curso; zona na Cloud Temple (qualificada) a pedido'),
-		regioes: f(1, '8 zonas na UE (7 em França e Varsóvia), várias em datacenters de outros fornecedores'),
-		catalogo: o(0.5),
-		fatura: o(0.5, 'Facto relacionado: sem taxa de saída nas aplicações; sem preço fixo mensal'),
+		custos: o(0.5, 'Factos relacionados: AWS Budgets com alertas e ações; saída paga depois de 100 GB/mês'),
 	},
 	gcp: {
 		k8s: f(1, 'Google Kubernetes Engine (GKE)'),
@@ -315,8 +295,7 @@ export const matriz: Record<string, Record<string, Celula>> = {
 		europa: f(0, 'Sede em Mountain View, EUA'),
 		secnum: f(0.5, 'Através da S3NS (Thales), qualificada desde 17/12/2025'),
 		regioes: f(1, '11 regiões na UE'),
-		catalogo: o(1),
-		fatura: o(0, 'Facto relacionado: sem saída grátis a partir da Europa no escalão predefinido'),
+		custos: o(0.5, 'Factos relacionados: orçamentos com alertas e tetos que param alguns serviços; saída paga'),
 	},
 	infomaniak: {
 		k8s: f(1, 'Kubernetes Service'),
@@ -325,8 +304,7 @@ export const matriz: Record<string, Record<string, Celula>> = {
 		europa: f(1, 'Sede em Genebra, Suíça (fora da UE)'),
 		secnum: f(0, 'Não está no catálogo da ANSSI'),
 		regioes: f(0, '0 regiões na UE; 2 na Suíça'),
-		catalogo: o(0, 'Facto relacionado: PostgreSQL gerido ainda «available soon»'),
-		fatura: o(1, 'Facto relacionado: tráfego de saída incluído; VPS a preço fixo'),
+		custos: o(1, 'Factos relacionados: quotas por projeto; tráfego de saída incluído; VPS a preço fixo'),
 	},
 	azure: {
 		k8s: f(1, 'Azure Kubernetes Service (AKS)'),
@@ -335,8 +313,7 @@ export const matriz: Record<string, Record<string, Celula>> = {
 		europa: f(0, 'Sede em Redmond, EUA; parceiros Bleu (França) e Delos (Alemanha)'),
 		secnum: f(0, 'A Bleu está em qualificação; não qualificada'),
 		regioes: f(1, '13 regiões na UE (2 de acesso restrito)'),
-		catalogo: o(1),
-		fatura: o(0, 'Facto relacionado: 100 GB/mês de saída grátis, depois 0,087 USD/GB'),
+		custos: o(0.5, 'Factos relacionados: orçamentos só com alertas; saída paga depois de 100 GB/mês'),
 	},
 	ovh: {
 		k8s: f(1, 'Managed Kubernetes Service'),
@@ -345,8 +322,7 @@ export const matriz: Record<string, Record<string, Celula>> = {
 		europa: f(1, 'Sede em Roubaix, França'),
 		secnum: f(1, '3 ofertas IaaS qualificadas, incluindo a SNC Cloud Platform'),
 		regioes: f(1, '7 regiões na UE'),
-		catalogo: o(0.5),
-		fatura: o(1, 'Facto relacionado: tráfego de saída incluído; VPS a preço fixo'),
+		custos: o(1, 'Factos relacionados: alerta de previsão de consumo; tráfego de saída incluído; VPS a preço fixo'),
 	},
 	scaleway: {
 		k8s: f(1, 'Kubernetes Kapsule'),
@@ -355,163 +331,16 @@ export const matriz: Record<string, Record<string, Celula>> = {
 		europa: f(1, 'Sede em Paris, França'),
 		secnum: f(0, 'Em qualificação; não qualificada'),
 		regioes: f(1, '4 regiões na UE'),
-		catalogo: o(0.5),
-		fatura: o(1, 'Facto relacionado: tráfego de saída incluído nas instâncias'),
+		custos: o(1, 'Factos relacionados: alertas de faturação; tráfego de saída incluído nas instâncias'),
 	},
 };
 
 // ---------- Ecologia ----------
-// Valores publicados: pesquisa «Que dados ambientais publicam os fornecedores cloud?» (#44),
-// consultada a 16/10/2026. Nenhum valor é uma classificação.
-export type ValorEco = { valor: number | null; texto?: string; ano?: string; ambito?: string; fonte?: string; estado: Estado; nota?: string };
-export type MetricaEco = {
-	id: string;
-	nome: string;
-	unidade: string;
-	tipo: 'numero' | 'texto';
-	min?: number;
-	max?: number;
-	marcas?: number[];
-	explica: string;
-	aviso: string;
-};
-export const metricasEco: MetricaEco[] = [
-	{
-		id: 'pue',
-		nome: 'PUE',
-		unidade: '',
-		tipo: 'numero',
-		min: 1,
-		max: 1.5,
-		marcas: [1, 1.1, 1.2, 1.3, 1.4, 1.5],
-		explica: 'Energia total do centro de dados a dividir pela energia dos servidores. 1,0 seria o ideal.',
-		aviso: 'Cada fornecedor conta centros diferentes (só os próprios, os geridos ou todos os usados) e o ano não é o mesmo.',
-	},
-	{
-		id: 'renovavel',
-		nome: 'Eletricidade renovável',
-		unidade: '%',
-		tipo: 'numero',
-		min: 0,
-		max: 100,
-		marcas: [0, 25, 50, 75, 100],
-		explica: 'Parte da eletricidade coberta por fontes renováveis, segundo o método de cada fornecedor.',
-		aviso: 'Quase todos dizem 100 %, com métodos diferentes. A correspondência anual não garante renovável a cada hora: medida hora a hora, a Google fica nos 65 %.',
-	},
-	{
-		id: 'agua',
-		nome: 'Água (WUE)',
-		unidade: 'L/kWh',
-		tipo: 'numero',
-		min: 0,
-		max: 0.4,
-		marcas: [0, 0.1, 0.2, 0.3, 0.4],
-		explica: 'Litros de água por kWh consumido pelos servidores.',
-		aviso: 'Uns contam a água retirada, outros só a de arrefecimento; os anos também mudam.',
-	},
-	{
-		id: 'emissoes',
-		nome: 'Emissões publicadas',
-		unidade: '',
-		tipo: 'texto',
-		explica: 'O que cada fornecedor publica sobre as suas emissões de gases com efeito de estufa.',
-		aviso: 'A AWS, a Google e a Microsoft só publicam o total da empresa inteira. Um total maior não diz nada sobre a pegada de cada cliente.',
-	},
-	{
-		id: 'ferramenta',
-		nome: 'Ferramenta para clientes',
-		unidade: '',
-		tipo: 'texto',
-		explica: 'Ferramenta onde o cliente vê a pegada da sua própria infraestrutura.',
-		aviso: 'Os métodos e os âmbitos das ferramentas são diferentes entre si.',
-	},
-];
-
-const F = {
-	aws: 'https://sustainability.aboutamazon.com/2025-aws-summary.pdf',
-	awsRen: 'https://sustainability.aboutamazon.com/2025-renewable-energy-assurance.pdf',
-	awsRel: 'https://sustainability.aboutamazon.com/2025-amazon-sustainability-report.pdf',
-	awsFer: 'https://docs.aws.amazon.com/sustainability/latest/userguide/',
-	gcp: 'https://sustainability.google/files/1699a2e19277e478b38a659f00cb38398a836e8c/download-1699a2e1.pdf',
-	gcpFer: 'https://cloud.google.com/carbon-footprint/docs/methodology',
-	azure: 'https://aka.ms/SustainabilityReport2026',
-	azureFicha: 'https://aka.ms/SustainabilityFactsheet2026',
-	azureFer: 'https://learn.microsoft.com/en-us/azure/carbon-optimization/view-emissions',
-	ovh: 'https://corporate.ovhcloud.com/sites/default/files/2025-11/ovh_urd_2025_en_mel_25_11_14.pdf',
-	ovhFer: 'https://corporate.ovhcloud.com/sites/default/files/2025-10/methodology_-_environmental_impact_tracker.pdf',
-	scw: 'https://www-uploads.scaleway.com/Impact_Report2025_22ee3a8232.pdf',
-	scwRen: 'https://www.scaleway.com/en/environmental-leadership/',
-	scwFer: 'https://www.scaleway.com/en/docs/environmental-footprint/additional-content/environmental-footprint-calculator/',
-	ik: 'https://www.infomaniak.com/en/impact-report',
-	ikRel: 'https://www.infomaniak.com/documents/impact-report/impact_report_2024_en.pdf',
-	ikGee: 'https://news.infomaniak.com/wp-content/uploads/2026/10/Bilan_gaz_a_effet_de_serre_2024.pdf',
-	ikFer: 'https://www.infomaniak.com/en/support/faq/1160/discover-eco-design-to-reduce-your-carbon-footprint',
-	clever: 'https://www.clever.cloud/cloud-and-green-it/',
-};
-const pb = (valor: number | null, ano: string, ambito: string, fonte: string, nota?: string): ValorEco => ({
-	valor,
-	ano,
-	ambito,
-	fonte,
-	nota,
-	estado: 'publicado',
-});
-const tx = (texto: string, fonte?: string, ano?: string): ValorEco => ({ valor: null, texto, fonte, ano, estado: 'publicado' });
-
-export const dadosEco: Record<string, Record<string, ValorEco>> = {
-	aws: {
-		pue: pb(1.14, '2025', 'Centros da AWS, global', F.aws, 'Na Europa: 1,11'),
-		renovavel: pb(100, '2025', 'Toda a Amazon, não só a AWS', F.awsRen, 'Correspondência anual em volume'),
-		agua: pb(0.12, '2025', 'Centros da AWS, global; água retirada', F.aws, 'Na Europa: 0,05'),
-		emissoes: tx('Só o total da Amazon: 80,85 Mt CO2e (market-based). Scope 2: 21,82 Mt location-based contra 3,74 Mt market-based.', F.awsRel, '2025'),
-		ferramenta: tx('AWS Sustainability console: por região, serviço e conta.', F.awsFer, '2026'),
-	},
-	clever: {
-		pue: { valor: null, texto: '«<1,2» em alguns centros, sem dizer quais', fonte: F.clever, estado: 'publicado', nota: 'Sem ano nem método: não comparável' },
-		renovavel: { valor: null, estado: 'publicado', texto: 'Sem percentagem publicada', fonte: F.clever },
-		agua: { valor: null, estado: 'publicado', texto: 'Não encontrado' },
-		emissoes: tx('Não publicado.'),
-		ferramenta: tx('Nenhuma encontrada.'),
-	},
-	gcp: {
-		pue: pb(1.09, '2025', 'Campus geridos pela Google, global', F.gcp),
-		renovavel: pb(100, '2025', 'Toda a Google', F.gcp, 'Correspondência anual; hora a hora (CFE): 65 %'),
-		agua: { valor: null, estado: 'publicado', texto: 'WUE de 2025 não publicado (só o consumo total)', fonte: F.gcp },
-		emissoes: tx('Só o total da Alphabet: 18,85 Mt CO2e (scope 2 market-based). Scope 2: 15,15 Mt location-based contra 2,82 Mt market-based.', F.gcp, '2025'),
-		ferramenta: tx('Google Cloud Carbon Footprint: por projeto, serviço e região.', F.gcpFer, '2026'),
-	},
-	infomaniak: {
-		pue: pb(1.085, '2024', 'Centros próprios em Genebra', F.ik),
-		renovavel: pb(100, '2024', 'Infomaniak', F.ikRel, 'Produtos certificados do distribuidor (SIG) e solar própria'),
-		agua: pb(0.0145, '2023', 'Infomaniak', F.ikRel),
-		emissoes: tx('Total: 2 124,8 t CO2e (myclimate, ISO 14069).', F.ikGee, '2024'),
-		ferramenta: tx('CO2 anual na fatura, só para alojamento web e email.', F.ikFer, '2024'),
-	},
-	azure: {
-		pue: pb(1.17, 'FY2025 (jul. 2024 a jun. 2025)', 'Centros próprios da Microsoft, global', F.azure, 'Na EMEA: 1,16'),
-		renovavel: pb(100, 'FY2025', 'Toda a Microsoft', F.azureFicha, 'Renovável «direta» anual, sem certificados avulsos; 78 % em FY2024'),
-		agua: pb(0.27, 'FY2025', 'Centros próprios, global; água de arrefecimento e humidificação', F.azure, 'Na EMEA: 0,03'),
-		emissoes: tx('Só o total da Microsoft: 21,12 Mt CO2e (scope 2 market-based).', F.azureFicha, 'FY2025'),
-		ferramenta: tx('Azure carbon optimization: por subscrição, recurso e região.', F.azureFer, '2026'),
-	},
-	ovh: {
-		pue: pb(1.24, 'FY2025 (set. 2024 a ago. 2025)', '9 centros geridos pela OVHcloud', F.ovh),
-		renovavel: pb(100, 'FY2025', 'Centros geridos pela OVHcloud', F.ovh, 'ISO/IEC 30134-3: PPA e certificados; 92 % em FY2024'),
-		agua: pb(0.34, 'FY2025', 'Centros geridos; toda a água retirada conta como consumida', F.ovh),
-		emissoes: tx('Total do grupo: 112 863 t CO2e market-based ou 158 748 t location-based.', F.ovh, 'FY2025'),
-		ferramenta: tx('Environmental Impact Tracker: mensal, por servidor.', F.ovhFer, '2026'),
-	},
-	scaleway: {
-		pue: pb(1.375, '2024', 'Todos os centros usados, incluindo os de terceiros', F.scw),
-		renovavel: pb(100, '2024', 'Energia dos centros de dados', F.scwRen, 'Garantias de origem; PPA não contados'),
-		agua: pb(0.222, '2024', 'Média de 4 centros franceses e AMS1', F.scw),
-		emissoes: tx('Total: 18 284 t CO2e, só location-based.', F.scw, '2024'),
-		ferramenta: tx('Environmental Footprint Calculator: diário, por projeto e zona.', F.scwFer, '2026'),
-	},
-};
-
+// A página não mostra dados ambientais dos fornecedores (validado pelo Julien a 19/10/2026,
+// mantém a linha 20 de «Que informações do Julien entram nas secções?»). O estimador usa só
+// dados por país e hipóteses visíveis. Método: emissões da eletricidade, location-based,
+// com a intensidade de ciclo de vida da Ember (2025); sem market-based (não há dados contratuais).
 export type Regiao = { id: string; nome: string; g: number; estado: Estado; ano?: string; fonte?: string };
-// Intensidade carbónica média da produção de eletricidade (gCO2e/kWh, ciclo de vida), Ember, 2025.
 const EMBER = 'https://files.ember-energy.org/public-downloads/generation/outputs/release_generation_yearly_global.csv';
 const r = (id: string, nome: string, g: number): Regiao => ({ id, nome, g, estado: 'publicado', ano: '2025', fonte: EMBER });
 export const regioes: Regiao[] = [
@@ -522,6 +351,7 @@ export const regioes: Regiao[] = [
 	r('fi', 'Finlândia', 57.2),
 	r('dk', 'Dinamarca', 99.9),
 	r('at', 'Áustria', 116.6),
+	r('pt', 'Portugal', 127.8),
 	r('be', 'Bélgica', 151.3),
 	r('es', 'Espanha', 153.5),
 	r('uk', 'Reino Unido', 218.2),
@@ -532,42 +362,25 @@ export const regioes: Regiao[] = [
 	r('pl', 'Polónia', 590.8),
 ];
 
-// Países onde cada fornecedor tem regiões (pesquisa #45).
-export const paisesFornecedor: Record<string, string[]> = {
-	aws: ['de', 'ie', 'it', 'fr', 'es', 'se', 'uk', 'ch'],
-	clever: ['fr', 'pl', 'uk'],
-	gcp: ['fi', 'se', 'pl', 'es', 'be', 'de', 'nl', 'it', 'fr', 'uk', 'ch'],
-	infomaniak: ['ch'],
-	azure: ['at', 'be', 'dk', 'fr', 'de', 'it', 'ie', 'pl', 'es', 'se', 'nl', 'no', 'ch', 'uk'],
-	ovh: ['fr', 'de', 'it', 'pl', 'uk'],
-	scaleway: ['fr', 'nl', 'pl', 'it'],
-};
-
-// Watts por vCPU com 0 % e 100 % de utilização: código do Cloud Carbon Footprint (commit f584c549ee).
-// O CCF só tem valores para a AWS, a Google Cloud e o Azure; os outros usam os da AWS, como hipótese.
-const CCF = 'https://github.com/cloud-carbon-footprint/cloud-carbon-footprint/tree/f584c549ee/packages';
-export type Coef = { wMin: number; wMax: number; estado: Estado; nota: string; fonte?: string };
-export const coeficientesCcf: Record<string, Coef> = {
-	aws: { wMin: 0.74, wMax: 3.5, estado: 'publicado', nota: 'CCF, AWS, processador desconhecido', fonte: `${CCF}/aws` },
-	gcp: { wMin: 0.68, wMax: 4.11, estado: 'publicado', nota: 'CCF, Google Cloud, processador desconhecido', fonte: `${CCF}/gcp` },
-	azure: { wMin: 0.74, wMax: 3.54, estado: 'publicado', nota: 'CCF, Azure, processador desconhecido', fonte: `${CCF}/azure` },
-};
-export const coeficientePadrao: Coef = {
+// Watts por vCPU com 0 % e 100 % de utilização: valores do Cloud Carbon Footprint para um
+// processador desconhecido (commit f584c549ee). Usá-los para qualquer servidor é uma hipótese.
+export const coeficientes = {
 	wMin: 0.74,
 	wMax: 3.5,
-	estado: 'hipotese',
-	nota: 'O CCF não tem valores para este fornecedor: usa os da AWS',
+	nota: 'Cloud Carbon Footprint, processador desconhecido',
+	fonte: 'https://www.cloudcarbonfootprint.org/docs/methodology/',
 };
 export const utilizacaoCcf = 50;
+export const pueExemplo = 1.4;
 
 export const fontesEco: { n: string; titulo: string; url: string }[] = [
+	{ n: '1', titulo: 'Ember, produção de eletricidade anual por país (intensidade carbónica, 2025)', url: EMBER },
+	{ n: '2', titulo: 'Cloud Carbon Footprint, metodologia', url: 'https://www.cloudcarbonfootprint.org/docs/methodology/' },
 	{
-		n: '1',
-		titulo: 'Pesquisa «Que dados ambientais publicam os fornecedores cloud?» (16/10/2026), com todas as fontes',
+		n: '3',
+		titulo: 'Pesquisa «Que dados ambientais publicam os fornecedores cloud?» (16/10/2026)',
 		url: 'https://github.com/juliensl/julien-devops-lp/blob/research/dados-ambientais-cloud/docs/research/dados-ambientais-cloud.md',
 	},
-	{ n: '2', titulo: 'Ember, produção de eletricidade anual por país (intensidade carbónica, 2025)', url: EMBER },
-	{ n: '3', titulo: 'Cloud Carbon Footprint, metodologia', url: 'https://www.cloudcarbonfootprint.org/docs/methodology/' },
 ];
 
 export const fontesCloud: { n: string; titulo: string; url: string }[] = [

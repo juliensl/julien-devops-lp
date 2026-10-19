@@ -1,13 +1,13 @@
 ---
 // PROTÓTIPO v2 · 2 «Painel aberto» (evolução da B). Cartões numa grelha de
-// tamanhos variados que ocupa a largura toda; Hero em duas metades com o pull
-// request do bloco 1, que corre uma vez e se pode repetir; mini-diagramas melhorados.
+// tamanhos variados que ocupa a largura toda; Hero em duas metades com as 5 etapas
+// (o pull request saiu, a pedido do Julien); mini-diagramas animados nos blocos.
 import { Image } from 'astro:assets';
 import foto from '../../../data/IMG_2030.png';
 import Folha from './Folha.astro';
 import DiagramaBloco from './DiagramaBloco.astro';
 import GraficoCloud from './GraficoCloud.astro';
-import GarantiaAnual from './GarantiaAnual.astro';
+import Garantia from './Garantia.astro';
 import FaqResumo from './FaqResumo.astro';
 import { calendly, textos, problemas, paraQuem, blocos, notaBlocos, etapas, type Modo } from './dados';
 import { ligacao } from './temas';
@@ -17,12 +17,6 @@ interface Props {
 }
 const { modo } = Astro.props;
 const promessaH1 = textos.promessa.replace('entrego-te', '<span style="white-space:nowrap">entrego-te</span>');
-const passos = [
-	{ nome: 'Testes unitários', estado: 'ok' },
-	{ nome: 'Testes de integração', estado: 'ok' },
-	{ nome: 'Lint', estado: 'ok' },
-	{ nome: 'Análise de segurança', estado: 'ko' },
-];
 ---
 
 <div class="i2">
@@ -37,28 +31,19 @@ const passos = [
 			</div>
 		</div>
 		<div class="hero-lado">
-			<div class="pr" data-pr>
-				<div class="pr-topo">
-					<span class="pr-num">Pull request #128 · exemplo</span>
-					<span class="pr-titulo">Nova página de faturação</span>
-				</div>
-				<ol>
-					{
-						passos.map((s, i) => (
-							<li class={s.estado} style={`--d:${i}`}>
-								<span class="ic" aria-hidden="true" />
-								<span>{s.nome}</span>
-								<span class="res">{s.estado === 'ok' ? 'passou' : '1 dependência com falha conhecida'}</span>
-							</li>
-						))
-					}
-				</ol>
-				<div class="pr-fim">
-					<p>Merge bloqueado até corrigir</p>
-					<button type="button" class="repetir" data-repetir>Repetir</button>
-				</div>
-			</div>
-			<p class="legenda-pr">O bloco 1 em ação: a falha é apanhada no pull request, não pelo cliente.</p>
+			<ol class="cartao etapas-hero" aria-label="Como corre uma colaboração">
+				{
+					etapas.map((e, i) => (
+						<li>
+							<span class="n-etapa">{i + 1}</span>
+							<span class="et-texto">
+								<strong>{e.nome}</strong>
+								<span>{e.texto}</span>
+							</span>
+						</li>
+					))
+				}
+			</ol>
 		</div>
 	</section>
 
@@ -113,24 +98,10 @@ const passos = [
 		</div>
 	</section>
 
-	<section class="largura etapas" id="p2-etapas">
-		<h2 class="h-pequeno">Do primeiro contacto à entrega</h2>
-		<ol>
-			{
-				etapas.map((e, i) => (
-					<li class="cartao">
-						<span class="num">Etapa {i + 1}</span>
-						<strong>{e.nome}</strong>
-						<span>{e.texto}</span>
-					</li>
-				))
-			}
-		</ol>
-	</section>
 
 	<section class="largura" id="p2-garantia">
 		<div class="cartao garantia">
-			<GarantiaAnual p={2} formato="linha" />
+			<Garantia formato="cartao" />
 		</div>
 	</section>
 
@@ -154,7 +125,7 @@ const passos = [
 		<a class="cartao eco" href={ligacao(modo, 2, 'ecologia')}>
 			<Folha tamanho={26} />
 			<strong>Ecologia e infraestrutura</strong>
-			<span>Compara o que os fornecedores publicam e estima o impacto de uma carga.</span>
+			<span>Estima a energia e as emissões de uma carga, conforme o país onde corre.</span>
 		</a>
 	</section>
 
@@ -174,17 +145,6 @@ const passos = [
 	</section>
 </div>
 
-<script>
-	// O pull request corre uma vez ao abrir; «Repetir» volta a corrê-lo.
-	for (const pr of document.querySelectorAll<HTMLElement>('[data-pr]')) {
-		pr.querySelector('[data-repetir]')!.addEventListener('click', () => {
-			pr.classList.remove('corre');
-			void pr.offsetWidth;
-			pr.classList.add('corre');
-		});
-		pr.classList.add('corre');
-	}
-</script>
 
 <style>
 	.i2 > section {
@@ -270,133 +230,45 @@ const passos = [
 		display: grid;
 		gap: 0.75rem;
 	}
-	.pr {
-		background: var(--surface);
-		border: 1px solid var(--line);
-		border-radius: var(--raio);
-		padding: 1.25rem;
-		display: grid;
-		gap: 1rem;
-	}
-	.pr-topo {
-		display: grid;
-	}
-	.pr-num {
-		font-size: 0.8125rem;
-		color: var(--muted);
-	}
-	.pr-titulo {
-		font-weight: 600;
-	}
-	.pr ol {
+	.etapas-hero {
 		list-style: none;
 		margin: 0;
-		padding: 0;
 		display: grid;
-		gap: 0.45rem;
+		gap: 0;
+		padding: 0.5rem 1.25rem;
+		counter-reset: etapa;
 	}
-	.pr li {
+	.etapas-hero li {
 		display: grid;
-		grid-template-columns: 22px 1fr;
-		column-gap: 0.6rem;
-		align-items: center;
-		padding: 0.55rem 0.75rem;
-		border-radius: 12px;
-		background: var(--surface-2);
-		font-size: 0.9375rem;
-	}
-	.pr .res {
-		grid-column: 2;
-		font-size: 0.8125rem;
-		color: var(--muted);
-	}
-	.ic {
-		grid-row: span 2;
-		width: 22px;
-		height: 22px;
-		border-radius: 50%;
-		background: var(--verde);
+		grid-template-columns: 32px 1fr;
+		gap: 0.85rem;
+		padding-block: 0.85rem;
 		position: relative;
 	}
-	.ic::after {
-		content: '';
-		position: absolute;
-		left: 7px;
-		top: 4px;
-		width: 6px;
-		height: 10px;
-		border-right: 2px solid var(--bg);
-		border-bottom: 2px solid var(--bg);
-		transform: rotate(45deg);
+	.etapas-hero li + li {
+		border-top: 1px solid var(--line);
 	}
-	.ko .ic {
-		background: #f08f86;
-	}
-	.ko .ic::after {
-		left: 10px;
-		top: 4px;
-		width: 0;
-		height: 14px;
-		border-bottom: 0;
-		transform: rotate(45deg);
-		box-shadow: none;
-	}
-	.ko .ic::before {
-		content: '';
-		position: absolute;
-		left: 10px;
-		top: 4px;
-		height: 14px;
-		border-right: 2px solid var(--bg);
-		transform: rotate(-45deg);
-	}
-	.ko .res {
-		color: #f4a49c;
-	}
-	.pr-fim {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		gap: 1rem;
+	.n-etapa {
+		width: 32px;
+		height: 32px;
+		display: grid;
+		place-items: center;
+		border-radius: 50%;
+		border: 1px solid var(--verde);
+		color: var(--verde);
 		font-size: 0.875rem;
+		font-variant-numeric: tabular-nums;
+	}
+	.etapas-hero li:nth-child(4) .n-etapa {
+		background: var(--verde);
+		color: var(--bg);
 		font-weight: 600;
-		color: #f4a49c;
 	}
-	.repetir {
-		font: inherit;
-		font-weight: 500;
-		font-size: 0.8125rem;
-		min-height: 36px;
-		padding: 0 0.85rem;
-		border-radius: 999px;
-		border: 1px solid var(--line-forte);
-		background: transparent;
-		color: var(--text);
-		cursor: pointer;
+	.et-texto {
+		display: grid;
+		gap: 0.1rem;
 	}
-	.repetir:hover {
-		border-color: var(--verde);
-	}
-	/* Corre uma vez: cada passo aparece por ordem e a falha chega no fim. */
-	.corre li {
-		animation: entra 0.5s ease both;
-		animation-delay: calc(var(--d) * 0.5s + 0.2s);
-	}
-	.corre .pr-fim p {
-		animation: entra 0.5s ease both;
-		animation-delay: 2.3s;
-	}
-	@keyframes entra {
-		from {
-			opacity: 0.25;
-			transform: translateY(4px);
-		}
-		to {
-			opacity: 1;
-			transform: none;
-		}
-	}
-	.legenda-pr {
+	.et-texto span {
 		font-size: 0.875rem;
 		color: var(--muted);
 	}
@@ -508,40 +380,6 @@ const passos = [
 		background: var(--surface-2);
 		color: var(--verde);
 	}
-	/* Etapas */
-	.etapas {
-		display: grid;
-		gap: 1.25rem;
-	}
-	.etapas ol {
-		list-style: none;
-		margin: 0;
-		padding: 0;
-		display: grid;
-		grid-template-columns: repeat(5, minmax(0, 1fr));
-		gap: 0.75rem;
-		counter-reset: etapa;
-	}
-	.etapas li {
-		display: grid;
-		gap: 0.35rem;
-		align-content: start;
-		padding: 1.1rem;
-		position: relative;
-	}
-	.etapas li:not(:last-child)::after {
-		content: '';
-		position: absolute;
-		right: -0.75rem;
-		top: 50%;
-		width: 0.75rem;
-		height: 2px;
-		background: var(--verde);
-	}
-	.etapas li span:last-child {
-		color: var(--muted);
-		font-size: 0.875rem;
-	}
 	.garantia {
 		padding: clamp(1.25rem, 3vw, 2.25rem);
 	}
@@ -592,9 +430,7 @@ const passos = [
 		align-content: start;
 		text-decoration: none;
 		color: var(--verde);
-		background:
-			radial-gradient(circle, rgb(146 214 173 / 0.22) 1px, transparent 1.6px) 0 0 / 16px 16px,
-			var(--surface-verde);
+		background: var(--surface-verde);
 		border-color: var(--verde-forte);
 		transition: transform 0.15s ease;
 	}
@@ -652,17 +488,6 @@ const passos = [
 		.b2,
 		.b3 {
 			grid-column: span 1;
-		}
-		.etapas ol {
-			grid-template-columns: 1fr;
-		}
-		.etapas li:not(:last-child)::after {
-			right: auto;
-			left: 1.5rem;
-			top: auto;
-			bottom: -0.75rem;
-			width: 2px;
-			height: 0.75rem;
 		}
 	}
 	@media (max-width: 640px) {

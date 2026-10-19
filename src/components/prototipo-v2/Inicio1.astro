@@ -1,12 +1,13 @@
 ---
 // PROTÓTIPO v2 · 1 «Noite com pontos» (evolução da A). Grelha larga de 12 colunas;
 // o Hero divide-se entre a Promessa e os 30 dias em pontos; os serviços são uma
-// pipeline horizontal ligada por pontos em movimento; o verde marca dados e estados.
+// pipeline horizontal com os mini-diagramas animados; o verde marca dados e estados.
 import { Image } from 'astro:assets';
 import foto from '../../../data/IMG_2030.png';
 import Folha from './Folha.astro';
 import GraficoCloud from './GraficoCloud.astro';
-import GarantiaAnual from './GarantiaAnual.astro';
+import Garantia from './Garantia.astro';
+import DiagramaBloco from './DiagramaBloco.astro';
 import FaqResumo from './FaqResumo.astro';
 import { calendly, textos, problemas, depois, blocos, notaBlocos, etapas, factosHero, type Modo } from './dados';
 import { ligacao } from './temas';
@@ -61,7 +62,6 @@ const dias = Array.from({ length: 30 }, (_, i) => i + 1);
 				}
 			</ul>
 		</div>
-		<div class="fluxo" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
 		<div>
 			<p class="etiqueta">Depois</p>
 			<ul class="lista depois">
@@ -81,6 +81,7 @@ const dias = Array.from({ length: 30 }, (_, i) => i + 1);
 				blocos.map((b) => (
 					<li>
 						<span class="no-pipeline" aria-hidden="true" />
+						<DiagramaBloco n={b.n as 1 | 2 | 3 | 4} />
 						<span class="num">Bloco {b.n}</span>
 						<h3>{b.nome}</h3>
 						<p>{b.texto}</p>
@@ -107,7 +108,7 @@ const dias = Array.from({ length: 30 }, (_, i) => i + 1);
 	</section>
 
 	<section class="largura" id="p1-garantia">
-		<GarantiaAnual p={1} formato="grelha" />
+		<Garantia formato="lado" />
 	</section>
 
 	<section class="largura">
@@ -133,8 +134,8 @@ const dias = Array.from({ length: 30 }, (_, i) => i + 1);
 			<div>
 				<h2 class="h-pequeno">Infraestrutura e ambiente</h2>
 				<p>
-					Onde a aplicação corre, quanto corre e com que eficiência também conta. Compara o que cada fornecedor publica
-					e estima o impacto de uma carga.
+					Onde a aplicação corre, quanto corre e com que eficiência também conta. Estima a energia e as emissões
+					de uma carga, conforme o país onde corre.
 				</p>
 			</div>
 			<a class="ligacao-seta" href={ligacao(modo, 1, 'ecologia')}>Explorar a página de ecologia</a>
@@ -287,11 +288,11 @@ const dias = Array.from({ length: 30 }, (_, i) => i + 1);
 	/* Hoje / Depois */
 	.bloco-duplo {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) 80px minmax(0, 1fr);
-		gap: 2rem;
-		align-items: center;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		gap: 2rem 4rem;
+		align-items: start;
 	}
-	.bloco-duplo > div:not(.fluxo) {
+	.bloco-duplo > div {
 		display: grid;
 		gap: 0.75rem;
 	}
@@ -322,40 +323,6 @@ const dias = Array.from({ length: 30 }, (_, i) => i + 1);
 		background: var(--verde);
 		margin-right: 0.6rem;
 		vertical-align: 0.1em;
-	}
-	.fluxo {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		height: 12px;
-	}
-	.fluxo span {
-		width: 8px;
-		height: 8px;
-		border-radius: 50%;
-		background: var(--verde);
-		animation: fluxo 2.4s ease-in-out infinite;
-	}
-	.fluxo span:nth-child(2) {
-		animation-delay: 0.2s;
-	}
-	.fluxo span:nth-child(3) {
-		animation-delay: 0.4s;
-	}
-	.fluxo span:nth-child(4) {
-		animation-delay: 0.6s;
-	}
-	.fluxo span:nth-child(5) {
-		animation-delay: 0.8s;
-	}
-	@keyframes fluxo {
-		0%,
-		100% {
-			opacity: 0.2;
-		}
-		40% {
-			opacity: 1;
-		}
 	}
 	/* Serviços */
 	.servicos {
@@ -388,13 +355,17 @@ const dias = Array.from({ length: 30 }, (_, i) => i + 1);
 		right: 0;
 		top: 7px;
 		height: 2px;
-		background-image: radial-gradient(circle, var(--verde) 1px, transparent 1.5px);
-		background-size: 10px 2px;
-		animation: corre 1.6s linear infinite;
+		background:
+			linear-gradient(90deg, transparent, var(--verde), transparent) 0 0 / 120px 100% no-repeat,
+			var(--line-forte);
+		animation: corre 4s linear infinite;
 	}
 	@keyframes corre {
+		from {
+			background-position: -120px 0, 0 0;
+		}
 		to {
-			background-position: 10px 0;
+			background-position: calc(100% + 120px) 0, 0 0;
 		}
 	}
 	.pipeline li {
@@ -507,9 +478,7 @@ const dias = Array.from({ length: 30 }, (_, i) => i + 1);
 		align-items: center;
 		padding: 1.75rem 2rem;
 		border-radius: var(--raio);
-		background:
-			radial-gradient(circle, rgb(140 207 166 / 0.25) 1px, transparent 1.6px) 0 0 / 16px 16px,
-			var(--surface-verde);
+		background: var(--surface-verde);
 		border: 1px solid var(--verde-forte);
 		color: var(--verde);
 	}
@@ -571,11 +540,6 @@ const dias = Array.from({ length: 30 }, (_, i) => i + 1);
 	@media (max-width: 640px) {
 		.bloco-duplo {
 			grid-template-columns: 1fr;
-		}
-		.fluxo {
-			width: 12px;
-			height: 60px;
-			flex-direction: column;
 		}
 		.pipeline,
 		.etapas ol,

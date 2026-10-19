@@ -1,25 +1,11 @@
 ---
-// PROTÓTIPO v2 · Página de ecologia (corpo), partilhada pelos três protótipos
-// com o tema de cada um. Duas ferramentas: o que cada fornecedor publica (com ano,
-// âmbito e fonte) e um estimador de uma carga em várias regiões. Distingue
-// sempre dados publicados, hipóteses, cálculos e dados de demonstração.
+// PROTÓTIPO v2 · Página de ecologia (corpo), partilhada pelos três protótipos com o
+// tema de cada um. Não mostra dados ambientais dos fornecedores (validado pelo Julien
+// a 19/10/2026). Tem um estimador por país, com o método à vista: emissões da
+// eletricidade, location-based, intensidade de ciclo de vida da Ember (2025).
+// Distingue sempre dados publicados, hipóteses e cálculos.
 import Folha from './Folha.astro';
-import {
-	fornecedores,
-	metricasEco,
-	dadosEco,
-	regioes,
-	paisesFornecedor,
-	coeficientesCcf,
-	coeficientePadrao,
-	utilizacaoCcf,
-	fontesEco,
-	nomesEstado,
-	calendly,
-	textos,
-	type P,
-	type Modo,
-} from './dados';
+import { regioes, coeficientes, utilizacaoCcf, pueExemplo, fontesEco, nomesEstado, calendly, textos, type P, type Modo } from './dados';
 import { ligacao } from './temas';
 
 interface Props {
@@ -27,12 +13,10 @@ interface Props {
 	modo: Modo;
 }
 const { p, modo } = Astro.props;
-const dados = { fornecedores, metricasEco, dadosEco, regioes, paisesFornecedor, coeficientesCcf, coeficientePadrao };
-const temDemo =
-	Object.values(dadosEco).some((f) => Object.values(f).some((v) => v.estado === 'demo')) ||
-	regioes.some((r) => r.estado === 'demo');
-const comPue = fornecedores.filter((f) => dadosEco[f.id]?.pue?.valor != null);
+const dados = { regioes, coeficientes };
 const pre = `p${p}-eco`;
+const inicial = 'fr';
+const virgula = (n: number) => String(n).replace('.', ',');
 ---
 
 <div class:list={['eco', `eco-p${p}`]} data-eco>
@@ -41,96 +25,43 @@ const pre = `p${p}-eco`;
 			<p class="etiqueta"><Folha tamanho={16} /> Ecologia e infraestrutura</p>
 			<h1>As escolhas de infraestrutura também têm consequências ambientais.</h1>
 			<p class="lead">
-				Onde a aplicação corre, quanto tempo corre e com que eficiência mudam a energia que consome e as emissões que
-				gera. Aqui comparas o que cada fornecedor publica e estimas o impacto de uma carga. Não há um vencedor: os dados
-				têm métodos, anos e âmbitos diferentes.
+				Onde a aplicação corre, quanto tempo corre e com que eficiência mudam a energia que consome e as emissões da
+				eletricidade que usa. Aqui estimas uma carga, conforme o país onde corre, com o método e as fontes à vista.
 			</p>
 		</div>
 		<ul class="legenda-estados" aria-label="Como ler os dados desta página">
-			<li><span class="selo publicado">{nomesEstado.publicado}</span> valor de um relatório ou de uma base de dados pública, com ano e fonte</li>
-			<li><span class="selo hipotese">{nomesEstado.hipotese}</span> pressuposto escolhido para o cálculo, que podes mudar</li>
-			<li><span class="selo calculado">{nomesEstado.calculado}</span> resultado de valores publicados e hipóteses</li>
-			<li><span class="selo demo">{nomesEstado.demo}</span> exemplo, enquanto não há fonte; não é um facto</li>
+			<li>
+				<span class="selo publicado">{nomesEstado.publicado}</span> valor de uma base de dados pública, com ano e fonte
+			</li>
+			<li><span class="selo hipotese">{nomesEstado.hipotese}</span> pressuposto do cálculo, que podes mudar</li>
+			<li><span class="selo calculado">{nomesEstado.calculado}</span> resultado dos dois anteriores</li>
 		</ul>
-	</section>
-
-	<section class="largura bloco-eco" id={`${pre}-comparar`}>
-		<div class="cab-bloco">
-			<div>
-				<p class="etiqueta">1 · O que cada fornecedor publica</p>
-				<h2>Comparar com cuidado.</h2>
-			</div>
-			<div class="separadores" role="tablist" aria-label="Indicador">
-				{
-					metricasEco.map((m, i) => (
-						<button
-							type="button"
-							role="tab"
-							id={`${pre}-tab-${m.id}`}
-							aria-selected={i === 0 ? 'true' : 'false'}
-							aria-controls={`${pre}-painel`}
-							tabindex={i === 0 ? 0 : -1}
-							data-metrica={m.id}
-						>
-							{m.nome}
-						</button>
-					))
-				}
-			</div>
-		</div>
-		<div class="comparador" id={`${pre}-painel`} role="tabpanel" aria-labelledby={`${pre}-tab-${metricasEco[0].id}`}>
-			<div class="comp-topo">
-				<p class="comp-explica" data-explica></p>
-				<p class="comp-aviso" data-aviso></p>
-			</div>
-			<div class="escala-comp" aria-hidden="true" data-escala></div>
-			<ul class="linhas" data-linhas></ul>
-		</div>
 	</section>
 
 	<section class="largura bloco-eco" id={`${pre}-estimar`}>
 		<div class="cab-bloco">
 			<div>
-				<p class="etiqueta">2 · Estimar uma carga</p>
+				<p class="etiqueta">1 · Estimar uma carga</p>
 				<h2>A mesma aplicação, em sítios diferentes.</h2>
 			</div>
 			<p class="intro">
-				Escolhe o fornecedor, a carga e o país da região. O cálculo segue o método aberto do Cloud Carbon Footprint:
-				energia dos processadores × eficiência do centro de dados × intensidade carbónica da eletricidade do país.
+				Escolhe o país, a carga e a eficiência do centro de dados. O cálculo segue o método aberto do Cloud Carbon
+				Footprint: energia dos processadores × eficiência do centro de dados × intensidade carbónica da eletricidade.
 			</p>
 		</div>
 		<div class="estimador">
 			<form class="controlos" data-controlos>
 				<div class="campo">
-					<label for={`${pre}-forn`}>Fornecedor</label>
-					<select id={`${pre}-forn`} name="fornecedor">
-						{
-							fornecedores.map((f) =>
-								comPue.includes(f) ? (
-									<option value={f.id} selected={f === comPue[0]}>
-										{f.nome}
-									</option>
-								) : (
-									<option value={f.id} disabled>
-										{f.nome} (sem PUE publicado)
-									</option>
-								),
-							)
-						}
-					</select>
-					<span class="dica" data-o="pue"></span>
-				</div>
-				<div class="campo">
-					<label for={`${pre}-regiao`}>País da região</label>
+					<label for={`${pre}-regiao`}>País onde corre a infraestrutura</label>
 					<select id={`${pre}-regiao`} name="regiao">
 						{
-							paisesFornecedor[comPue[0].id].map((id) => {
-								const r = regioes.find((x) => x.id === id)!;
-								return <option value={id}>{r.nome}</option>;
-							})
+							regioes.map((r) => (
+								<option value={r.id} selected={r.id === inicial}>
+									{r.nome}
+								</option>
+							))
 						}
 					</select>
-					<span class="dica">Só os países onde o fornecedor tem regiões.</span>
 				</div>
 				<div class="campo">
 					<label for={`${pre}-vcpu`}>Processadores virtuais (vCPU) <output data-o="vcpu">8</output></label>
@@ -147,6 +78,13 @@ const pre = `p${p}-eco`;
 					<label for={`${pre}-horas`}>Horas por dia <output data-o="horas">24 h</output></label>
 					<input type="range" id={`${pre}-horas`} name="horas" min="1" max="24" step="1" value="24" />
 				</div>
+				<div class="campo">
+					<label for={`${pre}-pue`}>Eficiência do centro de dados (PUE) <output data-o="pue">{virgula(pueExemplo)}</output></label>
+					<input type="range" id={`${pre}-pue`} name="pue" min="1" max="2" step="0.05" value={pueExemplo} />
+					<span class="dica"
+						><span class="selo hipotese">Hipótese</span> valor de exemplo; o fornecedor pode indicar o do centro que usas</span
+					>
+				</div>
 			</form>
 
 			<div class="resultado" aria-live="polite">
@@ -159,7 +97,7 @@ const pre = `p${p}-eco`;
 					<p>
 						<span class="selo calculado">Calculado</span>
 						<span class="valor" data-r="kg">0</span>
-						<span class="unidade">kg CO2e por mês</span>
+						<span class="unidade">kg CO2e por mês, location-based</span>
 					</p>
 				</div>
 				<div class="pontos-co2" data-pontos aria-hidden="true"></div>
@@ -172,15 +110,41 @@ const pre = `p${p}-eco`;
 		</div>
 
 		<div class="regioes">
-			<p class="regioes-tit">
-				A mesma carga nos outros países deste fornecedor <span class="selo calculado">Calculado</span>
-			</p>
+			<p class="regioes-tit">A mesma carga em cada país <span class="selo calculado">Calculado</span></p>
 			<ul data-regioes></ul>
-			<p class="regioes-nota">
-				Intensidade carbónica média anual da eletricidade produzida em cada país (Ember, 2025, ciclo de vida). A hora
-				do dia e os contratos de energia do fornecedor mudam o valor real; com contratos renováveis, o valor
-				market-based é mais baixo.
-			</p>
+		</div>
+	</section>
+
+	<section class="largura bloco-eco metodo" id={`${pre}-metodo`}>
+		<div class="cab-bloco">
+			<div>
+				<p class="etiqueta">2 · Como se calcula</p>
+				<h2>Um só método, explicado.</h2>
+			</div>
+		</div>
+		<div class="cartoes-metodo">
+			<div>
+				<strong>Location-based</strong>
+				<p>
+					Usa a média anual da eletricidade produzida no país. Não conta contratos de energia renovável: isso seria o
+					método market-based, que aqui não aparece porque precisa de dados contratuais que não temos.
+				</p>
+			</div>
+			<div>
+				<strong>Ciclo de vida</strong>
+				<p>
+					A intensidade da Ember inclui as emissões a montante (construção das centrais, extração e transporte do
+					combustível). Por isso é mais alta do que contar só as emissões diretas da queima. Os dois tipos nunca se
+					misturam nesta página.
+				</p>
+			</div>
+			<div>
+				<strong>Só os processadores</strong>
+				<p>
+					O estimador conta a energia dos vCPU e a eficiência do centro de dados. Memória, armazenamento, rede e
+					fabrico dos servidores ficam de fora, por isso o valor real é maior.
+				</p>
+			</div>
 		</div>
 	</section>
 
@@ -188,63 +152,49 @@ const pre = `p${p}-eco`;
 		<div class="cab-bloco">
 			<div>
 				<p class="etiqueta">3 · O que a infraestrutura pode mudar</p>
-				<h2>Medir primeiro, depois ajustar.</h2>
+				<h2>Mais eficiência, mais visibilidade.</h2>
 			</div>
-			<span class="selo a-validar">Texto a validar pelo Julien</span>
+			<span class="selo a-validar">Textos a validar pelo Julien</span>
 		</div>
 		<ul class="cartoes-alav">
 			<li>
-				<strong>Escalar para baixo</strong>
-				<span>Uma infraestrutura que acompanha a carga (bloco 3) também reduz as instâncias quando a carga desce.</span>
+				<strong>Usar só o que é preciso</strong>
+				<span>Uma infraestrutura que acompanha a carga (bloco 3) ajusta os recursos ao que a aplicação usa.</span>
 			</li>
 			<li>
-				<strong>Escolher a região</strong>
-				<span>Com o mesmo fornecedor, o país da região muda a intensidade carbónica da eletricidade.</span>
+				<strong>Ver o que se consome</strong>
+				<span>A observabilidade (bloco 4) dá visibilidade sobre a utilização dos recursos e os custos.</span>
 			</li>
 			<li>
-				<strong>Ver o que se gasta</strong>
-				<span>A observabilidade (bloco 4) mostra o que está sobredimensionado.</span>
+				<strong>Escolher com informação</strong>
+				<span>A intensidade carbónica da eletricidade muda de país para país, e o estimador mostra quanto.</span>
 			</li>
 			<li>
 				<strong>Alojamento com menor impacto ambiental</strong>
-				<span>Quando o orçamento e as necessidades o permitem, é uma das opções que proponho.</span>
+				<span>Quando as necessidades e o orçamento o permitem, é uma das opções que proponho.</span>
 			</li>
 		</ul>
 	</section>
 
 	<section class="largura bloco-eco fontes" id={`${pre}-fontes`}>
 		<h2 class="h-pequeno">Fontes e limites</h2>
-		{
-			fontesEco.length > 0 ? (
-				<ol class="lista-fontes">
-					{fontesEco.map((f) => (
-						<li>
-							<span class="n">[{f.n}]</span> <a href={f.url}>{f.titulo}</a>
-						</li>
-					))}
-				</ol>
-			) : (
-				<p class="intro">As fontes aparecem aqui quando a pesquisa terminar.</p>
-			)
-		}
+		<ol class="lista-fontes">
+			{
+				fontesEco.map((f) => (
+					<li>
+						<span class="n">[{f.n}]</span> <a href={f.url}>{f.titulo}</a>
+					</li>
+				))
+			}
+		</ol>
 		<ul class="limites">
-			<li>Os indicadores não são comparáveis entre si sem ler o ano, o âmbito e o método de cada um.</li>
-			<li>O estimador só conta a energia dos processadores. Memória, armazenamento, rede e fabrico ficam de fora.</li>
+			<li>Estimativa ilustrativa, não uma medição da tua infraestrutura.</li>
 			<li>
-				O PUE é a média que cada fornecedor publica para os seus centros, não o da região escolhida. Os watts por vCPU
-				são os do Cloud Carbon Footprint, que só os tem para a AWS, a Google Cloud e o Azure.
+				Os watts por vCPU são os do Cloud Carbon Footprint para um processador desconhecido; o servidor real pode
+				consumir mais ou menos.
 			</li>
-			<li>A Clever Cloud não publica PUE com ano e método, por isso fica fora do estimador.</li>
-			<li>Nenhum valor desta página é uma classificação dos fornecedores.</li>
+			<li>A intensidade é uma média anual do país; a hora do dia muda o valor real.</li>
 		</ul>
-		{
-			temDemo && (
-				<p class="nota-proto">
-					Esta versão ainda tem valores de demonstração. A pesquisa «Que dados ambientais publicam os fornecedores
-					cloud?» substitui-os por valores publicados, com fonte.
-				</p>
-			)
-		}
 		<div class="volta">
 			<a class="ligacao-seta" href={ligacao(modo, p, 'inicio')}>Voltar à página principal</a>
 			<a class="botao" href={calendly}>{textos.cta}</a>
@@ -255,157 +205,53 @@ const pre = `p${p}-eco`;
 </div>
 
 <script>
-	type ValorEco = { valor: number | null; texto?: string; ano?: string; ambito?: string; fonte?: string; estado: string; nota?: string };
-	type Metrica = {
-		id: string;
-		nome: string;
-		unidade: string;
-		tipo: 'numero' | 'texto';
-		min?: number;
-		max?: number;
-		marcas?: number[];
-		explica: string;
-		aviso: string;
-	};
 	type Regiao = { id: string; nome: string; g: number; estado: string; ano?: string; fonte?: string };
-	type Coef = { wMin: number; wMax: number; estado: string; nota: string; fonte?: string };
-	type Dados = {
-		fornecedores: { id: string; nome: string }[];
-		metricasEco: Metrica[];
-		dadosEco: Record<string, Record<string, ValorEco>>;
-		regioes: Regiao[];
-		paisesFornecedor: Record<string, string[]>;
-		coeficientesCcf: Record<string, Coef>;
-		coeficientePadrao: Coef;
-	};
-	const nomeEstado: Record<string, string> = {
-		publicado: 'Publicado',
-		demo: 'Demonstração',
-		calculado: 'Calculado',
-		hipotese: 'Hipótese',
-		'a-validar': 'A validar',
-	};
+	type Dados = { regioes: Regiao[]; coeficientes: { wMin: number; wMax: number; nota: string } };
+	const nomeEstado: Record<string, string> = { publicado: 'Publicado', calculado: 'Calculado', hipotese: 'Hipótese' };
 	const num = (n: number, casas = 1) => n.toLocaleString('pt-PT', { maximumFractionDigits: casas });
-	const sufixo = (u: string) => (u === '%' ? ' %' : u ? ` ${u}` : '');
 	const selo = (estado: string) => `<span class="selo ${estado}">${nomeEstado[estado] ?? estado}</span>`;
-	const meta = (v?: ValorEco) =>
-		v ? [v.ano, v.ambito].filter(Boolean).join(' · ') + (v.fonte ? ` · <a href="${v.fonte}">fonte</a>` : '') : '';
 
 	for (const raiz of document.querySelectorAll<HTMLElement>('[data-eco]')) {
 		const d: Dados = JSON.parse(raiz.querySelector('[data-dados-eco]')!.textContent!);
-
-		// ---------- 1. Comparador ----------
-		const tabs = [...raiz.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
-		const painel = raiz.querySelector<HTMLElement>('[role="tabpanel"]')!;
-		const escala = raiz.querySelector<HTMLElement>('[data-escala]')!;
-		function mostraMetrica(id: string) {
-			const m = d.metricasEco.find((x) => x.id === id)!;
-			tabs.forEach((t) => {
-				const sel = t.dataset.metrica === id;
-				t.setAttribute('aria-selected', String(sel));
-				t.tabIndex = sel ? 0 : -1;
-				if (sel) painel.setAttribute('aria-labelledby', t.id);
-			});
-			raiz.querySelector('[data-explica]')!.textContent = m.explica;
-			raiz.querySelector('[data-aviso]')!.textContent = m.aviso;
-			painel.classList.toggle('texto', m.tipo === 'texto');
-			const min = m.min ?? 0;
-			const max = m.max ?? 1;
-			const pos = (v: number) => Math.min(100, Math.max(0, ((v - min) / (max - min)) * 100));
-			escala.innerHTML =
-				m.tipo === 'texto'
-					? ''
-					: (m.marcas ?? []).map((x) => `<span style="left:${pos(x)}%">${num(x, 2)}${sufixo(m.unidade)}</span>`).join('');
-			raiz.querySelector('[data-linhas]')!.innerHTML = d.fornecedores
-				.map((f) => {
-					const v = d.dadosEco[f.id]?.[id];
-					const tem = !!v && v.valor !== null;
-					const nota = v?.nota ? ` · ${v.nota}` : '';
-					if (m.tipo === 'texto') {
-						return `<li class="linha texto"><span class="ln-nome">${f.nome}</span>
-							<span class="ln-texto">${v?.texto ?? 'Não encontrado'}</span>
-							<span class="ln-meta">${v ? selo(v.estado) : ''} ${meta(v)}${nota}</span></li>`;
-					}
-					return `<li class="linha ${tem ? '' : 'vazia'}">
-						<span class="ln-nome">${f.nome}</span>
-						<span class="ln-pista">${
-							tem
-								? `<span class="ln-ponto ${v!.estado}" style="left:${pos(v!.valor!)}%"></span>`
-								: `<span class="ln-falta">${v?.texto ?? 'Não publicado ou não encontrado'}</span>`
-						}</span>
-						<span class="ln-valor">${tem ? num(v!.valor!, 4) + sufixo(m.unidade) : '–'}</span>
-						<span class="ln-meta">${v ? selo(v.estado) : ''} ${meta(v)}${nota}</span>
-					</li>`;
-				})
-				.join('');
-		}
-		tabs.forEach((t, i) => {
-			t.addEventListener('click', () => mostraMetrica(t.dataset.metrica!));
-			t.addEventListener('keydown', (e) => {
-				if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
-				e.preventDefault();
-				const prox = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
-				prox.focus();
-				mostraMetrica(prox.dataset.metrica!);
-			});
-		});
-		mostraMetrica(d.metricasEco[0].id);
-
-		// ---------- 2. Estimador ----------
 		const form = raiz.querySelector<HTMLFormElement>('[data-controlos]')!;
-		const selRegiao = form.querySelector<HTMLSelectElement>('select[name="regiao"]')!;
 		const r = (k: string) => raiz.querySelector<HTMLElement>(`[data-r="${k}"]`)!;
 		const o = (k: string) => raiz.querySelector<HTMLElement>(`[data-o="${k}"]`)!;
 		const pontos = raiz.querySelector<HTMLElement>('[data-pontos]')!;
-		const listaRegioes = raiz.querySelector<HTMLElement>('[data-regioes]')!;
-		let fornAnterior = '';
+		const lista = raiz.querySelector<HTMLElement>('[data-regioes]')!;
+		const c = d.coeficientes;
 
 		function calcula() {
 			const f = new FormData(form);
-			const forn = String(f.get('fornecedor'));
-			const paises = d.paisesFornecedor[forn] ?? [];
-			if (forn !== fornAnterior) {
-				const antes = selRegiao.value;
-				selRegiao.innerHTML = paises
-					.map((id) => `<option value="${id}">${d.regioes.find((x) => x.id === id)!.nome}</option>`)
-					.join('');
-				selRegiao.value = paises.includes(antes) ? antes : paises[0];
-				fornAnterior = forn;
-			}
 			const vcpu = Number(f.get('vcpu'));
 			const uso = Number(f.get('uso'));
 			const horas = Number(f.get('horas'));
-			const pueV = d.dadosEco[forn].pue;
-			const pue = pueV.valor!;
-			const coef = d.coeficientesCcf[forn] ?? d.coeficientePadrao;
-			const reg = d.regioes.find((x) => x.id === selRegiao.value)!;
+			const pue = Number(f.get('pue'));
+			const reg = d.regioes.find((x) => x.id === f.get('regiao'))!;
 			o('vcpu').textContent = String(vcpu);
 			o('uso').textContent = `${uso} %`;
 			o('horas').textContent = `${horas} h`;
-			o('pue').innerHTML = `${selo(pueV.estado)} PUE ${num(pue, 3)} · ${pueV.ano}`;
-			const w = coef.wMin + (uso / 100) * (coef.wMax - coef.wMin);
+			o('pue').textContent = num(pue, 2);
+			const w = c.wMin + (uso / 100) * (c.wMax - c.wMin);
 			const kwh = (vcpu * w * horas * 30.4375 * pue) / 1000;
 			const kg = (kwh * reg.g) / 1000;
 			r('kwh').textContent = num(kwh, kwh < 10 ? 1 : 0);
 			r('kg').textContent = num(kg, kg < 10 ? 1 : 0);
 			// Pontos: cada ponto vale uma unidade escolhida para nunca passar de 200 pontos.
-			const unidades = [0.1, 1, 10, 100, 1000];
-			const u = unidades.find((x) => kg / x <= 200) ?? 1000;
+			const u = [0.1, 1, 10, 100, 1000].find((x) => kg / x <= 200) ?? 1000;
 			const n = Math.max(1, Math.round(kg / u));
 			pontos.innerHTML = '<i></i>'.repeat(n);
 			r('escala').textContent = `Cada ponto vale cerca de ${num(u, 1)} kg CO2e (${n} pontos)`;
 			r('formula').innerHTML =
-				`${vcpu} vCPU × (${num(coef.wMin, 2)} W + ${uso} % × (${num(coef.wMax, 2)} − ${num(coef.wMin, 2)}) W) ` +
-				`${selo(coef.estado)} <small>${coef.nota}</small> × ${horas} h × 30,4 dias × PUE ${num(pue, 3)} ${selo(pueV.estado)} ` +
-				`= ${num(kwh, 1)} kWh.<br>${num(kwh, 1)} kWh × ${num(reg.g, 1)} g/kWh (${reg.nome}, Ember ${reg.ano}) ${selo(reg.estado)} ` +
-				`= ${num(kg, 1)} kg CO2e ${selo('calculado')}`;
-			const doFornecedor = d.regioes.filter((x) => paises.includes(x.id));
-			const maxKg = Math.max(...doFornecedor.map((x) => (kwh * x.g) / 1000));
-			listaRegioes.innerHTML = doFornecedor
+				`${vcpu} vCPU × (${num(c.wMin, 2)} W + ${uso} % × (${num(c.wMax, 2)} − ${num(c.wMin, 2)}) W) ` +
+				`${selo('hipotese')} <small>${c.nota}</small> × ${horas} h × 30,4 dias × PUE ${num(pue, 2)} ${selo('hipotese')} ` +
+				`= ${num(kwh, 1)} kWh.<br>${num(kwh, 1)} kWh × ${num(reg.g, 1)} g/kWh (${reg.nome}, Ember ${reg.ano}, ciclo de vida) ` +
+				`${selo(reg.estado)} = ${num(kg, 1)} kg CO2e ${selo('calculado')}`;
+			const max = Math.max(...d.regioes.map((x) => x.g));
+			lista.innerHTML = d.regioes
 				.map((x) => {
 					const v = (kwh * x.g) / 1000;
 					return `<li class="${x.id === reg.id ? 'atual' : ''}"><span class="rg-nome">${x.nome} <small>${num(x.g, 0)} g/kWh</small></span>
-					<span class="rg-pista"><span class="rg-barra" style="width:${Math.max(1, (v / maxKg) * 100)}%"></span></span>
+					<span class="rg-pista"><span class="rg-barra" style="width:${Math.max(1, (x.g / max) * 100)}%"></span></span>
 					<span class="rg-valor">${num(v, v < 10 ? 1 : 0)} kg</span></li>`;
 				})
 				.join('');
@@ -470,7 +316,7 @@ const pre = `p${p}-eco`;
 	}
 	.legenda-estados li {
 		display: grid;
-		grid-template-columns: 8.5rem 1fr;
+		grid-template-columns: 7.5rem 1fr;
 		gap: 0.75rem;
 		align-items: center;
 	}
@@ -488,141 +334,6 @@ const pre = `p${p}-eco`;
 	.cab-bloco > div {
 		display: grid;
 		gap: 0.5rem;
-	}
-	.separadores {
-		flex: 1 1 100%;
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.5rem;
-	}
-	.separadores button {
-		font: inherit;
-		font-size: 0.875rem;
-		min-height: 40px;
-		padding: 0 1rem;
-		border: 1px solid var(--line-forte);
-		border-radius: 999px;
-		background: transparent;
-		color: var(--muted);
-		cursor: pointer;
-		white-space: nowrap;
-		transition:
-			background 0.15s ease,
-			color 0.15s ease;
-	}
-	.separadores button:hover {
-		color: var(--text);
-		border-color: var(--verde);
-	}
-	.separadores button[aria-selected='true'] {
-		background: var(--verde);
-		border-color: var(--verde);
-		color: var(--bg);
-		font-weight: 600;
-	}
-	.comparador {
-		border-radius: var(--raio);
-		border: 1px solid var(--line);
-		padding: clamp(1rem, 3vw, 1.75rem);
-		background-color: color-mix(in srgb, var(--surface-verde) 70%, var(--bg));
-		background-image: radial-gradient(circle, var(--ponto-a) 1px, transparent 1.5px);
-		background-size: 22px 22px;
-		display: grid;
-		gap: 1rem;
-	}
-	.comp-topo {
-		display: grid;
-		gap: 0.35rem;
-		max-width: 52rem;
-	}
-	.comp-aviso {
-		font-size: 0.875rem;
-		color: #fff1c2;
-	}
-	.comp-aviso::before {
-		content: 'Atenção · ';
-		font-weight: 700;
-	}
-	.escala-comp {
-		position: relative;
-		height: 1.25rem;
-		margin-left: calc(9rem + 1rem);
-		margin-right: calc(7rem + 1rem);
-		font-size: 0.75rem;
-		color: var(--muted);
-		font-variant-numeric: tabular-nums;
-	}
-	.escala-comp :global(span) {
-		position: absolute;
-		transform: translateX(-50%);
-	}
-	.linhas {
-		list-style: none;
-		margin: 0;
-		padding: 0;
-		display: grid;
-	}
-	.linhas :global(.linha) {
-		display: grid;
-		grid-template-columns: 9rem minmax(0, 1fr) 7rem;
-		grid-template-areas: 'nome pista valor' '. meta meta';
-		gap: 0.2rem 1rem;
-		align-items: center;
-		padding-block: 0.7rem;
-		border-top: 1px solid var(--line);
-	}
-	.linhas :global(.ln-nome) {
-		grid-area: nome;
-		font-weight: 600;
-	}
-	.linhas :global(.ln-pista) {
-		grid-area: pista;
-		position: relative;
-		height: 14px;
-		background: linear-gradient(var(--line-forte), var(--line-forte)) center / 100% 1px no-repeat;
-	}
-	.linhas :global(.ln-ponto) {
-		position: absolute;
-		top: 50%;
-		width: 14px;
-		height: 14px;
-		border-radius: 50%;
-		transform: translate(-50%, -50%);
-		background: var(--verde);
-		transition: left 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-	}
-	.linhas :global(.ln-ponto.demo) {
-		background: repeating-linear-gradient(135deg, #d9c27a 0 3px, #8a7a3a 3px 6px);
-	}
-	.linhas :global(.ln-falta) {
-		font-size: 0.8125rem;
-		color: var(--muted);
-		background: var(--bg);
-		padding-right: 0.5rem;
-	}
-	.linhas :global(.ln-valor) {
-		grid-area: valor;
-		text-align: right;
-		font-variant-numeric: tabular-nums;
-		font-weight: 600;
-	}
-	.linhas :global(.linha.texto) {
-		grid-template-columns: 9rem minmax(0, 1fr);
-		grid-template-areas: 'nome texto' '. meta';
-	}
-	.linhas :global(.ln-texto) {
-		grid-area: texto;
-	}
-	.comparador.texto .escala-comp {
-		display: none;
-	}
-	.linhas :global(.ln-meta) {
-		grid-area: meta;
-		font-size: 0.8125rem;
-		color: var(--muted);
-	}
-	.linhas :global(.ln-meta a) {
-		color: var(--verde);
 	}
 	.estimador {
 		display: grid;
@@ -656,6 +367,7 @@ const pre = `p${p}-eco`;
 		font-size: 0.8125rem;
 		color: var(--muted);
 		display: flex;
+		flex-wrap: wrap;
 		gap: 0.5rem;
 		align-items: center;
 	}
@@ -771,6 +483,10 @@ const pre = `p${p}-eco`;
 		background: color-mix(in srgb, var(--verde) 14%, transparent);
 		font-weight: 600;
 	}
+	.regioes :global(.rg-nome small) {
+		color: var(--muted);
+		font-size: 0.75rem;
+	}
 	.regioes :global(.rg-pista) {
 		height: 10px;
 		border-radius: 999px;
@@ -783,20 +499,29 @@ const pre = `p${p}-eco`;
 		background: var(--verde);
 		transition: width 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
 	}
-	.regioes :global(.rg-barra.demo) {
-		background: repeating-linear-gradient(135deg, var(--verde) 0 5px, var(--verde-forte) 5px 10px);
-	}
-	.regioes :global(.rg-nome small) {
-		color: var(--muted);
-		font-size: 0.75rem;
-	}
 	.regioes :global(.rg-valor) {
 		text-align: right;
 		font-variant-numeric: tabular-nums;
 	}
-	.regioes-nota {
-		font-size: 0.8125rem;
+	.cartoes-metodo {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 1rem;
+	}
+	.cartoes-metodo > div {
+		display: grid;
+		gap: 0.5rem;
+		align-content: start;
+		padding: 1.25rem;
+		border-radius: var(--raio);
+		border: 1px solid var(--line);
+	}
+	.cartoes-metodo strong {
+		font: 400 1.25rem/1.2 var(--serif);
+	}
+	.cartoes-metodo p {
 		color: var(--muted);
+		font-size: 0.9375rem;
 	}
 	.cartoes-alav {
 		list-style: none;
@@ -824,7 +549,8 @@ const pre = `p${p}-eco`;
 	}
 	.lista-fontes {
 		margin: 0;
-		padding-left: 1.25rem;
+		padding: 0;
+		list-style: none;
 		display: grid;
 		gap: 0.35rem;
 		font-size: 0.875rem;
@@ -852,7 +578,6 @@ const pre = `p${p}-eco`;
 	.eco-p3 .eco-hero {
 		background: repeating-radial-gradient(ellipse at 90% 10%, transparent 0 28px, rgb(143 224 176 / 0.08) 28px 29px);
 	}
-	.eco-p2 .comparador,
 	.eco-p2 .resultado,
 	.eco-p2 .controlos,
 	.eco-p2 .regioes {
@@ -860,7 +585,8 @@ const pre = `p${p}-eco`;
 	}
 	@media (max-width: 960px) {
 		.eco-hero,
-		.estimador {
+		.estimador,
+		.cartoes-metodo {
 			grid-template-columns: 1fr;
 		}
 		.cartoes-alav {
@@ -871,18 +597,6 @@ const pre = `p${p}-eco`;
 		.legenda-estados li {
 			grid-template-columns: 1fr;
 			gap: 0.25rem;
-		}
-		.escala-comp {
-			margin-left: 0;
-			margin-right: 0;
-		}
-		.linhas :global(.linha) {
-			grid-template-columns: minmax(0, 1fr) 5rem;
-			grid-template-areas: 'nome valor' 'pista pista' 'meta meta';
-		}
-		.linhas :global(.linha.texto) {
-			grid-template-columns: 1fr;
-			grid-template-areas: 'nome' 'texto' 'meta';
 		}
 		.cartoes-alav,
 		.numeros {

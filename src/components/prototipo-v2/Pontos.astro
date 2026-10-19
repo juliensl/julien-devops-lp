@@ -1,7 +1,7 @@
 ---
-// PROTÓTIPO v2 · Pontos em movimento constante no fundo da vista.
-// Só usa transform e opacity (compostos pela GPU, sem repintar a página).
-// Parados com prefers-reduced-motion.
+// PROTÓTIPO v2 · Pontos em movimento constante, só no topo da página (fixos, como os
+// da Arkoder; o Julien não quer pontos na página toda). Só usa transform e opacity
+// (compostos pela GPU, sem repintar a página). Parados com prefers-reduced-motion.
 interface Props {
 	estilo: 'deriva' | 'grelha' | 'rede';
 }
@@ -18,10 +18,12 @@ const { estilo } = Astro.props;
 <style>
 	.pontos {
 		position: fixed;
-		inset: 0;
+		inset: 0 0 auto;
+		height: 320px;
 		z-index: 0;
 		pointer-events: none;
 		overflow: hidden;
+		mask-image: linear-gradient(#000 35%, transparent);
 	}
 	.camada {
 		position: absolute;
@@ -68,12 +70,7 @@ const { estilo } = Astro.props;
 			opacity: 1;
 		}
 	}
-	.deriva {
-		mask-image: linear-gradient(#000 0%, rgb(0 0 0 / 0.55) 45%, rgb(0 0 0 / 0.8) 100%);
-	}
-	.grelha {
-		mask-image: linear-gradient(#000 0%, transparent 70%);
-	}
+
 	.grelha .c1 {
 		background-size: 36px 36px;
 		animation-duration: 30s;
@@ -103,8 +100,5 @@ const { estilo } = Astro.props;
 		background:
 			repeating-radial-gradient(ellipse at 18% 22%, transparent 0 26px, rgb(143 224 176 / 0.06) 26px 27px),
 			repeating-radial-gradient(ellipse at 86% 74%, transparent 0 34px, rgb(143 224 176 / 0.05) 34px 35px);
-	}
-	.rede {
-		mask-image: linear-gradient(#000, rgb(0 0 0 / 0.6));
 	}
 </style>
