@@ -143,15 +143,14 @@ export const perguntas: Record<Publico, Pergunta[]> = {
 	ceo: [
 		{
 			p: 'Quanto vai custar, e quando fico a saber?',
-			r: 'Um preço fixo, dado na Proposta de intervenção, depois do Diagnóstico gratuito. Não há preço por hora.',
-			estado: 'a-validar',
-			nota: '«Não há preço por hora» é uma dedução do preço fixo; o resto está validado.',
+			r: 'Um preço fixo, que dou na Proposta de intervenção. A Proposta vem depois do Diagnóstico gratuito, que demora 2 a 3 dias úteis a partir do momento em que tenho os acessos, ou 3 a 5 se incluir a cloud.',
+			estado: 'validado',
 		},
 		{
 			p: 'E os custos da infraestrutura?',
-			r: 'Os serviços e a infraestrutura têm um custo mensal próprio, pago ao fornecedor cloud. O serviço não é para quem recusa 100 a 500 € por mês nesses custos.',
+			r: 'Além do preço fixo, a infraestrutura e as ferramentas têm um custo mensal próprio, que pagas diretamente aos fornecedores, nas tuas contas. O serviço pressupõe um orçamento de 100 a 500 € por mês para estes custos.',
 			estado: 'a-validar',
-			nota: 'Os 100 a 500 €/mês estão validados como exclusão; esta formulação para CEO não.',
+			nota: 'Formulação aprovada; falta o Julien confirmar quem paga e se os 100 a 500 € são o total por mês.',
 		},
 		{
 			p: 'Ficamos dependentes de ti?',
@@ -165,9 +164,8 @@ export const perguntas: Record<Publico, Pergunta[]> = {
 		},
 		{
 			p: 'Que retorno posso esperar?',
-			r: 'Menos tempo a corrigir problemas. Mais tempo a desenvolver o produto. Ajudamos equipas SaaS a automatizar testes e entregas, detetar regressões mais cedo e melhorar a fiabilidade da infraestrutura, para que possam crescer com mais confiança.',
+			r: 'Menos tempo a corrigir problemas. Mais tempo a desenvolver o produto. Ajudo equipas SaaS a automatizar testes e entregas, detetar regressões mais cedo e melhorar a fiabilidade da infraestrutura, para que possam crescer com mais confiança.',
 			estado: 'validado',
-			nota: 'Texto do Julien. Falta confirmar «Ajudamos»: o resto da página fala na primeira pessoa do singular.',
 		},
 		{
 			p: 'Em que línguas e países trabalhas?',
@@ -375,13 +373,17 @@ export const coeficientes = {
 	fonte: 'https://www.cloudcarbonfootprint.org/docs/methodology/',
 };
 export const utilizacaoCcf = 50;
-export const pueExemplo = 1.4;
+// Média anual do setor por centro de dados (Uptime Institute, inquérito de 2026), validada pelo
+// Julien a 19/10/2026 em vez do 1,4 sem fonte. Ponderada pela capacidade, a média é 1,36.
+const UPTIME = 'https://intelligence.uptimeinstitute.com/resource/growing-pue-advantage-larger-data-centers';
+export const pueSetor = 1.52;
 
 export const fontesEco: { n: string; titulo: string; url: string }[] = [
 	{ n: '1', titulo: 'Ember, produção de eletricidade anual por país (intensidade carbónica, 2025)', url: EMBER },
 	{ n: '2', titulo: 'Cloud Carbon Footprint, metodologia', url: 'https://www.cloudcarbonfootprint.org/docs/methodology/' },
+	{ n: '3', titulo: 'Uptime Institute, PUE médio do setor (inquérito de 2026)', url: UPTIME },
 	{
-		n: '3',
+		n: '4',
 		titulo: 'Pesquisa «Que dados ambientais publicam os fornecedores cloud?» (16/10/2026)',
 		url: 'https://github.com/juliensl/julien-devops-lp/blob/research/dados-ambientais-cloud/docs/research/dados-ambientais-cloud.md',
 	},

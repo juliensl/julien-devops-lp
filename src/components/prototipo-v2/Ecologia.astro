@@ -5,7 +5,7 @@
 // eletricidade, location-based, intensidade de ciclo de vida da Ember (2025).
 // Distingue sempre dados publicados, hipóteses e cálculos.
 import Folha from './Folha.astro';
-import { regioes, coeficientes, utilizacaoCcf, pueExemplo, fontesEco, nomesEstado, calendly, textos, type P, type Modo } from './dados';
+import { regioes, coeficientes, utilizacaoCcf, pueSetor, fontesEco, nomesEstado, calendly, textos, type P, type Modo } from './dados';
 import { ligacao } from './temas';
 
 interface Props {
@@ -13,7 +13,7 @@ interface Props {
 	modo: Modo;
 }
 const { p, modo } = Astro.props;
-const dados = { regioes, coeficientes };
+const dados = { regioes, coeficientes, pue: pueSetor };
 const pre = `p${p}-eco`;
 const inicial = 'fr';
 const virgula = (n: number) => String(n).replace('.', ',');
@@ -31,7 +31,7 @@ const virgula = (n: number) => String(n).replace('.', ',');
 		</div>
 		<ul class="legenda-estados" aria-label="Como ler os dados desta página">
 			<li>
-				<span class="selo publicado">{nomesEstado.publicado}</span> valor de uma base de dados pública, com ano e fonte
+				<span class="selo publicado">{nomesEstado.publicado}</span> valor de uma base de dados ou de um estudo públicos, com ano e fonte
 			</li>
 			<li><span class="selo hipotese">{nomesEstado.hipotese}</span> pressuposto do cálculo, que podes mudar</li>
 			<li><span class="selo calculado">{nomesEstado.calculado}</span> resultado dos dois anteriores</li>
@@ -79,10 +79,11 @@ const virgula = (n: number) => String(n).replace('.', ',');
 					<input type="range" id={`${pre}-horas`} name="horas" min="1" max="24" step="1" value="24" />
 				</div>
 				<div class="campo">
-					<label for={`${pre}-pue`}>Eficiência do centro de dados (PUE) <output data-o="pue">{virgula(pueExemplo)}</output></label>
-					<input type="range" id={`${pre}-pue`} name="pue" min="1" max="2" step="0.05" value={pueExemplo} />
+					<label for={`${pre}-pue`}>Eficiência do centro de dados (PUE) <output data-o="pue">{virgula(pueSetor)}</output></label>
+					<input type="range" id={`${pre}-pue`} name="pue" min="1" max="2" step="0.01" value={pueSetor} />
 					<span class="dica"
-						><span class="selo hipotese">Hipótese</span> valor de exemplo; o fornecedor pode indicar o do centro que usas</span
+						><span class="selo publicado">Publicado</span> {virgula(pueSetor)} é a média do setor em 2026 (Uptime Institute); o fornecedor
+						pode indicar o do centro que usas</span
 					>
 				</div>
 			</form>
@@ -154,12 +155,11 @@ const virgula = (n: number) => String(n).replace('.', ',');
 				<p class="etiqueta">3 · O que a infraestrutura pode mudar</p>
 				<h2>Mais eficiência, mais visibilidade.</h2>
 			</div>
-			<span class="selo a-validar">Textos a validar pelo Julien</span>
 		</div>
 		<ul class="cartoes-alav">
 			<li>
-				<strong>Usar só o que é preciso</strong>
-				<span>Uma infraestrutura que acompanha a carga (bloco 3) ajusta os recursos ao que a aplicação usa.</span>
+				<strong>Ajustar os recursos à carga</strong>
+				<span>Com a infraestrutura escalável (bloco 3), os recursos acompanham a carga da aplicação.</span>
 			</li>
 			<li>
 				<strong>Ver o que se consome</strong>
@@ -194,6 +194,10 @@ const virgula = (n: number) => String(n).replace('.', ',');
 				consumir mais ou menos.
 			</li>
 			<li>A intensidade é uma média anual do país; a hora do dia muda o valor real.</li>
+			<li>
+				O PUE de {virgula(pueSetor)} é a média por centro de dados; ponderada pela capacidade, é 1,36. Os centros grandes,
+				como os da cloud, costumam ter valores mais baixos.
+			</li>
 		</ul>
 		<div class="volta">
 			<a class="ligacao-seta" href={ligacao(modo, p, 'inicio')}>Voltar à página principal</a>
@@ -206,7 +210,7 @@ const virgula = (n: number) => String(n).replace('.', ',');
 
 <script>
 	type Regiao = { id: string; nome: string; g: number; estado: string; ano?: string; fonte?: string };
-	type Dados = { regioes: Regiao[]; coeficientes: { wMin: number; wMax: number; nota: string } };
+	type Dados = { regioes: Regiao[]; coeficientes: { wMin: number; wMax: number; nota: string }; pue: number };
 	const nomeEstado: Record<string, string> = { publicado: 'Publicado', calculado: 'Calculado', hipotese: 'Hipótese' };
 	const num = (n: number, casas = 1) => n.toLocaleString('pt-PT', { maximumFractionDigits: casas });
 	const selo = (estado: string) => `<span class="selo ${estado}">${nomeEstado[estado] ?? estado}</span>`;
@@ -243,7 +247,7 @@ const virgula = (n: number) => String(n).replace('.', ',');
 			r('escala').textContent = `Cada ponto vale cerca de ${num(u, 1)} kg CO2e (${n} pontos)`;
 			r('formula').innerHTML =
 				`${vcpu} vCPU × (${num(c.wMin, 2)} W + ${uso} % × (${num(c.wMax, 2)} − ${num(c.wMin, 2)}) W) ` +
-				`${selo('hipotese')} <small>${c.nota}</small> × ${horas} h × 30,4 dias × PUE ${num(pue, 2)} ${selo('hipotese')} ` +
+				`${selo('hipotese')} <small>${c.nota}</small> × ${horas} h × 30,4 dias × PUE ${num(pue, 2)} ${selo(pue === d.pue ? 'publicado' : 'hipotese')} ` +
 				`= ${num(kwh, 1)} kWh.<br>${num(kwh, 1)} kWh × ${num(reg.g, 1)} g/kWh (${reg.nome}, Ember ${reg.ano}, ciclo de vida) ` +
 				`${selo(reg.estado)} = ${num(kg, 1)} kg CO2e ${selo('calculado')}`;
 			const max = Math.max(...d.regioes.map((x) => x.g));
