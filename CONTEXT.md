@@ -68,6 +68,10 @@ _Evitar_: servidor ecológico, alojamento verde, alojamento responsável
 A exigência de um CTO de que os dados fiquem na União Europeia, com um fornecedor europeu, ou num serviço qualificado SecNumCloud quando o setor o exige. Vai além do sítio onde os dados ficam guardados.
 _Evitar_: dados na UE (só diz onde os dados ficam), cloud soberana (rótulo comercial dos fornecedores)
 
+**Testemunho**:
+A citação de alguém que trabalhou com Julien, publicada com a autorização escrita do autor, com o primeiro nome, o cargo e a empresa dele.
+_Evitar_: avaliação, avis (os nomes no Malt), review, recomendação
+
 ## Fases da página
 
 **Primeira validação**:
@@ -89,7 +93,7 @@ A língua que o Visitante vê quando abre julienlaffont.com sem escolher nenhuma
 _Evitar_: língua principal
 
 **Língua de referência**:
-A língua em que os textos são escritos e validados com Julien antes de serem traduzidos: o português. O francês e o inglês são traduções dela.
+A língua em que os textos são escritos e validados com Julien antes de serem traduzidos: o português. O francês e o inglês são traduções dela. Os Testemunhos são a exceção: partem do texto do autor, e as traduções são assinaladas.
 _Evitar_: língua original
 
 ## Páginas legais
@@ -99,7 +103,7 @@ A página que identifica Julien como prestador: nome, estatuto, registo, morada 
 _Evitar_: aviso legal, mentions légales (só como título em francês), termos e condições
 
 **Política de privacidade**:
-A página que explica que dados pessoais dos Visitantes e dos CTO são tratados, por quem e para quê.
+A página que explica que dados pessoais dos Visitantes, dos CTO e dos autores dos Testemunhos são tratados, por quem e para quê.
 _Evitar_: política de cookies, RGPD
 
 ## Visitas e privacidade
