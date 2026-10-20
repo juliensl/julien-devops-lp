@@ -1,11 +1,15 @@
 ---
 // PROTÓTIPO v3 · Página principal, igual nas três variantes de cor. Estrutura do
 // protótipo 3, mais aberta (pedido do Julien a 20/10/2026): uma ideia por secção,
-// sem cartões, mais espaço; a página fica mais longa. O Hero tem só o texto e o lugar
-// do elemento 3D que reage ao scroll («Que elemento gráfico 3D tem o Hero?», #53).
+// sem cartões, mais espaço; a página fica mais longa. O Hero tem só o texto e o elemento
+// 3D que reage ao scroll («Que elemento gráfico 3D tem o Hero?», #53): na variante A, as
+// duas ideias do Julien (∞ e ramo) à escolha; nas B e C, ainda o lugar reservado.
 import { Image } from 'astro:assets';
 import foto from '../../../data/IMG_2030.png';
 import Folha from './Folha.astro';
+import HeroInfinito from './HeroInfinito.astro';
+import HeroRamo from './HeroRamo.astro';
+import SeletorHero from './SeletorHero.astro';
 import GraficoCloud from './GraficoCloud.astro';
 import Garantia from './Garantia.astro';
 import DiagramaBloco from './DiagramaBloco.astro';
@@ -20,6 +24,7 @@ interface Props {
 }
 const { p, modo } = Astro.props;
 const id = (s: string) => `p${p}-${s}`;
+const comElemento = p === 1;
 const promessaH1 = textos.promessa.replace('entrego-te', '<span style="white-space:nowrap">entrego-te</span>');
 const resumos = [
 	'Os bugs ficam no pull request.',
@@ -29,7 +34,8 @@ const resumos = [
 ];
 ---
 
-<div class="inicio">
+<div class="inicio" data-hero-raiz={comElemento ? '' : undefined} data-hero={comElemento ? 'inf-cont' : undefined}>
+	{comElemento && <HeroRamo />}
 	<section class="hero" id={id('topo')}>
 		<div class="largura hero-dentro">
 			<div class="hero-texto">
@@ -41,17 +47,25 @@ const resumos = [
 					<span class="nota">{textos.notaCta}</span>
 				</div>
 			</div>
-			<figure class="palco-3d">
-				<div class="palco" aria-hidden="true">
-					<span class="anel a1"></span>
-					<span class="anel a2"></span>
-					<span class="anel a3"></span>
-				</div>
-				<figcaption class="nota-proto">
-					Lugar do elemento 3D que reage ao scroll. Entra quando as duas ideias do Julien estiverem descritas em «Que
-					elemento gráfico 3D tem o Hero?».
-				</figcaption>
-			</figure>
+			{
+				comElemento ? (
+					<div class="palco-3d">
+						<HeroInfinito />
+					</div>
+				) : (
+					<figure class="palco-3d">
+						<div class="palco" aria-hidden="true">
+							<span class="anel a1" />
+							<span class="anel a2" />
+							<span class="anel a3" />
+						</div>
+						<figcaption class="nota-proto">
+							Lugar do elemento 3D que reage ao scroll. Por agora, as duas ideias do Julien só estão na variante A
+							(Escuro).
+						</figcaption>
+					</figure>
+				)
+			}
 		</div>
 	</section>
 
@@ -192,6 +206,7 @@ const resumos = [
 		<a class="botao grande" href={calendly}>{textos.cta}</a>
 		<p class="nota">{textos.notaLingua}</p>
 	</section>
+	{comElemento && <SeletorHero />}
 </div>
 
 <script>
@@ -212,6 +227,11 @@ const resumos = [
 </script>
 
 <style>
+	/* O ramo (variante A) desenha-se por trás das secções, dentro deste bloco. */
+	.inicio {
+		position: relative;
+		isolation: isolate;
+	}
 	.seccao {
 		padding-block: clamp(5rem, 11vw, 9rem);
 	}

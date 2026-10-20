@@ -1,0 +1,392 @@
+---
+// PROTÓTIPO v3 · Ideia 2 do Julien para o Hero («Que elemento gráfico 3D tem o Hero?»,
+// #53): um ramo estilizado que nasce no palco do Hero com folhas e cresce com o scroll
+// pela margem esquerda até às Etapas: um nó em cada secção, 4 pequenos ramos em Serviços
+// (um por bloco), 5 nós nas Etapas e uma folha no fim. Os nós lembram os commits de um
+// ramo do git. Traço roxo, folhas verdes. Só se mexe com o scroll (mais um crescimento
+// inicial de 1,6 s), por isso não precisa de pausa. SVG desenhado com stroke-dashoffset,
+// sem biblioteca. Com prefers-reduced-motion aparece inteiro, parado.
+---
+
+<svg class="ramo" data-ramo aria-hidden="true" hidden>
+	<path class="haste" data-haste></path>
+	<path class="haste-hero" data-haste-hero></path>
+	<g data-extras></g>
+	<circle class="ponta-brilho" data-ponta-brilho r="11"></circle>
+	<circle class="ponta" data-ponta r="3.5"></circle>
+</svg>
+
+<script>
+	type Pt = { x: number; y: number };
+	type Amostra = Pt & { l: number };
+	type Marca = { pt: Pt; len: number; el: SVGElement };
+
+	const NS = 'http://www.w3.org/2000/svg';
+	// Folha com a base em (0,0), virada para +x, comprimento 1; a metade de baixo mais escura.
+	const FOLHA = 'M0 0C.28-.34.72-.36 1 0 .72.36.28.34 0 0Z';
+	const SOMBRA = 'M0 0C.28.34.72.36 1 0Z';
+
+	for (const svg of document.querySelectorAll<SVGSVGElement>('[data-ramo]')) inicia(svg);
+
+	function inicia(svg: SVGSVGElement) {
+		const raiz = svg.closest<HTMLElement>('[data-hero-raiz]')!;
+		const haste = svg.querySelector<SVGPathElement>('[data-haste]')!;
+		const hasteHero = svg.querySelector<SVGPathElement>('[data-haste-hero]')!;
+		const extras = svg.querySelector<SVGGElement>('[data-extras]')!;
+		const ponta = svg.querySelector<SVGCircleElement>('[data-ponta]')!;
+		const pontaBrilho = svg.querySelector<SVGCircleElement>('[data-ponta-brilho]')!;
+		const palco = raiz.querySelector<HTMLElement>('[data-palco]')!;
+		const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+		let ativo = false;
+		let total = 0;
+		let atual = 0;
+		let lenHero = 0;
+		let lut: Amostra[] = [];
+		let marcas: Marca[] = [];
+		let intro = 0;
+		let pedido = 0;
+
+		function el<K extends keyof SVGElementTagNameMap>(tag: K, attrs: Record<string, string | number>, pai: Element = extras) {
+			const e = document.createElementNS(NS, tag);
+			for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, String(v));
+			pai.appendChild(e);
+			return e;
+		}
+
+		function folha(pt: Pt, graus: number, tam: number) {
+			const g = el('g', { transform: `translate(${pt.x} ${pt.y}) rotate(${graus}) scale(${tam})` });
+			const brota = el('g', { class: 'brota' }, g);
+			el('path', { d: FOLHA, class: 'folha' }, brota);
+			el('path', { d: SOMBRA, class: 'folha-sombra' }, brota);
+			return brota;
+		}
+
+		function no(pt: Pt, r = 5) {
+			return el('circle', { cx: pt.x, cy: pt.y, r, class: 'no' });
+		}
+
+		function ramito(a: Pt, b: Pt, tamFolha: number) {
+			const g = el('g', { class: 'ramito' });
+			const p = el('path', { d: `M${a.x} ${a.y}Q${(a.x + b.x) / 2} ${a.y} ${b.x} ${b.y}` }, g);
+			const L = p.getTotalLength();
+			p.style.strokeDasharray = `${L}px`;
+			p.style.setProperty('--L', `${L}px`);
+			const f = folha(b, (Math.atan2(b.y - a.y, (b.x - a.x) / 2) * 180) / Math.PI, tamFolha);
+			g.appendChild(f.parentNode!);
+			return g;
+		}
+
+		// Ponto da haste a um comprimento, pela tabela de amostras (sem getPointAtLength, que é lento).
+		function ponto(len: number): Pt {
+			let a = 0;
+			let b = lut.length - 1;
+			while (b - a > 1) {
+				const m = (a + b) >> 1;
+				if (lut[m].l < len) a = m;
+				else b = m;
+			}
+			const k = Math.min(Math.max((len - lut[a].l) / (lut[b].l - lut[a].l || 1), 0), 1);
+			return { x: lut[a].x + (lut[b].x - lut[a].x) * k, y: lut[a].y + (lut[b].y - lut[a].y) * k };
+		}
+
+		// Ângulo da haste (em graus) num comprimento, para orientar as folhas.
+		function angulo(len: number) {
+			const a = ponto(Math.max(len - 4, 0));
+			const b = ponto(Math.min(len + 4, total));
+			return (Math.atan2(b.y - a.y, b.x - a.x) * 180) / Math.PI;
+		}
+
+		function geometria() {
+			const base = raiz.getBoundingClientRect();
+			const R = (e: Element) => {
+				const r = e.getBoundingClientRect();
+				return { x: r.left - base.left, y: r.top - base.top, w: r.width, h: r.height, b: r.bottom - base.top };
+			};
+			const q = (s: string, de: ParentNode = raiz) => de.querySelector(s)!;
+			const pal = R(palco);
+			const texto = R(q('.hero-texto'));
+			const hero = R(q('section'));
+			const etapas = q('[id$="-etapas"]');
+			const mx = Math.max(9, texto.x - 34);
+			const onda = Math.min(7, mx - 4);
+			const aoLado = pal.x > texto.x + texto.w * 0.5;
+			const P = (u: number, v: number) => ({ x: pal.x + u * pal.w, y: pal.y + v * pal.h });
+
+			svg.setAttribute('width', String(raiz.clientWidth));
+			svg.setAttribute('height', String(R(etapas).b + 80));
+			extras.replaceChildren();
+
+			// O ramo no palco do Hero, de cima para baixo, e a curva até à margem.
+			const hero0 = [P(0.84, 0.06), P(0.7, 0.26), P(0.6, 0.47), P(0.46, 0.68), P(0.34, 0.9)];
+			const pts: Pt[] = [...hero0];
+			if (aoLado) {
+				// Desce junto ao palco até passar o texto e só depois vira para a margem.
+				const y = Math.max(texto.b, pal.b) + 30;
+				pts.push({ x: pal.x + pal.w * 0.1, y: y - 10 });
+				pts.push({ x: texto.x + texto.w * 0.5, y });
+				pts.push({ x: mx + 40, y: y + 30 });
+				pts.push({ x: mx, y: Math.max(y + 110, hero.b) });
+			} else {
+				pts.push({ x: mx + 40, y: pal.b + 30 });
+				pts.push({ x: mx, y: pal.b + 100 });
+			}
+
+			// Pela margem: um nó por secção e 4 ramitos em Serviços, com uma ligeira onda.
+			const nos: Pt[] = [];
+			const ramitos: Pt[] = [];
+			const desce = (y: number, guarda?: Pt[]) => {
+				const ult = pts[pts.length - 1];
+				if (y - ult.y > 70) pts.push({ x: mx + (pts.length % 2 ? onda : -onda), y: (ult.y + y) / 2 });
+				const pt = { x: mx, y };
+				pts.push(pt);
+				guarda?.push(pt);
+			};
+			desce(R(q('.etiqueta', q('[id$="-para-quem"]'))).y + 9, nos);
+			desce(R(q('h2', q('[id$="-problema"]'))).y + 22, nos);
+			for (const c of q('[id$="-servicos"]').querySelectorAll('.camada')) desce(R(c).y + 34, ramitos);
+			desce(R(q('h2', etapas)).b + 14);
+
+			// Etapas: 5 nós por cima dos números (em coluna no telemóvel) e uma folha no fim.
+			const nums = [...etapas.querySelectorAll('[class*="num-etapa"]')].map(R);
+			const emLinha = nums[1].y < nums[0].y + nums[0].h;
+			const nosEtapas = nums.map((n) => (emLinha ? { x: n.x + 8, y: n.y - 14 } : { x: mx, y: n.y + 22 }));
+			for (const n of nosEtapas) {
+				if (!emLinha) desce(n.y);
+				else pts.push(n);
+			}
+			const ult = nosEtapas[4];
+			const fim = emLinha ? { x: ult.x + 64, y: ult.y + 10 } : { x: mx + 10, y: R(etapas).b - 10 };
+			pts.push(fim);
+
+			const c = caminho(pts);
+			lut = c.lut;
+			total = lut[lut.length - 1].l;
+			// pathLength põe os traços nas mesmas unidades que a tabela de amostras.
+			for (const h of [haste, hasteHero]) {
+				h.setAttribute('d', c.d);
+				h.setAttribute('pathLength', String(total));
+			}
+			haste.style.strokeDasharray = String(total);
+
+			// Comprimento ao longo da haste de cada ponto marcado, procurando sempre para a frente.
+			let i0 = 0;
+			const len = (pt: Pt) => {
+				let melhor = i0;
+				let dist = Infinity;
+				for (let i = i0; i < lut.length; i++) {
+					const d = Math.hypot(lut[i].x - pt.x, lut[i].y - pt.y);
+					if (d < dist) {
+						dist = d;
+						melhor = i;
+					}
+				}
+				i0 = melhor;
+				return lut[melhor].l;
+			};
+
+			marcas = [];
+			const marca = (pt: Pt, l: number, e: SVGElement) => marcas.push({ pt, len: l, el: e });
+			const tamHero = Math.max(pal.w * 0.13, 30);
+			const lens = hero0.map(len);
+			marca(hero0[0], 0, folha(hero0[0], angulo(2) + 180, tamHero * 0.8));
+			marca(hero0[1], lens[1], folha(hero0[1], angulo(lens[1]) - 58, tamHero));
+			marca(hero0[2], lens[2], ramito(hero0[2], P(0.9, 0.42), tamHero * 0.7));
+			marca(hero0[2], lens[2], no(hero0[2], 6));
+			marca(hero0[3], lens[3], folha(hero0[3], angulo(lens[3]) + 58, tamHero * 1.05));
+			marca(hero0[4], lens[4], ramito(hero0[4], P(0.1, 0.78), tamHero * 0.6));
+			marca(hero0[4], lens[4], no(hero0[4], 6));
+			lenHero = lens[4];
+			for (const n of nos) marca(n, len(n), no(n));
+			// Os ramitos crescem para a margem, longe do texto; sem margem (telemóvel), só o nó.
+			const tamRamito = Math.min(mx - 22, 34);
+			for (const r of ramitos) {
+				const l = len(r);
+				if (tamRamito >= 14) marca(r, l, ramito(r, { x: r.x - tamRamito, y: r.y - tamRamito * 0.8 }, tamRamito * 0.75));
+				marca(r, l, no(r, 4.5));
+			}
+			i0 = 0;
+			for (const n of nosEtapas) marca(n, len(n), no(n));
+			marca(fim, total, folha(fim, angulo(total - 6) - 30, 30));
+			marcas.sort((a, b) => a.len - b.len);
+		}
+
+		// Até onde a haste já cresceu: até à linha a 62 % da altura do ecrã; o ramo do Hero
+		// aparece inteiro quando o palco está todo à vista.
+		function alvo() {
+			const linha = innerHeight * 0.62 - raiz.getBoundingClientRect().top;
+			let len = 0;
+			for (const a of lut) {
+				if (a.y <= linha) len = a.l;
+				else if (a.y > linha + 160) break;
+			}
+			return palco.getBoundingClientRect().bottom <= innerHeight ? Math.max(lenHero, len) : len;
+		}
+
+		function desenha() {
+			haste.style.strokeDashoffset = String(total - atual);
+			// No Hero o ramo é mais grosso: a mesma curva, só até ao fim do palco.
+			hasteHero.style.strokeDasharray = `${Math.min(atual, lenHero)} ${total}`;
+			const pt = ponto(atual);
+			for (const c of [ponta, pontaBrilho]) {
+				c.setAttribute('cx', String(pt.x));
+				c.setAttribute('cy', String(pt.y));
+				c.toggleAttribute('hidden', atual >= total - 1);
+			}
+			for (const m of marcas) m.el.classList.toggle('on', atual >= m.len - 1);
+		}
+
+		function quadro(agora: number) {
+			pedido = 0;
+			if (!ativo || reduz) return;
+			const destino = alvo();
+			if (intro) {
+				const k = Math.min((agora - intro) / 1600, 1);
+				atual = destino * (1 - (1 - k) ** 3);
+				if (k === 1) intro = 0;
+			} else {
+				atual += (destino - atual) * 0.14;
+				if (Math.abs(destino - atual) < 0.5) atual = destino;
+			}
+			desenha();
+			if (intro || atual !== destino) pedir();
+		}
+
+		function pedir() {
+			if (!pedido) pedido = requestAnimationFrame(quadro);
+		}
+
+		function muda() {
+			ativo = raiz.dataset.hero === 'ramo';
+			svg.toggleAttribute('hidden', !ativo);
+			if (!ativo) return;
+			geometria();
+			if (reduz) {
+				atual = total;
+				desenha();
+				return;
+			}
+			atual = 0;
+			desenha();
+			pedido = requestAnimationFrame((t) => {
+				pedido = 0;
+				intro = t;
+				quadro(t);
+			});
+		}
+
+		raiz.addEventListener('hero-muda', muda);
+		addEventListener('scroll', () => ativo && !reduz && pedir(), { passive: true });
+		let espera = 0;
+		new ResizeObserver(() => {
+			if (!ativo) return;
+			cancelAnimationFrame(espera);
+			espera = requestAnimationFrame(() => {
+				geometria();
+				if (reduz) atual = total;
+				else pedir();
+				desenha();
+			});
+		}).observe(raiz);
+		muda();
+	}
+
+	// Curva suave (Catmull-Rom) que passa por todos os pontos; as tangentes são limitadas a
+	// um terço de cada troço, para não fazer laços quando dois pontos estão muito perto.
+	// Devolve também amostras da curva com o comprimento acumulado.
+	function caminho(p: Pt[]) {
+		const tan = (a: Pt, c: Pt, max: number) => {
+			const x = (c.x - a.x) / 6;
+			const y = (c.y - a.y) / 6;
+			const k = Math.min(1, max / (Math.hypot(x, y) || 1));
+			return { x: x * k, y: y * k };
+		};
+		let d = `M${p[0].x} ${p[0].y}`;
+		const lut: Amostra[] = [{ ...p[0], l: 0 }];
+		for (let i = 0; i < p.length - 1; i++) {
+			const b = p[i];
+			const c = p[i + 1];
+			const max = Math.hypot(c.x - b.x, c.y - b.y) / 3;
+			const t1 = tan(p[i - 1] ?? b, c, max);
+			const t2 = tan(b, p[i + 2] ?? c, max);
+			const c1 = { x: b.x + t1.x, y: b.y + t1.y };
+			const c2 = { x: c.x - t2.x, y: c.y - t2.y };
+			d += `C${c1.x} ${c1.y} ${c2.x} ${c2.y} ${c.x} ${c.y}`;
+			for (let k = 1; k <= 16; k++) {
+				const t = k / 16;
+				const u = 1 - t;
+				const x = u * u * u * b.x + 3 * u * u * t * c1.x + 3 * u * t * t * c2.x + t * t * t * c.x;
+				const y = u * u * u * b.y + 3 * u * u * t * c1.y + 3 * u * t * t * c2.y + t * t * t * c.y;
+				const ant = lut[lut.length - 1];
+				lut.push({ x, y, l: ant.l + Math.hypot(x - ant.x, y - ant.y) });
+			}
+		}
+		return { d, lut };
+	}
+</script>
+
+<style>
+	.ramo {
+		position: absolute;
+		top: 0;
+		left: 0;
+		z-index: -1;
+		pointer-events: none;
+		overflow: visible;
+	}
+	.haste,
+	.haste-hero,
+	.ramo :global(.ramito > path) {
+		fill: none;
+		stroke: var(--acento);
+		stroke-width: 2;
+		stroke-linecap: round;
+	}
+	.haste-hero {
+		stroke-width: 3.5;
+	}
+	.ramo :global(.ramito > path) {
+		stroke-width: 1.75;
+		stroke-dashoffset: var(--L);
+		transition: stroke-dashoffset 0.6s ease-out;
+	}
+	.ramo :global(.ramito.on > path) {
+		stroke-dashoffset: 0;
+	}
+	.ramo :global(.brota) {
+		transform: scale(0);
+		transition: transform 0.5s cubic-bezier(0.3, 1.5, 0.5, 1) 0.15s;
+	}
+	.ramo :global(.on .brota),
+	.ramo :global(.brota.on) {
+		transform: scale(1);
+	}
+	.ramo :global(.folha) {
+		fill: var(--verde);
+	}
+	.ramo :global(.folha-sombra) {
+		fill: var(--verde-forte);
+	}
+	.ramo :global(.no) {
+		fill: var(--bg);
+		stroke: var(--acento);
+		stroke-width: 2;
+		transform-box: fill-box;
+		transform-origin: center;
+		transform: scale(0);
+		transition:
+			transform 0.35s cubic-bezier(0.3, 1.6, 0.5, 1),
+			fill 0.35s ease;
+	}
+	.ramo :global(.no.on) {
+		transform: scale(1);
+		fill: var(--acento);
+	}
+	.ponta {
+		fill: var(--verde);
+	}
+	.ponta-brilho {
+		fill: var(--verde);
+		opacity: 0.18;
+	}
+</style>
