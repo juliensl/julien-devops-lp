@@ -1,0 +1,87 @@
+---
+// PROTÓTIPO v3 · Botão fixo que pausa todas as animações automáticas da página: o ∞ e o
+// ramo, a folha da Ecologia e o carrossel dos testemunhos (WCAG 2.2.2). Guarda o estado em
+// <html data-animacao="pausada"> e avisa com o evento «animacao». Com
+// prefers-reduced-motion não há movimento automático, por isso o botão não aparece.
+---
+
+<button type="button" class="pausa" data-pausa-animacao>
+	<span class="icone" aria-hidden="true"></span><span class="rotulo" data-rotulo>Pausar animação</span>
+</button>
+
+<script>
+	const html = document.documentElement;
+	const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
+	const botoes = [...document.querySelectorAll<HTMLButtonElement>('[data-pausa-animacao]')];
+	const mostra = () => {
+		const pausada = html.dataset.animacao === 'pausada';
+		for (const b of botoes) {
+			b.classList.toggle('pausado', pausada);
+			b.querySelector('[data-rotulo]')!.textContent = pausada ? 'Retomar animação' : 'Pausar animação';
+		}
+	};
+	for (const b of botoes) {
+		b.hidden = reduz;
+		b.addEventListener('click', () => {
+			const pausada = html.dataset.animacao !== 'pausada';
+			if (pausada) html.dataset.animacao = 'pausada';
+			else delete html.dataset.animacao;
+			document.dispatchEvent(new CustomEvent('animacao', { detail: { pausada } }));
+			mostra();
+		});
+	}
+</script>
+
+<style>
+	.pausa {
+		position: fixed;
+		left: calc(16px + env(safe-area-inset-left, 0px));
+		bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+		z-index: 30;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		min-height: 40px;
+		padding: 0 0.9rem 0 0.75rem;
+		border-radius: 999px;
+		border: 1px solid var(--line-forte);
+		background: color-mix(in srgb, var(--bg) 85%, transparent);
+		backdrop-filter: blur(6px);
+		color: var(--muted);
+		font: 500 0.8125rem/1 var(--sans);
+		cursor: pointer;
+	}
+	.pausa:hover {
+		color: var(--text);
+		border-color: var(--text);
+	}
+	.icone {
+		width: 10px;
+		height: 12px;
+		border-inline: 3px solid currentColor;
+	}
+	.pausado .icone {
+		width: 0;
+		height: 0;
+		border-inline: 0;
+		border-left: 10px solid currentColor;
+		border-block: 6px solid transparent;
+	}
+	/* No telemóvel: só o ícone (o texto fica para leitores de ecrã), acima da barra do protótipo. */
+	@media (max-width: 700px) {
+		.pausa {
+			bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+			width: 40px;
+			padding: 0;
+			justify-content: center;
+		}
+		.rotulo {
+			position: absolute;
+			width: 1px;
+			height: 1px;
+			overflow: hidden;
+			clip-path: inset(50%);
+			white-space: nowrap;
+		}
+	}
+</style>

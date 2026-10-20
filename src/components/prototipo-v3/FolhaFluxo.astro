@@ -1,0 +1,211 @@
+---
+// PROTÓTIPO v3 · Folha de pontos em fluxo contínuo, na estética do ∞ do Hero (pedido do Julien
+// a 20/10/2026): a forma da folha que já usamos (ícone Lucide «leaf», como em Folha.astro),
+// com pontos verdes a correr pelo contorno e roxos pela nervura, a balançar em 3D. Usa as cores
+// fixas do ∞. Para com o botão de pausa da página; com prefers-reduced-motion fica parada.
+interface Props {
+	tamanho?: string;
+}
+const { tamanho = '18rem' } = Astro.props;
+---
+
+<div class="folha-fluxo" style={`--tam:${tamanho}`} aria-hidden="true" data-folha-fluxo>
+	<canvas></canvas>
+</div>
+
+<script>
+	type P3 = [number, number, number];
+	const TAU = Math.PI * 2;
+	// Pontos do ícone (24 × 24), já amostrados a intervalos iguais: contorno (fechado) e nervura.
+	// Assim não há medições do caminho SVG no carregamento.
+	const CONTORNO = [
+		11, 20, 10.22, 19.96, 9.46, 19.83, 8.71, 19.62, 7.99, 19.33, 7.31, 18.96, 6.67, 18.52, 6.09, 18.01, 5.56, 17.43, 5.1,
+		16.81, 4.72, 16.13, 4.41, 15.42, 4.18, 14.68, 4.04, 13.92, 3.98, 13.14, 4.01, 12.37, 4.12, 11.6, 4.32, 10.85, 4.6, 10.12,
+		4.96, 9.43, 5.39, 8.79, 5.89, 8.19, 6.45, 7.66, 7.07, 7.19, 7.74, 6.79, 8.44, 6.47, 9.18, 6.23, 9.94, 6.07, 10.71, 5.92,
+		11.47, 5.77, 12.23, 5.61, 12.98, 5.44, 13.74, 5.25, 14.49, 5.04, 15.22, 4.79, 15.94, 4.5, 16.63, 4.14, 17.28, 3.72, 17.88,
+		3.22, 18.43, 2.67, 18.93, 2.08, 19.3, 2.6, 19.62, 3.31, 19.93, 4.02, 20.2, 4.75, 20.43, 5.49, 20.62, 6.25, 20.76, 7.01,
+		20.87, 7.78, 20.95, 8.55, 20.99, 9.33, 21, 10.1, 20.96, 10.88, 20.86, 11.65, 20.69, 12.41, 20.46, 13.15, 20.18, 13.87,
+		19.84, 14.57, 19.44, 15.24, 19, 15.88, 18.51, 16.48, 17.98, 17.04, 17.4, 17.57, 16.79, 18.05, 16.15, 18.49, 15.48, 18.87,
+		14.78, 19.21, 14.05, 19.49, 13.31, 19.71, 12.55, 19.87, 11.78, 19.97, 11, 20,
+	];
+	const NERVURA = [
+		2, 21, 2.03, 20.34, 2.13, 19.68, 2.29, 19.03, 2.53, 18.41, 2.83, 17.82, 3.2, 17.27, 3.64, 16.77, 4.13, 16.32, 4.67, 15.94,
+		5.25, 15.61, 5.86, 15.35, 6.49, 15.14, 7.14, 14.99, 7.79, 14.83, 8.42, 14.64, 9.05, 14.41, 9.66, 14.15, 10.26, 13.86,
+		10.84, 13.55, 11.42, 13.21, 11.97, 12.84, 12.5, 12.44, 13, 12,
+	];
+
+	// Cada folha só arranca quando chega perto do ecrã.
+	const espera = new IntersectionObserver(
+		(entradas) => {
+			for (const e of entradas) {
+				if (!e.isIntersecting) continue;
+				espera.unobserve(e.target);
+				inicia(e.target as HTMLElement);
+			}
+		},
+		{ rootMargin: '200px' },
+	);
+	for (const caixa of document.querySelectorAll<HTMLElement>('[data-folha-fluxo]')) espera.observe(caixa);
+
+	function inicia(caixa: HTMLElement) {
+		const canvas = caixa.querySelector('canvas')!;
+		const ctx = canvas.getContext('2d')!;
+		const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
+		const tokens = getComputedStyle(caixa);
+		const roxo = tokens.getPropertyValue('--elemento-roxo').trim() || '#c3a6ff';
+		const verde = tokens.getPropertyValue('--elemento-verde').trim() || '#86d9a8';
+		const brilhos = [brilho(roxo), brilho(verde)];
+		// O ícone mede 24 × 24; centrado em (12, 11.5) e normalizado para cerca de -1…1, com uma
+		// ligeira curvatura em z para a folha não ser plana.
+		const normaliza = (lista: number[]) => {
+			const pts: P3[] = [];
+			for (let i = 0; i < lista.length; i += 2) {
+				const x = (lista[i] - 12) / 10;
+				const y = (lista[i + 1] - 11.5) / 10;
+				pts.push([x, y, 0.28 * (x * x + y * y) - 0.15]);
+			}
+			return pts;
+		};
+		const contorno = normaliza(CONTORNO);
+		const nervura = normaliza(NERVURA);
+		const ponto = (pts: P3[], u: number, fechado: boolean): P3 => {
+			const v = fechado ? ((u % 1) + 1) % 1 : Math.min(Math.max(u, 0), 1);
+			const f = v * (pts.length - 1);
+			const i = Math.floor(f);
+			const k = f - i;
+			const a = pts[i];
+			const b = pts[Math.min(i + 1, pts.length - 1)];
+			return [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k];
+		};
+		const parts = (n: number) =>
+			Array.from({ length: n }, (_, i) => ({
+				u: i / n,
+				r: (Math.random() - 0.5) * 0.07,
+				a: Math.random() * TAU,
+				s: 0.6 + Math.random() * 0.9,
+			}));
+		const noContorno = parts(170);
+		const naNervura = parts(55);
+
+		let w = 0;
+		let h = 0;
+		let visivel = false;
+		let pedido = 0;
+		let antes = 0;
+		let tempo = 0;
+		const pausada = () => reduz || document.documentElement.dataset.animacao === 'pausada';
+
+		function desenha() {
+			ctx.clearRect(0, 0, w, h);
+			const ay = reduz ? -0.35 : 0.45 * Math.sin(tempo * 0.45);
+			const ax = 0.3 + (reduz ? 0 : 0.12 * Math.sin(tempo * 0.3));
+			const escala = w * 0.42;
+			const proj = (p: P3) => {
+				const cy = Math.cos(ay);
+				const sy = Math.sin(ay);
+				const cx = Math.cos(ax);
+				const sx = Math.sin(ax);
+				const X = p[0] * cy + p[2] * sy;
+				let Z = -p[0] * sy + p[2] * cy;
+				const Y = p[1] * cx - Z * sx;
+				Z = p[1] * sx + Z * cx;
+				const k = 3 / (3 - Z);
+				return [w / 2 + X * k * escala, h / 2 + Y * k * escala, Z, k];
+			};
+			// Traços finos para dar a forma.
+			ctx.globalCompositeOperation = 'source-over';
+			ctx.lineWidth = Math.max(1, w / 360);
+			for (const [pts, cor] of [
+				[contorno, verde],
+				[nervura, roxo],
+			] as const) {
+				ctx.beginPath();
+				pts.forEach((p, i) => {
+					const [x, y] = proj(p);
+					if (i) ctx.lineTo(x, y);
+					else ctx.moveTo(x, y);
+				});
+				ctx.strokeStyle = cor;
+				ctx.globalAlpha = 0.22;
+				ctx.stroke();
+			}
+			// Pontos a correr: no contorno dão a volta, na nervura sobem do pé até à ponta.
+			ctx.globalCompositeOperation = 'lighter';
+			const base = w * 0.016;
+			for (const [lista, pts, fechado, img, vel] of [
+				[noContorno, contorno, true, brilhos[1], 0.035],
+				[naNervura, nervura, false, brilhos[0], 0.12],
+			] as const) {
+				for (const q of lista) {
+					const u = fechado ? q.u + tempo * vel : (q.u + tempo * vel) % 1;
+					const c = ponto(pts, u, fechado);
+					const ang = q.a + tempo * 1.2;
+					const [x, y, z, k] = proj([c[0] + q.r * Math.cos(ang), c[1] + q.r * Math.sin(ang), c[2] + q.r * Math.sin(ang)]);
+					const tam = base * q.s * k;
+					ctx.globalAlpha = Math.min(Math.max(0.35 + (z + 1) * 0.35, 0.25), 1) * (fechado ? 1 : Math.min(u * 6, 1));
+					ctx.drawImage(img, x - tam, y - tam, tam * 2, tam * 2);
+				}
+			}
+			ctx.globalAlpha = 1;
+		}
+
+		function quadro(agora: number) {
+			pedido = 0;
+			if (!visivel) return;
+			const dt = antes ? Math.min((agora - antes) / 1000, 0.05) : 0;
+			antes = agora;
+			if (!pausada()) tempo += dt;
+			desenha();
+			if (!pausada()) pedir();
+			else antes = 0;
+		}
+		function pedir() {
+			if (!pedido) pedido = requestAnimationFrame(quadro);
+		}
+
+		document.addEventListener('animacao', () => {
+			antes = 0;
+			pedir();
+		});
+		new IntersectionObserver(([e]) => {
+			visivel = e.isIntersecting;
+			antes = 0;
+			pedir();
+		}).observe(caixa);
+		new ResizeObserver(() => {
+			const dpr = Math.min(devicePixelRatio || 1, 2);
+			w = canvas.width = Math.round(canvas.clientWidth * dpr);
+			h = canvas.height = Math.round(canvas.clientHeight * dpr);
+			pedir();
+		}).observe(canvas);
+	}
+
+	function brilho(cor: string) {
+		const c = document.createElement('canvas');
+		c.width = c.height = 64;
+		const g = c.getContext('2d')!;
+		const [r, v, a] = [1, 3, 5].map((i) => parseInt(cor.slice(i, i + 2), 16));
+		const gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+		gr.addColorStop(0, 'rgba(255,255,255,0.95)');
+		gr.addColorStop(0.16, `rgba(${r},${v},${a},1)`);
+		gr.addColorStop(0.42, `rgba(${r},${v},${a},0.28)`);
+		gr.addColorStop(1, `rgba(${r},${v},${a},0)`);
+		g.fillStyle = gr;
+		g.fillRect(0, 0, 64, 64);
+		return c;
+	}
+</script>
+
+<style>
+	.folha-fluxo {
+		position: relative;
+		width: var(--tam);
+		max-width: 100%;
+		aspect-ratio: 1;
+	}
+	canvas {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+</style>

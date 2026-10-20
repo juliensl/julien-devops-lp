@@ -5,6 +5,7 @@ import Pontos from './Pontos.astro';
 import Cabecalho from './Cabecalho.astro';
 import Rodape from './Rodape.astro';
 import Comutador from './Comutador.astro';
+import PausaAnimacao from './PausaAnimacao.astro';
 import type { P, Pagina, Modo } from './dados';
 import { idVista } from './temas';
 
@@ -27,6 +28,7 @@ const pontos = 'deriva';
 		<slot />
 	</main>
 	<Rodape p={p} modo={modo} />
+	{pagina !== 'perguntas' && <PausaAnimacao />}
 	<Comutador p={p} pagina={pagina} modo={modo} />
 </div>
 

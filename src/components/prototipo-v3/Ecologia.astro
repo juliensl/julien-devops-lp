@@ -5,6 +5,7 @@
 // eletricidade, location-based, intensidade de ciclo de vida da Ember (2025).
 // Distingue sempre dados publicados, hipóteses e cálculos.
 import Folha from './Folha.astro';
+import FolhaFluxo from './FolhaFluxo.astro';
 import { regioes, coeficientes, utilizacaoCcf, pueSetor, fontesEco, nomesEstado, calendly, textos, type P, type Modo } from './dados';
 import { ligacao } from './temas';
 
@@ -23,7 +24,10 @@ const virgula = (n: number) => String(n).replace('.', ',');
 	<section class="largura eco-hero">
 		<div class="eco-hero-texto">
 			<p class="etiqueta"><Folha tamanho={16} /> Ecologia e infraestrutura</p>
-			<h1>As escolhas de infraestrutura também têm consequências ambientais.</h1>
+			<div class="titulo-folha">
+				<h1>As escolhas de infraestrutura também têm consequências ambientais.</h1>
+				<FolhaFluxo tamanho="11rem" />
+			</div>
 			<p class="lead">
 				Onde a aplicação corre, quanto tempo corre e com que eficiência mudam a energia que consome e as emissões da
 				eletricidade que usa. Aqui estimas uma carga, conforme o país onde corre, com o método e as fontes à vista.
@@ -294,6 +298,24 @@ const virgula = (n: number) => String(n).replace('.', ',');
 		display: inline-flex;
 		align-items: center;
 		gap: 0.4rem;
+	}
+	/* O título e, ao lado, a folha de pontos em fluxo (a mesma da página principal). */
+	.titulo-folha {
+		display: flex;
+		align-items: center;
+		gap: 1rem 2rem;
+	}
+	.titulo-folha :global(.folha-fluxo) {
+		flex: none;
+	}
+	@media (max-width: 640px) {
+		.titulo-folha {
+			flex-direction: column-reverse;
+			align-items: start;
+		}
+		.titulo-folha :global(.folha-fluxo) {
+			width: 8rem;
+		}
 	}
 	.eco-hero {
 		display: grid;

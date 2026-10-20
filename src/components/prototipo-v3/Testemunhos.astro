@@ -1,7 +1,8 @@
 ---
-// PROTÓTIPO v3 · Os 3 testemunhos num carrossel manual, em teste: a validar pelo Julien
-// (a decisão de #51 era os 3 visíveis ao mesmo tempo). Nunca passa sozinho. Sem JavaScript,
-// a faixa desliza; o script só acrescenta as setas e o indicador «1 de 3».
+// PROTÓTIPO v3 · Os 3 testemunhos num carrossel, um de cada vez (a decisão de #51 era os 3
+// visíveis ao mesmo tempo). Desde 20/10/2026 passa sozinho, a pedido do Julien: cada testemunho
+// fica o tempo de o ler e depois passa ao seguinte. Sem JavaScript, a faixa desliza; o script
+// acrescenta as setas, o indicador «1 de 3», a barra do tempo e a passagem automática.
 import { testemunhos, type P } from './dados';
 
 interface Props {
@@ -15,14 +16,16 @@ const total = testemunhos.length;
 
 <div class:list={['testemunhos', `t${p}`, classe]} {...resto}>
 	<p class="nota-proto">
-		Carrossel em teste, a validar pelo Julien (antes: os 3 visíveis ao mesmo tempo). Testemunhos reais do Malt, já
-		autorizados; a tradução é a rever pela estagiária e a aprovar por cada autor.
+		Passa sozinho: cada testemunho fica o tempo de o ler (cerca de 200 palavras por minuto, pelo menos 8 s). Para com
+		o rato ou o foco em cima e com o botão de pausa. Testemunhos reais do Malt, já autorizados; a tradução é a rever
+		pela estagiária e a aprovar por cada autor.
 	</p>
 	<section class="carrossel" aria-roledescription="carrossel" aria-label="Testemunhos" data-carrossel>
 		<div class="controlos" hidden data-controlos>
 			<button type="button" class="seta" aria-label="Testemunho anterior" data-anterior>←</button>
 			<span class="indicador" aria-live="polite" data-indicador>1 de {total}</span>
 			<button type="button" class="seta" aria-label="Testemunho seguinte" data-seguinte>→</button>
+			<span class="tempo" aria-hidden="true"><span data-tempo></span></span>
 		</div>
 		<div class="faixa" tabindex="0" role="group" aria-label="Faixa de testemunhos: desliza para ver os outros">
 			{
@@ -45,12 +48,17 @@ const total = testemunhos.length;
 </div>
 
 <script>
-	// Setas e indicador. As setas dão a volta (do 3.º para o 1.º) para o foco nunca ficar num botão desativado.
-	const reduzir = matchMedia('(prefers-reduced-motion: reduce)');
+	// Setas, indicador e passagem automática. As setas dão a volta (do 3.º para o 1.º) para o foco
+	// nunca ficar num botão desativado. Cada testemunho fica o tempo de o ler (cerca de 200 palavras
+	// por minuto, pelo menos 8 s): a barra do tempo é uma animação CSS e, quando acaba, passa ao
+	// seguinte. A barra para com o rato ou o foco no carrossel, fora do ecrã e com o botão de pausa
+	// da página (WCAG 2.2.2); com prefers-reduced-motion não anima, por isso só há as setas.
 	for (const raiz of document.querySelectorAll<HTMLElement>('[data-carrossel]')) {
 		const faixa = raiz.querySelector<HTMLElement>('.faixa')!;
 		const slides = [...faixa.children] as HTMLElement[];
 		const indicador = raiz.querySelector<HTMLElement>('[data-indicador]')!;
+		const barra = raiz.querySelector<HTMLElement>('[data-tempo]')!;
+		const tempos = slides.map((s) => Math.max(8, (s.textContent!.trim().split(/\s+/).length / 200) * 60 + 2));
 		const posicao = (el: HTMLElement) => el.offsetLeft - slides[0].offsetLeft;
 		const atual = () => {
 			let melhor = 0;
@@ -59,19 +67,68 @@ const total = testemunhos.length;
 			});
 			return melhor;
 		};
+		let mostrado = 0;
+		let visivel = false;
+		let dentro = false;
 		const ir = (i: number) => {
 			const alvo = (i + slides.length) % slides.length;
-			faixa.scrollTo({ left: posicao(slides[alvo]), behavior: reduzir.matches ? 'auto' : 'smooth' });
+			faixa.scrollTo({ left: posicao(slides[alvo]), behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
 		};
+		// Recomeça a barra do testemunho i.
+		const recomeca = (i: number) => {
+			barra.classList.remove('a-contar');
+			barra.style.animationDuration = `${tempos[i]}s`;
+			void barra.offsetWidth;
+			barra.classList.add('a-contar');
+		};
+		const estado = () => {
+			const parado = document.documentElement.dataset.animacao === 'pausada' || !visivel || dentro || document.hidden;
+			barra.style.animationPlayState = parado ? 'paused' : 'running';
+			// Enquanto passa sozinho, o indicador não é anunciado a cada troca.
+			indicador.setAttribute('aria-live', parado ? 'polite' : 'off');
+		};
+		barra.addEventListener('animationend', () => ir(atual() + 1));
 		raiz.querySelector('[data-anterior]')!.addEventListener('click', () => ir(atual() - 1));
 		raiz.querySelector('[data-seguinte]')!.addEventListener('click', () => ir(atual() + 1));
 		let espera = 0;
 		faixa.addEventListener('scroll', () => {
 			clearTimeout(espera);
 			espera = window.setTimeout(() => {
-				indicador.textContent = `${atual() + 1} de ${slides.length}`;
+				const i = atual();
+				if (i !== mostrado) {
+					mostrado = i;
+					recomeca(i);
+				}
+				indicador.textContent = `${i + 1} de ${slides.length}`;
 			}, 80);
 		});
+		raiz.addEventListener('pointerenter', () => {
+			dentro = true;
+			estado();
+		});
+		raiz.addEventListener('pointerleave', () => {
+			dentro = raiz.contains(document.activeElement);
+			estado();
+		});
+		raiz.addEventListener('focusin', () => {
+			dentro = true;
+			estado();
+		});
+		raiz.addEventListener('focusout', (e) => {
+			dentro = raiz.contains(e.relatedTarget as Node) || raiz.matches(':hover');
+			estado();
+		});
+		new IntersectionObserver(
+			([e]) => {
+				visivel = e.isIntersecting;
+				estado();
+			},
+			{ threshold: 0.5 },
+		).observe(raiz);
+		document.addEventListener('animacao', estado);
+		document.addEventListener('visibilitychange', estado);
+		recomeca(0);
+		estado();
 		raiz.querySelector<HTMLElement>('[data-controlos]')!.hidden = false;
 		raiz.classList.add('com-js');
 	}
@@ -161,6 +218,28 @@ const total = testemunhos.length;
 	}
 	.seta:hover {
 		border-color: var(--acento);
+	}
+	/* Barra do tempo de leitura do testemunho atual. */
+	.tempo {
+		position: relative;
+		width: 6rem;
+		height: 2px;
+		background: var(--line-forte);
+	}
+	.tempo span {
+		position: absolute;
+		inset: 0;
+		background: var(--verde);
+		transform: scaleX(0);
+		transform-origin: left;
+	}
+	.tempo .a-contar {
+		animation: enche linear forwards paused;
+	}
+	@keyframes enche {
+		to {
+			transform: scaleX(1);
+		}
 	}
 	.indicador {
 		min-width: 4.5ch;

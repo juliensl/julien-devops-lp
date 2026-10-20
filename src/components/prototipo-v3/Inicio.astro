@@ -8,6 +8,7 @@ import { Image } from 'astro:assets';
 import foto from '../../../data/IMG_2030.png';
 import Folha from './Folha.astro';
 import HeroElemento from './HeroElemento.astro';
+import FolhaFluxo from './FolhaFluxo.astro';
 import GraficoCloud from './GraficoCloud.astro';
 import Garantia from './Garantia.astro';
 import DiagramaBloco from './DiagramaBloco.astro';
@@ -165,6 +166,7 @@ const resumos = [
 			</p>
 			<a class="ligacao-seta" href={ligacao(modo, p, 'ecologia')}><Folha tamanho={18} /> Abrir a página de ecologia</a>
 		</div>
+		<FolhaFluxo tamanho="20rem" />
 	</section>
 
 	<section class="largura seccao" id={id('faq')}>
@@ -513,8 +515,8 @@ const resumos = [
 		font-size: 0.9375rem;
 	}
 	/* Quem é o Julien: faixa de cor */
+	/* Sem faixa de cor desde 20/10/2026: o ramo dá meia volta à fotografia. */
 	.quem {
-		background: var(--surface-verde);
 		padding-block: clamp(5rem, 10vw, 8rem);
 	}
 	.quem-dentro {
@@ -540,7 +542,16 @@ const resumos = [
 		display: grid;
 		gap: 2rem;
 	}
-	/* Ecologia */
+	/* Ecologia: o texto e a folha de pontos em fluxo */
+	.eco {
+		display: grid;
+		grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+		gap: 2rem 4rem;
+		align-items: center;
+	}
+	.eco :global(.folha-fluxo) {
+		justify-self: center;
+	}
 	.eco-texto {
 		display: grid;
 		gap: 1.25rem;
@@ -571,6 +582,7 @@ const resumos = [
 	}
 	@media (max-width: 960px) {
 		.hero-dentro,
+		.eco,
 		.pista-cab,
 		.pista,
 		.quem-dentro {
