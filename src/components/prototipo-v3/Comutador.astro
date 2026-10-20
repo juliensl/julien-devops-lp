@@ -1,6 +1,7 @@
 ---
 // PROTÓTIPO v3 · Barra do protótipo: muda de página e abre a ficha do tema. Desde 20/10/2026
-// só há a variante escura, por isso deixou de mudar de variante.
+// só há a variante escura, por isso deixou de mudar de variante. Também a 20/10/2026 passou a
+// trocar o logótipo entre as três versões do ∞ em teste (Logotipo.astro).
 import { contraste, type P, type Pagina, type Modo } from './dados';
 import { temas, nomesPagina, ligacao } from './temas';
 
@@ -16,9 +17,14 @@ const total = num(tema.fontes.reduce((s, f) => s + f.kb, 0));
 const paginas: Pagina[] = ['inicio', 'ecologia', 'perguntas'];
 const curto: Record<Pagina, string> = { ...nomesPagina, inicio: 'Início' };
 const idFicha = `ficha-p${p}-${pagina}`;
+const logos = [
+	{ id: 'abraca', nome: 'o ∞ a abraçar o nome' },
+	{ id: 'tras', nome: 'o ∞ por trás do nome' },
+	{ id: 'fita', nome: 'o ∞ entrelaçado no nome' },
+];
 ---
 
-<div class="comutador" role="region" aria-label="Protótipo: páginas" data-comutador>
+<div class="comutador" role="region" aria-label="Protótipo: páginas e logótipo" data-comutador>
 	<span class="tag">Protótipo</span>
 	<ul class="paginas">
 		{
@@ -31,6 +37,22 @@ const idFicha = `ficha-p${p}-${pagina}`;
 			))
 		}
 	</ul>
+	<div class="logos" role="group" aria-label="Logótipo">
+		<span class="rot" aria-hidden="true">Logo</span>
+		{
+			logos.map((l, i) => (
+				<button
+					type="button"
+					data-logo-escolha={l.id}
+					aria-pressed={i === 0 ? 'true' : 'false'}
+					aria-label={`Logótipo ${i + 1}: ${l.nome}`}
+					title={l.nome}
+				>
+					{i + 1}
+				</button>
+			))
+		}
+	</div>
 	<details class="ficha" data-fecha>
 		<summary>Ficha</summary>
 		<div class="ficha-painel" id={idFicha}>
@@ -64,6 +86,25 @@ const idFicha = `ficha-p${p}-${pagina}`;
 	</details>
 </div>
 
+<script>
+	// Troca o logótipo em todas as vistas e guarda a escolha (o <head> do layout repõe-na).
+	const raiz = document.documentElement;
+	const botoes = [...document.querySelectorAll<HTMLButtonElement>('[data-logo-escolha]')];
+	const marca = () => {
+		const atual = raiz.dataset.logo ?? 'abraca';
+		for (const b of botoes) b.setAttribute('aria-pressed', String(b.dataset.logoEscolha === atual));
+	};
+	for (const b of botoes) {
+		b.addEventListener('click', () => {
+			raiz.dataset.logo = b.dataset.logoEscolha;
+			try {
+				localStorage.setItem('prototipo-v3-logo', b.dataset.logoEscolha!);
+			} catch {}
+			marca();
+		});
+	}
+	marca();
+</script>
 
 <style>
 	.comutador {
@@ -105,6 +146,7 @@ const idFicha = `ficha-p${p}-${pagina}`;
 		margin-inline: 0.2rem;
 	}
 	.comutador a,
+	.comutador button,
 	.ficha summary {
 		display: inline-grid;
 		place-items: center;
@@ -116,12 +158,34 @@ const idFicha = `ficha-p${p}-${pagina}`;
 		text-decoration: none;
 		cursor: pointer;
 	}
-	.comutador a:hover {
+	.comutador button {
+		border: 0;
+		background: none;
+		font: inherit;
+		min-width: 32px;
+		padding: 0 0.4rem;
+	}
+	.comutador a:hover,
+	.comutador button:hover {
 		background: #ececec;
 	}
-	.comutador a[aria-current] {
+	.comutador a[aria-current],
+	.comutador button[aria-pressed='true'] {
 		background: #111111;
 		color: #ffffff;
+	}
+	.logos {
+		display: flex;
+		align-items: center;
+		gap: 0.1rem;
+		padding-left: 0.4rem;
+		margin-left: 0.15rem;
+		border-left: 1px solid #d4d4d4;
+	}
+	.rot {
+		font-size: 0.6875rem;
+		color: #555555;
+		margin-right: 0.15rem;
 	}
 	.comutador :focus-visible {
 		outline: 2px solid #1a56db;
@@ -187,9 +251,21 @@ const idFicha = `ficha-p${p}-${pagina}`;
 	.cores small {
 		color: #555555;
 	}
-	@media (max-width: 520px) {
+	/* No telemóvel a escolha do logótipo e a ficha passam para uma segunda linha. */
+	@media (max-width: 560px) {
+		.comutador {
+			flex-wrap: wrap;
+			justify-content: center;
+			row-gap: 0.2rem;
+			border-radius: 22px;
+		}
 		.tag {
 			display: none;
+		}
+		.logos {
+			border-left: 0;
+			margin-left: 0;
+			padding-left: 0;
 		}
 	}
 </style>

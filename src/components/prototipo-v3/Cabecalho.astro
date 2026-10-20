@@ -4,6 +4,7 @@
 // No telemóvel, as perguntas e a língua passam para um menu <details> (sem JS para
 // abrir; o JS só fecha ao clicar fora, com Escape ou depois de escolher).
 import Folha from './Folha.astro';
+import Logotipo from './Logotipo.astro';
 import { calendly, publicos, type P, type Pagina, type Modo } from './dados';
 import { ligacao } from './temas';
 
@@ -21,10 +22,7 @@ const todas = ligacao(modo, p, 'perguntas');
 <header class:list={['cab', `cab-${p}`]} data-cab>
 	<div class="cab-dentro largura">
 		<a class="marca" href={inicio} aria-label="Julien Laffont, página principal">
-			<span class="nome n3">
-				<span><span class="fr">Jul</span>ien</span>
-				<span class="l2">Laff<span class="fr">ont</span></span>
-			</span>
+			<Logotipo uid={`p${p}-${pagina}`} />
 		</a>
 
 		<nav class="nav" aria-label="Páginas">
@@ -137,47 +135,6 @@ const todas = ligacao(modo, p, 'perguntas');
 		display: inline-flex;
 		align-items: center;
 		min-height: 44px;
-	}
-	.nome {
-		font-family: var(--serif);
-		white-space: nowrap;
-	}
-	.n1 {
-		font-size: 1.5rem;
-	}
-	.pilula {
-		display: inline-block;
-		border: 1px solid var(--acento);
-		border-radius: 999px;
-		padding: 0.02em 0.4em 0.08em;
-	}
-	.n2 {
-		font-size: 1.45rem;
-	}
-	.cx {
-		display: inline-block;
-		border: 1.5px solid var(--acento);
-		border-radius: 0.3em;
-		padding: 0 0.12em;
-		margin-right: 0.04em;
-		line-height: 1.12;
-	}
-	.n3 {
-		display: grid;
-		font-size: 1rem;
-		line-height: 1.2;
-		text-transform: uppercase;
-		letter-spacing: 0.12em;
-	}
-	.n3 .l2 {
-		padding-left: 1.1em;
-	}
-	.fr {
-		display: inline-block;
-		border: 1px solid var(--verde);
-		border-radius: 0.38em;
-		padding: 0 0.12em 0 0.2em;
-		margin: 1px 0.05em;
 	}
 	.nav {
 		margin-left: auto;
@@ -437,21 +394,12 @@ const todas = ligacao(modo, p, 'perguntas');
 			padding: 0 0.75rem;
 			font-size: 0.8125rem;
 		}
-		.n1,
-		.n2 {
-			font-size: 1.1rem;
-		}
-		.n3 {
-			font-size: 0.8125rem;
-		}
 	}
-	@media (max-width: 380px) {
-		.n1,
-		.n2 {
-			font-size: 0.95rem;
-		}
-		.n3 {
-			font-size: 0.6875rem;
+	/* Nos ecrãs mais estreitos o nome com o ∞ não cabe ao lado da folha: a Ecologia fica só no menu,
+	   onde já está. */
+	@media (max-width: 359px) {
+		.eco {
+			display: none;
 		}
 	}
 </style>

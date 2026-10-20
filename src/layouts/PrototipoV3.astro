@@ -14,6 +14,13 @@ const { titulo } = Astro.props;
 		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 		<meta name="robots" content="noindex" />
 		<title>{titulo}</title>
+		<script is:inline>
+			// Logótipo escolhido na barra do protótipo, aplicado antes de a página aparecer.
+			try {
+				const logo = localStorage.getItem('prototipo-v3-logo');
+				if (['abraca', 'tras', 'fita'].includes(logo)) document.documentElement.dataset.logo = logo;
+			} catch {}
+		</script>
 	</head>
 	<body>
 		<slot />

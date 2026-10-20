@@ -1,12 +1,8 @@
 ---
 // PROTÓTIPO v3 · A Garantia como foi validada: pelo menos 99 % em cada mês, nos 3 meses
 // seguintes à entrega, sem equivalência anual nem horas por mês (validado a 19/10/2026).
-// A 20/10/2026 o Julien pediu outra representação do 99 % (os quadrados de pontos não
-// serviam). Três em teste, trocadas por um seletor do protótipo; sem JS fica a primeira:
-// 1. anel de 100 pontos, no estilo do ∞ (99 acesos, 1 apagado);
-// 2. linha dos 3 meses a partir da entrega, com o que acontece se um mês falhar;
-// 3. número grande e uma barra em que só a ponta (1 %) muda de cor.
-// Só aparecem números validados: 99 % e 3 meses.
+// A 20/10/2026 o Julien escolheu, entre três propostas, o número grande e uma barra da largura
+// da página em que só a ponta (1 %) muda de cor. Só aparecem números validados: 99 % e 3 meses.
 import { textos } from './dados';
 
 interface Props {
@@ -26,46 +22,8 @@ interface Props {
 		</div>
 	</div>
 
-	<div class="ga-escolha" role="group" aria-label="Protótipo: representação da Garantia" data-ga-escolha hidden>
-		<span class="tag">Protótipo</span>
-		<button type="button" aria-pressed="true" data-ga="anel">Anel de pontos</button>
-		<button type="button" aria-pressed="false" data-ga="linha">Linha dos 3 meses</button>
-		<button type="button" aria-pressed="false" data-ga="numero">Número e barra</button>
-	</div>
 
-	<figure class="ga-vis anel" data-ga-vis="anel">
-		<div class="anel-caixa">
-			<canvas data-anel aria-hidden="true"></canvas>
-			<p class="anel-centro"><span class="n">99&nbsp;%</span><span>em cada mês</span></p>
-		</div>
-		<figcaption>
-			100 pontos, um por cada 1 % do mês: 99 com serviço e 1 apagado, a margem máxima sem serviço. Durante os 3
-			meses seguintes à entrega.
-		</figcaption>
-	</figure>
-
-	<figure class="ga-vis linha" data-ga-vis="linha" hidden>
-		<ol class="meses">
-			<li class="marco"><span class="no" aria-hidden="true"></span>Entrega</li>
-			{
-				[1, 2, 3].map((m) => (
-					<li class="mes">
-						<span class="mes-nome">Mês {m}</span>
-						<span class="barra-mes" aria-hidden="true">
-							<span class="cheio" />
-							<span class="falta" />
-						</span>
-						<span class="mes-valor">pelo menos 99&nbsp;%</span>
-					</li>
-				))
-			}
-		</ol>
-		<figcaption>
-			<strong>Se um mês ficar abaixo de 99&nbsp;%,</strong> continuo a trabalhar sem faturar até chegar lá.
-		</figcaption>
-	</figure>
-
-	<figure class="ga-vis numero" data-ga-vis="numero" hidden>
+	<figure class="ga-vis numero">
 		<p class="grande">99&nbsp;%</p>
 		<p class="sub">do tempo, em cada mês</p>
 		<div class="barra-1" aria-hidden="true"><span class="com"></span><span class="sem"></span></div>
@@ -78,24 +36,9 @@ interface Props {
 </div>
 
 <script>
-	const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
-	const pausada = () => reduz || document.documentElement.dataset.animacao === 'pausada';
-
-	for (const raiz of document.querySelectorAll<HTMLElement>('[data-garantia]')) {
-		// Seletor do protótipo.
-		const escolha = raiz.querySelector<HTMLElement>('[data-ga-escolha]')!;
-		const botoes = [...escolha.querySelectorAll<HTMLButtonElement>('[data-ga]')];
-		const vis = [...raiz.querySelectorAll<HTMLElement>('[data-ga-vis]')];
-		escolha.hidden = false;
-		for (const b of botoes) {
-			b.addEventListener('click', () => {
-				for (const x of botoes) x.setAttribute('aria-pressed', String(x === b));
-				for (const v of vis) v.hidden = v.dataset.gaVis !== b.dataset.ga;
-				document.dispatchEvent(new Event('garantia-vista'));
-			});
-		}
-		// Barras: em repouso estão cheias; com movimento, enchem quando chegam ao ecrã.
-		if (!reduz) {
+	// Em repouso a barra está cheia; com movimento, enche quando a Garantia chega ao ecrã.
+	if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+		for (const raiz of document.querySelectorAll<HTMLElement>('[data-garantia]')) {
 			raiz.classList.add('anima');
 			new IntersectionObserver(
 				(es) => {
@@ -104,101 +47,6 @@ interface Props {
 				{ threshold: 0.4 },
 			).observe(raiz);
 		}
-		const canvas = raiz.querySelector<HTMLCanvasElement>('[data-anel]');
-		if (canvas) anel(canvas, raiz);
-	}
-
-	// Anel de 100 pontos com brilho, nas cores fixas do ∞: acendem um a um quando o anel chega ao
-	// ecrã e depois uma onda de luz corre devagar à volta. O 100.º fica apagado.
-	function anel(canvas: HTMLCanvasElement, raiz: HTMLElement) {
-		const ctx = canvas.getContext('2d')!;
-		const tokens = getComputedStyle(raiz);
-		const roxo = tokens.getPropertyValue('--elemento-roxo').trim() || '#c3a6ff';
-		const verde = tokens.getPropertyValue('--elemento-verde').trim() || '#86d9a8';
-		const falta = tokens.getPropertyValue('--s3').trim() || '#e6cf94';
-		const cores = Array.from({ length: 100 }, (_, i) => mistura(roxo, verde, i / 98));
-		const brilhos = new Map<string, HTMLCanvasElement>();
-		const brilhoDe = (c: string) => brilhos.get(c) ?? (brilhos.set(c, brilho(c)), brilhos.get(c)!);
-		let w = 0;
-		let visivel = false;
-		let comecou = 0;
-		let pedido = 0;
-		let antes = 0;
-		let tempo = 0;
-
-		function desenha(agora: number) {
-			pedido = 0;
-			if (!visivel || canvas.offsetParent === null) return;
-			const dt = antes ? Math.min((agora - antes) / 1000, 0.05) : 0;
-			antes = agora;
-			if (!pausada()) tempo += dt;
-			if (!comecou) comecou = agora;
-			const acesos = reduz ? 99 : Math.min(99, Math.floor(((agora - comecou) / 1600) * 99));
-			ctx.clearRect(0, 0, w, w);
-			const R = w * 0.42;
-			const c = w / 2;
-			const base = w * 0.016;
-			ctx.globalCompositeOperation = 'lighter';
-			for (let i = 0; i < 99; i++) {
-				if (i >= acesos) break;
-				const a = -Math.PI / 2 + (i / 100) * Math.PI * 2;
-				const onda = reduz ? 0.5 : 0.5 + 0.5 * Math.sin(tempo * 1.6 - i * 0.19);
-				const tam = base * (1 + onda * 0.45);
-				ctx.globalAlpha = 0.55 + onda * 0.45;
-				ctx.drawImage(brilhoDe(cores[i]), c + R * Math.cos(a) - tam, c + R * Math.sin(a) - tam, tam * 2, tam * 2);
-			}
-			// O 100.º ponto: só o contorno, noutra cor.
-			const a = -Math.PI / 2 + (99 / 100) * Math.PI * 2;
-			ctx.globalCompositeOperation = 'source-over';
-			ctx.globalAlpha = acesos >= 99 ? 1 : 0.3;
-			ctx.strokeStyle = falta;
-			ctx.lineWidth = Math.max(1.5, w / 260);
-			ctx.beginPath();
-			ctx.arc(c + R * Math.cos(a), c + R * Math.sin(a), base * 0.75, 0, Math.PI * 2);
-			ctx.stroke();
-			ctx.globalAlpha = 1;
-			if (!pausada() || acesos < 99) pedir();
-			else antes = 0;
-		}
-		function pedir() {
-			if (!pedido) pedido = requestAnimationFrame(desenha);
-		}
-		document.addEventListener('animacao', () => {
-			antes = 0;
-			pedir();
-		});
-		document.addEventListener('garantia-vista', pedir);
-		new IntersectionObserver(([e]) => {
-			visivel = e.isIntersecting;
-			antes = 0;
-			pedir();
-		}).observe(canvas);
-		new ResizeObserver(() => {
-			const dpr = Math.min(devicePixelRatio || 1, 2);
-			w = canvas.width = canvas.height = Math.round(canvas.clientWidth * dpr);
-			pedir();
-		}).observe(canvas);
-	}
-
-	function mistura(a: string, b: string, t: number) {
-		const p = (c: string) => [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16));
-		const [x, y] = [p(a), p(b)];
-		return '#' + x.map((v, i) => Math.round(v + (y[i] - v) * t).toString(16).padStart(2, '0')).join('');
-	}
-
-	function brilho(cor: string) {
-		const c = document.createElement('canvas');
-		c.width = c.height = 64;
-		const g = c.getContext('2d')!;
-		const [r, v, a] = [1, 3, 5].map((i) => parseInt(cor.slice(i, i + 2), 16));
-		const gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
-		gr.addColorStop(0, 'rgba(255,255,255,0.95)');
-		gr.addColorStop(0.16, `rgba(${r},${v},${a},1)`);
-		gr.addColorStop(0.42, `rgba(${r},${v},${a},0.28)`);
-		gr.addColorStop(1, `rgba(${r},${v},${a},0)`);
-		g.fillStyle = gr;
-		g.fillRect(0, 0, 64, 64);
-		return c;
 	}
 </script>
 
@@ -230,46 +78,6 @@ interface Props {
 		font-size: 0.9375rem;
 		color: var(--acento);
 	}
-	/* Seletor do protótipo: não faz parte do design. */
-	.ga-escolha {
-		justify-self: start;
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		gap: 0.25rem;
-		padding: 0.3rem;
-		border-radius: 999px;
-		background: #ffffff;
-		font: 500 0.8125rem/1.2 system-ui, -apple-system, 'Segoe UI', sans-serif;
-	}
-	.ga-escolha .tag {
-		font-size: 0.625rem;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-		padding: 0.2rem 0.45rem;
-		border-radius: 4px;
-		background: #fff3c4;
-		color: #5c4400;
-		margin-inline: 0.2rem;
-	}
-	.ga-escolha button {
-		font: inherit;
-		min-height: 36px;
-		padding: 0 0.8rem;
-		border: 0;
-		border-radius: 999px;
-		background: transparent;
-		color: #111111;
-		cursor: pointer;
-	}
-	.ga-escolha button[aria-pressed='true'] {
-		background: #111111;
-		color: #ffffff;
-	}
-	.ga-escolha button:focus-visible {
-		outline: 2px solid #1a56db;
-		outline-offset: 2px;
-	}
 	.ga-vis {
 		margin: 0;
 		display: grid;
@@ -280,91 +88,7 @@ interface Props {
 		font-size: 0.9375rem;
 		max-width: 44rem;
 	}
-	/* 1. Anel de pontos */
-	.anel {
-		justify-items: center;
-		text-align: center;
-	}
-	.anel-caixa {
-		position: relative;
-		width: min(100%, 26rem);
-		aspect-ratio: 1;
-	}
-	.anel-caixa canvas {
-		position: absolute;
-		inset: 0;
-		width: 100%;
-		height: 100%;
-	}
-	.anel-centro {
-		position: absolute;
-		inset: 0;
-		display: grid;
-		place-content: center;
-		gap: 0.25rem;
-		color: var(--muted);
-	}
-	.anel-centro .n {
-		font: 400 clamp(3.2rem, 9vw, 5rem) / 1 var(--serif);
-		color: var(--text);
-	}
-	/* 2. Linha dos 3 meses */
-	.meses {
-		list-style: none;
-		margin: 0;
-		padding: 0;
-		display: grid;
-		grid-template-columns: auto repeat(3, minmax(0, 1fr));
-		gap: 1rem 1.25rem;
-		align-items: end;
-	}
-	.marco {
-		display: grid;
-		justify-items: center;
-		gap: 0.6rem;
-		font-size: 0.875rem;
-		color: var(--muted);
-		padding-bottom: 1.85rem;
-	}
-	.marco .no {
-		width: 14px;
-		height: 14px;
-		border-radius: 50%;
-		background: var(--verde);
-		box-shadow: 0 0 0 4px color-mix(in srgb, var(--verde) 25%, transparent);
-	}
-	.mes {
-		display: grid;
-		gap: 0.6rem;
-	}
-	.mes-nome {
-		font: 400 1.5rem/1.1 var(--serif);
-	}
-	.barra-mes {
-		display: flex;
-		height: 12px;
-		gap: 3px;
-	}
-	.barra-mes .cheio {
-		flex: 0 0 99%;
-		border-radius: 999px 0 0 999px;
-		background: linear-gradient(90deg, var(--elemento-roxo, #c3a6ff), var(--elemento-verde, #86d9a8));
-		transform-origin: left;
-	}
-	.barra-mes .falta {
-		flex: 1;
-		min-width: 6px;
-		border-radius: 0 999px 999px 0;
-		border: 1.5px solid var(--s3);
-	}
-	.mes-valor {
-		font-size: 0.875rem;
-		color: var(--muted);
-	}
-	.linha figcaption strong {
-		color: var(--text);
-	}
-	/* 3. Número grande e barra de 1 % */
+	/* Número grande e barra de 1 % */
 	.numero {
 		gap: 1rem;
 	}
@@ -407,37 +131,17 @@ interface Props {
 		color: var(--s3);
 		text-align: right;
 	}
-	/* Com movimento: as barras enchem quando a Garantia chega ao ecrã. */
-	.anima .cheio,
+	/* Com movimento: a barra enche quando a Garantia chega ao ecrã. */
 	.anima .com {
 		transform: scaleX(0);
 		transition: transform 1.4s cubic-bezier(0.2, 0.8, 0.2, 1);
 	}
-	.anima.em-vista .cheio,
 	.anima.em-vista .com {
 		transform: none;
-	}
-	.anima .mes:nth-child(3) .cheio {
-		transition-delay: 0.25s;
-	}
-	.anima .mes:nth-child(4) .cheio {
-		transition-delay: 0.5s;
 	}
 	@media (max-width: 960px) {
 		.ga-texto {
 			grid-template-columns: 1fr;
-		}
-	}
-	@media (max-width: 640px) {
-		.meses {
-			grid-template-columns: 1fr;
-		}
-		.marco {
-			justify-items: start;
-			padding-bottom: 0;
-			grid-auto-flow: column;
-			justify-content: start;
-			align-items: center;
 		}
 	}
 </style>
