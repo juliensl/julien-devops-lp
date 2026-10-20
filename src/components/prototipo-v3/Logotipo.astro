@@ -1,32 +1,12 @@
 ---
 // PROTÓTIPO v3 · Logótipo com o ∞ (pedido do Julien a 20/10/2026, no lugar das molduras em
 // «JUL» e «ONT»): o ∞ e o nome sobrepostos, nunca um por cima ou por baixo do outro. Linha
-// contínua, metade roxa e metade verde, nas cores fixas do ∞ do Hero. Três versões em teste,
-// escolhidas na barra do protótipo (<html data-logo>); sem escolha, aparece a primeira:
-// 1. «abraca»: o nome numa linha; a volta roxa envolve «Julien» e a verde «Laffont»;
-// 2. «tras»: o nome em duas linhas, à frente de um ∞ maior e mais suave;
-// 3. «fita»: o nome numa linha e o ∞ a passar por cima de umas letras e por baixo de outras.
-interface Props {
-	uid: string;
-}
-const { uid } = Astro.props;
-const corte = `fita-${uid}`;
-// Na versão 3 o texto começa em x = 20 com a base em y = 36: o espaço entre as palavras fica em
-// x ≈ 87,6 (onde o ∞ cruza), o «J» em x ≈ 24 e o «t» em x ≈ 167 (onde ficam as pontas).
-const roxoFita = 'M87.6 28C80 15.5 67 6.5 52 6.5C34 6.5 24 16.5 24 28S34 49.5 52 49.5C67 49.5 80 40.5 87.6 28';
-const verdeFita = 'M87.6 28C95.6 15.5 111 6.5 128 6.5C154 6.5 167 16.5 167 28S154 49.5 128 49.5C111 49.5 95.6 40.5 87.6 28';
+// contínua, metade roxa e metade verde, nas cores fixas do ∞ do Hero. Das três versões
+// testadas ficou, por agora, a 2: o nome em duas linhas, à frente de um ∞ maior e mais suave.
+// Pode ser trocado mais tarde por outro desenho.
 ---
 
-<span class="logo logo-abraca">
-	<svg class="inf" viewBox="0 0 200 60" preserveAspectRatio="none" aria-hidden="true">
-		<path class="roxo" d="M100 30C88 12 70 5 50 5C22 5 6 17 6 30S22 55 50 55C70 55 88 48 100 30"></path>
-		<path class="verde" d="M100 30C112 12 130 5 150 5C178 5 194 17 194 30S178 55 150 55C130 55 112 48 100 30"></path>
-	</svg>
-	<span class="palavra">Julien</span>
-	<span class="palavra">Laffont</span>
-</span>
-
-<span class="logo logo-tras">
+<span class="logo">
 	<svg class="inf" viewBox="0 0 120 50" aria-hidden="true">
 		<path class="roxo" d="M60 25C47 6 8 5 8 25S47 44 60 25"></path>
 		<path class="verde" d="M60 25C73 6 112 5 112 25S73 44 60 25"></path>
@@ -35,85 +15,23 @@ const verdeFita = 'M87.6 28C95.6 15.5 111 6.5 128 6.5C154 6.5 167 16.5 167 28S15
 	<span class="linha">Laffont</span>
 </span>
 
-<span class="logo logo-fita">
-	<svg viewBox="16 3 160 50" aria-hidden="true">
-		<defs>
-			<clipPath id={corte}>
-				<rect x="0" y="0" width="87.6" height="28"></rect>
-				<rect x="87.6" y="28" width="100" height="30"></rect>
-			</clipPath>
-		</defs>
-		<g class="inf">
-			<path class="roxo" d={roxoFita}></path>
-			<path class="verde" d={verdeFita}></path>
-		</g>
-		<text x="20" y="36">Julien Laffont</text>
-		<g class="inf por-cima" clip-path={`url(#${corte})`}>
-			<path class="halo" d={roxoFita}></path>
-			<path class="halo" d={verdeFita}></path>
-			<path class="roxo" d={roxoFita}></path>
-			<path class="verde" d={verdeFita}></path>
-		</g>
-	</svg>
-</span>
-
 <style>
+	/* A margem lateral reserva o espaço do ∞, que sai da caixa do nome. */
 	.logo {
-		display: none;
 		position: relative;
-		font-family: var(--serif);
-		color: var(--text);
-		white-space: nowrap;
-	}
-	:global(:root:not([data-logo])) .logo-abraca,
-	:global(:root[data-logo='abraca']) .logo-abraca,
-	:global(:root[data-logo='tras']) .logo-tras {
 		display: inline-grid;
-	}
-	:global(:root[data-logo='fita']) .logo-fita {
-		display: inline-block;
-	}
-	.inf path {
-		fill: none;
-		stroke-width: 1.4;
-		stroke-linecap: round;
-		vector-effect: non-scaling-stroke;
-	}
-	.roxo {
-		stroke: var(--elemento-roxo, #c3a6ff);
-	}
-	.verde {
-		stroke: var(--elemento-verde, #86d9a8);
-	}
-	/* 1. O ∞ a abraçar o nome: cada palavra no centro da sua volta. */
-	.logo-abraca {
-		grid-template-columns: 1fr 1fr;
-		align-items: center;
-		column-gap: 1.3em;
-		padding: 0.55em 0.95em;
-		font-size: 1.2rem;
-		line-height: 1;
-	}
-	.logo-abraca .inf {
-		position: absolute;
-		inset: 0;
-		width: 100%;
-		height: 100%;
-	}
-	.palavra {
-		position: relative;
-		justify-self: center;
-	}
-	/* 2. O ∞ por trás do nome, maior e mais suave. */
-	.logo-tras {
 		justify-items: center;
+		margin-inline: 1.15em;
 		padding: 0.3em 0.2em;
+		font-family: var(--serif);
 		font-size: 0.95rem;
 		line-height: 1.3;
+		color: var(--text);
 		text-transform: uppercase;
 		letter-spacing: 0.14em;
+		white-space: nowrap;
 	}
-	.logo-tras .inf {
+	.inf {
 		position: absolute;
 		left: 50%;
 		top: 50%;
@@ -123,8 +41,17 @@ const verdeFita = 'M87.6 28C95.6 15.5 111 6.5 128 6.5C154 6.5 167 16.5 167 28S15
 		transform: translate(-50%, calc(-50% - 0.12em));
 		opacity: 0.75;
 	}
-	.logo-tras .inf path {
+	.inf path {
+		fill: none;
 		stroke-width: 1.2;
+		stroke-linecap: round;
+		vector-effect: non-scaling-stroke;
+	}
+	.roxo {
+		stroke: var(--elemento-roxo, #c3a6ff);
+	}
+	.verde {
+		stroke: var(--elemento-verde, #86d9a8);
 	}
 	/* Halo da cor do fundo: o ∞ desaparece junto às letras e não as confunde (o «F» com um «E»). */
 	.linha {
@@ -134,61 +61,15 @@ const verdeFita = 'M87.6 28C95.6 15.5 111 6.5 128 6.5C154 6.5 167 16.5 167 28S15
 			0 0 3px var(--bg),
 			0 0 6px var(--bg);
 	}
-	/* 3. O ∞ entrelaçado: o halo da cor do fundo à volta das letras faz o ∞ passar por baixo;
-	   a cópia recortada (cima à esquerda, baixo à direita), com o seu próprio halo, passa por
-	   cima. A largura do SVG dá o tamanho das letras: 24 unidades de letra em 160 de largura. */
-	.logo-fita svg {
-		display: block;
-		width: 8rem;
-		height: auto;
-		overflow: visible;
-	}
-	.logo-fita text {
-		font: 400 24px var(--serif);
-		fill: var(--text);
-		stroke: var(--bg);
-		stroke-width: 3px;
-		stroke-linejoin: round;
-		paint-order: stroke;
-		letter-spacing: 0.02em;
-	}
-	.logo-fita .halo {
-		stroke: var(--bg);
-		stroke-width: 3.5;
-	}
 	@media (max-width: 640px) {
-		.logo-abraca {
-			font-size: 1rem;
-			column-gap: 1em;
-			padding: 0.5em 0.75em;
-		}
-		.logo-tras {
+		.logo {
 			font-size: 0.8125rem;
-		}
-		.logo-fita svg {
-			width: 7rem;
 		}
 	}
 	@media (max-width: 420px) {
-		.logo-abraca {
-			font-size: 0.8125rem;
-			column-gap: 0.9em;
-			padding: 0.5em 0.55em;
-		}
-		.logo-tras {
+		.logo {
 			font-size: 0.6875rem;
 			letter-spacing: 0.1em;
-		}
-		.logo-fita svg {
-			width: 5.5rem;
-		}
-	}
-	@media (max-width: 360px) {
-		.logo-abraca {
-			font-size: 0.6875rem;
-		}
-		.logo-fita svg {
-			width: 4.75rem;
 		}
 	}
 </style>
