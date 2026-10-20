@@ -1,0 +1,363 @@
+---
+// PROTÓTIPO v3 · Mini-diagramas dos 4 blocos, versão melhorada da direção B.
+// Cada um mostra o resultado do bloco, não só a tecnologia. Só animam quando
+// estão à vista (IntersectionObserver) e ficam parados com movimento reduzido.
+interface Props {
+	n: 1 | 2 | 3 | 4;
+}
+const { n } = Astro.props;
+const titulos = {
+	1: 'Uma alteração com falha de segurança fica bloqueada antes da produção.',
+	2: 'O mesmo contentor corre igual no portátil e em produção.',
+	3: 'As instâncias aumentam com a carga e voltam a diminuir.',
+	4: 'Uma anomalia no sinal gera um alerta imediato.',
+};
+---
+
+<svg class={`diag d${n}`} viewBox="0 0 240 110" role="img" aria-label={titulos[n]} data-anima>
+	{
+		n === 1 && (
+			<g>
+				<line x1="24" y1="44" x2="216" y2="44" class="trilho" />
+				<circle cx="24" cy="44" r="7" class="no" />
+				<circle cx="88" cy="44" r="7" class="no" />
+				<rect x="145" y="29" width="14" height="30" rx="4" class="portao" />
+				<circle cx="216" cy="44" r="7" class="no fim" />
+				<circle cx="24" cy="44" r="5" class="bola ok" />
+				<circle cx="24" cy="44" r="5" class="bola ko" />
+				<rect x="122" y="2" width="60" height="18" rx="9" class="aviso" />
+				<text x="152" y="15" class="aviso-txt">bloqueado</text>
+				<text x="24" y="84">commit</text>
+				<text x="88" y="84">testes</text>
+				<text x="152" y="84">segurança</text>
+				<text x="216" y="84">produção</text>
+			</g>
+		)
+	}
+	{
+		n === 2 && (
+			<g>
+				<rect x="10" y="14" width="88" height="66" rx="10" class="moldura" />
+				<rect x="142" y="14" width="88" height="66" rx="10" class="moldura" />
+				<rect x="34" y="34" width="40" height="28" rx="6" class="caixa" />
+				<line x1="42" y1="44" x2="66" y2="44" class="risca" />
+				<line x1="42" y1="52" x2="58" y2="52" class="risca" />
+				<g class="viaja">
+					<rect x="34" y="34" width="40" height="28" rx="6" class="caixa nova" />
+					<line x1="42" y1="44" x2="66" y2="44" class="risca" />
+					<line x1="42" y1="52" x2="58" y2="52" class="risca" />
+				</g>
+				<path d="M104 47h30m-6-5 6 5-6 5" class="seta" />
+				<text x="54" y="98">portátil</text>
+				<text x="186" y="98">produção</text>
+			</g>
+		)
+	}
+	{
+		n === 3 && (
+			<g>
+				<polyline points="10,74 50,70 80,40 110,22 140,30 170,62 200,72 230,74" class="carga" />
+				{[0, 1, 2, 3, 4, 5].map((k) => (
+					<rect x={20 + k * 36} y="84" width="22" height="16" rx="4" class:list={['inst', `i${k}`]} />
+				))}
+				<text x="34" y="20">carga</text>
+				<text x="120" y="109">instâncias</text>
+			</g>
+		)
+	}
+	{
+		n === 4 && (
+			<g>
+				<rect x="8" y="10" width="224" height="76" rx="10" class="moldura" />
+				<polyline
+					class="pulso"
+					points="16,58 56,58 66,58 74,40 84,70 94,58 140,58 150,58 158,22 168,78 178,58 224,58"
+				/>
+				<circle cx="158" cy="22" r="5" class="alerta" />
+				<rect x="170" y="16" width="54" height="18" rx="9" class="selo-alerta" />
+				<text x="197" y="29" class="alerta-txt">alerta</text>
+				<text x="40" y="102">painel de saúde</text>
+			</g>
+		)
+	}
+</svg>
+
+<script>
+	const obs = new IntersectionObserver(
+		(entradas) => {
+			for (const en of entradas) en.target.classList.toggle('em-vista', en.isIntersecting);
+		},
+		{ threshold: 0.3 },
+	);
+	document.querySelectorAll('[data-anima]').forEach((el) => obs.observe(el));
+</script>
+
+<style>
+	.diag {
+		display: block;
+		width: 100%;
+		height: auto;
+		border-radius: calc(var(--raio) - 6px);
+		background: color-mix(in srgb, var(--bg) 70%, #000);
+	}
+	.diag:not(.em-vista) * {
+		animation-play-state: paused !important;
+	}
+	text {
+		font: 500 10px var(--sans);
+		fill: var(--muted);
+		text-anchor: middle;
+	}
+	.trilho {
+		stroke: var(--line-forte);
+		stroke-width: 2;
+	}
+	.no {
+		fill: var(--surface-2);
+		stroke: var(--muted);
+		stroke-width: 1.5;
+	}
+	.no.fim {
+		stroke: var(--verde);
+	}
+	.portao {
+		fill: var(--surface-2);
+		stroke: var(--muted);
+		stroke-width: 1.5;
+		animation: portao 4s ease-in-out infinite 2s;
+	}
+	.bola {
+		fill: var(--verde);
+	}
+	.bola.ok {
+		animation: passa 4s linear infinite;
+	}
+	.bola.ko {
+		opacity: 0;
+		animation: bloqueia 4s linear infinite 2s;
+	}
+	.aviso {
+		fill: rgb(240 143 134 / 0.18);
+		stroke: #f08f86;
+		opacity: 0;
+		animation: mostra 4s ease infinite 2s;
+	}
+	.aviso-txt {
+		fill: #f4a49c;
+		opacity: 0;
+		animation: mostra 4s ease infinite 2s;
+	}
+	@keyframes passa {
+		0% {
+			transform: translateX(0);
+			opacity: 0;
+		}
+		8%,
+		88% {
+			opacity: 1;
+		}
+		100% {
+			transform: translateX(192px);
+			opacity: 0;
+		}
+	}
+	@keyframes bloqueia {
+		0% {
+			transform: translateX(0);
+			opacity: 0;
+			fill: var(--verde);
+		}
+		8% {
+			opacity: 1;
+		}
+		50% {
+			transform: translateX(110px);
+			fill: var(--verde);
+		}
+		58%,
+		88% {
+			transform: translateX(110px);
+			fill: #f08f86;
+			opacity: 1;
+		}
+		100% {
+			transform: translateX(110px);
+			opacity: 0;
+		}
+	}
+	@keyframes portao {
+		0%,
+		48%,
+		100% {
+			stroke: var(--muted);
+		}
+		56%,
+		90% {
+			stroke: #f08f86;
+			fill: rgb(240 143 134 / 0.25);
+		}
+	}
+	@keyframes mostra {
+		0%,
+		50%,
+		100% {
+			opacity: 0;
+		}
+		58%,
+		88% {
+			opacity: 1;
+		}
+	}
+	.moldura {
+		fill: none;
+		stroke: var(--line-forte);
+		stroke-width: 1.2;
+		stroke-dasharray: 3 3;
+	}
+	.caixa {
+		fill: var(--surface-2);
+		stroke: var(--acento);
+		stroke-width: 1.5;
+	}
+	.risca {
+		stroke: var(--muted);
+		stroke-width: 2;
+		stroke-linecap: round;
+	}
+	.seta {
+		fill: none;
+		stroke: var(--verde);
+		stroke-width: 1.6;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+	.viaja {
+		animation: viaja 4s ease-in-out infinite;
+	}
+	@keyframes viaja {
+		0%,
+		15% {
+			transform: translateX(0);
+			opacity: 0;
+		}
+		25% {
+			opacity: 1;
+		}
+		60%,
+		90% {
+			transform: translateX(132px);
+			opacity: 1;
+		}
+		100% {
+			transform: translateX(132px);
+			opacity: 0;
+		}
+	}
+	.carga {
+		fill: none;
+		stroke: var(--acento);
+		stroke-width: 2;
+		stroke-dasharray: 4 4;
+		animation: carga 5s linear infinite;
+	}
+	@keyframes carga {
+		to {
+			stroke-dashoffset: -32;
+		}
+	}
+	.inst {
+		fill: var(--verde);
+	}
+	.i2,
+	.i3,
+	.i4,
+	.i5 {
+		animation: escala 5s ease-in-out infinite;
+	}
+	.i3 {
+		animation-delay: 0.2s;
+	}
+	.i4 {
+		animation-delay: 0.4s;
+	}
+	.i5 {
+		animation-delay: 0.6s;
+	}
+	@keyframes escala {
+		0%,
+		15%,
+		85%,
+		100% {
+			opacity: 0.15;
+		}
+		35%,
+		65% {
+			opacity: 1;
+		}
+	}
+	.pulso {
+		fill: none;
+		stroke: var(--verde);
+		stroke-width: 2.5;
+		stroke-linejoin: round;
+		stroke-linecap: round;
+		stroke-dasharray: 340;
+		animation: traca 3.6s linear infinite;
+	}
+	@keyframes traca {
+		from {
+			stroke-dashoffset: 340;
+		}
+		to {
+			stroke-dashoffset: 0;
+		}
+	}
+	.alerta,
+	.selo-alerta,
+	.alerta-txt {
+		animation: pisca 3.6s ease infinite;
+	}
+	.alerta {
+		fill: #f08f86;
+	}
+	.selo-alerta {
+		fill: rgb(240 143 134 / 0.18);
+		stroke: #f08f86;
+	}
+	.alerta-txt {
+		fill: #f4a49c;
+	}
+	@keyframes pisca {
+		0%,
+		55%,
+		100% {
+			opacity: 0.2;
+		}
+		62%,
+		92% {
+			opacity: 1;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.bola.ko,
+		.aviso,
+		.aviso-txt,
+		.viaja,
+		.alerta,
+		.selo-alerta,
+		.alerta-txt {
+			opacity: 1;
+		}
+		.bola.ko {
+			transform: translateX(110px);
+			fill: #f08f86;
+		}
+		.viaja {
+			transform: translateX(132px);
+		}
+		.i2,
+		.i3 {
+			opacity: 1;
+		}
+	}
+</style>

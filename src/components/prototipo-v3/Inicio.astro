@@ -1,0 +1,611 @@
+---
+// PROTÓTIPO v3 · Página principal, igual nas três variantes de cor. Estrutura do
+// protótipo 3, mais aberta (pedido do Julien a 20/10/2026): uma ideia por secção,
+// sem cartões, mais espaço; a página fica mais longa. O Hero tem só o texto e o lugar
+// do elemento 3D que reage ao scroll («Que elemento gráfico 3D tem o Hero?», #53).
+import { Image } from 'astro:assets';
+import foto from '../../../data/IMG_2030.png';
+import Folha from './Folha.astro';
+import GraficoCloud from './GraficoCloud.astro';
+import Garantia from './Garantia.astro';
+import DiagramaBloco from './DiagramaBloco.astro';
+import FaqResumo from './FaqResumo.astro';
+import Testemunhos from './Testemunhos.astro';
+import { calendly, textos, problemas, depois, paraQuem, blocos, notaBlocos, etapas, type P, type Modo } from './dados';
+import { ligacao } from './temas';
+
+interface Props {
+	p: P;
+	modo: Modo;
+}
+const { p, modo } = Astro.props;
+const id = (s: string) => `p${p}-${s}`;
+const promessaH1 = textos.promessa.replace('entrego-te', '<span style="white-space:nowrap">entrego-te</span>');
+const resumos = [
+	'Os bugs ficam no pull request.',
+	'A aplicação corre igual em todo o lado.',
+	'A infraestrutura acompanha a carga.',
+	'Vês os problemas antes dos clientes.',
+];
+---
+
+<div class="inicio">
+	<section class="hero" id={id('topo')}>
+		<div class="largura hero-dentro">
+			<div class="hero-texto">
+				<p class="etiqueta">{textos.designacao}</p>
+				<h1 set:html={promessaH1} />
+				<p class="lead">{textos.subPromessa}</p>
+				<div class="acao">
+					<a class="botao grande" href={calendly}>{textos.cta}</a>
+					<span class="nota">{textos.notaCta}</span>
+				</div>
+			</div>
+			<figure class="palco-3d">
+				<div class="palco" aria-hidden="true">
+					<span class="anel a1"></span>
+					<span class="anel a2"></span>
+					<span class="anel a3"></span>
+				</div>
+				<figcaption class="nota-proto">
+					Lugar do elemento 3D que reage ao scroll. Entra quando as duas ideias do Julien estiverem descritas em «Que
+					elemento gráfico 3D tem o Hero?».
+				</figcaption>
+			</figure>
+		</div>
+	</section>
+
+	<section class="largura seccao para-quem" id={id('para-quem')}>
+		<p class="etiqueta">Para quem é</p>
+		<ul>
+			{paraQuem.map((x) => <li>{x}</li>)}
+		</ul>
+	</section>
+
+	<section class="largura seccao caminhos" id={id('problema')}>
+		<h2>Hoje, e depois.</h2>
+		<div class="dois">
+			<div>
+				<p class="etiqueta muted">Hoje</p>
+				<ul class="lista">
+					{
+						problemas.map((x) => (
+							<li>
+								<strong>{x.titulo}</strong> {x.texto}
+							</li>
+						))
+					}
+				</ul>
+			</div>
+			<div>
+				<p class="etiqueta">Depois</p>
+				<ul class="lista depois">
+					{depois.map((d) => <li>{d}</li>)}
+				</ul>
+			</div>
+		</div>
+	</section>
+
+	<section class="largura seccao estratos" id={id('servicos')}>
+		<div class="titulo-col">
+			<p class="etiqueta">Serviços</p>
+			<h2>Quatro camadas da tua infraestrutura.</h2>
+			<p class="intro">{notaBlocos}</p>
+		</div>
+		<div class="camadas" data-camadas>
+			{
+				blocos.map((b, i) => (
+					<div class="camada" style={`--i:${i}`}>
+						<h3>
+							<button
+								type="button"
+								aria-expanded={i === 0 ? 'true' : 'false'}
+								aria-controls={id(`camada-${b.n}`)}
+								id={id(`camada-btn-${b.n}`)}
+							>
+								<span class="num">Bloco {b.n}</span>
+								<span class="nome-camada">{b.nome}</span>
+								<span class="resumo">{resumos[i]}</span>
+								<span class="mais" aria-hidden="true" />
+							</button>
+						</h3>
+						<div
+							class="painel"
+							id={id(`camada-${b.n}`)}
+							role="region"
+							aria-labelledby={id(`camada-btn-${b.n}`)}
+							hidden={i !== 0}
+						>
+							<DiagramaBloco n={b.n as 1 | 2 | 3 | 4} />
+							<div class="painel-texto">
+								<p>{b.texto}</p>
+								<p class="ferr">
+									{b.ferramentas.map((f) => (
+										<span>{f}</span>
+									))}
+								</p>
+							</div>
+						</div>
+					</div>
+				))
+			}
+		</div>
+	</section>
+
+	<section class="largura seccao etapas" id={id('etapas')}>
+		<h2>Cinco etapas, sempre pela mesma ordem.</h2>
+		<ol>
+			{
+				etapas.map((e, i) => (
+					<li style={`--i:${i}`}>
+						<span class="num-etapa">{i + 1}</span>
+						<strong>{e.nome}</strong>
+						<span class="txt">{e.texto}</span>
+					</li>
+				))
+			}
+		</ol>
+	</section>
+
+	<section class="largura seccao" id={id('garantia')}>
+		<Garantia formato="faixa" />
+	</section>
+
+	<section class="largura seccao">
+		<GraficoCloud p={p} />
+	</section>
+
+	<section class="quem" id={id('quem')}>
+		<div class="largura quem-dentro">
+			<Image src={foto} alt={textos.fotoAlt} width={560} format="avif" quality={55} loading="lazy" class="foto" />
+			<div class="quem-texto">
+				<p class="etiqueta">Quem é o Julien</p>
+				<p class="frase">{textos.quem}</p>
+			</div>
+		</div>
+	</section>
+
+	<section class="largura seccao testemunhos-seccao" id={id('testemunhos')}>
+		<p class="etiqueta">O que dizem os clientes</p>
+		<Testemunhos p={p} />
+	</section>
+
+	<section class="largura seccao eco" id={id('eco')}>
+		<div class="eco-texto">
+			<p class="etiqueta"><Folha tamanho={16} /> Ecologia</p>
+			<h2>A infraestrutura também tem pegada.</h2>
+			<p>
+				Onde a aplicação corre, quanto corre e com que eficiência mudam o impacto ambiental. A página de ecologia deixa-te
+				estimar uma carga conforme o país onde corre, separando dados publicados, hipóteses e cálculos.
+			</p>
+			<a class="ligacao-seta" href={ligacao(modo, p, 'ecologia')}><Folha tamanho={18} /> Abrir a página de ecologia</a>
+		</div>
+	</section>
+
+	<section class="largura seccao" id={id('faq')}>
+		<FaqResumo p={p} modo={modo} />
+	</section>
+
+	<section class="largura seccao final">
+		<h2>{textos.finalTitulo}</h2>
+		<p class="intro">{textos.finalTexto}</p>
+		<a class="botao grande" href={calendly}>{textos.cta}</a>
+		<p class="nota">{textos.notaLingua}</p>
+	</section>
+</div>
+
+<script>
+	// Camadas: uma aberta de cada vez (acordeão com botões e aria-expanded).
+	for (const raiz of document.querySelectorAll<HTMLElement>('[data-camadas]')) {
+		const botoes = [...raiz.querySelectorAll<HTMLButtonElement>('button[aria-controls]')];
+		for (const b of botoes) {
+			b.addEventListener('click', () => {
+				const abrir = b.getAttribute('aria-expanded') !== 'true';
+				for (const x of botoes) {
+					const sim = x === b && abrir;
+					x.setAttribute('aria-expanded', String(sim));
+					document.getElementById(x.getAttribute('aria-controls')!)!.hidden = !sim;
+				}
+			});
+		}
+	}
+</script>
+
+<style>
+	.seccao {
+		padding-block: clamp(5rem, 11vw, 9rem);
+	}
+	h1 {
+		font-size: clamp(2.5rem, 4.4vw, 4.1rem);
+		line-height: 1.05;
+		letter-spacing: -0.012em;
+	}
+	h2 {
+		font-size: clamp(2.1rem, 4.4vw, 3.4rem);
+		line-height: 1.06;
+	}
+	.lead,
+	.intro {
+		color: var(--muted);
+		max-width: 38rem;
+	}
+	.lead {
+		font-size: 1.1875rem;
+	}
+	.nota {
+		font-size: 0.875rem;
+		color: var(--muted);
+	}
+	.etiqueta.muted {
+		color: var(--muted);
+	}
+	/* Hero: o texto e o palco do elemento 3D */
+	.hero-dentro {
+		min-height: calc(100svh - 68px);
+		display: grid;
+		grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+		gap: 3rem 4rem;
+		align-items: center;
+		padding-block: 4rem;
+	}
+	.hero-texto {
+		display: grid;
+		gap: 1.5rem;
+		justify-items: start;
+	}
+	.acao {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.75rem 1.25rem;
+	}
+	.palco-3d {
+		margin: 0;
+		display: grid;
+		gap: 1rem;
+		justify-items: center;
+	}
+	.palco {
+		position: relative;
+		width: min(100%, 30rem);
+		aspect-ratio: 1;
+		display: grid;
+		place-items: center;
+	}
+	.anel {
+		position: absolute;
+		border-radius: 50%;
+		border: 1px solid color-mix(in srgb, var(--acento) 45%, transparent);
+	}
+	.a1 {
+		inset: 0;
+		border-style: dashed;
+	}
+	.a2 {
+		inset: 18%;
+		border-color: color-mix(in srgb, var(--verde) 55%, transparent);
+	}
+	.a3 {
+		inset: 38%;
+		background: radial-gradient(circle, color-mix(in srgb, var(--verde) 35%, transparent), transparent 70%);
+		border: 0;
+	}
+	/* Para quem é: três afirmações grandes, sem caixas */
+	.para-quem {
+		display: grid;
+		gap: 2rem;
+	}
+	.para-quem ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 2rem 3rem;
+	}
+	.para-quem li {
+		font: 400 clamp(1.5rem, 2.6vw, 2rem) / 1.25 var(--serif);
+		padding-top: 1.25rem;
+		border-top: 2px solid var(--verde);
+	}
+	/* Hoje e depois */
+	.caminhos {
+		display: grid;
+		gap: 3rem;
+	}
+	.dois {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 3rem 5rem;
+	}
+	.dois > div {
+		display: grid;
+		gap: 1rem;
+		align-content: start;
+	}
+	.lista {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+	}
+	.lista li {
+		padding-block: 1.1rem;
+		border-top: 1px solid var(--line);
+		color: var(--muted);
+		font-size: 1.0625rem;
+	}
+	.lista strong {
+		color: var(--text);
+		font-weight: 600;
+	}
+	.depois li {
+		color: var(--text);
+	}
+	.depois li::before {
+		content: '';
+		display: inline-block;
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: var(--verde);
+		margin-right: 0.7rem;
+		vertical-align: 0.12em;
+	}
+	/* Serviços: camadas abertas, separadas por linhas */
+	.estratos {
+		display: grid;
+		grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+		gap: 2.5rem 5rem;
+		align-items: start;
+	}
+	.titulo-col {
+		display: grid;
+		gap: 1.25rem;
+		position: sticky;
+		top: 110px;
+	}
+	.camadas {
+		display: grid;
+	}
+	.camada {
+		margin-left: calc(var(--i) * 22px);
+		border-top: 1px solid var(--line-forte);
+	}
+	.camada:last-child {
+		border-bottom: 1px solid var(--line-forte);
+	}
+	.camada:has([aria-expanded='true']) {
+		border-top: 2px solid var(--verde);
+	}
+	.camada h3 {
+		font: inherit;
+		margin: 0;
+	}
+	.camada button {
+		all: unset;
+		box-sizing: border-box;
+		width: 100%;
+		display: grid;
+		grid-template-columns: 5.5rem minmax(0, 1.2fr) minmax(0, 1fr) 28px;
+		gap: 0.5rem 1rem;
+		align-items: center;
+		padding: 1.5rem 0.25rem;
+		cursor: pointer;
+	}
+	.camada button:focus-visible {
+		outline: 2px solid var(--acento);
+		outline-offset: 2px;
+	}
+	.num {
+		font-size: 0.75rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--acento);
+	}
+	.nome-camada {
+		font: 400 1.5rem/1.2 var(--serif);
+	}
+	.resumo {
+		color: var(--verde);
+		font-size: 0.9375rem;
+	}
+	.mais {
+		width: 28px;
+		height: 28px;
+		border-radius: 50%;
+		border: 1px solid var(--line-forte);
+		position: relative;
+	}
+	.mais::before,
+	.mais::after {
+		content: '';
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		width: 11px;
+		height: 1.5px;
+		background: var(--text);
+		transform: translate(-50%, -50%);
+		transition: transform 0.2s ease;
+	}
+	.mais::after {
+		transform: translate(-50%, -50%) rotate(90deg);
+	}
+	[aria-expanded='true'] .mais::after {
+		transform: translate(-50%, -50%) rotate(0deg);
+	}
+	.painel {
+		padding: 0.25rem 0.25rem 2rem calc(5.5rem + 1.25rem);
+		display: grid;
+		grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+		gap: 1.5rem;
+		align-items: center;
+		color: var(--muted);
+	}
+	.painel-texto {
+		display: grid;
+		gap: 0.85rem;
+	}
+	.ferr {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem;
+	}
+	.ferr span {
+		font-size: 0.8125rem;
+		padding: 0.15rem 0.6rem;
+		border-radius: 999px;
+		border: 1px solid var(--verde-forte);
+		color: var(--verde);
+	}
+	/* Etapas: cinco colunas abertas */
+	.etapas {
+		display: grid;
+		gap: 3rem;
+	}
+	.etapas ol {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		grid-template-columns: repeat(5, minmax(0, 1fr));
+		gap: 2rem;
+	}
+	.etapas li {
+		display: grid;
+		gap: 0.5rem;
+		align-content: start;
+		padding-top: calc(var(--i) * 1.25rem);
+	}
+	.num-etapa {
+		font: 400 2.6rem/1 var(--serif);
+		color: var(--verde);
+	}
+	.etapas strong {
+		font-weight: 600;
+		padding-top: 0.75rem;
+		border-top: 1px solid var(--line-forte);
+	}
+	.etapas .txt {
+		color: var(--muted);
+		font-size: 0.9375rem;
+	}
+	/* Quem é o Julien: faixa de cor */
+	.quem {
+		background: var(--surface-verde);
+		padding-block: clamp(5rem, 10vw, 8rem);
+	}
+	.quem-dentro {
+		display: grid;
+		grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+		gap: 3rem 5rem;
+		align-items: center;
+	}
+	.foto {
+		width: 100%;
+		aspect-ratio: 4 / 5;
+		object-fit: cover;
+		border-radius: 999px 999px 14px 14px;
+	}
+	.quem-texto {
+		display: grid;
+		gap: 1.5rem;
+	}
+	.frase {
+		font: 400 clamp(1.6rem, 3vw, 2.3rem) / 1.3 var(--serif);
+	}
+	.testemunhos-seccao {
+		display: grid;
+		gap: 2rem;
+	}
+	/* Ecologia */
+	.eco-texto {
+		display: grid;
+		gap: 1.25rem;
+		justify-items: start;
+		max-width: 46rem;
+	}
+	.eco-texto .etiqueta {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+	}
+	.eco-texto > p:not(.etiqueta) {
+		color: var(--muted);
+		font-size: 1.0625rem;
+	}
+	.final {
+		display: grid;
+		gap: 1.5rem;
+		justify-items: start;
+		min-height: 70svh;
+		align-content: center;
+	}
+	.final h2 {
+		font-size: clamp(2.6rem, 6.5vw, 5rem);
+	}
+	.final .intro {
+		max-width: 42rem;
+	}
+	@media (max-width: 960px) {
+		.hero-dentro,
+		.estratos,
+		.quem-dentro {
+			grid-template-columns: 1fr;
+		}
+		.hero-dentro {
+			min-height: 0;
+		}
+		.palco {
+			width: min(100%, 22rem);
+		}
+		.titulo-col {
+			position: static;
+		}
+		.etapas ol {
+			grid-template-columns: 1fr;
+			gap: 1.5rem;
+		}
+		.etapas li {
+			padding-top: 0;
+			grid-template-columns: 3rem 1fr;
+			column-gap: 1rem;
+		}
+		.etapas li .num-etapa {
+			grid-row: span 2;
+		}
+		.etapas strong {
+			border-top: 0;
+			padding-top: 0;
+		}
+		.para-quem ul,
+		.dois {
+			grid-template-columns: 1fr;
+		}
+		.foto {
+			max-width: 18rem;
+		}
+	}
+	@media (max-width: 640px) {
+		.camada {
+			margin-left: calc(var(--i) * 8px);
+		}
+		.camada button {
+			grid-template-columns: minmax(0, 1fr) 28px;
+		}
+		.camada .num,
+		.camada .nome-camada,
+		.camada .resumo {
+			grid-column: 1;
+		}
+		.mais {
+			grid-column: 2;
+			grid-row: 1 / span 3;
+		}
+		.painel {
+			padding-left: 0.25rem;
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

@@ -1,0 +1,457 @@
+---
+// PROTÓTIPO v3 · Cabeçalho fixo sem menu de âncoras (validado pelo Julien): só ligações
+// às páginas (perguntas por público e ecologia, com a folha), a língua e o botão.
+// No telemóvel, as perguntas e a língua passam para um menu <details> (sem JS para
+// abrir; o JS só fecha ao clicar fora, com Escape ou depois de escolher).
+import Folha from './Folha.astro';
+import { calendly, publicos, type P, type Pagina, type Modo } from './dados';
+import { ligacao } from './temas';
+
+interface Props {
+	p: P;
+	pagina: Pagina;
+	modo: Modo;
+}
+const { p, pagina, modo } = Astro.props;
+const inicio = ligacao(modo, p, 'inicio');
+const eco = ligacao(modo, p, 'ecologia');
+const todas = ligacao(modo, p, 'perguntas');
+---
+
+<header class:list={['cab', `cab-${p}`]} data-cab>
+	<div class="cab-dentro largura">
+		<a class="marca" href={inicio} aria-label="Julien Laffont, página principal">
+			<span class="nome n3">
+				<span><span class="fr">Jul</span>ien</span>
+				<span class="l2">Laff<span class="fr">ont</span></span>
+			</span>
+		</a>
+
+		<nav class="nav" aria-label="Páginas">
+			<ul>
+				<li>
+					<details class="sub" data-fecha>
+						<summary aria-current={pagina === 'perguntas' ? 'page' : undefined}>
+							Perguntas
+							<svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"
+								><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6"></path></svg
+							>
+						</summary>
+						<ul class="painel">
+							{
+								publicos.map((pub) => (
+									<li>
+										<a href={ligacao(modo, p, 'perguntas', `perguntas-${pub.id}`)}>
+											<strong>{pub.nome}</strong>
+											<span>{pub.descricao}</span>
+										</a>
+									</li>
+								))
+							}
+							<li class="todas"><a href={todas}>Ver todas as perguntas</a></li>
+						</ul>
+					</details>
+				</li>
+			</ul>
+		</nav>
+
+		<a class="eco" href={eco} aria-current={pagina === 'ecologia' ? 'page' : undefined} aria-label="Ecologia">
+			<Folha tamanho={20} />
+			<span class="eco-texto">Ecologia</span>
+		</a>
+
+		<div class="linguas" role="group" aria-label="Língua">
+			<span>FR</span><span>EN</span><span aria-current="true">PT</span>
+		</div>
+
+		<a class="botao cta" href={calendly}>
+			<span class="longo">Marcar uma conversa</span><span class="curto">Marcar conversa</span>
+		</a>
+
+		<details class="menu" data-fecha>
+			<summary aria-label="Menu">
+				<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"
+					><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+					></path></svg
+				>
+			</summary>
+			<div class="menu-painel">
+				<nav aria-label="Menu">
+					<p class="grupo">Perguntas</p>
+					<ul>
+						{
+							publicos.map((pub) => (
+								<li>
+									<a href={ligacao(modo, p, 'perguntas', `perguntas-${pub.id}`)}>{pub.nome}</a>
+								</li>
+							))
+						}
+					</ul>
+					<a class="eco-menu" href={eco}><Folha tamanho={18} /> Ecologia e infraestrutura</a>
+					<div class="linguas-menu" role="group" aria-label="Língua">
+						<span>FR</span><span>EN</span><span aria-current="true">PT</span>
+					</div>
+				</nav>
+			</div>
+		</details>
+	</div>
+</header>
+
+<script>
+	// Fecha os menus <details> ao clicar fora, com Escape e depois de escolher uma ligação.
+	const abertos = () => [...document.querySelectorAll<HTMLDetailsElement>('details[data-fecha][open]')];
+	document.addEventListener('click', (e) => {
+		const alvo = e.target as HTMLElement;
+		for (const d of abertos()) {
+			if (!d.contains(alvo) || alvo.closest('a')) d.open = false;
+		}
+	});
+	document.addEventListener('keydown', (e) => {
+		if (e.key !== 'Escape') return;
+		for (const d of abertos()) {
+			d.open = false;
+			d.querySelector('summary')?.focus();
+		}
+	});
+</script>
+
+<style>
+	.cab {
+		position: sticky;
+		top: env(safe-area-inset-top, 0px);
+		z-index: 20;
+		background: color-mix(in srgb, var(--bg) 86%, transparent);
+		backdrop-filter: blur(6px);
+		border-bottom: 1px solid var(--line);
+	}
+	.cab-dentro {
+		display: flex;
+		align-items: center;
+		gap: 1.1rem;
+		min-height: 68px;
+	}
+	.marca {
+		text-decoration: none;
+		flex: 0 1 auto;
+		min-width: 0;
+		display: inline-flex;
+		align-items: center;
+		min-height: 44px;
+	}
+	.nome {
+		font-family: var(--serif);
+		white-space: nowrap;
+	}
+	.n1 {
+		font-size: 1.5rem;
+	}
+	.pilula {
+		display: inline-block;
+		border: 1px solid var(--acento);
+		border-radius: 999px;
+		padding: 0.02em 0.4em 0.08em;
+	}
+	.n2 {
+		font-size: 1.45rem;
+	}
+	.cx {
+		display: inline-block;
+		border: 1.5px solid var(--acento);
+		border-radius: 0.3em;
+		padding: 0 0.12em;
+		margin-right: 0.04em;
+		line-height: 1.12;
+	}
+	.n3 {
+		display: grid;
+		font-size: 1rem;
+		line-height: 1.2;
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+	}
+	.n3 .l2 {
+		padding-left: 1.1em;
+	}
+	.fr {
+		display: inline-block;
+		border: 1px solid var(--verde);
+		border-radius: 0.38em;
+		padding: 0 0.12em 0 0.2em;
+		margin: 1px 0.05em;
+	}
+	.nav {
+		margin-left: auto;
+	}
+	.nav > ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		align-items: center;
+		gap: 0.15rem;
+	}
+	.nav a,
+	.nav summary {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3rem;
+		min-height: 40px;
+		padding: 0 0.6rem;
+		border-radius: 8px;
+		font-size: 0.9rem;
+		color: var(--muted);
+		text-decoration: none;
+		cursor: pointer;
+		transition:
+			color 0.15s ease,
+			background 0.15s ease;
+	}
+	.nav a:hover,
+	.nav summary:hover,
+	.nav a.ativa,
+	.nav summary[aria-current] {
+		color: var(--text);
+		background: var(--surface);
+	}
+	.nav a.ativa {
+		box-shadow: inset 0 -2px 0 var(--verde);
+	}
+	.sub {
+		position: relative;
+	}
+	.sub summary {
+		list-style: none;
+	}
+	.sub summary::-webkit-details-marker {
+		display: none;
+	}
+	.sub[open] summary svg {
+		transform: rotate(180deg);
+	}
+	.sub summary svg {
+		transition: transform 0.15s ease;
+	}
+	.painel {
+		position: absolute;
+		right: 0;
+		top: calc(100% + 8px);
+		width: 22rem;
+		list-style: none;
+		margin: 0;
+		padding: 0.5rem;
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: var(--raio);
+		box-shadow: 0 18px 40px rgb(0 0 0 / 0.45);
+		display: grid;
+		gap: 0.15rem;
+	}
+	.painel a {
+		display: grid;
+		gap: 0.1rem;
+		padding: 0.6rem 0.75rem;
+		min-height: 0;
+		height: auto;
+	}
+	.painel a strong {
+		color: var(--text);
+		font-weight: 600;
+	}
+	.painel a span {
+		font-size: 0.8125rem;
+		color: var(--muted);
+		white-space: normal;
+		line-height: 1.4;
+	}
+	.painel a:hover {
+		background: var(--surface-2);
+	}
+	.painel .todas a {
+		color: var(--verde);
+		font-weight: 600;
+	}
+	.eco {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		min-height: 40px;
+		padding: 0 0.75rem;
+		border-radius: 999px;
+		border: 1px solid var(--verde-forte);
+		color: var(--verde);
+		text-decoration: none;
+		font-size: 0.9rem;
+		font-weight: 500;
+		transition: background 0.15s ease;
+	}
+	.eco:hover,
+	.eco[aria-current] {
+		background: color-mix(in srgb, var(--verde) 16%, transparent);
+	}
+	.eco:hover :global(.folha) {
+		transform: rotate(-12deg);
+	}
+	.eco :global(.folha) {
+		transition: transform 0.2s ease;
+	}
+	.linguas,
+	.linguas-menu {
+		display: flex;
+		gap: 0.25rem;
+		font-size: 0.8125rem;
+		letter-spacing: 0.06em;
+		color: var(--muted);
+	}
+	.linguas span,
+	.linguas-menu span {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 28px;
+		min-height: 28px;
+	}
+	.linguas [aria-current],
+	.linguas-menu [aria-current] {
+		color: var(--text);
+		text-decoration: underline;
+		text-underline-offset: 4px;
+	}
+	.cta .curto {
+		display: none;
+	}
+	.menu {
+		display: none;
+		position: relative;
+	}
+	.menu summary {
+		list-style: none;
+		display: grid;
+		place-items: center;
+		width: 44px;
+		height: 44px;
+		border-radius: 10px;
+		border: 1px solid var(--line-forte);
+		cursor: pointer;
+		color: var(--text);
+	}
+	.menu summary::-webkit-details-marker {
+		display: none;
+	}
+	.menu-painel {
+		position: absolute;
+		right: 0;
+		top: calc(100% + 10px);
+		width: min(20rem, calc(100vw - 40px));
+		padding: 1rem;
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: var(--raio);
+		box-shadow: 0 18px 40px rgb(0 0 0 / 0.5);
+	}
+	.menu-painel nav {
+		display: grid;
+		gap: 0.4rem;
+	}
+	.menu-painel ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+	}
+	.menu-painel ul a {
+		display: flex;
+		align-items: center;
+		min-height: 44px;
+		padding: 0 0.5rem;
+		border-radius: 8px;
+		text-decoration: none;
+	}
+	.menu-painel ul a:hover {
+		background: var(--surface-2);
+	}
+	.grupo {
+		font-size: 0.6875rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--muted);
+		padding: 0.5rem 0.5rem 0;
+	}
+	.eco-menu {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		min-height: 44px;
+		padding: 0 0.75rem;
+		margin-top: 0.4rem;
+		border-radius: 10px;
+		background: color-mix(in srgb, var(--verde) 14%, transparent);
+		color: var(--verde);
+		text-decoration: none;
+		font-weight: 600;
+	}
+	.linguas-menu {
+		padding: 0.5rem 0.25rem 0;
+	}
+	@media (max-width: 760px) {
+		.nav,
+		.linguas {
+			display: none;
+		}
+		.menu {
+			display: block;
+		}
+		.eco {
+			margin-left: auto;
+		}
+	}
+	@media (max-width: 640px) {
+		.cab-dentro {
+			gap: 0.4rem;
+			min-height: 60px;
+		}
+		.eco,
+		.menu,
+		.cta {
+			flex: none;
+		}
+		.eco {
+			padding: 0;
+			width: 42px;
+			min-height: 42px;
+			justify-content: center;
+		}
+		.menu summary {
+			width: 42px;
+			height: 42px;
+		}
+		.eco-texto {
+			display: none;
+		}
+		.cta .longo {
+			display: none;
+		}
+		.cta .curto {
+			display: inline;
+		}
+		.cta {
+			padding: 0 0.75rem;
+			font-size: 0.8125rem;
+		}
+		.n1,
+		.n2 {
+			font-size: 1.1rem;
+		}
+		.n3 {
+			font-size: 0.8125rem;
+		}
+	}
+	@media (max-width: 380px) {
+		.n1,
+		.n2 {
+			font-size: 0.95rem;
+		}
+		.n3 {
+			font-size: 0.6875rem;
+		}
+	}
+</style>

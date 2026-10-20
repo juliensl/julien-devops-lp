@@ -1,0 +1,24 @@
+---
+// PROTÓTIPO v3 · Página de perguntas de cada variante: /prototipo/v3/a/perguntas/.
+import PrototipoV3 from '../../../../layouts/PrototipoV3.astro';
+import Vista from '../../../../components/prototipo-v3/Vista.astro';
+import Perguntas from '../../../../components/prototipo-v3/Perguntas.astro';
+import { temas } from '../../../../components/prototipo-v3/temas';
+import type { P } from '../../../../components/prototipo-v3/dados';
+
+export function getStaticPaths() {
+	return [
+		{ params: { p: 'a' }, props: { n: 1 } },
+		{ params: { p: 'b' }, props: { n: 2 } },
+		{ params: { p: 'c' }, props: { n: 3 } },
+	];
+}
+const p = Astro.props.n as P;
+const t = temas[p - 1];
+---
+
+<PrototipoV3 titulo={`Perguntas · Variante ${t.letra} · ${t.nome}`}>
+	<Vista p={p} pagina="perguntas" modo="rotas">
+		<Perguntas p={p} modo="rotas" />
+	</Vista>
+</PrototipoV3>

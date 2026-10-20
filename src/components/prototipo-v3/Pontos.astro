@@ -1,0 +1,104 @@
+---
+// PROTÓTIPO v3 · Pontos em movimento constante, só no topo da página (fixos, como os
+// da Arkoder; o Julien não quer pontos na página toda). Só usa transform e opacity
+// (compostos pela GPU, sem repintar a página). Parados com prefers-reduced-motion.
+interface Props {
+	estilo: 'deriva' | 'grelha' | 'rede';
+}
+const { estilo } = Astro.props;
+---
+
+<div class:list={['pontos', estilo]} aria-hidden="true">
+	{estilo === 'rede' && <div class="contornos" />}
+	<div class="camada c1"></div>
+	<div class="camada c2"></div>
+	<div class="camada c3"></div>
+</div>
+
+<style>
+	.pontos {
+		position: fixed;
+		inset: 0 0 auto;
+		height: 320px;
+		z-index: 0;
+		pointer-events: none;
+		overflow: hidden;
+		mask-image: linear-gradient(#000 35%, transparent);
+	}
+	.camada {
+		position: absolute;
+		inset: -200px;
+		will-change: transform;
+	}
+	.c1 {
+		background-image: radial-gradient(circle, var(--ponto-a) 1.1px, transparent 1.7px);
+		background-size: 28px 28px;
+		animation: deriva-a 22s linear infinite;
+	}
+	.c2,
+	.c3 {
+		background-image: radial-gradient(circle, var(--ponto-b) 1.7px, transparent 2.4px);
+		background-size: 168px 140px;
+		animation:
+			deriva-b 40s linear infinite,
+			brilho 7s ease-in-out infinite;
+	}
+	.c2 {
+		background-position: 42px 28px;
+	}
+	.c3 {
+		background-position: 126px 98px;
+		animation-delay: 0s, -3.5s;
+		animation-direction: reverse, normal;
+	}
+	@keyframes deriva-a {
+		to {
+			transform: translate3d(28px, 28px, 0);
+		}
+	}
+	@keyframes deriva-b {
+		to {
+			transform: translate3d(-168px, 140px, 0);
+		}
+	}
+	@keyframes brilho {
+		0%,
+		100% {
+			opacity: 0.25;
+		}
+		50% {
+			opacity: 1;
+		}
+	}
+
+	.grelha .c1 {
+		background-size: 36px 36px;
+		animation-duration: 30s;
+	}
+	@keyframes deriva-grelha {
+		to {
+			transform: translate3d(36px, 0, 0);
+		}
+	}
+	.grelha .c1 {
+		animation-name: deriva-grelha;
+	}
+	.rede .c1 {
+		background-size: 32px 32px;
+	}
+	@keyframes deriva-rede {
+		to {
+			transform: translate3d(-32px, 32px, 0);
+		}
+	}
+	.rede .c1 {
+		animation-name: deriva-rede;
+	}
+	.contornos {
+		position: absolute;
+		inset: 0;
+		background:
+			repeating-radial-gradient(ellipse at 18% 22%, transparent 0 26px, rgb(143 224 176 / 0.06) 26px 27px),
+			repeating-radial-gradient(ellipse at 86% 74%, transparent 0 34px, rgb(143 224 176 / 0.05) 34px 35px);
+	}
+</style>

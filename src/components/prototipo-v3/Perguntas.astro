@@ -1,0 +1,365 @@
+---
+// PROTÓTIPO v3 · Página «Perguntas» (corpo): perguntas gerais e por público
+// (CTO, CEO, equipa técnica). Filtro por público e pesquisa por palavras;
+// sem JS, todas as perguntas ficam visíveis. Cada resposta mostra se está
+// validada pelo Julien ou ainda a validar.
+import { perguntas, publicos, calendly, textos, type P, type Modo } from './dados';
+import { ligacao } from './temas';
+
+interface Props {
+	p: P;
+	modo: Modo;
+}
+const { p, modo } = Astro.props;
+const pre = `p${p}-perguntas`;
+const total = Object.values(perguntas).reduce((s, l) => s + l.length, 0);
+const porValidar = Object.values(perguntas).reduce((s, l) => s + l.filter((q) => q.estado === 'a-validar').length, 0);
+---
+
+<div class="perg" data-perguntas>
+	<section class="largura perg-hero">
+		<div class="perg-hero-texto">
+			<p class="etiqueta">Perguntas</p>
+			<h1>Respostas para cada perfil.</h1>
+			<p class="lead">
+				Escolhe o teu perfil ou pesquisa uma palavra. Se a tua pergunta não estiver aqui, faz-ma na Conversa.
+			</p>
+		</div>
+		<div class="filtros">
+			<div class="publicos" role="group" aria-label="Filtrar por perfil">
+				<button type="button" aria-pressed="true" data-publico="todos">Todas</button>
+				{
+					publicos.map((pub) => (
+						<button type="button" aria-pressed="false" data-publico={pub.id}>
+							{pub.curto}
+						</button>
+					))
+				}
+			</div>
+			<label class="pesquisa">
+				<span class="sr">Pesquisar nas perguntas</span>
+				<input type="search" placeholder="Pesquisar: testes, custos, acessos…" data-pesquisa />
+			</label>
+			<p class="contagem" aria-live="polite" data-contagem>{total} perguntas</p>
+		</div>
+	</section>
+
+	<div class="largura perg-corpo">
+		<nav class="indice" aria-label="Perfis">
+			<ul>
+				{
+					publicos.map((pub) => (
+						<li>
+							<a href={ligacao(modo, p, 'perguntas', `perguntas-${pub.id}`)}>
+								{pub.nome}
+								<span>{perguntas[pub.id].length}</span>
+							</a>
+						</li>
+					))
+				}
+			</ul>
+		</nav>
+		<div class="grupos">
+			{
+				publicos.map((pub) => (
+					<section class="grupo" id={`${pre}-${pub.id}`} data-grupo={pub.id}>
+						<div class="grupo-cab">
+							<h2>{pub.nome}</h2>
+							<p>{pub.descricao}</p>
+						</div>
+						<div class="lista">
+							{perguntas[pub.id].map((q) => (
+								<details data-texto={`${q.p} ${q.r}`.toLowerCase()}>
+									<summary>
+										<span>{q.p}</span>
+										<span class={`selo ${q.estado}`}>{q.estado === 'validado' ? 'Validado' : 'A validar'}</span>
+									</summary>
+									<div class="resposta">
+										<p>{q.r}</p>
+										{q.nota && <p class="nota-proto">{q.nota}</p>}
+									</div>
+								</details>
+							))}
+						</div>
+					</section>
+				))
+			}
+			<p class="sem-resultados" data-vazio hidden>Nenhuma pergunta com essas palavras.</p>
+		</div>
+	</div>
+
+	<section class="largura perg-final">
+		<p class="nota-proto">
+			{
+				porValidar
+					? `${porValidar} de ${total} respostas ainda precisam da validação do Julien. As respostas validadas vêm das decisões já registadas;`
+					: `As ${total} respostas estão validadas pelo Julien e vêm das decisões já registadas;`
+			} nenhuma promessa nova foi acrescentada.
+		</p>
+		<div class="perg-cta">
+			<h2>Não encontras a tua pergunta?</h2>
+			<a class="botao grande" href={calendly}>{textos.cta}</a>
+		</div>
+	</section>
+</div>
+
+<script>
+	for (const raiz of document.querySelectorAll<HTMLElement>('[data-perguntas]')) {
+		const botoes = [...raiz.querySelectorAll<HTMLButtonElement>('[data-publico]')];
+		const pesquisa = raiz.querySelector<HTMLInputElement>('[data-pesquisa]')!;
+		const grupos = [...raiz.querySelectorAll<HTMLElement>('[data-grupo]')];
+		const contagem = raiz.querySelector<HTMLElement>('[data-contagem]')!;
+		const vazio = raiz.querySelector<HTMLElement>('[data-vazio]')!;
+		let publico = 'todos';
+
+		function aplica() {
+			const termos = pesquisa.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+			let n = 0;
+			for (const g of grupos) {
+				let visiveis = 0;
+				for (const d of g.querySelectorAll<HTMLDetailsElement>('details')) {
+					const ok = termos.every((t) => d.dataset.texto!.includes(t));
+					d.hidden = !ok;
+					if (ok) visiveis++;
+					if (ok && termos.length) d.open = true;
+				}
+				g.hidden = (publico !== 'todos' && g.dataset.grupo !== publico) || visiveis === 0;
+				if (!g.hidden) n += visiveis;
+			}
+			contagem.textContent = n === 1 ? '1 pergunta' : `${n} perguntas`;
+			vazio.hidden = n > 0;
+		}
+		for (const b of botoes) {
+			b.addEventListener('click', () => {
+				publico = b.dataset.publico!;
+				botoes.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+				aplica();
+			});
+		}
+		pesquisa.addEventListener('input', aplica);
+
+		// Ao chegar por uma ligação «Perguntas para CTO», etc., abre esse grupo.
+		function pelaAncora() {
+			const id = location.hash.slice(1);
+			const g = grupos.find((x) => x.id === id);
+			if (!g) return;
+			publico = g.dataset.grupo!;
+			botoes.forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.publico === publico)));
+			aplica();
+		}
+		window.addEventListener('hashchange', pelaAncora);
+		pelaAncora();
+	}
+</script>
+
+<style>
+	.perg > section {
+		padding-block: 4rem 0;
+	}
+	h1 {
+		font-size: clamp(2.4rem, 5vw, 4rem);
+		line-height: 1.05;
+	}
+	h2 {
+		font-size: clamp(1.7rem, 3.2vw, 2.3rem);
+		line-height: 1.1;
+	}
+	.lead {
+		color: var(--muted);
+		font-size: 1.125rem;
+		max-width: 38rem;
+	}
+	.perg-hero {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		gap: 2rem 4rem;
+		align-items: end;
+		padding-top: 4.5rem !important;
+	}
+	.perg-hero-texto {
+		display: grid;
+		gap: 1rem;
+	}
+	.filtros {
+		display: grid;
+		gap: 0.75rem;
+	}
+	.publicos {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+	.publicos button {
+		font: inherit;
+		font-size: 0.875rem;
+		min-height: 40px;
+		padding: 0 1rem;
+		border-radius: 999px;
+		border: 1px solid var(--line-forte);
+		background: transparent;
+		color: var(--muted);
+		cursor: pointer;
+		transition:
+			background 0.15s ease,
+			color 0.15s ease;
+	}
+	.publicos button:hover {
+		color: var(--text);
+		border-color: var(--verde);
+	}
+	.publicos button[aria-pressed='true'] {
+		background: var(--verde);
+		border-color: var(--verde);
+		color: var(--bg);
+		font-weight: 600;
+	}
+	.pesquisa input {
+		width: 100%;
+		font: inherit;
+		min-height: 48px;
+		padding: 0 1rem;
+		border-radius: var(--raio-botao);
+		border: 1px solid var(--line-forte);
+		background: var(--surface);
+		color: var(--text);
+	}
+	.pesquisa input::placeholder {
+		color: var(--muted);
+	}
+	.contagem {
+		font-size: 0.8125rem;
+		color: var(--muted);
+	}
+	.perg-corpo {
+		display: grid;
+		grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+		gap: 2rem 4rem;
+		align-items: start;
+		padding-top: 3rem;
+	}
+	.indice {
+		position: sticky;
+		top: 96px;
+	}
+	.indice ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		gap: 0.25rem;
+		border-left: 1px solid var(--line);
+	}
+	.indice a {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 1rem;
+		min-height: 40px;
+		padding: 0 0.85rem;
+		margin-left: -1px;
+		border-left: 2px solid transparent;
+		color: var(--muted);
+		text-decoration: none;
+	}
+	.indice a:hover {
+		color: var(--text);
+		border-left-color: var(--verde);
+	}
+	.indice a span {
+		font-size: 0.8125rem;
+		color: var(--verde);
+		font-variant-numeric: tabular-nums;
+	}
+	.grupos {
+		display: grid;
+		gap: 3rem;
+	}
+	.grupo {
+		display: grid;
+		gap: 1rem;
+	}
+	.grupo-cab {
+		display: grid;
+		gap: 0.35rem;
+	}
+	.grupo-cab p {
+		color: var(--muted);
+	}
+	.lista {
+		display: grid;
+	}
+	details {
+		border-top: 1px solid var(--line);
+	}
+	details:last-child {
+		border-bottom: 1px solid var(--line);
+	}
+	summary {
+		cursor: pointer;
+		list-style: none;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 1rem;
+		min-height: 56px;
+		font: 400 1.2rem/1.3 var(--serif);
+	}
+	summary::-webkit-details-marker {
+		display: none;
+	}
+	summary .selo {
+		flex: none;
+	}
+	.resposta {
+		display: grid;
+		gap: 0.75rem;
+		padding-bottom: 1.1rem;
+		color: var(--muted);
+		max-width: 46rem;
+	}
+	.sem-resultados {
+		color: var(--muted);
+	}
+	.perg-final {
+		display: grid;
+		gap: 2rem;
+	}
+	.perg-cta {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		align-items: center;
+		gap: 1.5rem;
+		padding-top: 2.5rem;
+		border-top: 2px solid var(--verde);
+	}
+	@media (max-width: 960px) {
+		.perg-hero,
+		.perg-corpo {
+			grid-template-columns: 1fr;
+		}
+		.indice {
+			position: static;
+		}
+		.indice ul {
+			display: flex;
+			flex-wrap: wrap;
+			border-left: 0;
+			gap: 0.5rem;
+		}
+		.indice a {
+			border: 1px solid var(--line);
+			border-radius: 999px;
+			margin: 0;
+		}
+	}
+	@media (max-width: 640px) {
+		summary {
+			flex-direction: column;
+			align-items: flex-start;
+			justify-content: center;
+			gap: 0.35rem;
+			padding-block: 0.75rem;
+		}
+	}
+</style>

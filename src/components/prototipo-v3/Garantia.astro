@@ -1,0 +1,160 @@
+---
+// PROTÓTIPO v3 · A Garantia como foi validada: pelo menos 99 % em cada mês, nos 3 meses
+// seguintes à entrega. Sem equivalência anual nem horas por mês (validado pelo Julien a
+// 19/10/2026). Cada mês é um quadrado de 100 pontos; cada ponto é 1 % do mês e a
+// Garantia deixa no máximo 1 ponto sem serviço.
+import { textos, garantia } from './dados';
+
+interface Props {
+	formato: 'lado' | 'cartao' | 'faixa';
+}
+const { formato } = Astro.props;
+const meses = Array.from({ length: garantia.meses }, (_, i) => i + 1);
+---
+
+<div class:list={['ga', formato]}>
+	<div class="ga-texto">
+		<p class="etiqueta">A garantia</p>
+		<h2>Disponível pelo menos 99&nbsp;% do tempo, em cada mês.</h2>
+		<p class="ga-num">
+			<span class="ga-grande">99&nbsp;%</span>
+			<span class="ga-sub">em cada mês, nos 3 meses seguintes à entrega</span>
+		</p>
+		<p class="ga-compromisso">{textos.garantia}</p>
+		<p class="ga-condicao">{textos.garantiaCondicao}</p>
+	</div>
+	<figure class="ga-quadro">
+		<div class="ga-meses" role="img" aria-label="3 meses de 100 pontos cada; em cada mês, no máximo 1 ponto sem serviço">
+			{
+				meses.map((m) => (
+					<div class="mes">
+						<span class="quad" />
+						<span class="mes-nome">Mês {m} depois da entrega</span>
+					</div>
+				))
+			}
+		</div>
+		<figcaption>
+			<span><i class="pt cheio"></i> 1 % do mês com serviço</span>
+			<span><i class="pt livre"></i> margem máxima sem serviço</span>
+		</figcaption>
+	</figure>
+</div>
+
+<style>
+	.ga {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		gap: 2.5rem 4rem;
+		align-items: center;
+	}
+	.ga-texto {
+		display: grid;
+		gap: 1rem;
+		justify-items: start;
+	}
+	.ga h2 {
+		font-size: clamp(2rem, 4vw, 2.9rem);
+		line-height: 1.08;
+	}
+	.ga-num {
+		display: grid;
+		gap: 0.1rem;
+	}
+	.ga-grande {
+		font: 400 clamp(3rem, 7vw, 4.8rem) / 1 var(--serif);
+		color: var(--verde);
+	}
+	.ga-sub {
+		font-size: 1.0625rem;
+	}
+	.ga-compromisso {
+		color: var(--muted);
+		max-width: 34rem;
+	}
+	.ga-condicao {
+		font-size: 0.9375rem;
+		color: var(--acento);
+	}
+	.ga-quadro {
+		margin: 0;
+		display: grid;
+		gap: 1rem;
+	}
+	.ga-meses {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 1.25rem;
+	}
+	.mes {
+		display: grid;
+		gap: 0.5rem;
+	}
+	.quad {
+		position: relative;
+		display: block;
+		aspect-ratio: 1;
+		max-width: 100%;
+		border-radius: 6px;
+		background-image: radial-gradient(circle, var(--verde) 34%, transparent 38%);
+		background-size: 10% 10%;
+	}
+	.quad::after {
+		/* o 100.º ponto: margem máxima sem serviço */
+		content: '';
+		position: absolute;
+		right: 0;
+		bottom: 0;
+		width: 10%;
+		height: 10%;
+		background:
+			radial-gradient(circle, transparent 26%, var(--s3) 28% 36%, transparent 38%),
+			var(--fundo-ga, var(--bg));
+	}
+	.mes-nome {
+		font-size: 0.75rem;
+		color: var(--muted);
+	}
+	figcaption {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem 1.5rem;
+		font-size: 0.8125rem;
+		color: var(--muted);
+	}
+	.pt {
+		display: inline-block;
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		vertical-align: -1px;
+		margin-right: 0.3rem;
+	}
+	.pt.cheio {
+		background: var(--verde);
+	}
+	.pt.livre {
+		border: 2px solid var(--s3);
+	}
+	/* Cartão (protótipo 2): o quadro à esquerda, o texto à direita. */
+	.cartao .ga-quadro {
+		order: -1;
+	}
+	/* Faixa (protótipo 3): quadros maiores, texto por cima em duas colunas. */
+	.faixa {
+		grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+	}
+	@media (max-width: 960px) {
+		.ga {
+			grid-template-columns: 1fr;
+		}
+		.cartao .ga-quadro {
+			order: 0;
+		}
+	}
+	@media (max-width: 420px) {
+		.ga-meses {
+			gap: 0.75rem;
+		}
+	}
+</style>

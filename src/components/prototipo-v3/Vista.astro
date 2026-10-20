@@ -1,0 +1,52 @@
+---
+// PROTÓTIPO v3 · Uma vista (protótipo × página): pontos, cabeçalho, conteúdo,
+// rodapé e barra do protótipo. No modo «hash» várias vistas vivem na mesma página.
+import Pontos from './Pontos.astro';
+import Cabecalho from './Cabecalho.astro';
+import Rodape from './Rodape.astro';
+import Comutador from './Comutador.astro';
+import type { P, Pagina, Modo } from './dados';
+import { idVista } from './temas';
+
+interface Props {
+	p: P;
+	pagina: Pagina;
+	modo: Modo;
+	oculta?: boolean;
+}
+const { p, pagina, modo, oculta = false } = Astro.props;
+const id = idVista(p, pagina);
+const pontos = 'deriva';
+---
+
+<div class:list={['vista', `p${p}`, `pag-${pagina}`]} id={id} data-vista hidden={oculta}>
+	<a class="saltar" href={`#${id}-conteudo`}>Saltar para o conteúdo</a>
+	<Pontos estilo={pontos} />
+	<Cabecalho p={p} pagina={pagina} modo={modo} />
+	<main id={`${id}-conteudo`} class="conteudo">
+		<slot />
+	</main>
+	<Rodape p={p} modo={modo} />
+	<Comutador p={p} pagina={pagina} modo={modo} />
+</div>
+
+<style>
+	.conteudo {
+		position: relative;
+		z-index: 1;
+	}
+	.saltar {
+		position: absolute;
+		left: 12px;
+		top: -100px;
+		z-index: 70;
+		padding: 0.6rem 1rem;
+		border-radius: 8px;
+		background: var(--acao);
+		color: var(--acao-texto);
+		font-weight: 600;
+	}
+	.saltar:focus {
+		top: 12px;
+	}
+</style>

@@ -1,0 +1,316 @@
+---
+// PROTÓTIPO v3 · Esqueleto das páginas do protótipo: fontes, reinício e os
+// tokens de cada tema (.p1, .p2, .p3). Os estilos de cada tema só existem
+// dentro da sua classe, por isso não contaminam os outros.
+interface Props {
+	titulo: string;
+}
+const { titulo } = Astro.props;
+---
+
+<html lang="pt-PT">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<meta name="robots" content="noindex" />
+		<title>{titulo}</title>
+	</head>
+	<body>
+		<slot />
+	</body>
+</html>
+
+<style is:global>
+	@font-face {
+		font-family: 'Bona Nova';
+		src: url('/prototipo-direcao-visual/fonts/bona-nova-400.woff2') format('woff2');
+		font-weight: 400;
+		font-display: swap;
+	}
+	@font-face {
+		font-family: 'Geist';
+		src: url('/prototipo-direcao-visual/fonts/geist-wght.woff2') format('woff2');
+		font-weight: 100 900;
+		font-display: swap;
+	}
+
+	:root {
+		color-scheme: dark;
+		-webkit-text-size-adjust: 100%;
+	}
+	*,
+	*::before,
+	*::after {
+		box-sizing: border-box;
+	}
+	body {
+		margin: 0;
+		background: #0e0c12;
+		color: #f2eef7;
+	}
+	body:has(.vista.p2:not([hidden])) {
+		background: #2a1745;
+	}
+	body:has(.vista.p3:not([hidden])) {
+		background: #0f2c22;
+	}
+	[hidden] {
+		display: none !important;
+	}
+	img {
+		max-width: 100%;
+		height: auto;
+	}
+	[id] {
+		scroll-margin-top: 96px;
+	}
+
+	/* ---------- Tokens das variantes A, B e C ----------
+	   Na C os papéis trocam: --verde guarda o roxo (cor das ações e dos dados) e
+	   --acento guarda o verde. Os nomes vêm da v2; os valores seguem o pedido do Julien. */
+	.p1 {
+		--bg: #0e0c12;
+		--fundo-vista:
+			radial-gradient(1100px 700px at 12% -8%, rgb(160 120 255 / 0.2), transparent 60%),
+			radial-gradient(900px 700px at 105% 35%, rgb(110 220 160 / 0.1), transparent 60%),
+			radial-gradient(900px 900px at 0% 95%, rgb(160 120 255 / 0.08), transparent 60%), #0e0c12;
+		--surface: #17141f;
+		--surface-2: #1f1b29;
+		--surface-verde: #10221b;
+		--line: #2a2533;
+		--line-forte: #6d6480;
+		--text: #f2eef7;
+		--muted: #b3aac2;
+		--acao: #c3a6ff;
+		--acao-hover: #d5c2ff;
+		--acao-texto: #0e0c12;
+		--acento: #c3a6ff;
+		--verde: #86d9a8;
+		--verde-forte: #4fa57a;
+		--etiqueta: #86d9a8;
+		--ponto-a: rgb(195 166 255 / 0.3);
+		--ponto-b: rgb(134 217 168 / 0.85);
+		--s1: #86d9a8;
+		--s2: #c3a6ff;
+		--s3: #e6cf94;
+		--s4: #8a7ab5;
+		--serif: 'Bona Nova', 'Iowan Old Style', Georgia, serif;
+		--sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+		--raio: 12px;
+		--raio-botao: 999px;
+	}
+	.p2 {
+		--bg: #2a1745;
+		--fundo-vista:
+			radial-gradient(1100px 700px at 85% -10%, rgb(143 227 176 / 0.12), transparent 60%),
+			linear-gradient(180deg, #2f1a4d 0%, #2a1745 40%, #251440 100%);
+		--surface: #331d52;
+		--surface-2: #3d2460;
+		--surface-verde: #173a32;
+		--line: #4a3170;
+		--line-forte: #9a85c4;
+		--text: #f6f1ff;
+		--muted: #d2c6e8;
+		--acao: #8fe3b0;
+		--acao-hover: #aaedc4;
+		--acao-texto: #1d1030;
+		--acento: #dccbff;
+		--verde: #8fe3b0;
+		--verde-forte: #4fae80;
+		--etiqueta: #8fe3b0;
+		--ponto-a: rgb(143 227 176 / 0.28);
+		--ponto-b: rgb(143 227 176 / 0.85);
+		--s1: #8fe3b0;
+		--s2: #dccbff;
+		--s3: #f0d79a;
+		--s4: #a48fd6;
+		--serif: 'Bona Nova', 'Iowan Old Style', Georgia, serif;
+		--sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+		--raio: 12px;
+		--raio-botao: 999px;
+	}
+	.p3 {
+		--bg: #0f2c22;
+		--fundo-vista:
+			radial-gradient(1100px 700px at 10% -10%, rgb(210 189 255 / 0.12), transparent 60%),
+			linear-gradient(180deg, #11301f 0%, #0f2c22 45%, #0d281f 100%);
+		--surface: #143628;
+		--surface-2: #1a4031;
+		--surface-verde: #2a2147;
+		--line: #285443;
+		--line-forte: #73a08b;
+		--text: #effaf4;
+		--muted: #bcd6c9;
+		--acao: #d2bdff;
+		--acao-hover: #e2d4ff;
+		--acao-texto: #1a1030;
+		--acento: #93e3b5;
+		--verde: #d2bdff;
+		--verde-forte: #9b85d9;
+		--etiqueta: #d2bdff;
+		--ponto-a: rgb(210 189 255 / 0.3);
+		--ponto-b: rgb(210 189 255 / 0.85);
+		--s1: #d2bdff;
+		--s2: #93e3b5;
+		--s3: #f0d79a;
+		--s4: #8fd0ad;
+		--serif: 'Bona Nova', 'Iowan Old Style', Georgia, serif;
+		--sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+		--raio: 12px;
+		--raio-botao: 999px;
+	}
+
+	/* ---------- Base comum, sempre através dos tokens ---------- */
+	.vista {
+		position: relative;
+		min-height: 100vh;
+		background: var(--fundo-vista, var(--bg));
+		color: var(--text);
+		font: 400 1rem/1.65 var(--sans);
+		padding-bottom: 6rem;
+		overflow-x: clip;
+	}
+	.vista :is(h1, h2, h3) {
+		font-family: var(--serif);
+		font-weight: 400;
+		margin: 0;
+		text-wrap: balance;
+	}
+	.vista p {
+		margin: 0;
+	}
+	.vista a {
+		color: inherit;
+	}
+	.vista :focus-visible {
+		outline: 2px solid var(--verde);
+		outline-offset: 3px;
+	}
+	.vista .botao {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		min-height: 44px;
+		padding: 0 1.15rem;
+		border-radius: var(--raio-botao);
+		background: var(--acao);
+		color: var(--acao-texto);
+		font: 600 0.9375rem/1 var(--sans);
+		text-decoration: none;
+		white-space: nowrap;
+		border: 0;
+		cursor: pointer;
+		transition:
+			background 0.15s ease,
+			transform 0.15s ease;
+	}
+	.vista .botao:hover {
+		background: var(--acao-hover);
+	}
+	.vista .botao:active {
+		transform: translateY(1px);
+	}
+	.vista .botao.grande {
+		min-height: 52px;
+		padding: 0 1.6rem;
+		font-size: 1.0625rem;
+	}
+	.vista .ligacao-seta {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		color: var(--verde);
+		font-weight: 600;
+		text-decoration: none;
+		min-height: 24px;
+	}
+	.vista .ligacao-seta:hover {
+		text-decoration: underline;
+		text-underline-offset: 4px;
+	}
+	.vista .etiqueta {
+		font-size: 0.75rem;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--etiqueta, var(--verde));
+		font-weight: 500;
+	}
+	.vista .largura {
+		max-width: 76rem;
+		margin-inline: auto;
+		padding-left: max(20px, env(safe-area-inset-left, 0px));
+		padding-right: max(20px, env(safe-area-inset-right, 0px));
+	}
+	.sr {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+	}
+
+	/* Estado de cada dado: publicado, calculado, hipótese, demonstração, a validar. */
+	.selo {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3rem;
+		font: 600 0.6875rem/1.2 var(--sans, system-ui);
+		letter-spacing: 0.04em;
+		padding: 0.2rem 0.5rem;
+		border-radius: 999px;
+		white-space: nowrap;
+		vertical-align: middle;
+	}
+	.selo.validado {
+		background: rgb(140 207 166 / 0.16);
+		color: #a6e3bd;
+	}
+	.selo.publicado {
+		background: rgb(140 207 166 / 0.16);
+		color: #a6e3bd;
+		border: 1px solid #5fae82;
+	}
+	.selo.calculado {
+		background: rgb(195 166 255 / 0.16);
+		color: #d6c4ff;
+	}
+	.selo.hipotese {
+		border: 1px dashed #d6c4ff;
+		color: #d6c4ff;
+	}
+	.selo.demo {
+		background: repeating-linear-gradient(135deg, #4a3d14 0 6px, #3d3416 6px 12px);
+		color: #fff1c2;
+	}
+	.selo.a-validar {
+		background: #3d3416;
+		color: #fff1c2;
+		border: 1px dashed #d9c27a;
+	}
+	/* Notas do protótipo: não fazem parte do design. */
+	.nota-proto {
+		font: 500 0.8125rem/1.45 system-ui, sans-serif;
+		color: #fff6d6;
+		background: #3d3416;
+		border: 1px dashed #d9c27a;
+		border-radius: 6px;
+		padding: 0.5rem 0.75rem;
+		max-width: 64ch;
+	}
+	.nota-proto::before {
+		content: 'Nota do protótipo · ';
+		font-weight: 700;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		*,
+		*::before,
+		*::after {
+			animation: none !important;
+			transition: none !important;
+			scroll-behavior: auto !important;
+		}
+	}
+</style>
