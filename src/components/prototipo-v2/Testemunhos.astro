@@ -1,0 +1,187 @@
+---
+// PROTÓTIPO v2 · Os 3 testemunhos num carrossel manual, em teste: a validar pelo Julien
+// (a decisão de #51 era os 3 visíveis ao mesmo tempo). Nunca passa sozinho. Sem JavaScript,
+// a faixa desliza; o script só acrescenta as setas e o indicador «1 de 3».
+import { testemunhos, type P } from './dados';
+
+interface Props {
+	p: P;
+	class?: string;
+}
+// O resto leva o atributo data-astro-cid-* de quem chama, para os estilos dele (p. ex. .cartao) se aplicarem.
+const { p, class: classe, ...resto } = Astro.props;
+const total = testemunhos.length;
+---
+
+<div class:list={['testemunhos', `t${p}`, classe]} {...resto}>
+	<p class="nota-proto">
+		Carrossel em teste, a validar pelo Julien (antes: os 3 visíveis ao mesmo tempo). Testemunhos reais do Malt, já
+		autorizados; a tradução é a rever pela estagiária e a aprovar por cada autor.
+	</p>
+	<section class="carrossel" aria-roledescription="carrossel" aria-label="Testemunhos" data-carrossel>
+		<div class="controlos" hidden data-controlos>
+			<button type="button" class="seta" aria-label="Testemunho anterior" data-anterior>←</button>
+			<span class="indicador" aria-live="polite" data-indicador>1 de {total}</span>
+			<button type="button" class="seta" aria-label="Testemunho seguinte" data-seguinte>→</button>
+		</div>
+		<div class="faixa" tabindex="0" role="group" aria-label="Faixa de testemunhos: desliza para ver os outros">
+			{
+				testemunhos.map((t, i) => (
+					<figure class="testemunho" aria-roledescription="testemunho" aria-label={`${i + 1} de ${total}`}>
+						<blockquote>
+							{t.traducao.map((par) => (
+								<p>{par}</p>
+							))}
+						</blockquote>
+						<figcaption>
+							<strong>{t.nome}</strong> · {t.cargo} · {t.empresa}
+						</figcaption>
+						<p class="traduzido">Traduzido do francês</p>
+					</figure>
+				))
+			}
+		</div>
+	</section>
+</div>
+
+<script>
+	// Setas e indicador. As setas dão a volta (do 3.º para o 1.º) para o foco nunca ficar num botão desativado.
+	const reduzir = matchMedia('(prefers-reduced-motion: reduce)');
+	for (const raiz of document.querySelectorAll<HTMLElement>('[data-carrossel]')) {
+		const faixa = raiz.querySelector<HTMLElement>('.faixa')!;
+		const slides = [...faixa.children] as HTMLElement[];
+		const indicador = raiz.querySelector<HTMLElement>('[data-indicador]')!;
+		const posicao = (el: HTMLElement) => el.offsetLeft - slides[0].offsetLeft;
+		const atual = () => {
+			let melhor = 0;
+			slides.forEach((s, i) => {
+				if (Math.abs(posicao(s) - faixa.scrollLeft) < Math.abs(posicao(slides[melhor]) - faixa.scrollLeft)) melhor = i;
+			});
+			return melhor;
+		};
+		const ir = (i: number) => {
+			const alvo = (i + slides.length) % slides.length;
+			faixa.scrollTo({ left: posicao(slides[alvo]), behavior: reduzir.matches ? 'auto' : 'smooth' });
+		};
+		raiz.querySelector('[data-anterior]')!.addEventListener('click', () => ir(atual() - 1));
+		raiz.querySelector('[data-seguinte]')!.addEventListener('click', () => ir(atual() + 1));
+		let espera = 0;
+		faixa.addEventListener('scroll', () => {
+			clearTimeout(espera);
+			espera = window.setTimeout(() => {
+				indicador.textContent = `${atual() + 1} de ${slides.length}`;
+			}, 80);
+		});
+		raiz.querySelector<HTMLElement>('[data-controlos]')!.hidden = false;
+		raiz.classList.add('com-js');
+	}
+</script>
+
+<style>
+	.testemunhos {
+		display: grid;
+		gap: 1rem;
+		min-width: 0;
+		align-content: start;
+	}
+	.carrossel {
+		display: grid;
+		gap: 0.75rem;
+		min-width: 0;
+	}
+	/* Um testemunho de cada vez; a faixa tem a altura do mais longo, para a página não saltar.
+	   Cada cartão ajusta-se ao seu texto, e as setas ficam por cima, longe do espaço que sobra. */
+	.faixa {
+		display: grid;
+		grid-auto-flow: column;
+		grid-auto-columns: 100%;
+		align-items: start;
+		gap: 1rem;
+		overflow-x: auto;
+		scroll-snap-type: x mandatory;
+		overscroll-behavior-x: contain;
+	}
+	.com-js .faixa {
+		scrollbar-width: none;
+	}
+	.com-js .faixa::-webkit-scrollbar {
+		display: none;
+	}
+	.faixa:focus-visible,
+	.seta:focus-visible {
+		outline: 2px solid var(--acento);
+		outline-offset: 3px;
+	}
+	.testemunho {
+		margin: 0;
+		scroll-snap-align: start;
+		display: grid;
+		gap: 0.75rem;
+		align-content: start;
+	}
+	blockquote {
+		margin: 0;
+		display: grid;
+		gap: 0.6rem;
+	}
+	blockquote p {
+		margin: 0;
+	}
+	figcaption {
+		font-size: 0.875rem;
+		color: var(--muted);
+	}
+	figcaption strong {
+		color: var(--text);
+	}
+	.traduzido {
+		margin: 0;
+		font-size: 0.75rem;
+		color: var(--muted);
+	}
+	.controlos {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+	.controlos[hidden] {
+		display: none;
+	}
+	.seta {
+		width: 44px;
+		height: 44px;
+		display: grid;
+		place-items: center;
+		border-radius: 999px;
+		border: 1px solid var(--line-forte);
+		background: transparent;
+		color: var(--text);
+		font: 500 1.1rem/1 var(--sans);
+		cursor: pointer;
+	}
+	.seta:hover {
+		border-color: var(--acento);
+	}
+	.indicador {
+		min-width: 4.5ch;
+		text-align: center;
+		font-size: 0.875rem;
+		color: var(--muted);
+		font-variant-numeric: tabular-nums;
+	}
+	/* 1 «Noite com pontos»: cada testemunho num cartão com contorno. */
+	.t1 .testemunho {
+		padding: 1.25rem;
+		border-radius: var(--raio);
+		border: 1px solid var(--line-forte);
+	}
+	/* 2 «Painel acolhedor»: o carrossel é o cartão; a citação em serifa. */
+	.t2 blockquote {
+		font: 400 1.125rem/1.45 var(--serif);
+	}
+	/* 3 «Estratos verdes»: um filete por cima, sem cartão. */
+	.t3 .testemunho {
+		padding-top: 1rem;
+		border-top: 1px solid var(--line-forte);
+	}
+</style>

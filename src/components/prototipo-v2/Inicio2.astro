@@ -9,7 +9,8 @@ import DiagramaBloco from './DiagramaBloco.astro';
 import GraficoCloud from './GraficoCloud.astro';
 import Garantia from './Garantia.astro';
 import FaqResumo from './FaqResumo.astro';
-import { calendly, textos, problemas, paraQuem, blocos, notaBlocos, etapas, testemunhos, type Modo } from './dados';
+import Testemunhos from './Testemunhos.astro';
+import { calendly, textos, problemas, paraQuem, blocos, notaBlocos, etapas, type Modo } from './dados';
 import { ligacao } from './temas';
 
 interface Props {
@@ -117,26 +118,7 @@ const promessaH1 = textos.promessa.replace('entrego-te', '<span style="white-spa
 				<p class="frase">{textos.quem}</p>
 			</div>
 		</div>
-		<div class="testemunhos">
-			<p class="nota-proto">
-				Testemunhos reais do Malt, já autorizados. A tradução é a rever pela estagiária e a aprovar por cada autor.
-			</p>
-			{
-				testemunhos.map((t) => (
-					<figure class="cartao testemunho">
-						<blockquote>
-							{t.traducao.map((par) => (
-								<p>{par}</p>
-							))}
-						</blockquote>
-						<figcaption>
-							<strong>{t.nome}</strong> · {t.cargo} · {t.empresa}
-						</figcaption>
-						<p class="traduzido">Traduzido do francês</p>
-					</figure>
-				))
-			}
-		</div>
+		<Testemunhos p={2} class="cartao" />
 		<a class="cartao eco" href={ligacao(modo, 2, 'ecologia')}>
 			<Folha tamanho={26} />
 			<strong>Ecologia e infraestrutura</strong>
@@ -401,10 +383,11 @@ const promessaH1 = textos.promessa.replace('entrego-te', '<span style="white-spa
 	/* Quem */
 	.quem {
 		display: grid;
-		grid-template-columns: minmax(0, 9fr) minmax(0, 3fr);
+		grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
 		gap: 1rem;
 	}
 	.quem-cartao {
+		grid-row: span 2;
 		display: grid;
 		grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr);
 		gap: 1.5rem;
@@ -423,46 +406,7 @@ const promessaH1 = textos.promessa.replace('entrego-te', '<span style="white-spa
 	.frase {
 		font: 400 1.25rem/1.4 var(--serif);
 	}
-	/* Os 3 testemunhos ficam visíveis ao mesmo tempo, numa linha de cartões. */
-	.testemunhos {
-		grid-column: 1 / -1;
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 1rem;
-		align-items: start;
-	}
-	.testemunhos .nota-proto {
-		grid-column: 1 / -1;
-	}
-	.testemunho {
-		margin: 0;
-		display: grid;
-		gap: 0.75rem;
-		align-content: start;
-	}
-	.testemunho blockquote {
-		margin: 0;
-		display: grid;
-		gap: 0.6rem;
-	}
-	.testemunho blockquote p {
-		margin: 0;
-	}
-	.testemunho figcaption {
-		font-size: 0.875rem;
-		color: var(--muted);
-	}
-	.testemunho figcaption strong {
-		color: var(--text);
-	}
-	.traduzido {
-		margin: 0;
-		font-size: 0.75rem;
-		color: var(--muted);
-	}
 	.eco {
-		grid-column: 2;
-		grid-row: 1;
 		display: grid;
 		gap: 0.6rem;
 		align-content: start;
@@ -507,8 +451,7 @@ const promessaH1 = textos.promessa.replace('entrego-te', '<span style="white-spa
 		.quem {
 			grid-template-columns: 1fr;
 		}
-		.eco {
-			grid-column: auto;
+		.quem-cartao {
 			grid-row: auto;
 		}
 	}
@@ -527,9 +470,6 @@ const promessaH1 = textos.promessa.replace('entrego-te', '<span style="white-spa
 		.b2,
 		.b3 {
 			grid-column: span 1;
-		}
-		.testemunhos {
-			grid-template-columns: 1fr;
 		}
 	}
 	@media (max-width: 640px) {

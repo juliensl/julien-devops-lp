@@ -10,7 +10,8 @@ import GraficoCloud from './GraficoCloud.astro';
 import Garantia from './Garantia.astro';
 import DiagramaBloco from './DiagramaBloco.astro';
 import FaqResumo from './FaqResumo.astro';
-import { calendly, textos, problemas, depois, paraQuem, blocos, notaBlocos, etapas, testemunhos, type Modo } from './dados';
+import Testemunhos from './Testemunhos.astro';
+import { calendly, textos, problemas, depois, paraQuem, blocos, notaBlocos, etapas, type Modo } from './dados';
 import { ligacao } from './temas';
 
 interface Props {
@@ -157,27 +158,8 @@ const resumos = [
 			<div class="quem-texto">
 				<p class="etiqueta">Quem é o Julien</p>
 				<p class="frase">{textos.quem}</p>
+				<Testemunhos p={3} />
 			</div>
-		</div>
-		<div class="largura testemunhos">
-			<p class="nota-proto">
-				Testemunhos reais do Malt, já autorizados. A tradução é a rever pela estagiária e a aprovar por cada autor.
-			</p>
-			{
-				testemunhos.map((t) => (
-					<figure class="testemunho">
-						<blockquote>
-							{t.traducao.map((par) => (
-								<p>{par}</p>
-							))}
-						</blockquote>
-						<figcaption>
-							<strong>{t.nome}</strong> · {t.cargo} · {t.empresa}
-						</figcaption>
-						<p class="traduzido">Traduzido do francês</p>
-					</figure>
-				))
-			}
 		</div>
 	</section>
 
@@ -535,44 +517,6 @@ const resumos = [
 	.frase {
 		font: 400 clamp(1.4rem, 2.6vw, 1.9rem) / 1.35 var(--serif);
 	}
-	/* Os 3 testemunhos ficam visíveis ao mesmo tempo, numa linha por baixo da fotografia. */
-	.testemunhos {
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 2rem 3rem;
-		align-items: start;
-		margin-top: 3rem;
-	}
-	.testemunhos .nota-proto {
-		grid-column: 1 / -1;
-	}
-	.testemunho {
-		margin: 0;
-		padding-top: 1rem;
-		border-top: 1px solid var(--line-forte);
-		display: grid;
-		gap: 0.75rem;
-	}
-	.testemunho blockquote {
-		margin: 0;
-		display: grid;
-		gap: 0.6rem;
-	}
-	.testemunho blockquote p {
-		margin: 0;
-	}
-	.testemunho figcaption {
-		font-size: 0.875rem;
-		color: var(--muted);
-	}
-	.testemunho figcaption strong {
-		color: var(--text);
-	}
-	.traduzido {
-		margin: 0;
-		font-size: 0.75rem;
-		color: var(--muted);
-	}
 	.final {
 		display: grid;
 		gap: 1.1rem;
@@ -589,8 +533,7 @@ const resumos = [
 		.hero-linha,
 		.estratos,
 		.eco,
-		.quem-dentro,
-		.testemunhos {
+		.quem-dentro {
 			grid-template-columns: 1fr;
 		}
 		.titulo-col {
