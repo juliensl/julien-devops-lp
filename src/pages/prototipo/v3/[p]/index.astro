@@ -1,5 +1,5 @@
 ---
-// PROTÓTIPO v3 · Página principal de cada variante de cor: /prototipo/v3/a/, /b/, /c/.
+// PROTÓTIPO v3 · Página principal da variante escura (a única desde 20/10/2026): /prototipo/v3/a/.
 import PrototipoV3 from '../../../../layouts/PrototipoV3.astro';
 import Vista from '../../../../components/prototipo-v3/Vista.astro';
 import Inicio from '../../../../components/prototipo-v3/Inicio.astro';
@@ -9,8 +9,6 @@ import type { P } from '../../../../components/prototipo-v3/dados';
 export function getStaticPaths() {
 	return [
 		{ params: { p: 'a' }, props: { n: 1 } },
-		{ params: { p: 'b' }, props: { n: 2 } },
-		{ params: { p: 'c' }, props: { n: 3 } },
 	];
 }
 const p = Astro.props.n as P;

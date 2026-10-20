@@ -1,5 +1,5 @@
 ---
-// PROTÓTIPO v3 · Índice para comparar as três variantes de cor.
+// PROTÓTIPO v3 · Índice. Desde 20/10/2026 só fica a variante escura (decisão do Julien).
 import PrototipoV3 from '../../../layouts/PrototipoV3.astro';
 import { temas, nomesPagina, letras } from '../../../components/prototipo-v3/temas';
 import type { Pagina } from '../../../components/prototipo-v3/dados';
@@ -12,14 +12,14 @@ const url = (p: 1 | 2 | 3, pg: Pagina) => `/prototipo/v3/${letras[p]}/` + (pg ==
 	<div class="vista p1 indice">
 		<main class="largura">
 			<p class="etiqueta">Protótipo descartável · «Qual a direção visual?»</p>
-			<h1>A estrutura do 3, em três cores.</h1>
+			<h1>A estrutura do 3, no fundo escuro.</h1>
 			<p class="lead">
-				Cada variante tem uma página principal, uma página de ecologia e uma página de perguntas. Dentro de cada uma, a
-				barra branca em baixo muda de variante sem mudar de página (também com as setas ← →).
+				O Julien escolheu o fundo escuro; o roxo e o verde passam a ser cores complementares. Há uma página principal,
+				uma página de ecologia e uma página de perguntas; a barra branca em baixo muda de página.
 			</p>
 			<ul class="cartoes">
 				{
-					temas.map((t) => (
+					temas.filter((t) => t.p === 1).map((t) => (
 						<li class={`p${t.p}`}>
 							<p class="n">{t.letra}</p>
 							<h2>{t.nome}</h2>

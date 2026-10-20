@@ -1,0 +1,605 @@
+---
+// PROTÓTIPO v3 · Elemento do Hero escolhido pelo Julien a 20/10/2026 («Que elemento gráfico
+// 3D tem o Hero?», #53): o ∞ de pontos em 3D (metade roxo, metade verde) e, saindo da volta
+// roxa, um ramo no mesmo estilo que desce pela margem esquerda com o scroll até ao CTA final,
+// com folhas de pontos verdes junto a cada secção (4 em Serviços, uma por cartão). Movimento
+// contínuo (o fluxo do ∞ e do ramo), com botão de pausa fixo por causa da WCAG 2.2.2; o ramo
+// cresce com o scroll. Um só canvas fixo, feito à mão, sem biblioteca. Com
+// prefers-reduced-motion fica uma imagem parada, com o ramo inteiro.
+---
+
+<canvas class="elemento" data-elemento aria-hidden="true"></canvas>
+<button type="button" class="pausa" data-elemento-pausa>
+	<span class="icone" aria-hidden="true"></span><span class="rotulo" data-elemento-rotulo>Pausar animação</span>
+</button>
+
+<script>
+	type Pt = { x: number; y: number };
+	type Amostra = Pt & { l: number };
+	type Folha = Pt & { l: number; ang: number; tam: number };
+
+	const TAU = Math.PI * 2;
+	// Ponto da volta roxa de onde sai o ramo (em baixo, à esquerda).
+	const T_SAIDA = (Math.PI * 5) / 4;
+
+	// Arranca depois de a página carregar, quando o navegador está livre, para não pesar no
+	// carregamento (TBT).
+	const arranca = () => {
+		for (const canvas of document.querySelectorAll<HTMLCanvasElement>('[data-elemento]')) inicia(canvas);
+	};
+	const livre = () => ('requestIdleCallback' in window ? requestIdleCallback(arranca, { timeout: 800 }) : setTimeout(arranca, 200));
+	if (document.readyState === 'complete') livre();
+	else addEventListener('load', livre, { once: true });
+
+	function inicia(canvas: HTMLCanvasElement) {
+		const raiz = canvas.closest<HTMLElement>('[data-hero-raiz]')!;
+		const palco = raiz.querySelector<HTMLElement>('[data-palco]')!;
+		const pausa = raiz.querySelector<HTMLButtonElement>('[data-elemento-pausa]')!;
+		const rotulo = pausa.querySelector<HTMLElement>('[data-elemento-rotulo]')!;
+		const ctx = canvas.getContext('2d')!;
+		const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
+		const tokens = getComputedStyle(raiz);
+		const roxo = tokens.getPropertyValue('--acento').trim() || '#c3a6ff';
+		const verde = tokens.getPropertyValue('--verde').trim() || '#86d9a8';
+		const brilhos = [brilho(roxo), brilho(verde), brilho('#ffffff')];
+		const pontos = Array.from({ length: 340 }, (_, i) => ({
+			t: (i / 340) * TAU,
+			r: Math.sqrt(Math.random()) * 0.08,
+			a: Math.random() * TAU,
+			v: 0.75 + Math.random() * 0.5,
+			s: 0.55 + Math.random() * 0.95,
+		}));
+
+		// Geometria em coordenadas do bloco .inicio (px CSS); recalculada quando o tamanho muda.
+		let inf = { x: 0, y: 0, escala: 0 };
+		let lut: Amostra[] = [];
+		let total = 0;
+		let lenHero = 0;
+		let folhas: Folha[] = [];
+		let hastePts = { off: new Float32Array(0), fase: new Float32Array(0), cor: new Uint8Array(0), esp: 9 };
+
+		let dpr = 1;
+		let w = 0;
+		let h = 0;
+		let pequeno = false;
+		let visivel = false;
+		let pausado = reduz;
+		let pedido = 0;
+		let antes = 0;
+		let tempo = 0;
+		let fase = 0;
+		let fluxo = 0;
+		let impulso = 0;
+		let atual = 0;
+		let intro = reduz ? 0 : -1;
+		let ultimoScroll = scrollY;
+
+		const corre = () => !pausado;
+
+		function geometria() {
+			const base = raiz.getBoundingClientRect();
+			const R = (e: Element) => {
+				const r = e.getBoundingClientRect();
+				return { x: r.left - base.left, y: r.top - base.top, w: r.width, h: r.height, b: r.bottom - base.top };
+			};
+			const q = (s: string, de: ParentNode = raiz) => de.querySelector(s)!;
+			const pal = R(palco);
+			const texto = R(q('.hero-texto'));
+			const hero = R(q('section'));
+			const mx = Math.max(9, texto.x - 34);
+			const onda = Math.min(7, mx - 4);
+			const tamFolha = mx < 40 ? 12 : 30;
+
+			inf = { x: pal.x + pal.w / 2, y: pal.y + pal.h / 2, escala: pal.w * (pequeno ? 0.44 : 0.5) };
+			// A saída do ramo é o ponto da volta roxa na pose de repouso do ∞.
+			const c = curva(T_SAIDA);
+			const [sx, sy] = projeta(c[0], c[1], c[2], 0.5, -0.4);
+			const saida = { x: inf.x + sx * inf.escala, y: inf.y + sy * inf.escala };
+
+			const pts: Pt[] = [saida];
+			const folhasPt: { pt: Pt; ang: number; tam: number }[] = [];
+			if (pal.x > texto.x + texto.w * 0.5) {
+				// Desce junto ao palco até passar o texto e só depois vira para a margem.
+				const y = Math.max(texto.b, pal.b) + 30;
+				pts.push({ x: pal.x + pal.w * 0.08, y: y - 14 });
+				pts.push({ x: texto.x + texto.w * 0.5, y });
+				pts.push({ x: mx + 40, y: y + 30 });
+				pts.push({ x: mx, y: Math.max(y + 110, hero.b) });
+			} else {
+				pts.push({ x: mx + 40, y: pal.b + 30 });
+				pts.push({ x: mx, y: pal.b + 100 });
+			}
+			const fimHero = pts[pts.length - 1];
+
+			const desce = (y: number) => {
+				const ult = pts[pts.length - 1];
+				if (y - ult.y > 70) pts.push({ x: mx + (pts.length % 2 ? onda : -onda), y: (ult.y + y) / 2 });
+				const pt = { x: mx, y };
+				pts.push(pt);
+				return pt;
+			};
+			// Um par de folhas por secção, à altura do primeiro texto.
+			const par = (pt: Pt, tam = tamFolha) => {
+				folhasPt.push({ pt, ang: -38, tam });
+				if (mx > 40) folhasPt.push({ pt, ang: -148, tam: tam * 0.8 });
+			};
+			const seccoes = [...raiz.querySelectorAll<HTMLElement>(':scope > section')].slice(1);
+			const final = seccoes.pop()!;
+			for (const s of seccoes) {
+				if (s.matches('[data-pista]')) {
+					// Serviços: uma folha por cartão, à altura em que o cartão chega com o scroll.
+					const passo = Number(s.dataset.percurso ?? 0) / 3;
+					const cartoes = [...s.querySelectorAll('[data-cartao]')].map(R);
+					const topo = R(s).y - 68 + innerHeight * 0.62;
+					cartoes.forEach((cr, k) => {
+						const y = passo ? topo + k * passo : cr.y + 20;
+						folhasPt.push({ pt: desce(y), ang: k % 2 ? -150 : -35, tam: tamFolha });
+					});
+					continue;
+				}
+				const primeiro = s.firstElementChild ?? s;
+				par(desce(R(primeiro).y + 12));
+			}
+			const botao = R(q('.botao', final));
+			const fim = desce(botao.y + botao.h / 2);
+			folhasPt.push({ pt: fim, ang: -70, tam: tamFolha * 1.2 }, { pt: fim, ang: -15, tam: tamFolha }, { pt: fim, ang: -125, tam: tamFolha * 0.85 });
+
+			lut = amostras(pts);
+			total = lut[lut.length - 1].l;
+			lenHero = comprimentoEm(fimHero);
+			// Duas folhas no caminho do Hero, entre o ∞ e a margem.
+			for (const [k, lado] of [
+				[0.35, -40],
+				[0.7, 40],
+			]) {
+				const a = ponto(lenHero * k);
+				folhasPt.push({ pt: a, ang: angulo(lenHero * k) + lado, tam: tamFolha });
+			}
+			folhas = folhasPt.map((f) => ({ ...f.pt, l: comprimentoEm(f.pt), ang: f.ang, tam: f.tam }));
+
+			const esp = pequeno ? 11 : 9;
+			const n = Math.ceil(total / esp);
+			hastePts = { off: new Float32Array(n), fase: new Float32Array(n), cor: new Uint8Array(n), esp };
+			for (let i = 0; i < n; i++) {
+				hastePts.off[i] = (Math.random() - 0.5) * 7;
+				hastePts.fase[i] = Math.random() * TAU;
+				hastePts.cor[i] = Math.random() < 0.2 ? 1 : 0;
+			}
+			if (reduz) atual = total;
+		}
+
+		function comprimentoEm(pt: Pt) {
+			let melhor = 0;
+			let dist = Infinity;
+			for (const a of lut) {
+				const d = Math.hypot(a.x - pt.x, a.y - pt.y);
+				if (d < dist) {
+					dist = d;
+					melhor = a.l;
+				}
+			}
+			return melhor;
+		}
+
+		// Ponto e direção da haste a um comprimento, por pesquisa binária nas amostras.
+		const dir = { x: 0, y: 0 };
+		function ponto(l: number): Pt {
+			let a = 0;
+			let b = lut.length - 1;
+			while (b - a > 1) {
+				const m = (a + b) >> 1;
+				if (lut[m].l < l) a = m;
+				else b = m;
+			}
+			const A = lut[a];
+			const B = lut[b];
+			const seg = B.l - A.l || 1;
+			const k = Math.min(Math.max((l - A.l) / seg, 0), 1);
+			dir.x = (B.x - A.x) / seg;
+			dir.y = (B.y - A.y) / seg;
+			return { x: A.x + (B.x - A.x) * k, y: A.y + (B.y - A.y) * k };
+		}
+
+		function angulo(l: number) {
+			ponto(l);
+			return (Math.atan2(dir.y, dir.x) * 180) / Math.PI;
+		}
+
+		// Até onde o ramo cresceu: até à linha a 62 % do ecrã; o caminho do Hero aparece todo
+		// quando o palco está inteiro à vista.
+		function alvo(topo: number) {
+			const linha = innerHeight * 0.62 - topo;
+			let len = 0;
+			for (const a of lut) {
+				if (a.y <= linha) len = a.l;
+				else if (a.y > linha + 160) break;
+			}
+			// No fundo da página, o ramo fica completo mesmo que o CTA final não chegue à linha.
+			if (scrollY + innerHeight >= document.documentElement.scrollHeight - 2) return total;
+			const r = palco.getBoundingClientRect();
+			return r.bottom <= innerHeight && r.top >= 0 ? Math.max(lenHero, len) : len;
+		}
+
+		function quadro(agora: number) {
+			pedido = 0;
+			if (!visivel || !lut.length) return;
+			const dt = antes ? Math.min((agora - antes) / 1000, 0.05) : 0;
+			antes = agora;
+			const delta = scrollY - ultimoScroll;
+			ultimoScroll = scrollY;
+			const topo = raiz.getBoundingClientRect().top;
+			const destino = reduz ? total : alvo(topo);
+
+			if (!reduz) {
+				if (intro < 0) intro = agora;
+				if (intro) {
+					const k = Math.min((agora - intro) / 1800, 1);
+					atual = destino * (1 - (1 - k) ** 3);
+					if (k === 1) intro = 0;
+				} else {
+					atual += (destino - atual) * 0.14;
+					if (Math.abs(destino - atual) < 0.5) atual = destino;
+				}
+				impulso += Math.abs(delta) * 0.003;
+				impulso *= Math.pow(0.04, dt);
+				if (corre()) {
+					tempo += dt;
+					fase += (0.22 + impulso) * dt;
+					fluxo += (26 + impulso * 300) * dt;
+				}
+			}
+			desenha(topo);
+			if (corre() || intro || atual !== destino || impulso > 0.002) pedir();
+			else antes = 0;
+		}
+
+		function desenha(topo: number) {
+			const esq = raiz.getBoundingClientRect().left;
+			ctx.setTransform(dpr, 0, 0, dpr, esq * dpr, topo * dpr);
+			ctx.clearRect(-esq, -topo, w / dpr, h / dpr);
+			const vTopo = -topo - 40;
+			const vFim = -topo + h / dpr + 40;
+			const visto = (y: number) => y > vTopo && y < vFim;
+
+			// O ramo: um traço fino e pontos que correm ao longo dele, em hélice.
+			ctx.globalCompositeOperation = 'source-over';
+			ctx.globalAlpha = 0.28;
+			ctx.strokeStyle = roxo;
+			ctx.lineWidth = 1.2;
+			ctx.beginPath();
+			let comecou = false;
+			for (const a of lut) {
+				if (a.l > atual) break;
+				if (!visto(a.y)) {
+					comecou = false;
+					continue;
+				}
+				if (comecou) ctx.lineTo(a.x, a.y);
+				else ctx.moveTo(a.x, a.y);
+				comecou = true;
+			}
+			if (atual > 0) {
+				const p = ponto(atual);
+				if (comecou) ctx.lineTo(p.x, p.y);
+			}
+			ctx.stroke();
+
+			// Só as partículas do troço visível: o comprimento entre a primeira e a última amostra no ecrã.
+			let lMin = Infinity;
+			let lMax = -1;
+			for (const a of lut) {
+				if (a.l > atual) break;
+				if (!visto(a.y)) continue;
+				if (a.l < lMin) lMin = a.l;
+				lMax = a.l;
+			}
+			ctx.globalCompositeOperation = 'lighter';
+			const { off, fase: fs, cor, esp } = hastePts;
+			const n = off.length;
+			const fim = Math.min(lMax + esp, atual);
+			for (let s = lMin - ((((lMin - fluxo) % esp) + esp) % esp); s <= fim; s += esp) {
+				if (s < 0) continue;
+				const i = ((Math.round((s - fluxo) / esp) % n) + n) % n;
+				const p = ponto(s);
+				if (!visto(p.y)) continue;
+				const ang = fs[i] + s * 0.045 + tempo * 1.4;
+				const prof = Math.sin(ang);
+				const o = off[i] * Math.cos(ang);
+				const x = p.x - dir.y * o;
+				const y = p.y + dir.x * o;
+				const entra = Math.min(s / 40, 1);
+				const tam = (3 + prof * 1) * (pequeno ? 0.85 : 1);
+				ctx.globalAlpha = (0.55 + prof * 0.35) * entra;
+				ctx.drawImage(brilhos[cor[i]], x - tam, y - tam, tam * 2, tam * 2);
+			}
+
+			// As folhas, feitas de pontos verdes, crescem quando a ponta do ramo passa por elas.
+			for (const f of folhas) {
+				if (f.l > atual || !visto(f.y)) continue;
+				// As folhas do fim abrem quando o ramo fica completo.
+				const g = atual >= total - 0.5 ? 1 : Math.min((atual - f.l) / 60, 1);
+				desenhaFolha(f, 1 - (1 - g) ** 2);
+			}
+
+			// A ponta do ramo, enquanto cresce.
+			if (atual > 0 && atual < total - 1) {
+				const p = ponto(atual);
+				ctx.globalAlpha = 0.9;
+				ctx.drawImage(brilhos[1], p.x - 9, p.y - 9, 18, 18);
+				ctx.drawImage(brilhos[2], p.x - 3, p.y - 3, 6, 6);
+			}
+
+			desenhaInfinito(topo);
+			ctx.globalAlpha = 1;
+		}
+
+		function desenhaFolha(f: Folha, g: number) {
+			const L = f.tam * g;
+			const W = L * 0.32;
+			const balanco = corre() && !reduz ? Math.sin(tempo * 1.3 + f.l * 0.01) * 5 : 0;
+			const a = ((f.ang + balanco) * Math.PI) / 180;
+			ctx.save();
+			ctx.translate(f.x, f.y);
+			ctx.rotate(a);
+			ctx.globalCompositeOperation = 'source-over';
+			ctx.globalAlpha = 0.16;
+			ctx.fillStyle = verde;
+			ctx.beginPath();
+			ctx.moveTo(0, 0);
+			ctx.quadraticCurveTo(L / 2, -W * 1.4, L, 0);
+			ctx.quadraticCurveTo(L / 2, W * 1.4, 0, 0);
+			ctx.fill();
+			ctx.globalCompositeOperation = 'lighter';
+			const n = L > 20 ? 7 : 4;
+			for (let k = 1; k <= n; k++) {
+				const u = k / (n + 1);
+				const y = W * Math.sin(Math.PI * u) ** 0.8;
+				const x = u * L;
+				const tam = L > 20 ? 2.4 : 1.8;
+				ctx.globalAlpha = 0.8;
+				ctx.drawImage(brilhos[1], x - tam, -y - tam, tam * 2, tam * 2);
+				ctx.drawImage(brilhos[1], x - tam, y - tam, tam * 2, tam * 2);
+				if (k % 2) {
+					ctx.globalAlpha = 0.45;
+					ctx.drawImage(brilhos[1], x - tam * 0.8, -tam * 0.8, tam * 1.6, tam * 1.6);
+				}
+			}
+			ctx.globalAlpha = 0.9;
+			ctx.drawImage(brilhos[1], L - 2.5, -2.5, 5, 5);
+			ctx.restore();
+		}
+
+		function desenhaInfinito(topo: number) {
+			const yEcra = inf.y + topo;
+			if (yEcra < -inf.escala || yEcra > h / dpr + inf.escala) return;
+			// Progresso do scroll: 0 enquanto o ∞ está no meio do ecrã ou abaixo.
+			const p = reduz ? 0 : Math.min(Math.max((innerHeight / 2 - yEcra) / (innerHeight * 0.6), 0), 1);
+			const ay = -0.4 + p * 0.6 + (corre() ? 0.12 * Math.sin(tempo * 0.35) : 0);
+			const ax = 0.5 + p * 0.3;
+			const E = inf.escala;
+
+			ctx.globalCompositeOperation = 'source-over';
+			ctx.lineWidth = 1;
+			for (const [lado, cor] of [
+				[-1, roxo],
+				[1, verde],
+			] as const) {
+				ctx.beginPath();
+				for (let i = 0; i <= 90; i++) {
+					const t = (lado < 0 ? Math.PI / 2 : -Math.PI / 2) + (i / 90) * Math.PI;
+					const c = curva(t);
+					const [x, y] = projeta(c[0], c[1], c[2], ax, ay);
+					if (i) ctx.lineTo(inf.x + x * E, inf.y + y * E);
+					else ctx.moveTo(inf.x + x * E, inf.y + y * E);
+				}
+				ctx.strokeStyle = cor;
+				ctx.globalAlpha = 0.22;
+				ctx.stroke();
+			}
+
+			ctx.globalCompositeOperation = 'lighter';
+			const base = E * 0.026;
+			for (let i = 0; i < pontos.length; i++) {
+				if (pequeno && i % 3 === 2) continue;
+				const q = pontos[i];
+				const t = q.t + fase * q.v;
+				const c = curva(t);
+				const d = curva(t + 0.002);
+				// Tangente T e duas normais (n1 no plano, n2 = T × n1) para afastar o ponto do eixo.
+				const tl = Math.hypot(d[0] - c[0], d[1] - c[1], d[2] - c[2]) || 1;
+				const tx = (d[0] - c[0]) / tl;
+				const ty = (d[1] - c[1]) / tl;
+				const tz = (d[2] - c[2]) / tl;
+				const nl = Math.hypot(tx, ty) || 1;
+				const n1x = -ty / nl;
+				const n1y = tx / nl;
+				const ang = q.a + fase * 0.6;
+				const ca = Math.cos(ang) * q.r;
+				const sa = Math.sin(ang) * q.r;
+				const [x, y, z, k] = projeta(
+					c[0] + ca * n1x - sa * tz * n1y,
+					c[1] + ca * n1y + sa * tz * n1x,
+					c[2] + sa * (tx * n1y - ty * n1x),
+					ax,
+					ay,
+				);
+				const prof = Math.min(Math.max(0.3 + (z + 1.2) * 0.32, 0.2), 1);
+				const tam = base * q.s * k;
+				const m = Math.min(Math.max((c[0] + 0.12) / 0.24, 0), 1);
+				const px = inf.x + x * E;
+				const py = inf.y + y * E;
+				if (m < 0.98) {
+					ctx.globalAlpha = prof * (1 - m);
+					ctx.drawImage(brilhos[0], px - tam, py - tam, tam * 2, tam * 2);
+				}
+				if (m > 0.02) {
+					ctx.globalAlpha = prof * m;
+					ctx.drawImage(brilhos[1], px - tam, py - tam, tam * 2, tam * 2);
+				}
+			}
+		}
+
+		function pedir() {
+			if (!pedido) pedido = requestAnimationFrame(quadro);
+		}
+
+		pausa.hidden = reduz;
+		pausa.addEventListener('click', () => {
+			pausado = !pausado;
+			rotulo.textContent = pausado ? 'Retomar animação' : 'Pausar animação';
+			pausa.classList.toggle('pausado', pausado);
+			antes = 0;
+			pedir();
+		});
+		addEventListener('scroll', pedir, { passive: true });
+		new IntersectionObserver(([e]) => {
+			visivel = e.isIntersecting;
+			antes = 0;
+			pedir();
+		}).observe(raiz);
+		let espera = 0;
+		const redimensiona = () => {
+			cancelAnimationFrame(espera);
+			espera = requestAnimationFrame(() => {
+				pequeno = innerWidth < 700;
+				// O canvas cobre o ecrã todo: 1,5 chega para pontos com brilho e poupa muito trabalho.
+				dpr = Math.min(devicePixelRatio || 1, 1.5);
+				w = canvas.width = Math.round(canvas.clientWidth * dpr);
+				h = canvas.height = Math.round(canvas.clientHeight * dpr);
+				geometria();
+				pedir();
+			});
+		};
+		new ResizeObserver(redimensiona).observe(raiz);
+		new ResizeObserver(redimensiona).observe(canvas);
+	}
+
+	// Lemniscata de Bernoulli com profundidade: as duas voltas cruzam-se a alturas diferentes.
+	function curva(t: number) {
+		const s = Math.sin(t);
+		const c = Math.cos(t);
+		const d = 1 + s * s;
+		return [c / d, (s * c) / d, 0.3 * s];
+	}
+
+	// Roda em y e em x e projeta com perspetiva; devolve x, y (unidades do ∞), z e o fator k.
+	function projeta(x: number, y: number, z: number, ax: number, ay: number) {
+		const cy = Math.cos(ay);
+		const sy = Math.sin(ay);
+		const cx = Math.cos(ax);
+		const sx = Math.sin(ax);
+		const X = x * cy + z * sy;
+		let Z = -x * sy + z * cy;
+		const Y = y * cx - Z * sx;
+		Z = y * sx + Z * cx;
+		const k = 3 / (3 - Z);
+		return [X * k, Y * k, Z, k];
+	}
+
+	// Curva suave (Catmull-Rom) pelos pontos, com tangentes limitadas a um terço de cada troço,
+	// amostrada com o comprimento acumulado.
+	function amostras(p: Pt[]) {
+		const tan = (a: Pt, c: Pt, max: number) => {
+			const x = (c.x - a.x) / 6;
+			const y = (c.y - a.y) / 6;
+			const k = Math.min(1, max / (Math.hypot(x, y) || 1));
+			return { x: x * k, y: y * k };
+		};
+		const lut: Amostra[] = [{ ...p[0], l: 0 }];
+		for (let i = 0; i < p.length - 1; i++) {
+			const b = p[i];
+			const c = p[i + 1];
+			const max = Math.hypot(c.x - b.x, c.y - b.y) / 3;
+			const t1 = tan(p[i - 1] ?? b, c, max);
+			const t2 = tan(b, p[i + 2] ?? c, max);
+			const c1 = { x: b.x + t1.x, y: b.y + t1.y };
+			const c2 = { x: c.x - t2.x, y: c.y - t2.y };
+			for (let k = 1; k <= 16; k++) {
+				const t = k / 16;
+				const u = 1 - t;
+				const x = u * u * u * b.x + 3 * u * u * t * c1.x + 3 * u * t * t * c2.x + t * t * t * c.x;
+				const y = u * u * u * b.y + 3 * u * u * t * c1.y + 3 * u * t * t * c2.y + t * t * t * c.y;
+				const ant = lut[lut.length - 1];
+				lut.push({ x, y, l: ant.l + Math.hypot(x - ant.x, y - ant.y) });
+			}
+		}
+		return lut;
+	}
+
+	function brilho(cor: string) {
+		const c = document.createElement('canvas');
+		c.width = c.height = 64;
+		const g = c.getContext('2d')!;
+		const [r, v, a] = [1, 3, 5].map((i) => parseInt(cor.slice(i, i + 2), 16));
+		const gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+		gr.addColorStop(0, 'rgba(255,255,255,0.95)');
+		gr.addColorStop(0.16, `rgba(${r},${v},${a},1)`);
+		gr.addColorStop(0.42, `rgba(${r},${v},${a},0.28)`);
+		gr.addColorStop(1, `rgba(${r},${v},${a},0)`);
+		g.fillStyle = gr;
+		g.fillRect(0, 0, 64, 64);
+		return c;
+	}
+</script>
+
+<style>
+	.elemento {
+		position: fixed;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		z-index: 2;
+		pointer-events: none;
+	}
+	.pausa {
+		position: fixed;
+		left: calc(16px + env(safe-area-inset-left, 0px));
+		bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+		z-index: 30;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		min-height: 40px;
+		padding: 0 0.9rem 0 0.75rem;
+		border-radius: 999px;
+		border: 1px solid var(--line-forte);
+		background: color-mix(in srgb, var(--bg) 85%, transparent);
+		backdrop-filter: blur(6px);
+		color: var(--muted);
+		font: 500 0.8125rem/1 var(--sans);
+		cursor: pointer;
+	}
+	.pausa:hover {
+		color: var(--text);
+		border-color: var(--text);
+	}
+	.icone {
+		width: 10px;
+		height: 12px;
+		border-inline: 3px solid currentColor;
+	}
+	/* No telemóvel: só o ícone (o texto fica para leitores de ecrã), acima da barra do protótipo. */
+	@media (max-width: 700px) {
+		.pausa {
+			bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+			width: 40px;
+			padding: 0;
+			justify-content: center;
+		}
+		.rotulo {
+			position: absolute;
+			width: 1px;
+			height: 1px;
+			overflow: hidden;
+			clip-path: inset(50%);
+			white-space: nowrap;
+		}
+	}
+	.pausado .icone {
+		width: 0;
+		height: 0;
+		border-inline: 0;
+		border-left: 10px solid currentColor;
+		border-block: 6px solid transparent;
+	}
+</style>

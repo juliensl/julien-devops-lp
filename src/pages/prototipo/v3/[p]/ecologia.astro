@@ -1,5 +1,5 @@
 ---
-// PROTÓTIPO v3 · Página de ecologia de cada variante: /prototipo/v3/a/ecologia/.
+// PROTÓTIPO v3 · Página de ecologia da variante escura: /prototipo/v3/a/ecologia/.
 import PrototipoV3 from '../../../../layouts/PrototipoV3.astro';
 import Vista from '../../../../components/prototipo-v3/Vista.astro';
 import Ecologia from '../../../../components/prototipo-v3/Ecologia.astro';
@@ -9,8 +9,6 @@ import type { P } from '../../../../components/prototipo-v3/dados';
 export function getStaticPaths() {
 	return [
 		{ params: { p: 'a' }, props: { n: 1 } },
-		{ params: { p: 'b' }, props: { n: 2 } },
-		{ params: { p: 'c' }, props: { n: 3 } },
 	];
 }
 const p = Astro.props.n as P;

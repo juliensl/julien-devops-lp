@@ -1,6 +1,6 @@
 ---
-// PROTÓTIPO v3 · As 9 vistas (3 variantes de cor × 3 páginas) numa só página, trocadas
-// pelo hash do endereço (#p1, #p2-ecologia, #p3-perguntas…). Serve para a cópia
+// PROTÓTIPO v3 · As 3 vistas da variante escura (página principal, ecologia e perguntas) numa
+// só página, trocadas pelo hash do endereço (#p1, #p1-ecologia, #p1-perguntas). Serve para a cópia
 // publicada como artifact, onde só o hash chega à página.
 import PrototipoV3 from '../../../layouts/PrototipoV3.astro';
 import Vista from '../../../components/prototipo-v3/Vista.astro';
@@ -9,7 +9,7 @@ import Ecologia from '../../../components/prototipo-v3/Ecologia.astro';
 import Perguntas from '../../../components/prototipo-v3/Perguntas.astro';
 import type { P } from '../../../components/prototipo-v3/dados';
 
-const ps: P[] = [1, 2, 3];
+const ps: P[] = [1];
 ---
 
 <PrototipoV3 titulo="Direção visual v3">

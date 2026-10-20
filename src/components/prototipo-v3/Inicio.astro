@@ -1,15 +1,13 @@
 ---
-// PROTÓTIPO v3 · Página principal, igual nas três variantes de cor. Estrutura do
-// protótipo 3, mais aberta (pedido do Julien a 20/10/2026): uma ideia por secção,
-// sem cartões, mais espaço; a página fica mais longa. O Hero tem só o texto e o elemento
-// 3D que reage ao scroll («Que elemento gráfico 3D tem o Hero?», #53): na variante A, as
-// duas ideias do Julien (∞ e ramo) à escolha; nas B e C, ainda o lugar reservado.
+// PROTÓTIPO v3 · Página principal, só com o fundo escuro (decisão do Julien a 20/10/2026).
+// Estrutura do protótipo 3, mais aberta: uma ideia por secção, sem cartões, mais espaço.
+// O Hero tem o texto e o ∞ do qual sai o ramo que desce pela página («Que elemento gráfico
+// 3D tem o Hero?», #53). Serviços: os 4 blocos abertos em cartões que passam na horizontal
+// com o scroll, como na Expertise By Me.
 import { Image } from 'astro:assets';
 import foto from '../../../data/IMG_2030.png';
 import Folha from './Folha.astro';
-import HeroInfinito from './HeroInfinito.astro';
-import HeroRamo from './HeroRamo.astro';
-import SeletorHero from './SeletorHero.astro';
+import HeroElemento from './HeroElemento.astro';
 import GraficoCloud from './GraficoCloud.astro';
 import Garantia from './Garantia.astro';
 import DiagramaBloco from './DiagramaBloco.astro';
@@ -24,7 +22,6 @@ interface Props {
 }
 const { p, modo } = Astro.props;
 const id = (s: string) => `p${p}-${s}`;
-const comElemento = p === 1;
 const promessaH1 = textos.promessa.replace('entrego-te', '<span style="white-space:nowrap">entrego-te</span>');
 const resumos = [
 	'Os bugs ficam no pull request.',
@@ -34,8 +31,8 @@ const resumos = [
 ];
 ---
 
-<div class="inicio" data-hero-raiz={comElemento ? '' : undefined} data-hero={comElemento ? 'inf-cont' : undefined}>
-	{comElemento && <HeroRamo />}
+<div class="inicio" data-hero-raiz>
+	<HeroElemento />
 	<section class="hero" id={id('topo')}>
 		<div class="largura hero-dentro">
 			<div class="hero-texto">
@@ -47,25 +44,7 @@ const resumos = [
 					<span class="nota">{textos.notaCta}</span>
 				</div>
 			</div>
-			{
-				comElemento ? (
-					<div class="palco-3d">
-						<HeroInfinito />
-					</div>
-				) : (
-					<figure class="palco-3d">
-						<div class="palco" aria-hidden="true">
-							<span class="anel a1" />
-							<span class="anel a2" />
-							<span class="anel a3" />
-						</div>
-						<figcaption class="nota-proto">
-							Lugar do elemento 3D que reage ao scroll. Por agora, as duas ideias do Julien só estão na variante A
-							(Escuro).
-						</figcaption>
-					</figure>
-				)
-			}
+			<div class="palco" data-palco></div>
 		</div>
 	</section>
 
@@ -100,49 +79,41 @@ const resumos = [
 		</div>
 	</section>
 
-	<section class="largura seccao estratos" id={id('servicos')}>
-		<div class="titulo-col">
-			<p class="etiqueta">Serviços</p>
-			<h2>Quatro camadas da tua infraestrutura.</h2>
-			<p class="intro">{notaBlocos}</p>
-		</div>
-		<div class="camadas" data-camadas>
-			{
-				blocos.map((b, i) => (
-					<div class="camada" style={`--i:${i}`}>
-						<h3>
-							<button
-								type="button"
-								aria-expanded={i === 0 ? 'true' : 'false'}
-								aria-controls={id(`camada-${b.n}`)}
-								id={id(`camada-btn-${b.n}`)}
-							>
-								<span class="num">Bloco {b.n}</span>
-								<span class="nome-camada">{b.nome}</span>
-								<span class="resumo">{resumos[i]}</span>
-								<span class="mais" aria-hidden="true" />
-							</button>
-						</h3>
-						<div
-							class="painel"
-							id={id(`camada-${b.n}`)}
-							role="region"
-							aria-labelledby={id(`camada-btn-${b.n}`)}
-							hidden={i !== 0}
-						>
-							<DiagramaBloco n={b.n as 1 | 2 | 3 | 4} />
-							<div class="painel-texto">
-								<p>{b.texto}</p>
-								<p class="ferr">
-									{b.ferramentas.map((f) => (
-										<span>{f}</span>
-									))}
-								</p>
+	<section class="seccao servicos" id={id('servicos')} data-pista>
+		<div class="pista-palco">
+			<div class="largura pista-cab">
+				<div class="pista-titulo">
+					<p class="etiqueta">Serviços</p>
+					<h2>Quatro camadas da tua infraestrutura.</h2>
+				</div>
+				<div class="pista-lado">
+					<p class="intro">{notaBlocos}</p>
+					<p class="contador" aria-hidden="true">
+						<span data-pista-n>1</span> / {blocos.length}
+						<span class="barra"><span data-pista-barra></span></span>
+					</p>
+				</div>
+			</div>
+			<ol class="pista" data-pista-cartoes>
+				{
+					blocos.map((b, i) => (
+						<li class="cartao" data-cartao>
+							<div class="diag-caixa">
+								<DiagramaBloco n={b.n as 1 | 2 | 3 | 4} />
 							</div>
-						</div>
-					</div>
-				))
-			}
+							<p class="num">Bloco {b.n}</p>
+							<h3>{b.nome}</h3>
+							<p class="resumo">{resumos[i]}</p>
+							<p class="txt">{b.texto}</p>
+							<p class="ferr">
+								{b.ferramentas.map((f) => (
+									<span>{f}</span>
+								))}
+							</p>
+						</li>
+					))
+				}
+			</ol>
 		</div>
 	</section>
 
@@ -206,28 +177,55 @@ const resumos = [
 		<a class="botao grande" href={calendly}>{textos.cta}</a>
 		<p class="nota">{textos.notaLingua}</p>
 	</section>
-	{comElemento && <SeletorHero />}
 </div>
 
 <script>
-	// Camadas: uma aberta de cada vez (acordeão com botões e aria-expanded).
-	for (const raiz of document.querySelectorAll<HTMLElement>('[data-camadas]')) {
-		const botoes = [...raiz.querySelectorAll<HTMLButtonElement>('button[aria-controls]')];
-		for (const b of botoes) {
-			b.addEventListener('click', () => {
-				const abrir = b.getAttribute('aria-expanded') !== 'true';
-				for (const x of botoes) {
-					const sim = x === b && abrir;
-					x.setAttribute('aria-expanded', String(sim));
-					document.getElementById(x.getAttribute('aria-controls')!)!.hidden = !sim;
-				}
-			});
-		}
+	// Serviços: no computador, a secção fica presa enquanto o scroll faz passar os cartões na
+	// horizontal; depois a página continua. No telemóvel e com movimento reduzido, não fica presa.
+	const CABECALHO = 68;
+	for (const sec of document.querySelectorAll<HTMLElement>('[data-pista]')) {
+		const palco = sec.querySelector<HTMLElement>('.pista-palco')!;
+		const pista = sec.querySelector<HTMLElement>('[data-pista-cartoes]')!;
+		const n = sec.querySelector<HTMLElement>('[data-pista-n]')!;
+		const barra = sec.querySelector<HTMLElement>('[data-pista-barra]')!;
+		const total = pista.children.length;
+		const largo = matchMedia('(min-width: 961px) and (prefers-reduced-motion: no-preference)');
+		// O scroll vertical percorre 1,8 vezes o deslocamento horizontal: os cartões passam devagar.
+		const VAGAR = 1.8;
+		let desloc = 0;
+		let pedido = 0;
+		const mede = () => {
+			sec.toggleAttribute('data-fixa', largo.matches);
+			if (!largo.matches) {
+				sec.style.height = '';
+				pista.style.transform = '';
+				delete sec.dataset.percurso;
+				return;
+			}
+			desloc = Math.max(pista.scrollWidth - document.documentElement.clientWidth, 0);
+			sec.dataset.percurso = String(desloc * VAGAR);
+			sec.style.height = `${palco.offsetHeight + desloc * VAGAR}px`;
+			move();
+		};
+		const move = () => {
+			pedido = 0;
+			if (!largo.matches) return;
+			const r = sec.getBoundingClientRect();
+			const p = Math.min(Math.max((CABECALHO - r.top) / (r.height - palco.offsetHeight || 1), 0), 1);
+			pista.style.transform = `translate3d(${-p * desloc}px, 0, 0)`;
+			n.textContent = String(Math.round(p * (total - 1)) + 1);
+			barra.style.width = `${p * 100}%`;
+		};
+		addEventListener('scroll', () => pedido || (pedido = requestAnimationFrame(move)), { passive: true });
+		addEventListener('resize', mede);
+		largo.addEventListener('change', mede);
+		new ResizeObserver(mede).observe(pista);
+		mede();
 	}
 </script>
 
 <style>
-	/* O ramo (variante A) desenha-se por trás das secções, dentro deste bloco. */
+	/* O canvas do ∞ e do ramo vive dentro deste bloco. */
 	.inicio {
 		position: relative;
 		isolation: isolate;
@@ -279,36 +277,10 @@ const resumos = [
 		align-items: center;
 		gap: 0.75rem 1.25rem;
 	}
-	.palco-3d {
-		margin: 0;
-		display: grid;
-		gap: 1rem;
-		justify-items: center;
-	}
 	.palco {
-		position: relative;
 		width: min(100%, 30rem);
-		aspect-ratio: 1;
-		display: grid;
-		place-items: center;
-	}
-	.anel {
-		position: absolute;
-		border-radius: 50%;
-		border: 1px solid color-mix(in srgb, var(--acento) 45%, transparent);
-	}
-	.a1 {
-		inset: 0;
-		border-style: dashed;
-	}
-	.a2 {
-		inset: 18%;
-		border-color: color-mix(in srgb, var(--verde) 55%, transparent);
-	}
-	.a3 {
-		inset: 38%;
-		background: radial-gradient(circle, color-mix(in srgb, var(--verde) 35%, transparent), transparent 70%);
-		border: 0;
+		aspect-ratio: 5 / 4;
+		justify-self: center;
 	}
 	/* Para quem é: três afirmações grandes, sem caixas */
 	.para-quem {
@@ -372,100 +344,129 @@ const resumos = [
 		margin-right: 0.7rem;
 		vertical-align: 0.12em;
 	}
-	/* Serviços: camadas abertas, separadas por linhas */
-	.estratos {
+	/* Serviços: os 4 blocos abertos, em cartões. Por omissão em grelha (telemóvel e movimento
+	   reduzido); com data-fixa (computador), a secção fica presa e os cartões passam na
+	   horizontal com o scroll. */
+	.pista-palco {
 		display: grid;
-		grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
-		gap: 2.5rem 5rem;
-		align-items: start;
+		gap: 3rem;
 	}
-	.titulo-col {
+	.pista-cab {
+		display: grid;
+		grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+		gap: 1.5rem 4rem;
+		align-items: end;
+	}
+	.pista-titulo,
+	.pista-lado {
 		display: grid;
 		gap: 1.25rem;
-		position: sticky;
-		top: 110px;
 	}
-	.camadas {
-		display: grid;
-	}
-	.camada {
-		margin-left: calc(var(--i) * 22px);
-		border-top: 1px solid var(--line-forte);
-	}
-	.camada:last-child {
-		border-bottom: 1px solid var(--line-forte);
-	}
-	.camada:has([aria-expanded='true']) {
-		border-top: 2px solid var(--verde);
-	}
-	.camada h3 {
-		font: inherit;
-		margin: 0;
-	}
-	.camada button {
-		all: unset;
-		box-sizing: border-box;
-		width: 100%;
-		display: grid;
-		grid-template-columns: 5.5rem minmax(0, 1.2fr) minmax(0, 1fr) 28px;
-		gap: 0.5rem 1rem;
+	.contador {
+		display: flex;
 		align-items: center;
-		padding: 1.5rem 0.25rem;
-		cursor: pointer;
+		gap: 0.75rem;
+		font: 500 0.8125rem/1 var(--sans);
+		letter-spacing: 0.08em;
+		color: var(--muted);
+		font-variant-numeric: tabular-nums;
 	}
-	.camada button:focus-visible {
-		outline: 2px solid var(--acento);
-		outline-offset: 2px;
+	.barra {
+		position: relative;
+		width: 8rem;
+		height: 1px;
+		background: var(--line-forte);
 	}
-	.num {
+	.barra span {
+		position: absolute;
+		left: 0;
+		top: -0.5px;
+		height: 2px;
+		width: 0;
+		background: var(--verde);
+	}
+	.pista {
+		list-style: none;
+		margin: 0 auto;
+		max-width: 76rem;
+		padding-inline: max(20px, env(safe-area-inset-left, 0px)) max(20px, env(safe-area-inset-right, 0px));
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 3.5rem 2.5rem;
+	}
+	.cartao {
+		display: grid;
+		gap: 0.7rem;
+		align-content: start;
+	}
+	.diag-caixa {
+		padding: 1rem 1.25rem;
+		margin-bottom: 0.6rem;
+		border-radius: var(--raio);
+		background: var(--surface);
+		border: 1px solid var(--line);
+	}
+	.cartao .num {
 		font-size: 0.75rem;
 		letter-spacing: 0.12em;
 		text-transform: uppercase;
 		color: var(--acento);
 	}
-	.nome-camada {
-		font: 400 1.5rem/1.2 var(--serif);
+	.cartao h3 {
+		font-size: 1.65rem;
+		line-height: 1.15;
 	}
 	.resumo {
 		color: var(--verde);
 		font-size: 0.9375rem;
 	}
-	.mais {
-		width: 28px;
-		height: 28px;
-		border-radius: 50%;
-		border: 1px solid var(--line-forte);
-		position: relative;
-	}
-	.mais::before,
-	.mais::after {
-		content: '';
-		position: absolute;
-		left: 50%;
-		top: 50%;
-		width: 11px;
-		height: 1.5px;
-		background: var(--text);
-		transform: translate(-50%, -50%);
-		transition: transform 0.2s ease;
-	}
-	.mais::after {
-		transform: translate(-50%, -50%) rotate(90deg);
-	}
-	[aria-expanded='true'] .mais::after {
-		transform: translate(-50%, -50%) rotate(0deg);
-	}
-	.painel {
-		padding: 0.25rem 0.25rem 2rem calc(5.5rem + 1.25rem);
-		display: grid;
-		grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
-		gap: 1.5rem;
-		align-items: center;
+	.cartao .txt {
 		color: var(--muted);
 	}
-	.painel-texto {
-		display: grid;
-		gap: 0.85rem;
+	.servicos[data-fixa] {
+		padding-block: 0;
+	}
+	[data-fixa] .pista-palco {
+		position: sticky;
+		top: 68px;
+		height: calc(100vh - 68px);
+		grid-template-columns: minmax(0, 1fr);
+		align-content: center;
+		gap: clamp(1.75rem, 5vh, 3.5rem);
+		overflow: hidden;
+	}
+	[data-fixa] .pista {
+		display: flex;
+		width: max-content;
+		max-width: none;
+		margin: 0;
+		gap: 2.5rem;
+		padding-inline: max(20px, calc((100vw - 76rem) / 2 + 20px));
+		justify-self: start;
+		will-change: transform;
+	}
+	[data-fixa] .cartao {
+		width: clamp(21rem, 31vw, 27rem);
+	}
+	/* Ecrãs baixos: diagramas e títulos mais pequenos, para tudo caber com a secção presa. */
+	[data-fixa] .diag-caixa :global(svg) {
+		display: block;
+		width: 100%;
+		max-height: min(11rem, 19vh);
+	}
+	@media (max-height: 820px) {
+		[data-fixa] .pista-palco {
+			gap: 1.25rem;
+		}
+		[data-fixa] .pista-cab h2 {
+			font-size: clamp(1.9rem, 3.4vw, 2.6rem);
+		}
+		[data-fixa] .cartao {
+			gap: 0.45rem;
+		}
+		[data-fixa] .cartao h3 {
+			font-size: 1.4rem;
+		}
 	}
 	.ferr {
 		display: flex;
@@ -570,7 +571,8 @@ const resumos = [
 	}
 	@media (max-width: 960px) {
 		.hero-dentro,
-		.estratos,
+		.pista-cab,
+		.pista,
 		.quem-dentro {
 			grid-template-columns: 1fr;
 		}
@@ -579,9 +581,6 @@ const resumos = [
 		}
 		.palco {
 			width: min(100%, 22rem);
-		}
-		.titulo-col {
-			position: static;
 		}
 		.etapas ol {
 			grid-template-columns: 1fr;
@@ -605,27 +604,6 @@ const resumos = [
 		}
 		.foto {
 			max-width: 18rem;
-		}
-	}
-	@media (max-width: 640px) {
-		.camada {
-			margin-left: calc(var(--i) * 8px);
-		}
-		.camada button {
-			grid-template-columns: minmax(0, 1fr) 28px;
-		}
-		.camada .num,
-		.camada .nome-camada,
-		.camada .resumo {
-			grid-column: 1;
-		}
-		.mais {
-			grid-column: 2;
-			grid-row: 1 / span 3;
-		}
-		.painel {
-			padding-left: 0.25rem;
-			grid-template-columns: 1fr;
 		}
 	}
 </style>
