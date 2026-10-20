@@ -49,6 +49,53 @@ export const etapas = [
 
 export const factosHero = ['No máximo 30 dias', 'Diagnóstico gratuito', 'Preço fixo'];
 
+// ---------- Testemunhos ----------
+// Os 3 testemunhos do perfil Malt do Julien, já autorizados pelos autores (validado a 20/10/2026, #51).
+// Primeiro nome, cargo e empresa como no Malt; texto completo; sem ligação ao Malt.
+// Na página portuguesa aparece a tradução, assinalada; o autor ainda tem de a aprovar.
+export type Testemunho = { nome: string; cargo: string; empresa: string; original: string[]; traducao: string[] };
+export const testemunhos: Testemunho[] = [
+	{
+		nome: 'Thibaud',
+		cargo: 'Fundador',
+		empresa: 'Vasco',
+		original: [
+			"Julien a été très pro dans l'approche. Il est intervenu sur un périmètre précis, il a aidé notre équipe technique sénior qui avait déjà de bonnes notions, mais le DevOps est une discipline à part entière et c'est en collaborant avec Julien qu'on en devient convaincus. Un profil à recommander à 100%",
+		],
+		traducao: [
+			'O Julien foi muito profissional na abordagem. Interveio num âmbito preciso e ajudou a nossa equipa técnica sénior, que já tinha boas noções, mas o DevOps é uma disciplina por direito próprio e é a trabalhar com o Julien que ficamos convencidos disso. Um perfil a recomendar a 100 %.',
+		],
+	},
+	{
+		nome: 'Adam',
+		cargo: 'Especialista DevOps',
+		empresa: 'Venus consulting',
+		original: [
+			"J'ai fait appel à Julien dans le cadre d'un projet de formation en DevOps, et son intervention a été une totale réussite. Julien s'est montré parfaitement à la hauteur de la mission.",
+			"Grâce à sa double expertise de développeur et de spécialiste DevOps, il a su transmettre des compétences pointues avec beaucoup de pédagogie et de clarté. Son professionnalisme, sa maîtrise technique et sa capacité à s'adapter aux besoins du projet ont été des atouts majeurs. Je recommande vivement Julien à quiconque cherche un expert DevOps fiable, compétent et excellent pédagogue. Un grand merci pour ton travail !",
+		],
+		traducao: [
+			'Recorri ao Julien para um projeto de formação em DevOps, e a intervenção dele foi um êxito total. O Julien esteve perfeitamente à altura da missão.',
+			'Graças à dupla experiência de programador e de especialista DevOps, soube transmitir competências avançadas com muita pedagogia e clareza. O profissionalismo, o domínio técnico e a capacidade de se adaptar às necessidades do projeto foram trunfos importantes. Recomendo vivamente o Julien a quem procure um especialista DevOps fiável, competente e excelente pedagogo. Muito obrigado pelo teu trabalho!',
+		],
+	},
+	{
+		nome: 'Guillaume',
+		cargo: 'Programador principal',
+		empresa: 'DADOUN PERE ET FILS',
+		original: [
+			'Julien nous a beaucoup aidés sur nos sujets DevOps avec sérieux, efficacité et beaucoup de pédagogie.',
+			"Il a tout de suite compris notre contexte, proposé des solutions adaptées, et nous a permis d’améliorer la stabilité et la fiabilité de notre plateforme. Les échanges ont toujours été simples, clairs et agréables.",
+			'C’est quelqu’un de fiable, disponible et très compétent. Nous recommandons Julien sans hésitation, et retravaillerons avec lui avec plaisir.',
+		],
+		traducao: [
+			'O Julien ajudou-nos muito nos nossos temas de DevOps, com seriedade, eficácia e muita pedagogia.',
+			'Percebeu logo o nosso contexto, propôs soluções adaptadas e permitiu-nos melhorar a estabilidade e a fiabilidade da nossa plataforma. A comunicação foi sempre simples, clara e agradável.',
+			'É alguém fiável, disponível e muito competente. Recomendamos o Julien sem hesitar e voltaremos a trabalhar com ele com todo o gosto.',
+		],
+	},
+];
+
 // ---------- Perguntas por público ----------
 export type Publico = 'gerais' | 'cto' | 'ceo' | 'equipa';
 export const publicos: { id: Publico; nome: string; curto: string; descricao: string }[] = [
