@@ -1,72 +1,226 @@
 ---
 // PROTÓTIPO v3 · A Garantia como foi validada: pelo menos 99 % em cada mês, nos 3 meses
-// seguintes à entrega. Sem equivalência anual nem horas por mês (validado pelo Julien a
-// 19/10/2026). Cada mês é um quadrado de 100 pontos; cada ponto é 1 % do mês e a
-// Garantia deixa no máximo 1 ponto sem serviço.
-import { textos, garantia } from './dados';
+// seguintes à entrega, sem equivalência anual nem horas por mês (validado a 19/10/2026).
+// A 20/10/2026 o Julien pediu outra representação do 99 % (os quadrados de pontos não
+// serviam). Três em teste, trocadas por um seletor do protótipo; sem JS fica a primeira:
+// 1. anel de 100 pontos, no estilo do ∞ (99 acesos, 1 apagado);
+// 2. linha dos 3 meses a partir da entrega, com o que acontece se um mês falhar;
+// 3. número grande e uma barra em que só a ponta (1 %) muda de cor.
+// Só aparecem números validados: 99 % e 3 meses.
+import { textos } from './dados';
 
 interface Props {
-	formato: 'lado' | 'cartao' | 'faixa';
+	formato?: string;
 }
-const { formato } = Astro.props;
-const meses = Array.from({ length: garantia.meses }, (_, i) => i + 1);
 ---
 
-<div class:list={['ga', formato]}>
+<div class="ga" data-garantia>
 	<div class="ga-texto">
-		<p class="etiqueta">A garantia</p>
-		<h2>Disponível pelo menos 99&nbsp;% do tempo, em cada mês.</h2>
-		<p class="ga-num">
-			<span class="ga-grande">99&nbsp;%</span>
-			<span class="ga-sub">em cada mês, nos 3 meses seguintes à entrega</span>
-		</p>
-		<p class="ga-compromisso">{textos.garantia}</p>
-		<p class="ga-condicao">{textos.garantiaCondicao}</p>
+		<div class="ga-titulo">
+			<p class="etiqueta">A garantia</p>
+			<h2>Disponível pelo menos 99&nbsp;% do tempo, em cada mês.</h2>
+		</div>
+		<div class="ga-lado">
+			<p class="ga-compromisso">{textos.garantia}</p>
+			<p class="ga-condicao">{textos.garantiaCondicao}</p>
+		</div>
 	</div>
-	<figure class="ga-quadro">
-		<div class="ga-meses" role="img" aria-label="3 meses de 100 pontos cada; em cada mês, no máximo 1 ponto sem serviço">
-			{
-				meses.map((m) => (
-					<div class="mes">
-						<span class="quad" />
-						<span class="mes-nome">Mês {m} depois da entrega</span>
-					</div>
-				))
-			}
+
+	<div class="ga-escolha" role="group" aria-label="Protótipo: representação da Garantia" data-ga-escolha hidden>
+		<span class="tag">Protótipo</span>
+		<button type="button" aria-pressed="true" data-ga="anel">Anel de pontos</button>
+		<button type="button" aria-pressed="false" data-ga="linha">Linha dos 3 meses</button>
+		<button type="button" aria-pressed="false" data-ga="numero">Número e barra</button>
+	</div>
+
+	<figure class="ga-vis anel" data-ga-vis="anel">
+		<div class="anel-caixa">
+			<canvas data-anel aria-hidden="true"></canvas>
+			<p class="anel-centro"><span class="n">99&nbsp;%</span><span>em cada mês</span></p>
 		</div>
 		<figcaption>
-			<span><i class="pt cheio"></i> 1 % do mês com serviço</span>
-			<span><i class="pt livre"></i> margem máxima sem serviço</span>
+			100 pontos, um por cada 1 % do mês: 99 com serviço e 1 apagado, a margem máxima sem serviço. Durante os 3
+			meses seguintes à entrega.
 		</figcaption>
 	</figure>
+
+	<figure class="ga-vis linha" data-ga-vis="linha" hidden>
+		<ol class="meses">
+			<li class="marco"><span class="no" aria-hidden="true"></span>Entrega</li>
+			{
+				[1, 2, 3].map((m) => (
+					<li class="mes">
+						<span class="mes-nome">Mês {m}</span>
+						<span class="barra-mes" aria-hidden="true">
+							<span class="cheio" />
+							<span class="falta" />
+						</span>
+						<span class="mes-valor">pelo menos 99&nbsp;%</span>
+					</li>
+				))
+			}
+		</ol>
+		<figcaption>
+			<strong>Se um mês ficar abaixo de 99&nbsp;%,</strong> continuo a trabalhar sem faturar até chegar lá.
+		</figcaption>
+	</figure>
+
+	<figure class="ga-vis numero" data-ga-vis="numero" hidden>
+		<p class="grande">99&nbsp;%</p>
+		<p class="sub">do tempo, em cada mês</p>
+		<div class="barra-1" aria-hidden="true"><span class="com"></span><span class="sem"></span></div>
+		<div class="barra-legenda">
+			<span>com serviço</span>
+			<span>no máximo 1&nbsp;% sem serviço</span>
+		</div>
+		<figcaption>Nos 3 meses seguintes à entrega.</figcaption>
+	</figure>
 </div>
+
+<script>
+	const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
+	const pausada = () => reduz || document.documentElement.dataset.animacao === 'pausada';
+
+	for (const raiz of document.querySelectorAll<HTMLElement>('[data-garantia]')) {
+		// Seletor do protótipo.
+		const escolha = raiz.querySelector<HTMLElement>('[data-ga-escolha]')!;
+		const botoes = [...escolha.querySelectorAll<HTMLButtonElement>('[data-ga]')];
+		const vis = [...raiz.querySelectorAll<HTMLElement>('[data-ga-vis]')];
+		escolha.hidden = false;
+		for (const b of botoes) {
+			b.addEventListener('click', () => {
+				for (const x of botoes) x.setAttribute('aria-pressed', String(x === b));
+				for (const v of vis) v.hidden = v.dataset.gaVis !== b.dataset.ga;
+				document.dispatchEvent(new Event('garantia-vista'));
+			});
+		}
+		// Barras: em repouso estão cheias; com movimento, enchem quando chegam ao ecrã.
+		if (!reduz) {
+			raiz.classList.add('anima');
+			new IntersectionObserver(
+				(es) => {
+					for (const e of es) if (e.isIntersecting) (e.target as HTMLElement).classList.add('em-vista');
+				},
+				{ threshold: 0.4 },
+			).observe(raiz);
+		}
+		const canvas = raiz.querySelector<HTMLCanvasElement>('[data-anel]');
+		if (canvas) anel(canvas, raiz);
+	}
+
+	// Anel de 100 pontos com brilho, nas cores fixas do ∞: acendem um a um quando o anel chega ao
+	// ecrã e depois uma onda de luz corre devagar à volta. O 100.º fica apagado.
+	function anel(canvas: HTMLCanvasElement, raiz: HTMLElement) {
+		const ctx = canvas.getContext('2d')!;
+		const tokens = getComputedStyle(raiz);
+		const roxo = tokens.getPropertyValue('--elemento-roxo').trim() || '#c3a6ff';
+		const verde = tokens.getPropertyValue('--elemento-verde').trim() || '#86d9a8';
+		const falta = tokens.getPropertyValue('--s3').trim() || '#e6cf94';
+		const cores = Array.from({ length: 100 }, (_, i) => mistura(roxo, verde, i / 98));
+		const brilhos = new Map<string, HTMLCanvasElement>();
+		const brilhoDe = (c: string) => brilhos.get(c) ?? (brilhos.set(c, brilho(c)), brilhos.get(c)!);
+		let w = 0;
+		let visivel = false;
+		let comecou = 0;
+		let pedido = 0;
+		let antes = 0;
+		let tempo = 0;
+
+		function desenha(agora: number) {
+			pedido = 0;
+			if (!visivel || canvas.offsetParent === null) return;
+			const dt = antes ? Math.min((agora - antes) / 1000, 0.05) : 0;
+			antes = agora;
+			if (!pausada()) tempo += dt;
+			if (!comecou) comecou = agora;
+			const acesos = reduz ? 99 : Math.min(99, Math.floor(((agora - comecou) / 1600) * 99));
+			ctx.clearRect(0, 0, w, w);
+			const R = w * 0.42;
+			const c = w / 2;
+			const base = w * 0.016;
+			ctx.globalCompositeOperation = 'lighter';
+			for (let i = 0; i < 99; i++) {
+				if (i >= acesos) break;
+				const a = -Math.PI / 2 + (i / 100) * Math.PI * 2;
+				const onda = reduz ? 0.5 : 0.5 + 0.5 * Math.sin(tempo * 1.6 - i * 0.19);
+				const tam = base * (1 + onda * 0.45);
+				ctx.globalAlpha = 0.55 + onda * 0.45;
+				ctx.drawImage(brilhoDe(cores[i]), c + R * Math.cos(a) - tam, c + R * Math.sin(a) - tam, tam * 2, tam * 2);
+			}
+			// O 100.º ponto: só o contorno, noutra cor.
+			const a = -Math.PI / 2 + (99 / 100) * Math.PI * 2;
+			ctx.globalCompositeOperation = 'source-over';
+			ctx.globalAlpha = acesos >= 99 ? 1 : 0.3;
+			ctx.strokeStyle = falta;
+			ctx.lineWidth = Math.max(1.5, w / 260);
+			ctx.beginPath();
+			ctx.arc(c + R * Math.cos(a), c + R * Math.sin(a), base * 0.75, 0, Math.PI * 2);
+			ctx.stroke();
+			ctx.globalAlpha = 1;
+			if (!pausada() || acesos < 99) pedir();
+			else antes = 0;
+		}
+		function pedir() {
+			if (!pedido) pedido = requestAnimationFrame(desenha);
+		}
+		document.addEventListener('animacao', () => {
+			antes = 0;
+			pedir();
+		});
+		document.addEventListener('garantia-vista', pedir);
+		new IntersectionObserver(([e]) => {
+			visivel = e.isIntersecting;
+			antes = 0;
+			pedir();
+		}).observe(canvas);
+		new ResizeObserver(() => {
+			const dpr = Math.min(devicePixelRatio || 1, 2);
+			w = canvas.width = canvas.height = Math.round(canvas.clientWidth * dpr);
+			pedir();
+		}).observe(canvas);
+	}
+
+	function mistura(a: string, b: string, t: number) {
+		const p = (c: string) => [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16));
+		const [x, y] = [p(a), p(b)];
+		return '#' + x.map((v, i) => Math.round(v + (y[i] - v) * t).toString(16).padStart(2, '0')).join('');
+	}
+
+	function brilho(cor: string) {
+		const c = document.createElement('canvas');
+		c.width = c.height = 64;
+		const g = c.getContext('2d')!;
+		const [r, v, a] = [1, 3, 5].map((i) => parseInt(cor.slice(i, i + 2), 16));
+		const gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+		gr.addColorStop(0, 'rgba(255,255,255,0.95)');
+		gr.addColorStop(0.16, `rgba(${r},${v},${a},1)`);
+		gr.addColorStop(0.42, `rgba(${r},${v},${a},0.28)`);
+		gr.addColorStop(1, `rgba(${r},${v},${a},0)`);
+		g.fillStyle = gr;
+		g.fillRect(0, 0, 64, 64);
+		return c;
+	}
+</script>
 
 <style>
 	.ga {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-		gap: 2.5rem 4rem;
-		align-items: center;
+		gap: 3rem;
 	}
 	.ga-texto {
 		display: grid;
+		grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+		gap: 2rem 4rem;
+		align-items: end;
+	}
+	.ga-titulo,
+	.ga-lado {
+		display: grid;
 		gap: 1rem;
-		justify-items: start;
 	}
 	.ga h2 {
-		font-size: clamp(2rem, 4vw, 2.9rem);
-		line-height: 1.08;
-	}
-	.ga-num {
-		display: grid;
-		gap: 0.1rem;
-	}
-	.ga-grande {
-		font: 400 clamp(3rem, 7vw, 4.8rem) / 1 var(--serif);
-		color: var(--verde);
-	}
-	.ga-sub {
-		font-size: 1.0625rem;
+		font-size: clamp(2.1rem, 4.4vw, 3.4rem);
+		line-height: 1.06;
 	}
 	.ga-compromisso {
 		color: var(--muted);
@@ -76,85 +230,214 @@ const meses = Array.from({ length: garantia.meses }, (_, i) => i + 1);
 		font-size: 0.9375rem;
 		color: var(--acento);
 	}
-	.ga-quadro {
+	/* Seletor do protótipo: não faz parte do design. */
+	.ga-escolha {
+		justify-self: start;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.25rem;
+		padding: 0.3rem;
+		border-radius: 999px;
+		background: #ffffff;
+		font: 500 0.8125rem/1.2 system-ui, -apple-system, 'Segoe UI', sans-serif;
+	}
+	.ga-escolha .tag {
+		font-size: 0.625rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		padding: 0.2rem 0.45rem;
+		border-radius: 4px;
+		background: #fff3c4;
+		color: #5c4400;
+		margin-inline: 0.2rem;
+	}
+	.ga-escolha button {
+		font: inherit;
+		min-height: 36px;
+		padding: 0 0.8rem;
+		border: 0;
+		border-radius: 999px;
+		background: transparent;
+		color: #111111;
+		cursor: pointer;
+	}
+	.ga-escolha button[aria-pressed='true'] {
+		background: #111111;
+		color: #ffffff;
+	}
+	.ga-escolha button:focus-visible {
+		outline: 2px solid #1a56db;
+		outline-offset: 2px;
+	}
+	.ga-vis {
 		margin: 0;
 		display: grid;
-		gap: 1rem;
+		gap: 1.5rem;
 	}
-	.ga-meses {
+	.ga-vis figcaption {
+		color: var(--muted);
+		font-size: 0.9375rem;
+		max-width: 44rem;
+	}
+	/* 1. Anel de pontos */
+	.anel {
+		justify-items: center;
+		text-align: center;
+	}
+	.anel-caixa {
+		position: relative;
+		width: min(100%, 26rem);
+		aspect-ratio: 1;
+	}
+	.anel-caixa canvas {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+	}
+	.anel-centro {
+		position: absolute;
+		inset: 0;
 		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 1.25rem;
+		place-content: center;
+		gap: 0.25rem;
+		color: var(--muted);
+	}
+	.anel-centro .n {
+		font: 400 clamp(3.2rem, 9vw, 5rem) / 1 var(--serif);
+		color: var(--text);
+	}
+	/* 2. Linha dos 3 meses */
+	.meses {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		grid-template-columns: auto repeat(3, minmax(0, 1fr));
+		gap: 1rem 1.25rem;
+		align-items: end;
+	}
+	.marco {
+		display: grid;
+		justify-items: center;
+		gap: 0.6rem;
+		font-size: 0.875rem;
+		color: var(--muted);
+		padding-bottom: 1.85rem;
+	}
+	.marco .no {
+		width: 14px;
+		height: 14px;
+		border-radius: 50%;
+		background: var(--verde);
+		box-shadow: 0 0 0 4px color-mix(in srgb, var(--verde) 25%, transparent);
 	}
 	.mes {
 		display: grid;
-		gap: 0.5rem;
-	}
-	.quad {
-		position: relative;
-		display: block;
-		aspect-ratio: 1;
-		max-width: 100%;
-		border-radius: 6px;
-		background-image: radial-gradient(circle, var(--verde) 34%, transparent 38%);
-		background-size: 10% 10%;
-	}
-	.quad::after {
-		/* o 100.º ponto: margem máxima sem serviço */
-		content: '';
-		position: absolute;
-		right: 0;
-		bottom: 0;
-		width: 10%;
-		height: 10%;
-		background:
-			radial-gradient(circle, transparent 26%, var(--s3) 28% 36%, transparent 38%),
-			var(--fundo-ga, var(--bg));
+		gap: 0.6rem;
 	}
 	.mes-nome {
-		font-size: 0.75rem;
-		color: var(--muted);
+		font: 400 1.5rem/1.1 var(--serif);
 	}
-	figcaption {
+	.barra-mes {
 		display: flex;
-		flex-wrap: wrap;
-		gap: 0.5rem 1.5rem;
-		font-size: 0.8125rem;
+		height: 12px;
+		gap: 3px;
+	}
+	.barra-mes .cheio {
+		flex: 0 0 99%;
+		border-radius: 999px 0 0 999px;
+		background: linear-gradient(90deg, var(--elemento-roxo, #c3a6ff), var(--elemento-verde, #86d9a8));
+		transform-origin: left;
+	}
+	.barra-mes .falta {
+		flex: 1;
+		min-width: 6px;
+		border-radius: 0 999px 999px 0;
+		border: 1.5px solid var(--s3);
+	}
+	.mes-valor {
+		font-size: 0.875rem;
 		color: var(--muted);
 	}
-	.pt {
-		display: inline-block;
-		width: 10px;
-		height: 10px;
-		border-radius: 50%;
-		vertical-align: -1px;
-		margin-right: 0.3rem;
+	.linha figcaption strong {
+		color: var(--text);
 	}
-	.pt.cheio {
-		background: var(--verde);
+	/* 3. Número grande e barra de 1 % */
+	.numero {
+		gap: 1rem;
 	}
-	.pt.livre {
-		border: 2px solid var(--s3);
+	.grande {
+		font: 400 clamp(5rem, 16vw, 11rem) / 0.9 var(--serif);
+		background: linear-gradient(90deg, var(--elemento-roxo, #c3a6ff), var(--elemento-verde, #86d9a8));
+		-webkit-background-clip: text;
+		background-clip: text;
+		color: transparent;
 	}
-	/* Cartão (protótipo 2): o quadro à esquerda, o texto à direita. */
-	.cartao .ga-quadro {
-		order: -1;
+	.sub {
+		font-size: 1.125rem;
+		margin-bottom: 1.5rem !important;
 	}
-	/* Faixa (protótipo 3): quadros maiores, texto por cima em duas colunas. */
-	.faixa {
-		grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+	.barra-1 {
+		display: flex;
+		height: 14px;
+		gap: 3px;
+	}
+	.barra-1 .com {
+		flex: 0 0 calc(99% - 3px);
+		border-radius: 999px 0 0 999px;
+		background: linear-gradient(90deg, var(--elemento-roxo, #c3a6ff), var(--elemento-verde, #86d9a8));
+		transform-origin: left;
+	}
+	.barra-1 .sem {
+		flex: 1;
+		min-width: 6px;
+		border-radius: 0 999px 999px 0;
+		background: var(--s3);
+	}
+	.barra-legenda {
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+		font-size: 0.875rem;
+		color: var(--muted);
+	}
+	.barra-legenda span:last-child {
+		color: var(--s3);
+		text-align: right;
+	}
+	/* Com movimento: as barras enchem quando a Garantia chega ao ecrã. */
+	.anima .cheio,
+	.anima .com {
+		transform: scaleX(0);
+		transition: transform 1.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+	}
+	.anima.em-vista .cheio,
+	.anima.em-vista .com {
+		transform: none;
+	}
+	.anima .mes:nth-child(3) .cheio {
+		transition-delay: 0.25s;
+	}
+	.anima .mes:nth-child(4) .cheio {
+		transition-delay: 0.5s;
 	}
 	@media (max-width: 960px) {
-		.ga {
+		.ga-texto {
 			grid-template-columns: 1fr;
 		}
-		.cartao .ga-quadro {
-			order: 0;
-		}
 	}
-	@media (max-width: 420px) {
-		.ga-meses {
-			gap: 0.75rem;
+	@media (max-width: 640px) {
+		.meses {
+			grid-template-columns: 1fr;
+		}
+		.marco {
+			justify-items: start;
+			padding-bottom: 0;
+			grid-auto-flow: column;
+			justify-content: start;
+			align-items: center;
 		}
 	}
 </style>

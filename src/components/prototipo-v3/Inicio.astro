@@ -118,19 +118,21 @@ const resumos = [
 		</div>
 	</section>
 
-	<section class="largura seccao etapas" id={id('etapas')}>
-		<h2>Cinco etapas, sempre pela mesma ordem.</h2>
-		<ol>
-			{
-				etapas.map((e, i) => (
-					<li style={`--i:${i}`}>
-						<span class="num-etapa">{i + 1}</span>
-						<strong>{e.nome}</strong>
-						<span class="txt">{e.texto}</span>
-					</li>
-				))
-			}
-		</ol>
+	<section class="seccao etapas" id={id('etapas')} data-etapas>
+		<div class="largura etapas-palco">
+			<h2>Cinco etapas, sempre pela mesma ordem.</h2>
+			<ol>
+				{
+					etapas.map((e, i) => (
+						<li style={`--i:${i}`} data-etapa>
+							<span class="num-etapa">{i + 1}</span>
+							<strong>{e.nome}</strong>
+							<span class="txt">{e.texto}</span>
+						</li>
+					))
+				}
+			</ol>
+		</div>
 	</section>
 
 	<section class="largura seccao" id={id('garantia')}>
@@ -222,6 +224,47 @@ const resumos = [
 		addEventListener('resize', mede);
 		largo.addEventListener('change', mede);
 		new ResizeObserver(mede).observe(pista);
+		mede();
+	}
+
+	// Etapas: no computador, a secção fica presa e o scroll faz o ramo passar uma etapa de cada
+	// vez (pedido do Julien a 20/10/2026: antes passava pelas cinco quase de uma vez). A etapa k
+	// chega a meio da sua fatia do percurso, (k + 0,5) / 5; o ramo usa a mesma conta
+	// (HeroElemento). No telemóvel e com movimento reduzido, não fica presa.
+	for (const sec of document.querySelectorAll<HTMLElement>('[data-etapas]')) {
+		const palco = sec.querySelector<HTMLElement>('.etapas-palco')!;
+		const itens = [...sec.querySelectorAll<HTMLElement>('[data-etapa]')];
+		const largo = matchMedia('(min-width: 961px) and (prefers-reduced-motion: no-preference)');
+		// Quanto scroll gasta cada etapa, em fração da altura do ecrã.
+		const POR_ETAPA = 0.45;
+		let pedido = 0;
+		const mede = () => {
+			sec.toggleAttribute('data-fixa', largo.matches);
+			if (!largo.matches) {
+				sec.style.height = '';
+				delete sec.dataset.percurso;
+				itens.forEach((li) => li.classList.remove('chegou', 'atual'));
+				return;
+			}
+			const percurso = Math.round(innerHeight * POR_ETAPA * itens.length);
+			sec.dataset.percurso = String(percurso);
+			sec.style.height = `${palco.offsetHeight + percurso}px`;
+			move();
+		};
+		const move = () => {
+			pedido = 0;
+			if (!largo.matches) return;
+			const r = sec.getBoundingClientRect();
+			const p = Math.min(Math.max((CABECALHO - r.top) / (r.height - palco.offsetHeight || 1), 0), 1);
+			const chegaram = itens.filter((_, k) => p >= (k + 0.5) / itens.length).length;
+			itens.forEach((li, k) => {
+				li.classList.toggle('chegou', k < chegaram);
+				li.classList.toggle('atual', k === chegaram - 1);
+			});
+		};
+		addEventListener('scroll', () => pedido || (pedido = requestAnimationFrame(move)), { passive: true });
+		addEventListener('resize', mede);
+		largo.addEventListener('change', mede);
 		mede();
 	}
 </script>
@@ -482,10 +525,33 @@ const resumos = [
 		border: 1px solid var(--verde-forte);
 		color: var(--verde);
 	}
-	/* Etapas: cinco colunas abertas */
-	.etapas {
+	/* Etapas: cinco colunas abertas. Com data-fixa (computador), a secção fica presa e as etapas
+	   acendem uma a uma, à medida que o ramo chega. */
+	.etapas-palco {
 		display: grid;
 		gap: 3rem;
+	}
+	.etapas[data-fixa] {
+		padding-block: 0;
+	}
+	[data-fixa] .etapas-palco {
+		position: sticky;
+		top: 68px;
+		height: calc(100vh - 68px);
+		align-content: center;
+	}
+	[data-fixa] .num-etapa {
+		color: var(--line-forte);
+		transition: color 0.35s ease;
+	}
+	[data-fixa] li.chegou .num-etapa {
+		color: var(--verde);
+	}
+	[data-fixa] li strong {
+		transition: border-color 0.35s ease;
+	}
+	[data-fixa] li.atual strong {
+		border-top-color: var(--verde);
 	}
 	.etapas ol {
 		list-style: none;

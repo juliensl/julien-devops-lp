@@ -4,7 +4,8 @@
 // um ramo no mesmo estilo que cresce com o scroll até ao CTA final, com folhas de pontos verdes.
 // Percurso (acertos do mesmo dia): margem esquerda; nos Serviços presos fica ao lado do título,
 // com uma folha por cartão, e só volta a descer quando os cartões acabam, já pela direita; volta
-// à esquerda antes das Etapas e segue os degraus, com um nó por etapa; desce pela direita na
+// à esquerda antes das Etapas e segue os degraus, com um nó por etapa (com as Etapas presas,
+// o scroll faz o ramo chegar a uma etapa de cada vez); desce pela direita na
 // Garantia e volta à esquerda antes do gráfico; em «Quem é o Julien» só o traço roxo dá meia
 // volta à fotografia e desce até ao fim da secção; volta à esquerda nos testemunhos.
 // As cores do ∞ e do ramo são fixas (--elemento-*). Movimento contínuo, parado pelo botão de
@@ -62,6 +63,8 @@
 		let nos: No[] = [];
 		let quem = { ini: Infinity, fim: -1 };
 		let pino = { ini: 0, percurso: 0, lenTitulo: Infinity };
+		// Etapas presas: as marcas ligam o progresso da passagem (0…1) ao comprimento do ramo.
+		let pinoEt = { ini: 0, percurso: 0, marcas: [] as [number, number][] };
 		let hastePts = { off: new Float32Array(0), fase: new Float32Array(0), cor: new Uint8Array(0), esp: 9 };
 
 		let dpr = 1;
@@ -80,9 +83,19 @@
 		let ultimoScroll = scrollY;
 
 		const corre = () => !reduz && document.documentElement.dataset.animacao !== 'pausada';
-		// Scroll em coordenadas do bloco, sem o percurso gasto pelos Serviços presos.
-		const scrollVirtual = (S: number) => S - Math.min(Math.max(S - pino.ini, 0), pino.percurso);
+		// Scroll em coordenadas do bloco, sem o percurso gasto pelas secções presas (Serviços e Etapas).
+		const gasto = (S: number, p: { ini: number; percurso: number }) => Math.min(Math.max(S - p.ini, 0), p.percurso);
+		const scrollVirtual = (S: number) => S - gasto(S, pino) - gasto(S, pinoEt);
 		const progressoPino = (S: number) => (pino.percurso ? Math.min(Math.max((S - pino.ini) / pino.percurso, 0), 1) : 1);
+		const progressoEt = (S: number) => (pinoEt.percurso ? Math.min(Math.max((S - pinoEt.ini) / pinoEt.percurso, 0), 1) : 1);
+		// Comprimento do ramo nas Etapas presas: linear entre as marcas (entrada, cada nó, saída).
+		const emEtapas = (p: number) => {
+			const m = pinoEt.marcas;
+			for (let i = 1; i < m.length; i++) {
+				if (p <= m[i][0]) return m[i - 1][1] + ((p - m[i - 1][0]) / (m[i][0] - m[i - 1][0] || 1)) * (m[i][1] - m[i - 1][1]);
+			}
+			return m[m.length - 1][1];
+		};
 
 		function geometria() {
 			const base = raiz.getBoundingClientRect();
@@ -101,12 +114,21 @@
 			const percurso = fixa ? Number(servicos.dataset.percurso ?? 0) : 0;
 			const desvio = fixa ? R(palcoServ).y - sR.y : 0;
 			const fimServ = sR.y + sR.h;
+			// Etapas: o mesmo, com a sua própria passagem presa.
+			const etapasSec = q('[data-etapas]');
+			const fixaEt = etapasSec.hasAttribute('data-fixa');
+			const eR = R(etapasSec);
+			const percursoEt = fixaEt ? Number(etapasSec.dataset.percurso ?? 0) : 0;
+			const desvioEt = fixaEt ? R(q('.etapas-palco', etapasSec)).y - eR.y : 0;
+			const fimEt = eR.y + eR.h;
 			const C = (e: Element) => {
 				const r = R(e);
-				const d = r.y >= fimServ - 1 ? percurso : e !== servicos && servicos.contains(e) ? desvio : 0;
+				let d = r.y >= fimServ - 1 ? percurso : e !== servicos && servicos.contains(e) ? desvio : 0;
+				d += r.y >= fimEt - 1 ? percursoEt : e !== etapasSec && etapasSec.contains(e) ? desvioEt : 0;
 				return { ...r, y: r.y - d, b: r.b - d };
 			};
 			pino = { ini: sR.y - CABECALHO, percurso, lenTitulo: Infinity };
+			pinoEt = { ini: eR.y - CABECALHO, percurso: percursoEt, marcas: [] };
 
 			const pal = R(palco);
 			const texto = R(q('.hero-texto'));
@@ -162,6 +184,8 @@
 			const seccoes = [...raiz.querySelectorAll<HTMLElement>(':scope > section')].slice(1);
 			const final = seccoes.pop()!;
 			let lenTituloPt: Pt | null = null;
+			let entradaEt: Pt | null = null;
+			let saidaEt: Pt | null = null;
 			let quemPts: Pt[] = [];
 			let depoisGarantia = false;
 			for (const s of seccoes) {
@@ -190,7 +214,7 @@
 				if (s.id.endsWith('-etapas')) {
 					const h2 = C(q('h2', s));
 					if (foraDaMargem()) cruza((sC.y + h2.y) / 2, mx);
-					desce(h2.b + 14, mx);
+					entradaEt = desce(h2.b + 14, mx);
 					// Etapas: um nó por cima de cada número; no computador o ramo segue os degraus.
 					const nums = [...s.querySelectorAll('.num-etapa')].map(C);
 					const emLinha = nums[1].y < nums[0].y + nums[0].h;
@@ -202,7 +226,8 @@
 					}
 					if (emLinha) {
 						const ult = nosPt[nosPt.length - 1];
-						pts.push({ x: ult.x + 90, y: ult.y + 6 }, { x: mxD, y: ult.y + 60 });
+						saidaEt = { x: ult.x + 90, y: ult.y + 6 };
+						pts.push(saidaEt, { x: mxD, y: ult.y + 60 });
 					}
 					continue;
 				}
@@ -259,6 +284,14 @@
 			nos = nosPt.map((n) => ({ ...n, l: comprimentoEm(n) }));
 			quem = quemPts.length ? { ini: comprimentoEm(quemPts[0]), fim: comprimentoEm(quemPts[1]) } : { ini: Infinity, fim: -1 };
 			if (lenTituloPt) pino.lenTitulo = comprimentoEm(lenTituloPt);
+			if (pinoEt.percurso && entradaEt && saidaEt && nos.length) {
+				const N = nos.length;
+				pinoEt.marcas = [
+					[0, comprimentoEm(entradaEt)],
+					...nos.map((nd, k) => [(k + 0.5) / N, nd.l] as [number, number]),
+					[1, comprimentoEm(saidaEt)],
+				];
+			}
 
 			const esp = pequeno ? 11 : 9;
 			const n = Math.ceil(total / esp);
@@ -320,6 +353,8 @@
 				else if (a.y > linha + 160) break;
 			}
 			if (pino.percurso && S < pino.ini + pino.percurso) len = Math.min(len, pino.lenTitulo);
+			// Nas Etapas presas, o ramo avança com o progresso da passagem: uma etapa de cada vez.
+			if (pinoEt.marcas.length && S < pinoEt.ini + pinoEt.percurso) len = Math.min(len, emEtapas(progressoEt(S)));
 			const r = palco.getBoundingClientRect();
 			return r.bottom <= innerHeight && r.top >= 0 ? Math.max(lenHero, len) : len;
 		}
