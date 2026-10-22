@@ -68,3 +68,20 @@ jobs:
           name: relatorio-playwright
           path: playwright-report/
           retention-days: 7
+
+      # O SEO, os pesos, as fontes e os pedidos bloqueiam.
+      # O desempenho só avisa, no resumo do job, com a mediana de 3 execuções.
+      - name: Lighthouse em modo telemóvel
+        id: lighthouse
+        run: npm run lighthouse -- ${{ inputs.sem-desempenho && '--sem-desempenho' || '' }}
+
+      # Os relatórios HTML são uma ajuda: se a quota de artefactos da conta estiver cheia,
+      # o upload falha sem deixar o PR vermelho. As metas já estão no resumo do job.
+      - name: Relatórios do Lighthouse
+        if: ${{ !cancelled() && steps.lighthouse.outcome != 'skipped' }}
+        continue-on-error: true
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: relatorio-lighthouse
+          path: relatorio-lighthouse/
+          retention-days: 7
