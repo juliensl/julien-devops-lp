@@ -1,0 +1,42 @@
+---
+// A secção Ecologia da página principal: um texto curto e a ligação para a página de ecologia.
+// A folha de pontos em fluxo (#69) fica na coluna da direita, no lugar marcado.
+import Folha from './Folha';
+
+interface Props {
+	etiqueta: string;
+	titulo: string;
+	texto: string;
+	ligacao: string;
+	/** A página de ecologia, na língua da página principal. */
+	href: string;
+}
+
+const { etiqueta, titulo, texto, ligacao, href } = Astro.props;
+---
+
+<section
+	aria-labelledby="ecologia-titulo"
+	data-seccao="ecologia"
+	class="largura grid items-center gap-x-16 gap-y-8 py-16 sm:py-24 md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]"
+>
+	<div class="grid max-w-3xl justify-items-start gap-5">
+		<p class="etiqueta inline-flex items-center gap-1.5">
+			<Folha tamanho={16} />
+			{etiqueta}
+		</p>
+		<h2 id="ecologia-titulo" class="text-[clamp(1.9rem,3.6vw,2.6rem)] leading-[1.1]">
+			{titulo}
+		</h2>
+		<p class="text-[1.0625rem] text-texto-secundario">{texto}</p>
+		<a
+			href={href}
+			class="inline-flex min-h-11 items-center gap-2 font-semibold text-verde underline-offset-4 hover:underline"
+		>
+			<Folha tamanho={18} className="shrink-0" />
+			{ligacao}
+		</a>
+	</div>
+
+	{/* Folha de pontos em fluxo (#69) */}
+</section>

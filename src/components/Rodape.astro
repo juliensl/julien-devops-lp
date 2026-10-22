@@ -1,7 +1,18 @@
 ---
-// O rodapé de todas as páginas: o nome e o LinkedIn.
+// O rodapé de todas as páginas: o nome, o LinkedIn e a Ecologia.
 // As partes que chegam com as páginas para onde levam têm o lugar marcado com o ticket.
+import { type Lingua } from '../config/site';
 import { valores } from '../config/valores';
+import { dicionarios } from '../i18n';
+import { caminhoDaEcologia } from '../lib/caminhos';
+import Folha from './Folha';
+
+interface Props {
+	lingua: Lingua;
+}
+
+const { lingua } = Astro.props;
+const t = dicionarios[lingua];
 ---
 
 <footer class="mt-20 border-t border-linha text-sm text-texto-secundario">
@@ -17,7 +28,13 @@ import { valores } from '../config/valores';
 			LinkedIn
 		</a>
 
-		{/* Ecologia (#68) */}
+		<a
+			href={caminhoDaEcologia(lingua)}
+			class="inline-flex min-h-6 items-center gap-1.5 underline underline-offset-3 hover:text-texto"
+		>
+			<Folha tamanho={16} className="shrink-0 text-verde" />
+			{t.ecologia.ligacao}
+		</a>
 
 		{/* Informação legal e Política de privacidade (#71) */}
 	</div>

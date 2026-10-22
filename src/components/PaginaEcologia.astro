@@ -1,0 +1,149 @@
+---
+// A página de ecologia (#54, «Página de ecologia»): o estimador, o método, o que a infraestrutura
+// pode mudar e as fontes e os limites. Sem dados ambientais dos fornecedores: nenhum aparece aqui.
+// Os valores distinguem-se sempre com um selo: Publicado, Hipótese ou Calculado.
+import { CURSORES, FONTES, PUE_PONDERADO } from '../config/ecologia';
+import { CODIGOS_HTML, PREFIXOS, type Lingua } from '../config/site';
+import { valores } from '../config/valores';
+import { dicionarios } from '../i18n';
+import Base from '../layouts/Base.astro';
+import { numeros } from '../lib/ecologia';
+import BotaoMarcar from './BotaoMarcar';
+import Estimador from './Estimador';
+import Folha from './Folha';
+import Selo from './Selo';
+
+interface Props {
+	lingua: Lingua;
+}
+
+const { lingua } = Astro.props;
+const { botaoMarcar, ecologia: t } = dicionarios[lingua];
+const n = numeros(CODIGOS_HTML[lingua]);
+const estados = ['publicado', 'hipotese', 'calculado'] as const;
+const fontes = [
+	{ titulo: t.fontes.ember, href: FONTES.ember },
+	{ titulo: t.fontes.ccf, href: FONTES.ccf },
+	{ titulo: t.fontes.uptime, href: FONTES.uptime },
+	{ titulo: t.fontes.pesquisa },
+];
+const tituloDeSeccao = 'text-[clamp(1.9rem,3.6vw,2.6rem)] leading-[1.1]';
+---
+
+<Base lingua={lingua} titulo={`${t.etiqueta} · ${valores.nome}`} descricao={t.descricao}>
+	<main>
+		<section
+			aria-labelledby="ecologia-titulo"
+			class="largura grid grid-cols-[minmax(0,1fr)] items-end gap-x-16 gap-y-8 pt-16 sm:pt-20 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]"
+		>
+			<div class="grid gap-5">
+				<p class="etiqueta inline-flex items-center gap-1.5">
+					<Folha tamanho={16} />
+					{t.etiqueta}
+				</p>
+				<div class="flex items-center gap-x-8 gap-y-4 max-sm:flex-col-reverse max-sm:items-start">
+					<h1
+						id="ecologia-titulo"
+						class="max-w-[20ch] text-[clamp(2.1rem,5vw,4.2rem)] leading-[1.05] tracking-[-0.012em]"
+					>
+						{t.titulo}
+					</h1>
+
+					{/* Folha de pontos em fluxo (#69): ao lado do título, por cima dele no telemóvel */}
+				</div>
+				<p class="max-w-2xl text-lg text-texto-secundario">{t.introducao}</p>
+			</div>
+			<ul
+				aria-label={t.legenda.nome}
+				class="grid gap-3 border-l-2 border-verde pl-6 text-sm text-texto-secundario"
+			>
+				{estados.map((estado) => (
+					<li class="grid items-center gap-x-3 gap-y-1 sm:grid-cols-[7.5rem_1fr]">
+						<span>
+							<Selo estado={estado} rotulo={t.selos[estado]} />
+						</span>{' '}
+						{t.legenda[estado]}
+					</li>
+				))}
+			</ul>
+		</section>
+
+		<Estimador lingua={lingua} textos={t.estimar} selos={t.selos} />
+		<script>
+			import '../scripts/ecologia';
+		</script>
+		<section aria-labelledby="metodo-titulo" class="largura grid gap-6 pt-16">
+			<div class="grid gap-2">
+				<p class="etiqueta">{t.metodo.etiqueta}</p>
+				<h2 id="metodo-titulo" class={tituloDeSeccao}>
+					{t.metodo.titulo}
+				</h2>
+			</div>
+			<ul class="grid gap-4 lg:grid-cols-3">
+				{t.metodo.cartoes.map(({ titulo, texto }) => (
+					<li class="grid content-start gap-2 border-t border-linha-forte pt-5">
+						<h3 class="text-xl leading-tight">{titulo}</h3>
+						<p class="text-[0.9375rem] text-texto-secundario">{texto}</p>
+					</li>
+				))}
+			</ul>
+		</section>
+
+		<section aria-labelledby="infraestrutura-titulo" class="largura grid gap-6 pt-16">
+			<div class="grid gap-2">
+				<p class="etiqueta">{t.infraestrutura.etiqueta}</p>
+				<h2 id="infraestrutura-titulo" class={tituloDeSeccao}>
+					{t.infraestrutura.titulo}
+				</h2>
+			</div>
+			<ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+				{t.infraestrutura.cartoes.map(({ titulo, texto }) => (
+					<li class="grid content-start gap-2 border-t-2 border-verde pt-5">
+						<h3 class="text-xl leading-tight">{titulo}</h3>
+						<p class="text-[0.9375rem] text-texto-secundario">{texto}</p>
+					</li>
+				))}
+			</ul>
+		</section>
+
+		<section aria-labelledby="fontes-titulo" class="largura grid gap-6 pt-16">
+			<h2 id="fontes-titulo" class="text-[clamp(1.5rem,3vw,2rem)] leading-[1.1]">
+				{t.fontes.titulo}
+			</h2>
+			<ol class="grid list-decimal gap-1.5 pl-5 text-sm text-texto-secundario">
+				{fontes.map(({ titulo, href }) => (
+					<li>
+						{href ? (
+							<a
+								href={href}
+								class="inline-flex min-h-6 items-center text-verde underline underline-offset-3"
+							>
+								{titulo}
+							</a>
+						) : (
+							titulo
+						)}
+					</li>
+				))}
+			</ol>
+			<ul class="grid list-disc gap-1.5 pl-5 text-[0.9375rem] text-texto-secundario">
+				{t.fontes.limites.map((limite) => (
+					<li>{limite}</li>
+				))}
+				<li>{t.fontes.limitePue(n.pue(CURSORES.pue.defeito), n.pue(PUE_PONDERADO))}</li>
+			</ul>
+			<div class="mt-4 flex flex-wrap items-center gap-x-8 gap-y-4">
+				<a
+					href={PREFIXOS[lingua]}
+					class="inline-flex min-h-11 items-center font-semibold text-verde underline-offset-4 hover:underline"
+				>
+					<span aria-hidden="true">←&nbsp;</span>
+					{t.fontes.voltar}
+				</a>
+				<BotaoMarcar texto={botaoMarcar} />
+			</div>
+		</section>
+
+		{/* Botão de pausa da folha (#69) */}
+	</main>
+</Base>

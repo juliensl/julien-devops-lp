@@ -6,7 +6,9 @@ import { type Lingua } from '../config/site';
 import { valores } from '../config/valores';
 import { dicionarios } from '../i18n';
 import Base from '../layouts/Base.astro';
+import { caminhoDaEcologia } from '../lib/caminhos';
 import Hero from './Hero';
+import SeccaoEcologia from './SeccaoEcologia.astro';
 
 interface Props {
 	lingua: Lingua;
@@ -47,7 +49,7 @@ const t = dicionarios[lingua];
 
 		{/* Testemunhos (#67) */}
 
-		{/* Ecologia (#68) */}
+		<SeccaoEcologia {...t.paginaPrincipal.ecologia} href={caminhoDaEcologia(lingua)} />
 
 		{/* Perguntas (#70) */}
 

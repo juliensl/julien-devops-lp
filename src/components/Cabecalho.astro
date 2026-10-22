@@ -1,10 +1,12 @@
 ---
-// O cabeçalho fixo de todas as páginas: o logótipo, o seletor de língua e o botão.
+// O cabeçalho fixo de todas as páginas: o logótipo, 🍃 Ecologia, o seletor de língua e o botão.
 // No telemóvel, as línguas passam para um menu <details>, que abre sem JS; o botão fica sempre à vista.
 // As partes que chegam com as páginas para onde levam têm o lugar marcado com o ticket.
 import { PREFIXOS, type Lingua } from '../config/site';
 import { dicionarios } from '../i18n';
+import { caminhoDaEcologia } from '../lib/caminhos';
 import BotaoMarcar from './BotaoMarcar';
+import Folha from './Folha';
 import Logotipo from './Logotipo.astro';
 import SeletorLingua from './SeletorLingua.astro';
 
@@ -14,6 +16,8 @@ interface Props {
 
 const { lingua } = Astro.props;
 const t = dicionarios[lingua];
+const ecologia = caminhoDaEcologia(lingua);
+const naEcologia = Astro.url.pathname === ecologia ? 'page' : undefined;
 ---
 
 <header class="sticky top-0 z-20 border-b border-linha bg-fundo/85 backdrop-blur-md">
@@ -29,7 +33,18 @@ const t = dicionarios[lingua];
 		<div class="ml-auto flex items-center gap-4">
 			{/* «Os teus desafios» e o submenu (#70) */}
 
-			{/* 🍃 Ecologia (#68) */}
+			{/* 🍃 Ecologia: só a folha abaixo de 640 px; abaixo de 360 px, só no menu. */}
+			<a
+				href={ecologia}
+				aria-current={naEcologia}
+				class="group inline-flex min-h-10 items-center gap-1.5 rounded-full border border-verde-forte px-3 text-[0.9rem] font-medium text-verde transition-colors hover:bg-verde/15 aria-[current=page]:bg-verde/15 max-sm:size-11 max-sm:justify-center max-sm:px-0 max-[360px]:hidden"
+			>
+				<Folha
+					tamanho={20}
+					className="shrink-0 motion-safe:transition-transform motion-safe:group-hover:-rotate-12"
+				/>
+				<span class="max-sm:sr-only">{t.ecologia.ligacao}</span>
+			</a>
 
 			<SeletorLingua lingua={lingua} rotulo={t.cabecalho.linguas} class="max-md:hidden" />
 		</div>
@@ -51,7 +66,15 @@ const t = dicionarios[lingua];
 			<div class="absolute top-[calc(100%+0.625rem)] right-0 grid w-[min(20rem,calc(100vw-2.5rem))] gap-2 rounded-xl border border-linha bg-superficie p-4 shadow-[0_18px_40px_rgb(0_0_0/0.5)]">
 				{/* «Os teus desafios» (#70) */}
 
-				{/* Ecologia (#68): abaixo de 360 px, fica só aqui */}
+				{/* Ecologia: abaixo de 360 px, fica só aqui */}
+				<a
+					href={ecologia}
+					aria-current={naEcologia}
+					class="flex min-h-11 items-center gap-2 rounded-md px-2 text-texto transition-colors hover:bg-superficie-2 aria-[current=page]:bg-superficie-2"
+				>
+					<Folha tamanho={18} className="shrink-0 text-verde" />
+					{t.ecologia.ligacao}
+				</a>
 
 				<SeletorLingua lingua={lingua} rotulo={t.cabecalho.linguas} grande />
 			</div>

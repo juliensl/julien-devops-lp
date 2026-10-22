@@ -12,3 +12,8 @@ export function caminhoNaLingua(caminho: string, de: Lingua, para: Lingua): stri
 	}
 	return PREFIXOS[para] + caminho.slice(PREFIXOS[de].length);
 }
+
+/** A página de ecologia na língua dada (src/paginas/<língua>/ecology.astro): `/pt/ecology/`. */
+export function caminhoDaEcologia(lingua: Lingua): string {
+	return `${PREFIXOS[lingua]}ecology/`;
+}

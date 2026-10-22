@@ -1,0 +1,26 @@
+/* Os pontos de CO2e do estimador: cada um surge quando aparece, menos com movimento reduzido. */
+.pontos-co2 {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+	min-height: 24px;
+}
+
+.pontos-co2 > i {
+	width: 9px;
+	height: 9px;
+	border-radius: 50%;
+	background: var(--color-verde);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.pontos-co2 > i {
+		animation: surge 0.35s ease both;
+	}
+}
+
+@keyframes surge {
+	from {
+		transform: scale(0);
+	}
+}

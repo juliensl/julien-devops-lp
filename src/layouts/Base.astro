@@ -35,6 +35,6 @@ const canonical = new URL(Astro.url.pathname, SITE).href;
 	<body class="antialiased">
 		<Cabecalho lingua={lingua} />
 		<slot />
-		<Rodape />
+		<Rodape lingua={lingua} />
 	</body>
 </html>
