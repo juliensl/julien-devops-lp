@@ -8,8 +8,10 @@ emCadaBuild((build) => {
 
 		test(`${inicio}: o Hero mostra a Designação e a Promessa`, async ({ page }) => {
 			await page.goto(inicio);
-			await expect(page.getByText(designacao, { exact: true })).toBeVisible();
 			await expect(page.getByRole('heading', { level: 1 })).toHaveText(promessa);
+			// A Designação aparece também em «Quem é o Julien» (#54, SEO).
+			const hero = page.getByRole('region', { name: promessa });
+			await expect(hero.getByText(designacao, { exact: true })).toBeVisible();
 		});
 
 		test(`${inicio}: o título tem a Designação e a descrição parte da Promessa`, async ({
