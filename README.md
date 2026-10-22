@@ -27,5 +27,8 @@ Com o Node 24 (`nvm use` lê o `.nvmrc`):
 - `src/components/`: os componentes, comuns às três línguas. O cabeçalho e o rodapé entram em todas as páginas pelo `src/layouts/Base.astro`.
 - `src/styles/global.css`: as cores e as fontes da identidade visual, como tokens do Tailwind (`bg-fundo`, `text-verde`, `font-titulos`…). Só existem estas.
 - `src/assets/fontes/`: as 2 fontes do site, geradas por `subconjuntos.sh` (só é preciso voltar a correr para mudar de fonte ou de caracteres).
+- `.github/workflows/`: `verificacoes.yml` corre em cada PR; `publicacao.yml` corre depois de cada merge na `main`, repete as mesmas verificações e faz a Publicação.
+- `scripts/`: a Publicação por SFTP (`publicar.sh`) e a confirmação que corre depois dela (`confirmar-publicacao.sh`).
+- `public/.htaccess`: as regras do Apache da Infomaniak (HTTPS, `www`, cache, compressão e 404). Só têm efeito no alojamento.
 - `testes/`: a suite Playwright, que percorre todas as páginas geradas.
 - `testes/lighthouse.ts`: o Lighthouse em modo telemóvel, também sobre todas as páginas geradas. O SEO, os pesos, as fontes e os pedidos a outros domínios bloqueiam. O desempenho, o LCP e o TBT só avisam, no resumo do job. Os relatórios ficam em `relatorio-lighthouse/`.
