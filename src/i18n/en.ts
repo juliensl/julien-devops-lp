@@ -13,6 +13,10 @@ export const en: Dicionario = {
 		linguas: 'Language',
 		menu: 'Menu',
 	},
+	animacao: {
+		pausar: 'Pause animation',
+		retomar: 'Resume animation',
+	},
 	paginaPrincipal: {
 		descricao: `${promessa} For CTOs of growing SaaS companies.`,
 		hero: {

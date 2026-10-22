@@ -14,6 +14,10 @@ export const fr: Dicionario = {
 		linguas: 'Langue',
 		menu: 'Menu',
 	},
+	animacao: {
+		pausar: "Mettre l'animation en pause",
+		retomar: "Reprendre l'animation",
+	},
 	paginaPrincipal: {
 		descricao: `${promessa} Pour les CTO de SaaS en croissance.`,
 		hero: {

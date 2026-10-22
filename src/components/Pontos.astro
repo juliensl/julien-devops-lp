@@ -1,0 +1,107 @@
+---
+// Os pontos decorativos no topo da página principal: pequenos roxos numa grelha, e verdes, mais
+// espaçados, a brilhar. Ficam fixos no topo do ecrã, por baixo do conteúdo, e desaparecem
+// para baixo (protótipo v3, «como os da Arkoder»). Só mexem transform e opacity, que a GPU
+// compõe sem redesenhar a página.
+---
+
+<div class="pontos" data-pontos aria-hidden="true">
+	<div class="camada roxos"></div>
+	<div class="camada verdes"></div>
+	<div class="camada verdes outros"></div>
+</div>
+
+<script>
+	import { depoisDoCarregamento } from '../scripts/carregamento';
+
+	depoisDoCarregamento(() => {
+		for (const pontos of document.querySelectorAll<HTMLElement>('[data-pontos]')) {
+			pontos.dataset.aAndar = '';
+		}
+	});
+</script>
+
+<style>
+	/* Por baixo do conteúdo e do cabeçalho; as camadas, maiores do que o ecrã, ficam cortadas. */
+	.pontos {
+		position: fixed;
+		inset: 0 0 auto;
+		z-index: -1;
+		height: 20rem;
+		overflow: hidden;
+		pointer-events: none;
+		mask-image: linear-gradient(#000 35%, transparent);
+	}
+	.camada {
+		position: absolute;
+		inset: -200px;
+		will-change: transform;
+	}
+	.roxos {
+		background-image: radial-gradient(
+			circle,
+			color-mix(in srgb, var(--color-roxo) 30%, transparent) 1.1px,
+			transparent 1.7px
+		);
+		background-size: 28px 28px;
+	}
+	.verdes {
+		background-image: radial-gradient(
+			circle,
+			color-mix(in srgb, var(--color-verde) 85%, transparent) 1.7px,
+			transparent 2.4px
+		);
+		background-size: 168px 140px;
+		background-position: 42px 28px;
+	}
+	.outros {
+		background-position: 126px 98px;
+	}
+
+	/* Com movimento reduzido, ficam parados. */
+	@media (prefers-reduced-motion: no-preference) {
+		.roxos {
+			animation: deriva-roxos 22s linear infinite;
+		}
+		.verdes {
+			animation:
+				deriva-verdes 40s linear infinite,
+				brilho 7s ease-in-out infinite;
+		}
+		/* A segunda camada verde anda ao contrário e brilha desencontrada da primeira. */
+		.outros {
+			animation-direction: reverse, normal;
+			animation-delay:
+				0s,
+				-3.5s;
+		}
+	}
+	@keyframes deriva-roxos {
+		to {
+			transform: translate3d(28px, 28px, 0);
+		}
+	}
+	@keyframes deriva-verdes {
+		to {
+			transform: translate3d(-168px, 140px, 0);
+		}
+	}
+	@keyframes brilho {
+		0%,
+		100% {
+			opacity: 0.25;
+		}
+		50% {
+			opacity: 1;
+		}
+	}
+
+	/* Parados até o script os pôr a andar: sem JS, não haveria botão de pausa para os parar
+	   (WCAG 2.2.2). Depois, param com o botão, que põe <html data-animacao="pausada">. */
+	.camada {
+		animation-play-state: paused;
+	}
+	:global(:root:not([data-animacao='pausada'])) [data-a-andar] .camada {
+		animation-play-state: running;
+	}
+</style>

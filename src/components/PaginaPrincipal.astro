@@ -6,7 +6,9 @@ import { type Lingua } from '../config/site';
 import { valores } from '../config/valores';
 import { dicionarios } from '../i18n';
 import Base from '../layouts/Base.astro';
+import BotaoPausa from './BotaoPausa.astro';
 import Hero from './Hero';
+import Pontos from './Pontos.astro';
 
 interface Props {
 	lingua: Lingua;
@@ -22,7 +24,9 @@ const t = dicionarios[lingua];
 	descricao={t.paginaPrincipal.descricao}
 >
 	<main>
-		{/* Pontos no topo (#62) */}
+		{/* O botão de pausa é o primeiro foco depois do cabeçalho: para tudo antes de ler. */}
+		<Pontos />
+		<BotaoPausa {...t.animacao} />
 
 		<Hero
 			designacao={t.designacao}
