@@ -28,13 +28,19 @@ emCadaBuild((build) => {
 			test('carrega as 2 fontes do site e pré-carrega uma só, com crossorigin', async ({
 				page,
 				baseURL,
+				browserName,
 			}) => {
-				const fontes: string[] = [];
+				const pedidos: string[] = [];
 				page.on('request', (pedido) => {
-					if (pedido.resourceType() === 'font') fontes.push(pedido.url());
+					if (pedido.resourceType() === 'font') pedidos.push(pedido.url());
 				});
 				await page.goto(caminho, { waitUntil: 'networkidle' });
+				const fontes = [...new Set(pedidos)];
 				expect(fontes).toHaveLength(2);
+				// No CI, o WebKit às vezes pede duas vezes a fonte pré-carregada: o astro preview serve-a com
+				// `Cache-Control: no-cache`, e o WebKit volta a pedi-la se o CSS só a pede depois de o preload
+				// acabar. O Chromium usa sempre o preload: nele, um segundo pedido seria um preload perdido.
+				if (browserName === 'chromium') expect(pedidos).toHaveLength(2);
 				for (const fonte of fontes) {
 					expect(fonte.startsWith(`${baseURL}/`), fonte).toBe(true);
 					expect(fonte).toMatch(/\.woff2$/);
