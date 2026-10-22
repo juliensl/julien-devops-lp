@@ -45,7 +45,8 @@ emCadaBuild((build) => {
 
 				await botao(page, pausar).click();
 				await expect(botao(page, retomar)).toBeVisible();
-				expect(await mexeSe(page), 'em pausa').toBe(false);
+				// No WebKit, a pausa chega ao ecrã uns frames depois do clique: espera-se que assente.
+				await expect.poll(() => mexeSe(page), { message: 'em pausa', timeout: 10_000 }).toBe(false);
 				const { violations } = await new AxeBuilder({ page }).withTags(NIVEIS_WCAG).analyze();
 				expect(violations.map((v) => v.id)).toEqual([]);
 
