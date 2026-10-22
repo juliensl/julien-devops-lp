@@ -12,6 +12,9 @@ export const PREFIXOS: Record<Lingua, string> = { fr: '/', en: '/en/', pt: '/pt/
 /** O valor de `<html lang>` em cada língua. */
 export const CODIGOS_HTML: Record<Lingua, string> = { fr: 'fr', en: 'en', pt: 'pt-PT' };
 
+/** O nome de cada língua na própria língua, que o seletor diz aos leitores de ecrã. */
+export const NOMES: Record<Lingua, string> = { fr: 'Français', en: 'English', pt: 'Português' };
+
 /** O que uma fase da página publica: só as línguas publicadas têm páginas. */
 export interface Fase {
 	linguasPublicadas: readonly Lingua[];

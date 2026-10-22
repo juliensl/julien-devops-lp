@@ -24,6 +24,8 @@ Com o Node 24 (`nvm use` lê o `.nvmrc`):
 - `src/config/valores.ts`: os valores únicos (página de marcação, LinkedIn…). O build falha se faltar algum.
 - `src/i18n/`: os textos, um ficheiro por língua. O português é a Língua de referência; o francês e o inglês são tipados a partir dele.
 - `src/paginas/<língua>/`: um ficheiro de página fino por página e por língua. Só se geram as páginas das línguas publicadas. As páginas sem língua ficam em `src/pages/`. Uma página nova só aparece no `npm run dev` depois de o reiniciar.
-- `src/components/`: os componentes, comuns às três línguas.
+- `src/components/`: os componentes, comuns às três línguas. O cabeçalho e o rodapé entram em todas as páginas pelo `src/layouts/Base.astro`.
+- `src/styles/global.css`: as cores e as fontes da identidade visual, como tokens do Tailwind (`bg-fundo`, `text-verde`, `font-titulos`…). Só existem estas.
+- `src/assets/fontes/`: as 2 fontes do site, geradas por `subconjuntos.sh` (só é preciso voltar a correr para mudar de fonte ou de caracteres).
 - `testes/`: a suite Playwright, que percorre todas as páginas geradas.
 - `testes/lighthouse.ts`: o Lighthouse em modo telemóvel, também sobre todas as páginas geradas. O SEO, os pesos, as fontes e os pedidos a outros domínios bloqueiam. O desempenho, o LCP e o TBT só avisam, no resumo do job. Os relatórios ficam em `relatorio-lighthouse/`.
