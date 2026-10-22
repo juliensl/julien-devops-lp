@@ -1,0 +1,109 @@
+# Depois de cada merge na main: repete as verificações que bloqueiam, faz a Publicação
+# na Infomaniak e confirma que cada página publicada responde com este commit.
+# Se alguma coisa falhar, o job fica vermelho e o GitHub avisa o Julien por email.
+# Os merges só de documentação não correm este workflow.
+#
+# Voltar atrás: um PR de revert, pelo caminho normal. Em urgência, «Re-run all jobs»
+# numa execução antiga publica de novo esse commit.
+name: Publicação
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - 'CONTEXT.md'
+      - 'README.md'
+      - 'AGENTS.md'
+      - 'CLAUDE.md'
+
+permissions:
+  contents: read
+
+# Uma Publicação de cada vez, em fila, e nunca cancelada a meio.
+concurrency:
+  group: publicacao
+  cancel-in-progress: false
+
+# O que o repositório guarda da Publicação. Os secrets são os outros três:
+# PUBLICACAO_CHAVE_PRIVADA, PUBLICACAO_SERVIDOR e PUBLICACAO_UTILIZADOR.
+# Enquanto faltar um destes cinco valores, a Publicação é saltada com um aviso (#57).
+env:
+  # A pasta do site no alojamento, tal como a conta da Publicação a vê.
+  # Nunca a pasta da própria conta: a Publicação apaga na pasta-alvo tudo o que não está no build.
+  PASTA_ALVO: '' # por preencher na #57
+  # A chave do servidor, tal como ficou no known_hosts do Julien depois do primeiro login
+  # (ssh-keygen -F <servidor>). Tem de ser para o mesmo nome que o secret PUBLICACAO_SERVIDOR.
+  KNOWN_HOSTS: '' # por preencher na #57
+
+jobs:
+  # As mesmas verificações que bloqueiam um PR, sem os avisos de desempenho.
+  verificar:
+    uses: ./.github/workflows/verificacoes.yml
+    with:
+      sem-desempenho: true
+
+  condicoes:
+    name: Condições da Publicação
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      publicar: ${{ steps.condicoes.outputs.publicar }}
+    steps:
+      - id: condicoes
+        env:
+          TEM_CHAVE_PRIVADA: ${{ secrets.PUBLICACAO_CHAVE_PRIVADA != '' }}
+          TEM_SERVIDOR: ${{ secrets.PUBLICACAO_SERVIDOR != '' }}
+          TEM_UTILIZADOR: ${{ secrets.PUBLICACAO_UTILIZADOR != '' }}
+        run: |
+          falta=()
+          [[ $TEM_CHAVE_PRIVADA == true ]] || falta+=('o secret PUBLICACAO_CHAVE_PRIVADA')
+          [[ $TEM_SERVIDOR == true ]] || falta+=('o secret PUBLICACAO_SERVIDOR')
+          [[ $TEM_UTILIZADOR == true ]] || falta+=('o secret PUBLICACAO_UTILIZADOR')
+          [[ -n $PASTA_ALVO ]] || falta+=('PASTA_ALVO em publicacao.yml')
+          [[ -n $KNOWN_HOSTS ]] || falta+=('KNOWN_HOSTS em publicacao.yml')
+          if ((${#falta[@]} == 0)); then
+            echo 'publicar=true' >>"$GITHUB_OUTPUT"
+            exit 0
+          fi
+          printf -v lista '%s, ' "${falta[@]}"
+          aviso="Publicação saltada. Em falta: ${lista%, } (ver #57)."
+          echo "::warning title=Publicação saltada::$aviso"
+          echo "### ⚠️ $aviso" >>"$GITHUB_STEP_SUMMARY"
+          echo 'publicar=false' >>"$GITHUB_OUTPUT"
+
+  publicar:
+    name: Publicação
+    needs: [verificar, condicoes]
+    if: needs.condicoes.outputs.publicar == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      # O mesmo build que «verificar» fez, do mesmo commit, refeito aqui. Não passa por um
+      # artefacto porque a quota de artefactos da conta é partilhada com outros repositórios.
+      - name: Build publicado
+        run: npm run build
+
+      - name: lftp
+        run: sudo apt-get update && sudo apt-get install --yes --no-install-recommends lftp
+
+      - name: Publicação
+        env:
+          CHAVE_PRIVADA: ${{ secrets.PUBLICACAO_CHAVE_PRIVADA }}
+          SERVIDOR: ${{ secrets.PUBLICACAO_SERVIDOR }}
+          UTILIZADOR: ${{ secrets.PUBLICACAO_UTILIZADOR }}
+        run: scripts/publicar.sh dist
+
+      - name: Confirmação
+        run: scripts/confirmar-publicacao.sh dist https://julienlaffont.com "$GITHUB_SHA"
