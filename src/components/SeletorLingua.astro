@@ -1,0 +1,62 @@
+---
+// O seletor de língua: FR · EN · PT, só com as línguas publicadas, gerado no build e sem JS.
+// Cada ligação leva à mesma página na outra língua e diz o nome completo aos leitores de ecrã.
+// A língua atual fica marcada e não é uma ligação. Sem bandeiras.
+import { CODIGOS_HTML, FASE, NOMES, type Lingua } from '../config/site';
+import { caminhoNaLingua } from '../lib/caminhos';
+
+interface Props {
+	lingua: Lingua;
+	/** O nome do seletor, na língua da página. */
+	rotulo: string;
+	/** No menu do telemóvel: letras e alvos de toque maiores. */
+	grande?: boolean;
+	class?: string;
+}
+
+const { lingua, rotulo, grande = false, class: classe } = Astro.props;
+const caminho = Astro.url.pathname;
+const alvo = grande ? 'min-h-11 min-w-11' : 'min-h-7 min-w-7';
+---
+
+<nav aria-label={rotulo} class={classe}>
+	<ul
+		class:list={['flex items-center tracking-[0.06em]', grande ? 'text-base' : 'text-[0.8125rem]']}
+	>
+		{FASE.linguasPublicadas.map((l, i) => (
+			<li class="flex items-center">
+				{i > 0 && (
+					<span aria-hidden="true" class="px-0.5 text-texto-secundario">
+						·
+					</span>
+				)}
+				{l === lingua ? (
+					<span
+						aria-current="true"
+						lang={CODIGOS_HTML[l]}
+						class:list={[
+							alvo,
+							'inline-flex items-center justify-center text-texto underline decoration-verde decoration-2 underline-offset-4',
+						]}
+					>
+						{l.toUpperCase()}
+						<span class="sr-only">, {NOMES[l]}</span>
+					</span>
+				) : (
+					<a
+						href={caminhoNaLingua(caminho, lingua, l)}
+						hreflang={l}
+						lang={CODIGOS_HTML[l]}
+						class:list={[
+							alvo,
+							'inline-flex items-center justify-center rounded-md text-texto-secundario transition-colors hover:bg-superficie-2 hover:text-texto',
+						]}
+					>
+						{l.toUpperCase()}
+						<span class="sr-only">, {NOMES[l]}</span>
+					</a>
+				)}
+			</li>
+		))}
+	</ul>
+</nav>
