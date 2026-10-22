@@ -1,0 +1,57 @@
+---
+// A página principal: as secções pela ordem da #54, com o ticket que traz cada uma.
+// Cada secção fica no seu lugar, separada das outras por uma linha em branco,
+// para que os PR que acrescentam secções diferentes não entrem em conflito.
+import { type Lingua } from '../config/site';
+import { valores } from '../config/valores';
+import { dicionarios } from '../i18n';
+import Base from '../layouts/Base.astro';
+import Hero from './Hero';
+
+interface Props {
+	lingua: Lingua;
+}
+
+const { lingua } = Astro.props;
+const t = dicionarios[lingua];
+---
+
+<Base
+	lingua={lingua}
+	titulo={`${valores.nome} · ${t.designacao}`}
+	descricao={t.paginaPrincipal.descricao}
+>
+	<main>
+		{/* Pontos no topo (#62) */}
+
+		<Hero
+			designacao={t.designacao}
+			promessa={t.promessa}
+			apoio={t.paginaPrincipal.hero.apoio}
+			botao={t.botaoMarcar}
+			nota={t.paginaPrincipal.hero.nota}
+		/>
+
+		{/* Para quem é (#63) */}
+
+		{/* Hoje, e depois (#63) */}
+
+		{/* Serviços (#64) */}
+
+		{/* Etapas (#65) */}
+
+		{/* Garantia (#63) */}
+
+		{/* Gráfico de fornecedores cloud (#66) */}
+
+		{/* Quem é o Julien (#63) */}
+
+		{/* Testemunhos (#67) */}
+
+		{/* Ecologia (#68) */}
+
+		{/* Perguntas (#70) */}
+
+		{/* CTA final (#63) */}
+	</main>
+</Base>

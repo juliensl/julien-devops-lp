@@ -1,0 +1,8 @@
+dist/
+dist-tres-linguas/
+.astro/
+.claude/
+.orca/
+playwright-report/
+test-results/
+package-lock.json

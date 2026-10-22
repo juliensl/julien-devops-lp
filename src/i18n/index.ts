@@ -1,0 +1,9 @@
+import type { Lingua } from '../config/site';
+import { en } from './en';
+import { fr } from './fr';
+import { pt, type Dicionario } from './pt';
+
+export const dicionarios: Record<Lingua, Dicionario> = { fr, en, pt };
+
+/** O valor de `<html lang>` em cada língua. */
+export const codigosHtml: Record<Lingua, string> = { fr: 'fr', en: 'en', pt: 'pt-PT' };

@@ -25,3 +25,10 @@ pnpm-debug.log*
 
 # orca
 .orca/
+
+# build com as três línguas, para os testes
+dist-tres-linguas/
+
+# playwright
+playwright-report/
+test-results/

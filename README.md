@@ -1,46 +1,27 @@
-# Astro Starter Kit: Basics
+# Landing page de Julien Laffont
 
-```sh
-npm create astro@latest -- --template basics
-```
+Site estático em Astro, com React (gerado no build) e Tailwind. A spec é a [#54](https://github.com/juliensl/julien-devops-lp/issues/54) e o glossário está no `CONTEXT.md`.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Comandos
 
-## 🚀 Project Structure
+Com o Node 24 (`nvm use` lê o `.nvmrc`):
 
-Inside of your Astro project, you'll see the following folders and files:
+| Comando                      | O que faz                                                   |
+| :--------------------------- | :---------------------------------------------------------- |
+| `npm ci`                     | Instala as dependências                                     |
+| `npm run dev`                | Servidor de desenvolvimento em `localhost:4321`             |
+| `npm run check`              | Verifica os tipos: um texto em falta numa língua faz falhar |
+| `npm run format`             | Formata o código com o Prettier                             |
+| `npm run build`              | Build do site publicado, em `dist/`                         |
+| `npm run build:tres-linguas` | Build de teste com as três línguas, em `dist-tres-linguas/` |
+| `npm test`                   | Suite Playwright sobre os dois builds, que têm de existir   |
+| `npm run verificar`          | Tudo o que o workflow corre num PR, pela mesma ordem        |
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
-```
+## Onde fica cada coisa
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+- `src/config/site.ts`: o domínio, as línguas publicadas e o `noindex`.
+- `src/config/valores.ts`: os valores únicos (página de marcação, LinkedIn…). O build falha se faltar algum.
+- `src/i18n/`: os textos, um ficheiro por língua. O português é a Língua de referência; o francês e o inglês são tipados a partir dele.
+- `src/paginas/<língua>/`: um ficheiro de página fino por página e por língua. Só se geram as páginas das línguas publicadas. As páginas sem língua ficam em `src/pages/`.
+- `src/components/`: os componentes, comuns às três línguas.
+- `testes/`: a suite Playwright, que percorre todas as páginas geradas.
