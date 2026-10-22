@@ -1,8 +1,8 @@
 // Os dois builds que a suite verifica, e as páginas que cada um gerou.
 import { existsSync, globSync } from 'node:fs';
 import { test } from '@playwright/test';
-import { FASE_ATUAL, LANCAMENTO_COMERCIAL, type Fase } from '../src/config/site';
-import { LINGUAS, type Lingua } from './esperado';
+import { FASE_ATUAL, LANCAMENTO_COMERCIAL, type Fase } from '../src/config/site.ts';
+import { LINGUAS, type Lingua } from './esperado.ts';
 
 export const BUILDS = [
 	{ nome: 'publicado', dist: 'dist', porta: 4331, fase: FASE_ATUAL, comando: 'npm run build' },

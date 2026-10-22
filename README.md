@@ -15,6 +15,7 @@ Com o Node 24 (`nvm use` lê o `.nvmrc`):
 | `npm run build`            | Build do site publicado, em `dist/`                              |
 | `npm run build:lancamento` | Build de teste com o Lançamento comercial, em `dist-lancamento/` |
 | `npm test`                 | Suite Playwright sobre os dois builds, que têm de existir        |
+| `npm run lighthouse`       | Lighthouse em modo telemóvel sobre `dist/` (ver abaixo)          |
 | `npm run verificar`        | Tudo o que o workflow corre num PR, pela mesma ordem             |
 
 ## Onde fica cada coisa
@@ -25,3 +26,4 @@ Com o Node 24 (`nvm use` lê o `.nvmrc`):
 - `src/paginas/<língua>/`: um ficheiro de página fino por página e por língua. Só se geram as páginas das línguas publicadas. As páginas sem língua ficam em `src/pages/`. Uma página nova só aparece no `npm run dev` depois de o reiniciar.
 - `src/components/`: os componentes, comuns às três línguas.
 - `testes/`: a suite Playwright, que percorre todas as páginas geradas.
+- `testes/lighthouse.ts`: o Lighthouse em modo telemóvel, também sobre todas as páginas geradas. O SEO, os pesos, as fontes e os pedidos a outros domínios bloqueiam. O desempenho, o LCP e o TBT só avisam, no resumo do job. Os relatórios ficam em `relatorio-lighthouse/`.

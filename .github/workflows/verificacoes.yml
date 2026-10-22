@@ -1,5 +1,6 @@
 # As verificações que bloqueiam um PR: qualquer falha deixa-o vermelho.
 # Os PR só de documentação não correm este workflow.
+# A Publicação (#58) chama-o antes de publicar, com `sem-desempenho: true`.
 name: Verificações
 
 on:
@@ -10,13 +11,21 @@ on:
       - 'README.md'
       - 'AGENTS.md'
       - 'CLAUDE.md'
+  workflow_call:
+    inputs:
+      sem-desempenho:
+        description: 'Só as verificações que bloqueiam, sem os avisos de desempenho do Lighthouse'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
 
+# Nos PR, um push novo cancela a verificação anterior.
+# Chamado por outro workflow, fica num grupo só seu: a fila é de quem chama.
 concurrency:
-  group: verificacoes-${{ github.ref }}
-  cancel-in-progress: true
+  group: verificacoes-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   verificar:
@@ -58,4 +67,21 @@ jobs:
         with:
           name: relatorio-playwright
           path: playwright-report/
+          retention-days: 7
+
+      # O SEO, os pesos, as fontes e os pedidos bloqueiam.
+      # O desempenho só avisa, no resumo do job, com a mediana de 3 execuções.
+      - name: Lighthouse em modo telemóvel
+        id: lighthouse
+        run: npm run lighthouse -- ${{ inputs.sem-desempenho && '--sem-desempenho' || '' }}
+
+      # Os relatórios HTML são uma ajuda: se a quota de artefactos da conta estiver cheia,
+      # o upload falha sem deixar o PR vermelho. As metas já estão no resumo do job.
+      - name: Relatórios do Lighthouse
+        if: ${{ !cancelled() && steps.lighthouse.outcome != 'skipped' }}
+        continue-on-error: true
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: relatorio-lighthouse
+          path: relatorio-lighthouse/
           retention-days: 7
