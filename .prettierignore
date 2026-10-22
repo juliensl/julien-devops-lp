@@ -1,0 +1,8 @@
+dist/
+dist-lancamento/
+.astro/
+.claude/
+.orca/
+playwright-report/
+test-results/
+package-lock.json

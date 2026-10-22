@@ -1,0 +1,8 @@
+@import 'tailwindcss';
+
+@layer base {
+	/* Uma palavra comprida nunca obriga a scroll horizontal, mesmo a 320 px. */
+	body {
+		overflow-wrap: break-word;
+	}
+}

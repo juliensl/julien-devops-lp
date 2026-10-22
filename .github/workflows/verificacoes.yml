@@ -1,0 +1,61 @@
+# As verificações que bloqueiam um PR: qualquer falha deixa-o vermelho.
+# Os PR só de documentação não correm este workflow.
+name: Verificações
+
+on:
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - 'CONTEXT.md'
+      - 'README.md'
+      - 'AGENTS.md'
+      - 'CLAUDE.md'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verificacoes-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Tipos e traduções
+        run: npm run check
+
+      - name: Formatação
+        run: npm run format:check
+
+      - name: Build publicado
+        run: npm run build
+
+      - name: Build do Lançamento comercial
+        run: npm run build:lancamento
+
+      - name: Navegadores do Playwright
+        run: npx playwright install --with-deps chromium webkit
+
+      - name: Suite Playwright
+        run: npm test
+
+      - name: Relatório do Playwright
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: relatorio-playwright
+          path: playwright-report/
+          retention-days: 7

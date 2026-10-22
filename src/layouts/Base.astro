@@ -1,0 +1,32 @@
+---
+import '../styles/global.css';
+import { CODIGOS_HTML, FASE, SITE, type Lingua } from '../config/site';
+import { commit } from '../lib/commit';
+
+interface Props {
+	lingua: Lingua;
+	titulo: string;
+	descricao: string;
+}
+
+const { lingua, titulo, descricao } = Astro.props;
+const canonical = new URL(Astro.url.pathname, SITE).href;
+---
+
+<!doctype html>
+<html lang={CODIGOS_HTML[lingua]}>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>{titulo}</title>
+		<meta name="description" content={descricao} />
+		<link rel="canonical" href={canonical} />
+		{FASE.noindex && <meta name="robots" content="noindex" />}
+		<meta name="commit" content={commit} />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+	</head>
+	<body class="bg-white text-neutral-900 antialiased">
+		<slot />
+	</body>
+</html>
