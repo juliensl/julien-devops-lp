@@ -27,9 +27,8 @@ const t = dicionarios[lingua];
 		<Hero
 			designacao={t.designacao}
 			promessa={t.promessa}
-			apoio={t.paginaPrincipal.hero.apoio}
-			botao={t.botaoMarcar}
-			nota={t.paginaPrincipal.hero.nota}
+			textoDoBotao={t.botaoMarcar}
+			{...t.paginaPrincipal.hero}
 		/>
 
 		{/* Para quem é (#63) */}

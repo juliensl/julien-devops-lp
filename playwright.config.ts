@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 import { BUILDS } from './testes/builds';
 
-// A suite corre sobre os builds já feitos (npm run build e npm run build:tres-linguas),
+// A suite corre sobre os builds já feitos (npm run build e npm run build:lancamento),
 // cada um servido pelo astro preview na sua porta.
 export default defineConfig({
 	testDir: 'testes',

@@ -8,13 +8,13 @@
 	"scripts": {
 		"dev": "astro dev",
 		"build": "astro build",
-		"build:tres-linguas": "TRES_LINGUAS=1 astro build --outDir dist-tres-linguas",
+		"build:lancamento": "LANCAMENTO_COMERCIAL=1 astro build --outDir dist-lancamento",
 		"preview": "astro preview",
 		"check": "astro check",
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
 		"test": "playwright test",
-		"verificar": "npm run check && npm run format:check && npm run build && npm run build:tres-linguas && npm test",
+		"verificar": "npm run check && npm run format:check && npm run build && npm run build:lancamento && npm test",
 		"astro": "astro"
 	},
 	"dependencies": {

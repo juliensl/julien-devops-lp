@@ -43,8 +43,8 @@ jobs:
       - name: Build publicado
         run: npm run build
 
-      - name: Build com as três línguas
-        run: npm run build:tres-linguas
+      - name: Build do Lançamento comercial
+        run: npm run build:lancamento
 
       - name: Navegadores do Playwright
         run: npx playwright install --with-deps chromium webkit

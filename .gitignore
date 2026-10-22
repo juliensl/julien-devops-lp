@@ -26,8 +26,8 @@ pnpm-debug.log*
 # orca
 .orca/
 
-# build com as três línguas, para os testes
-dist-tres-linguas/
+# build de teste com a configuração do Lançamento comercial
+dist-lancamento/
 
 # playwright
 playwright-report/
