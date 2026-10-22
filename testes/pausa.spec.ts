@@ -35,7 +35,7 @@ function sobrepoem(a: Caixa, b: Caixa) {
 
 emCadaBuild((build) => {
 	for (const lingua of build.fase.linguasPublicadas) {
-		const { inicio, botao: botaoMarcar } = LINGUAS[lingua];
+		const { inicio, promessa, botao: botaoMarcar } = LINGUAS[lingua];
 		const { pausar, retomar } = ROTULOS[lingua];
 
 		test.describe(inicio, () => {
@@ -175,7 +175,9 @@ emCadaBuild((build) => {
 				await expect(botao(page, pausar)).toBeVisible();
 				const caixaDoBotao = (await botao(page, pausar).boundingBox())!;
 				// O botão da Hero, a seguir ao de pausa com Tab, fica por baixo dele depois do scroll.
-				const marcar = page.getByRole('main').getByRole('link', { name: botaoMarcar, exact: true });
+				const marcar = page
+					.getByRole('region', { name: promessa })
+					.getByRole('link', { name: botaoMarcar, exact: true });
 				await marcar.evaluate(
 					(e, alvo) => scrollBy(0, e.getBoundingClientRect().top - alvo),
 					caixaDoBotao.y + 4,

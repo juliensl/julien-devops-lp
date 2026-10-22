@@ -7,8 +7,13 @@ import { valores } from '../config/valores';
 import { dicionarios } from '../i18n';
 import Base from '../layouts/Base.astro';
 import BotaoPausa from './BotaoPausa.astro';
+import CtaFinal from './CtaFinal';
+import Garantia from './Garantia';
 import Hero from './Hero';
+import HojeEDepois from './HojeEDepois';
+import ParaQuem from './ParaQuem';
 import Pontos from './Pontos.astro';
+import Quem from './Quem.astro';
 
 interface Props {
 	lingua: Lingua;
@@ -35,19 +40,19 @@ const t = dicionarios[lingua];
 			{...t.paginaPrincipal.hero}
 		/>
 
-		{/* Para quem é (#63) */}
+		<ParaQuem textoDoBotao={t.botaoMarcar} {...t.paginaPrincipal.paraQuem} />
 
-		{/* Hoje, e depois (#63) */}
+		<HojeEDepois {...t.paginaPrincipal.hojeEDepois} />
 
 		{/* Serviços (#64) */}
 
 		{/* Etapas (#65) */}
 
-		{/* Garantia (#63) */}
+		<Garantia {...t.paginaPrincipal.garantia} />
 
 		{/* Gráfico de fornecedores cloud (#66) */}
 
-		{/* Quem é o Julien (#63) */}
+		<Quem designacao={t.designacao} {...t.paginaPrincipal.quem} />
 
 		{/* Testemunhos (#67) */}
 
@@ -55,6 +60,6 @@ const t = dicionarios[lingua];
 
 		{/* Perguntas (#70) */}
 
-		{/* CTA final (#63) */}
+		<CtaFinal lingua={lingua} textoDoBotao={t.botaoMarcar} {...t.paginaPrincipal.ctaFinal} />
 	</main>
 </Base>
