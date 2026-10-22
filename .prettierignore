@@ -6,3 +6,4 @@ dist-lancamento/
 playwright-report/
 test-results/
 package-lock.json
+relatorio-lighthouse/

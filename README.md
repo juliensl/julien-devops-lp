@@ -15,6 +15,7 @@ Com o Node 24 (`nvm use` lê o `.nvmrc`):
 | `npm run build`            | Build do site publicado, em `dist/`                              |
 | `npm run build:lancamento` | Build de teste com o Lançamento comercial, em `dist-lancamento/` |
 | `npm test`                 | Suite Playwright sobre os dois builds, que têm de existir        |
+| `npm run lighthouse`       | Lighthouse em modo telemóvel sobre `dist/` (ver abaixo)          |
 | `npm run verificar`        | Tudo o que o workflow corre num PR, pela mesma ordem             |
 
 ## Onde fica cada coisa
@@ -27,3 +28,4 @@ Com o Node 24 (`nvm use` lê o `.nvmrc`):
 - `src/styles/global.css`: as cores e as fontes da identidade visual, como tokens do Tailwind (`bg-fundo`, `text-verde`, `font-titulos`…). Só existem estas.
 - `src/assets/fontes/`: as 2 fontes do site, geradas por `subconjuntos.sh` (só é preciso voltar a correr para mudar de fonte ou de caracteres).
 - `testes/`: a suite Playwright, que percorre todas as páginas geradas.
+- `testes/lighthouse.ts`: o Lighthouse em modo telemóvel, também sobre todas as páginas geradas. O SEO, os pesos, as fontes e os pedidos a outros domínios bloqueiam. O desempenho, o LCP e o TBT só avisam, no resumo do job. Os relatórios ficam em `relatorio-lighthouse/`.
