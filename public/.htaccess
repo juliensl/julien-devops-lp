@@ -1,0 +1,32 @@
+# Lido só pelo Apache da Infomaniak: o astro preview e a suite Playwright ignoram-no.
+# Verifica-se com a confirmação depois de cada Publicação (npm run confirmar)
+# e à mão no Lançamento comercial: compressão, cache e HTTPS (#54).
+# O rewrite e os cabeçalhos são obrigatórios: se o Apache não os tiver, o site dá 500
+# e a confirmação fica vermelha. A compressão só entra se o Apache a tiver.
+
+RewriteEngine On
+
+# HTTPS forçado, com 301. Atrás de um proxy, o HTTPS chega em X-Forwarded-Proto,
+# e testar só %{HTTPS} daria um ciclo de redirecionamentos.
+RewriteCond %{HTTPS} !=on
+RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+# Uma pasta sem index.html dá a página 404, e não 403 nem a lista dos ficheiros.
+# É o caso de / antes do Lançamento comercial, e de /_astro/.
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteCond %{REQUEST_FILENAME}/index.html !-f
+RewriteRule ^ - [R=404,L]
+
+ErrorDocument 404 /404.html
+
+# Os ficheiros de _astro/ têm o hash no nome e nunca mudam. O HTML confirma sempre
+# com o servidor, para que os Visitantes vejam logo a última Publicação.
+Header set Cache-Control "public, max-age=31536000, immutable" "expr=%{REQUEST_URI} =~ m#^/_astro/#"
+Header set Cache-Control "no-cache" "expr=%{CONTENT_TYPE} =~ m#^text/html#"
+
+<IfModule mod_filter.c>
+	<IfModule mod_deflate.c>
+		AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/json image/svg+xml application/xml text/plain
+	</IfModule>
+</IfModule>

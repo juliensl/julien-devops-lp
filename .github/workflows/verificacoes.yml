@@ -1,4 +1,5 @@
 # As verificações que bloqueiam um PR: qualquer falha deixa-o vermelho.
+# Os passos estão em .github/actions/verificar, partilhados com a Publicação.
 # Os PR só de documentação não correm este workflow.
 name: Verificações
 
@@ -32,25 +33,7 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
 
-      - run: npm ci
-
-      - name: Tipos e traduções
-        run: npm run check
-
-      - name: Formatação
-        run: npm run format:check
-
-      - name: Build publicado
-        run: npm run build
-
-      - name: Build do Lançamento comercial
-        run: npm run build:lancamento
-
-      - name: Navegadores do Playwright
-        run: npx playwright install --with-deps chromium webkit
-
-      - name: Suite Playwright
-        run: npm test
+      - uses: ./.github/actions/verificar
 
       - name: Relatório do Playwright
         if: failure()

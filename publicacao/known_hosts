@@ -1,0 +1,2 @@
+# A chave do servidor SFTP da Infomaniak. A Publicação só liga se o servidor tiver esta chave.
+# A linha chega na #57, depois de o Julien confirmar a impressão digital no primeiro login.

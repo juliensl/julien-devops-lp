@@ -1,0 +1,83 @@
+# Depois de cada merge na main: repete as verificações que bloqueiam, faz a Publicação
+# na Infomaniak e confirma que cada página publicada responde com este commit.
+# Os merges só de documentação não correm este workflow.
+# Se alguma coisa falhar, o job fica vermelho e o GitHub envia um email a quem fez o merge.
+#
+# Voltar atrás: um PR de revert, pelo caminho normal. Em urgência, «Re-run all jobs»
+# numa execução antiga publica de novo esse commit.
+name: Publicação
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - 'CONTEXT.md'
+      - 'README.md'
+      - 'AGENTS.md'
+      - 'CLAUDE.md'
+
+permissions:
+  contents: read
+
+# Uma Publicação de cada vez, nunca cancelada a meio. Se chegarem várias enquanto
+# uma corre, o GitHub guarda só a mais recente, que publica tudo.
+concurrency:
+  group: publicacao
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    name: Verificar e publicar
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      # As mesmas verificações que bloqueiam um PR.
+      - uses: ./.github/actions/verificar
+
+      # Enquanto o Julien não criar os secrets (#57), a Publicação é saltada com um aviso.
+      - name: Secrets da Publicação
+        id: secrets
+        env:
+          TEM_CHAVE: ${{ secrets.PUBLICACAO_CHAVE_SSH != '' }}
+          TEM_SERVIDOR: ${{ secrets.PUBLICACAO_SERVIDOR != '' }}
+          TEM_UTILIZADOR: ${{ secrets.PUBLICACAO_UTILIZADOR != '' }}
+        run: |
+          falta=()
+          [[ $TEM_CHAVE == true ]] || falta+=(PUBLICACAO_CHAVE_SSH)
+          [[ $TEM_SERVIDOR == true ]] || falta+=(PUBLICACAO_SERVIDOR)
+          [[ $TEM_UTILIZADOR == true ]] || falta+=(PUBLICACAO_UTILIZADOR)
+          if ((${#falta[@]} == 0)); then
+            echo 'publicar=true' >>"$GITHUB_OUTPUT"
+            exit 0
+          fi
+          aviso="Publicação saltada. Faltam os secrets: ${falta[*]} (#57)."
+          echo "::warning title=Publicação saltada::$aviso"
+          echo "### ⚠️ $aviso" >>"$GITHUB_STEP_SUMMARY"
+
+      - name: Instalar o lftp
+        if: steps.secrets.outputs.publicar == 'true'
+        timeout-minutes: 5
+        run: sudo apt-get update && sudo apt-get install --yes --no-install-recommends lftp
+
+      - name: Publicação
+        if: steps.secrets.outputs.publicar == 'true'
+        timeout-minutes: 10
+        env:
+          PUBLICACAO_CHAVE_SSH: ${{ secrets.PUBLICACAO_CHAVE_SSH }}
+          PUBLICACAO_SERVIDOR: ${{ secrets.PUBLICACAO_SERVIDOR }}
+          PUBLICACAO_UTILIZADOR: ${{ secrets.PUBLICACAO_UTILIZADOR }}
+        run: publicacao/publicar.sh
+
+      - name: Confirmação
+        if: steps.secrets.outputs.publicar == 'true'
+        run: npm run confirmar
