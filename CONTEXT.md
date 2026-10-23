@@ -79,17 +79,17 @@ A primeira versão completa da página, só em português, revista com Julien an
 _Evitar_: beta, MVP
 
 **Lançamento comercial**:
-A publicação da página em julienlaffont.com com francês, inglês e português.
+A publicação da página em devops.julienlaffont.com com francês, inglês e português.
 _Evitar_: go-live, lançamento (sem qualificativo)
 
 **Publicação**:
-O envio do site construído para o alojamento da Infomaniak, que o põe online em julienlaffont.com. Acontece depois de cada merge na `main`.
+O envio do site construído para o alojamento da Infomaniak, que o põe online em devops.julienlaffont.com. Acontece depois de cada merge na `main`.
 _Evitar_: deploy, upload, lançamento
 
 ## Línguas
 
 **Língua por defeito**:
-A língua que o Visitante vê quando abre julienlaffont.com sem escolher nenhuma: o francês.
+A língua que o Visitante vê quando abre devops.julienlaffont.com sem escolher nenhuma: o francês.
 _Evitar_: língua principal
 
 **Língua de referência**:

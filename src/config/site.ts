@@ -1,7 +1,7 @@
 // O domínio, as línguas e o que cada fase da página publica.
 // O PR do Lançamento comercial muda só este ficheiro: FASE_ATUAL passa a LANCAMENTO_COMERCIAL.
 
-export const SITE = 'https://julienlaffont.com';
+export const SITE = 'https://devops.julienlaffont.com';
 
 export const LINGUAS = ['fr', 'en', 'pt'] as const;
 export type Lingua = (typeof LINGUAS)[number];

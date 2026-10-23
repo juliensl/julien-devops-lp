@@ -2,7 +2,7 @@
 // O botão em francês e em inglês e a Promessa em inglês são traduções
 // que a estagiária valida antes do Lançamento comercial (#75).
 
-export const SITE = 'https://julienlaffont.com';
+export const SITE = 'https://devops.julienlaffont.com';
 export const PAGINA_DE_MARCACAO = 'https://calendly.com/contact-julienlaffont/appel-cadrage';
 
 export const LINGUAS = {
