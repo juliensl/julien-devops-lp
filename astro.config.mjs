@@ -5,13 +5,13 @@ import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 
 import { SITE } from './src/config/site';
-import paginasPorLingua from './src/integracoes/paginas-por-lingua';
+import localizedPages from './src/integrations/localized-pages';
 
 // https://astro.build/config
 export default defineConfig({
 	site: SITE,
 	trailingSlash: 'always',
-	integrations: [react(), paginasPorLingua()],
+	integrations: [react(), localizedPages()],
 
 	vite: {
 		plugins: [tailwindcss()],

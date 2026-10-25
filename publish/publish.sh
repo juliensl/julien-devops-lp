@@ -27,7 +27,7 @@ case $PASTA_ALVO in
 	;;
 esac
 if ! grep -q '^[^#]' "$aqui/known_hosts"; then
-	echo "::error::Falta a chave do servidor em publicacao/known_hosts (#57)." >&2
+	echo "::error::Falta a chave do servidor em publish/known_hosts (#57)." >&2
 	exit 1
 fi
 

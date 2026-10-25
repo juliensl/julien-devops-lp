@@ -17,7 +17,7 @@ const resultado = esquema.safeParse({
 
 if (!resultado.success) {
 	throw new Error(
-		`Valores únicos em falta ou inválidos em src/config/valores.ts:\n${z.prettifyError(resultado.error)}`,
+		`Valores únicos em falta ou inválidos em src/config/values.ts:\n${z.prettifyError(resultado.error)}`,
 	);
 }
 

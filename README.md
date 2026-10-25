@@ -21,12 +21,12 @@ Com o Node 24 (`nvm use` lê o `.nvmrc`):
 ## Onde fica cada coisa
 
 - `src/config/site.ts`: o domínio e o que cada fase publica (as línguas publicadas e o `noindex`).
-- `src/config/valores.ts`: os valores únicos (página de marcação, LinkedIn…). O build falha se faltar algum.
+- `src/config/values.ts`: os valores únicos (página de marcação, LinkedIn…). O build falha se faltar algum.
 - `src/i18n/`: os textos, um ficheiro por língua. O português é a Língua de referência; o francês e o inglês são tipados a partir dele.
-- `src/paginas/<língua>/`: um ficheiro de página fino por página e por língua. Só se geram as páginas das línguas publicadas. As páginas sem língua ficam em `src/pages/`. Uma página nova só aparece no `npm run dev` depois de o reiniciar.
+- `src/localized-pages/<língua>/`: um ficheiro de página fino por página e por língua. Só se geram as páginas das línguas publicadas. As páginas sem língua ficam em `src/pages/`. Uma página nova só aparece no `npm run dev` depois de o reiniciar.
 - `src/components/`: os componentes, comuns às três línguas.
-- `testes/`: a suite Playwright, que percorre todas as páginas geradas.
-- `.github/workflows/`: `verificacoes.yml` corre em cada PR; `publicacao.yml` corre depois de cada merge na `main`, repete as mesmas verificações (`.github/actions/verificar/`) e faz a Publicação.
-- `publicacao/`: o envio por SFTP (`publicar.sh`, com a pasta-alvo) e a chave do servidor (`known_hosts`). Os secrets são `PUBLICACAO_CHAVE_SSH`, `PUBLICACAO_SERVIDOR` e `PUBLICACAO_UTILIZADOR`.
-- `testes/publicacao/`: a confirmação que corre depois de cada Publicação, contra o site publicado.
+- `tests/`: a suite Playwright, que percorre todas as páginas geradas.
+- `.github/workflows/`: `ci.yml` corre em cada PR; `publish.yml` corre depois de cada merge na `main`, repete as mesmas verificações (`.github/actions/verify/`) e faz a Publicação.
+- `publish/`: o envio por SFTP (`publish.sh`, com a pasta-alvo) e a chave do servidor (`known_hosts`). Os secrets são `PUBLICACAO_CHAVE_SSH`, `PUBLICACAO_SERVIDOR` e `PUBLICACAO_UTILIZADOR`.
+- `tests/publish/`: a confirmação que corre depois de cada Publicação, contra o site publicado.
 - `public/.htaccess`: HTTPS, cache, compressão e 404 no Apache da Infomaniak. Só tem efeito no alojamento.

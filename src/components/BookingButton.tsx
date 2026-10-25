@@ -1,4 +1,4 @@
-import { valores } from '../config/valores';
+import { valores } from '../config/values';
 
 interface Props {
 	/** «Marcar uma conversa», sempre com o mesmo texto em cada língua. */
@@ -6,7 +6,7 @@ interface Props {
 }
 
 /** Ligação simples para a página de marcação, no mesmo separador. */
-export default function BotaoMarcar({ texto }: Props) {
+export default function BookingButton({ texto }: Props) {
 	return (
 		<a
 			href={valores.paginaDeMarcacao}

@@ -3,7 +3,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 import { emCadaBuild, paginas } from './builds';
-import { SITE } from './esperado';
+import { SITE } from './expected';
 
 const NIVEIS_WCAG = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22a', 'wcag22aa'];
 const LARGURAS = [320, 375, 820, 1440];

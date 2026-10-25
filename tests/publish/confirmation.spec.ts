@@ -3,7 +3,7 @@
 import { execSync } from 'node:child_process';
 import { expect, test } from '@playwright/test';
 import { BUILDS, paginas } from '../builds';
-import { LINGUAS } from '../esperado';
+import { LINGUAS } from '../expected';
 
 const [publicado] = BUILDS;
 const publicadas: readonly string[] = publicado.fase.linguasPublicadas;

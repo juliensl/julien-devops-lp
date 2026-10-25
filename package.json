@@ -15,7 +15,7 @@
 		"format:check": "prettier --check .",
 		"test": "playwright test",
 		"verificar": "npm run check && npm run format:check && npm run build && npm run build:lancamento && npm test",
-		"confirmar": "playwright test -c playwright.publicacao.config.ts",
+		"confirmar": "playwright test -c playwright.publish.config.ts",
 		"astro": "astro"
 	},
 	"dependencies": {

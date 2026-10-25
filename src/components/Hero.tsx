@@ -1,4 +1,4 @@
-import BotaoMarcar from './BotaoMarcar';
+import BookingButton from './BookingButton';
 
 interface Props {
 	designacao: string;
@@ -18,7 +18,7 @@ export default function Hero({ designacao, promessa, apoio, textoDoBotao, nota }
 			</h1>
 			<p className="mt-6 max-w-2xl text-lg text-neutral-700">{apoio}</p>
 			<div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
-				<BotaoMarcar texto={textoDoBotao} />
+				<BookingButton texto={textoDoBotao} />
 				<p className="text-sm text-neutral-700">{nota}</p>
 			</div>
 		</section>

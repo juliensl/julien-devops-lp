@@ -1,5 +1,5 @@
-# As verificações que bloqueiam, as mesmas num PR (verificacoes.yml) e antes de cada
-# Publicação (publicacao.yml). Deixa os dois builds feitos.
+# As verificações que bloqueiam, as mesmas num PR (ci.yml) e antes de cada
+# Publicação (publish.yml). Deixa os dois builds feitos.
 # Corre depois do checkout e do setup-node, que ficam nos workflows: o Dependabot
 # só atualiza as actions que encontra lá.
 name: Verificar

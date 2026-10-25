@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { emCadaBuild, paginas } from './builds';
-import { LINGUAS } from './esperado';
+import { LINGUAS } from './expected';
 
 emCadaBuild((build) => {
 	const publicadas: readonly string[] = build.fase.linguasPublicadas;
