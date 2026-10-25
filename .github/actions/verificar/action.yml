@@ -1,0 +1,36 @@
+# As verificações que bloqueiam, as mesmas num PR (verificacoes.yml) e antes de cada
+# Publicação (publicacao.yml). Deixa os dois builds feitos.
+# Corre depois do checkout e do setup-node, que ficam nos workflows: o Dependabot
+# só atualiza as actions que encontra lá.
+name: Verificar
+description: Instala, verifica os tipos e a formatação, faz os dois builds e corre a suite Playwright.
+
+runs:
+  using: composite
+  steps:
+    - run: npm ci
+      shell: bash
+
+    - name: Tipos e traduções
+      run: npm run check
+      shell: bash
+
+    - name: Formatação
+      run: npm run format:check
+      shell: bash
+
+    - name: Build publicado
+      run: npm run build
+      shell: bash
+
+    - name: Build do Lançamento comercial
+      run: npm run build:lancamento
+      shell: bash
+
+    - name: Navegadores do Playwright
+      run: npx playwright install --with-deps chromium webkit
+      shell: bash
+
+    - name: Suite Playwright
+      run: npm test
+      shell: bash
