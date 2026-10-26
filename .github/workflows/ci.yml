@@ -1,5 +1,5 @@
 # As verificações que bloqueiam um PR: qualquer falha deixa-o vermelho.
-# Os passos estão em .github/actions/verificar, partilhados com a Publicação.
+# Os passos estão em .github/actions/verify, partilhados com a Publicação.
 # Os PR só de documentação não correm este workflow.
 name: Verificações
 
@@ -33,7 +33,7 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
 
-      - uses: ./.github/actions/verificar
+      - uses: ./.github/actions/verify
 
       - name: Relatório do Playwright
         if: failure()

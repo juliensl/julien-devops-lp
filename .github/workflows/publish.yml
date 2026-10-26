@@ -42,7 +42,7 @@ jobs:
           cache: npm
 
       # As mesmas verificações que bloqueiam um PR.
-      - uses: ./.github/actions/verificar
+      - uses: ./.github/actions/verify
 
       # Enquanto o Julien não criar os secrets (#57), a Publicação é saltada com um aviso.
       - name: Secrets da Publicação
@@ -76,7 +76,7 @@ jobs:
           PUBLICACAO_CHAVE_SSH: ${{ secrets.PUBLICACAO_CHAVE_SSH }}
           PUBLICACAO_SERVIDOR: ${{ secrets.PUBLICACAO_SERVIDOR }}
           PUBLICACAO_UTILIZADOR: ${{ secrets.PUBLICACAO_UTILIZADOR }}
-        run: publicacao/publicar.sh
+        run: publish/publish.sh
 
       - name: Confirmação
         if: steps.secrets.outputs.publicar == 'true'

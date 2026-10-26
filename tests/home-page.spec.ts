@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { emCadaBuild } from './builds';
-import { LINGUAS, PAGINA_DE_MARCACAO } from './esperado';
+import { LINGUAS, PAGINA_DE_MARCACAO } from './expected';
 
 emCadaBuild((build) => {
 	for (const lingua of build.fase.linguasPublicadas) {

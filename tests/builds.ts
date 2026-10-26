@@ -2,7 +2,7 @@
 import { existsSync, globSync } from 'node:fs';
 import { test } from '@playwright/test';
 import { FASE_ATUAL, LANCAMENTO_COMERCIAL, type Fase } from '../src/config/site';
-import { LINGUAS, type Lingua } from './esperado';
+import { LINGUAS, type Lingua } from './expected';
 
 export const BUILDS = [
 	{ nome: 'publicado', dist: 'dist', porta: 4331, fase: FASE_ATUAL, comando: 'npm run build' },
