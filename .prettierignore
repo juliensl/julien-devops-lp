@@ -5,4 +5,5 @@ dist-lancamento/
 .orca/
 playwright-report/
 test-results/
+lighthouse-report/
 package-lock.json

@@ -32,3 +32,6 @@ dist-lancamento/
 # playwright
 playwright-report/
 test-results/
+
+# relatórios do Lighthouse
+lighthouse-report/

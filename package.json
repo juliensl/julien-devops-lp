@@ -14,7 +14,8 @@
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
 		"test": "playwright test",
-		"verificar": "npm run check && npm run format:check && npm run build && npm run build:lancamento && npm test",
+		"lighthouse": "node tests/lighthouse/run.ts",
+		"verificar": "npm run check && npm run format:check && npm run build && npm run build:lancamento && npm test && npm run lighthouse",
 		"confirmar": "playwright test -c playwright.publish.config.ts",
 		"astro": "astro"
 	},
@@ -36,6 +37,7 @@
 		"@axe-core/playwright": "^4.14.0",
 		"@playwright/test": "^1.64.1",
 		"@types/node": "^24.19.2",
+		"lighthouse": "^13.5.0",
 		"prettier": "^3.9.10",
 		"prettier-plugin-astro": "^1.1.1",
 		"typescript": "^6.0.3"
