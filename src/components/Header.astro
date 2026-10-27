@@ -1,0 +1,82 @@
+---
+// O cabeçalho fixo de todas as páginas: o logótipo, o seletor de língua e o botão.
+// No telemóvel, as línguas passam para um menu <details>, que abre sem JS; o botão fica sempre à vista.
+// As partes que chegam com as páginas para onde levam têm o lugar marcado com o ticket.
+import { PREFIXOS, type Lingua } from '../config/site';
+import { dicionarios } from '../i18n';
+import BookingButton from './BookingButton';
+import LanguageSwitcher from './LanguageSwitcher.astro';
+import Logo from './Logo.astro';
+
+interface Props {
+	lingua: Lingua;
+}
+
+const { lingua } = Astro.props;
+const t = dicionarios[lingua];
+---
+
+<header class="sticky top-0 z-20 border-b border-linha bg-fundo/85 backdrop-blur-md">
+	<div class="largura flex h-(--altura-cabecalho) items-center gap-2 md:gap-4">
+		<a
+			href={PREFIXOS[lingua]}
+			class="inline-flex min-h-11 shrink-0 items-center rounded-md text-[0.6875rem] min-[420px]:text-[0.8125rem] sm:text-[0.95rem]"
+		>
+			<Logo />
+			<span class="sr-only">, {t.cabecalho.paginaPrincipal}</span>
+		</a>
+
+		<div class="ml-auto flex items-center gap-4">
+			{/* «Os teus desafios» e o submenu (#70) */}
+
+			{/* 🍃 Ecologia (#68) */}
+
+			<LanguageSwitcher lingua={lingua} rotulo={t.cabecalho.linguas} class="max-md:hidden" />
+		</div>
+
+		<BookingButton texto={t.botaoMarcar} compacto />
+
+		<details data-menu class="relative md:hidden">
+			<summary class="flex size-11 cursor-pointer list-none items-center justify-center rounded-[10px] border border-linha-forte text-texto [&::-webkit-details-marker]:hidden">
+				<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+					<path
+						d="M4 7h16M4 12h16M4 17h16"
+						stroke="currentColor"
+						stroke-width="1.8"
+						stroke-linecap="round"
+					></path>
+				</svg>
+				<span class="sr-only">{t.cabecalho.menu}</span>
+			</summary>
+			<div class="absolute top-[calc(100%+0.625rem)] right-0 grid w-[min(20rem,calc(100vw-2.5rem))] gap-2 rounded-xl border border-linha bg-superficie p-4 shadow-[0_18px_40px_rgb(0_0_0/0.5)]">
+				{/* «Os teus desafios» (#70) */}
+
+				{/* Ecologia (#68): abaixo de 360 px, fica só aqui */}
+
+				<LanguageSwitcher lingua={lingua} rotulo={t.cabecalho.linguas} grande />
+			</div>
+		</details>
+	</div>
+</header>
+
+<script>
+	// Os menus <details data-menu> abrem e fecham sem JS. O JS só os fecha também ao clicar fora,
+	// com Escape e depois de escolher uma ligação.
+	const abertos = () => document.querySelectorAll<HTMLDetailsElement>('details[data-menu][open]');
+
+	document.addEventListener('click', (evento) => {
+		const alvo = evento.target as Element;
+		for (const menu of abertos()) {
+			if (!menu.contains(alvo) || alvo.closest('a')) menu.open = false;
+		}
+	});
+
+	document.addEventListener('keydown', (evento) => {
+		if (evento.key !== 'Escape') return;
+		for (const menu of abertos()) {
+			const tinhaOFoco = menu.contains(document.activeElement);
+			menu.open = false;
+			if (tinhaOFoco) menu.querySelector('summary')?.focus();
+		}
+	});
+</script>
