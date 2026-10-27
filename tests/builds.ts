@@ -1,8 +1,8 @@
 // Os dois builds que a suite verifica, e as páginas que cada um gerou.
 import { existsSync, globSync } from 'node:fs';
 import { test } from '@playwright/test';
-import { FASE_ATUAL, LANCAMENTO_COMERCIAL, type Fase } from '../src/config/site';
-import { LINGUAS, type Lingua } from './expected';
+import { FASE_ATUAL, LANCAMENTO_COMERCIAL, type Fase } from '../src/config/site.ts';
+import { LINGUAS, type Lingua } from './expected.ts';
 
 export const BUILDS = [
 	{ nome: 'publicado', dist: 'dist', porta: 4331, fase: FASE_ATUAL, comando: 'npm run build' },
@@ -38,7 +38,12 @@ export function paginas(build: Build): Pagina[] {
 	if (!existsSync(build.dist)) {
 		throw new Error(`Falta a pasta ${build.dist}. Corre primeiro «${build.comando}».`);
 	}
-	return globSync('**/*.html', { cwd: build.dist })
+	return paginasDe(build.dist);
+}
+
+/** Todas as páginas HTML de uma pasta, como se fosse um build. */
+export function paginasDe(pasta: string): Pagina[] {
+	return globSync('**/*.html', { cwd: pasta })
 		.map((ficheiro) => `/${ficheiro.replace(/(^|\/)index\.html$/, '$1')}`)
 		.sort()
 		.map((caminho) => ({ caminho, lingua: caminho.endsWith('/') ? linguaDe(caminho) : undefined }));

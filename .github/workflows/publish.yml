@@ -41,8 +41,10 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
 
-      # As mesmas verificações que bloqueiam um PR.
+      # As mesmas verificações que bloqueiam um PR, sem as metas de desempenho do Lighthouse.
       - uses: ./.github/actions/verify
+        with:
+          desempenho: false
 
       # Enquanto o Julien não criar os secrets (#57), a Publicação é saltada com um aviso.
       - name: Secrets da Publicação

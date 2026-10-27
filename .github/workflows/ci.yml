@@ -42,3 +42,15 @@ jobs:
           name: relatorio-playwright
           path: playwright-report/
           retention-days: 7
+
+      # Os relatórios HTML do Lighthouse são uma ajuda: se a quota de artefactos da conta
+      # estiver cheia, o upload falha sem deixar o PR vermelho. As metas já estão no resumo do job.
+      - name: Relatórios do Lighthouse
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: relatorio-lighthouse
+          path: lighthouse-report/
+          retention-days: 7
+          if-no-files-found: ignore

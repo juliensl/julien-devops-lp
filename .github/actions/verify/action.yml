@@ -3,7 +3,13 @@
 # Corre depois do checkout e do setup-node, que ficam nos workflows: o Dependabot
 # só atualiza as actions que encontra lá.
 name: Verificar
-description: Instala, verifica os tipos e a formatação, faz os dois builds e corre a suite Playwright.
+description: Instala, verifica os tipos e a formatação, faz os dois builds e corre a suite Playwright e o Lighthouse.
+
+inputs:
+  desempenho:
+    description: 'Mede também o desempenho no Lighthouse, com 3 execuções por página (só avisa). A Publicação desliga-o.'
+    required: false
+    default: 'true'
 
 runs:
   using: composite
@@ -33,4 +39,11 @@ runs:
 
     - name: Suite Playwright
       run: npm test
+      shell: bash
+
+    # O SEO, os pesos, as fontes e os pedidos bloqueiam. O desempenho só avisa, no resumo do job.
+    - name: Lighthouse em modo telemóvel
+      env:
+        DESEMPENHO: ${{ inputs.desempenho }}
+      run: npm run lighthouse
       shell: bash

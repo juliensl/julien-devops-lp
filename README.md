@@ -15,6 +15,7 @@ Com o Node 24 (`nvm use` lê o `.nvmrc`):
 | `npm run build`            | Build do site publicado, em `dist/`                              |
 | `npm run build:lancamento` | Build de teste com o Lançamento comercial, em `dist-lancamento/` |
 | `npm test`                 | Suite Playwright sobre os dois builds, que têm de existir        |
+| `npm run lighthouse`       | Lighthouse em modo telemóvel sobre os dois builds (ver abaixo)   |
 | `npm run verificar`        | Tudo o que o workflow corre num PR, pela mesma ordem             |
 | `npm run confirmar`        | Confirma que o site publicado é o do `dist/` e deste commit      |
 
@@ -26,6 +27,7 @@ Com o Node 24 (`nvm use` lê o `.nvmrc`):
 - `src/localized-pages/<língua>/`: um ficheiro de página fino por página e por língua. Só se geram as páginas das línguas publicadas. As páginas sem língua ficam em `src/pages/`. Uma página nova só aparece no `npm run dev` depois de o reiniciar.
 - `src/components/`: os componentes, comuns às três línguas.
 - `tests/`: a suite Playwright, que percorre todas as páginas geradas.
+- `tests/lighthouse/`: o Lighthouse em modo telemóvel, também sobre todas as páginas geradas. O SEO, os pesos, as fontes e os pedidos a outros domínios bloqueiam. O desempenho, o LCP e o TBT só avisam, no resumo do job, com a mediana de 3 execuções no `dist/`. O `dist-lancamento/` só verifica o que bloqueia. Os relatórios HTML ficam em `lighthouse-report/`.
 - `.github/workflows/`: `ci.yml` corre em cada PR; `publish.yml` corre depois de cada merge na `main`, repete as mesmas verificações (`.github/actions/verify/`) e faz a Publicação.
 - `publish/`: o envio por SFTP (`publish.sh`, com a pasta-alvo) e a chave do servidor (`known_hosts`). Os secrets são `PUBLICACAO_CHAVE_SSH`, `PUBLICACAO_SERVIDOR` e `PUBLICACAO_UTILIZADOR`.
 - `tests/publish/`: a confirmação que corre depois de cada Publicação, contra o site publicado.
