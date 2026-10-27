@@ -37,10 +37,10 @@ const { pausar, retomar } = Astro.props;
 <script>
 	import { depoisDoCarregamento } from '../scripts/after-load';
 
-	const html = document.documentElement;
-	const botoes = document.querySelectorAll<HTMLButtonElement>('[data-pausa-animacao]');
-
 	depoisDoCarregamento(() => {
+		const html = document.documentElement;
+		const botoes = document.querySelectorAll<HTMLButtonElement>('[data-pausa-animacao]');
+
 		for (const botao of botoes) {
 			botao.addEventListener('click', () => {
 				const pausada = html.dataset.animacao !== 'pausada';
@@ -50,16 +50,16 @@ const { pausar, retomar } = Astro.props;
 			});
 			botao.hidden = false;
 		}
-	});
 
-	// O nome diz o que o próximo clique faz.
-	document.addEventListener('animacao', () => {
-		const pausada = html.dataset.animacao === 'pausada';
-		for (const botao of botoes) {
-			botao.querySelector('[data-rotulo]')!.textContent = pausada
-				? botao.dataset.retomar!
-				: botao.dataset.pausar!;
-		}
+		// O nome diz o que o próximo clique faz.
+		document.addEventListener('animacao', () => {
+			const pausada = html.dataset.animacao === 'pausada';
+			for (const botao of botoes) {
+				botao.querySelector('[data-rotulo]')!.textContent = pausada
+					? botao.dataset.retomar!
+					: botao.dataset.pausar!;
+			}
+		});
 	});
 </script>
 

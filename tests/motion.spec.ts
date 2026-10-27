@@ -3,22 +3,15 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 import { emCadaBuild, paginas } from './builds';
-import { LINGUAS, type Lingua } from './expected';
-
-// O nome do botão: o português é o do protótipo validado; o francês e o inglês são traduções
-// que a estagiária valida antes do Lançamento comercial (#75).
-const ROTULOS = {
-	fr: { pausar: "Mettre l'animation en pause", retomar: "Reprendre l'animation" },
-	en: { pausar: 'Pause animation', retomar: 'Resume animation' },
-	pt: { pausar: 'Pausar animação', retomar: 'Retomar animação' },
-} satisfies Record<Lingua, { pausar: string; retomar: string }>;
+import { LINGUAS } from './expected';
 
 // As páginas com animações automáticas: por agora, só a principal. A de ecologia junta-se com #69.
 const COM_ANIMACOES = new Set<string>(Object.values(LINGUAS).map(({ inicio }) => inicio));
 
 const NIVEIS_WCAG = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22a', 'wcag22aa'];
 
-const botao = (page: Page, nome: string) => page.getByRole('button', { name: nome, exact: true });
+const botaoDePausa = (page: Page, nome: string) =>
+	page.getByRole('button', { name: nome, exact: true });
 
 /** Duas fotografias do ecrã, com 1 s de intervalo: diferentes se alguma coisa se mexeu. */
 async function mexeSe(page: Page) {
@@ -35,24 +28,23 @@ function sobrepoem(a: Caixa, b: Caixa) {
 
 emCadaBuild((build) => {
 	for (const lingua of build.fase.linguasPublicadas) {
-		const { inicio, promessa, botao: botaoMarcar } = LINGUAS[lingua];
-		const { pausar, retomar } = ROTULOS[lingua];
+		const { inicio, promessa, botao, pausar, retomar } = LINGUAS[lingua];
 
 		test.describe(inicio, () => {
 			test('o botão de pausa para as animações automáticas e retoma-as', async ({ page }) => {
 				await page.goto(inicio);
 				expect(await mexeSe(page), 'antes da pausa').toBe(true);
 
-				await botao(page, pausar).click();
-				await expect(botao(page, retomar)).toBeVisible();
+				await botaoDePausa(page, pausar).click();
+				await expect(botaoDePausa(page, retomar)).toBeVisible();
 				// No WebKit, a pausa chega ao ecrã uns frames depois do clique: espera-se que assente.
 				await expect.poll(() => mexeSe(page), { message: 'em pausa', timeout: 10_000 }).toBe(false);
 				const { violations } = await new AxeBuilder({ page }).withTags(NIVEIS_WCAG).analyze();
 				expect(violations.map((v) => v.id)).toEqual([]);
 
 				// Com o teclado.
-				await botao(page, retomar).press('Enter');
-				await expect(botao(page, pausar)).toBeVisible();
+				await botaoDePausa(page, retomar).press('Enter');
+				await expect(botaoDePausa(page, pausar)).toBeVisible();
 				expect(await mexeSe(page), 'depois de retomar').toBe(true);
 			});
 
@@ -61,8 +53,8 @@ emCadaBuild((build) => {
 				context,
 			}) => {
 				await page.goto(inicio);
-				await botao(page, pausar).click();
-				await expect(botao(page, retomar)).toBeVisible();
+				await botaoDePausa(page, pausar).click();
+				await expect(botaoDePausa(page, retomar)).toBeVisible();
 				expect(await context.storageState({ indexedDB: true })).toEqual({
 					cookies: [],
 					origins: [],
@@ -70,7 +62,7 @@ emCadaBuild((build) => {
 				expect(await page.evaluate(() => sessionStorage.length)).toBe(0);
 
 				await page.reload();
-				await expect(botao(page, pausar)).toBeVisible();
+				await expect(botaoDePausa(page, pausar)).toBeVisible();
 				expect(await mexeSe(page)).toBe(true);
 			});
 
@@ -89,11 +81,11 @@ emCadaBuild((build) => {
 					() => document.getAnimations().filter((a) => a.playState === 'running').length,
 				);
 				expect(aAndar, 'animações a andar durante o carregamento').toBe(0);
-				await expect(botao(page, pausar)).toBeHidden();
+				await expect(botaoDePausa(page, pausar)).toBeHidden();
 
 				soltarAsFontes();
 				await page.waitForLoadState('load');
-				await expect(botao(page, pausar)).toBeVisible();
+				await expect(botaoDePausa(page, pausar)).toBeVisible();
 				expect(await mexeSe(page), 'depois do carregamento').toBe(true);
 			});
 
@@ -101,7 +93,7 @@ emCadaBuild((build) => {
 				await page.emulateMedia({ reducedMotion: 'reduce' });
 				await page.goto(inicio);
 				expect(await mexeSe(page)).toBe(false);
-				await expect(botao(page, pausar)).toBeHidden();
+				await expect(botaoDePausa(page, pausar)).toBeHidden();
 			});
 
 			test.describe('sem JavaScript', () => {
@@ -111,7 +103,7 @@ emCadaBuild((build) => {
 				test('nada se mexe e o botão não aparece', async ({ page }) => {
 					await page.goto(inicio);
 					expect(await mexeSe(page)).toBe(false);
-					await expect(botao(page, pausar)).toBeHidden();
+					await expect(botaoDePausa(page, pausar)).toBeHidden();
 				});
 			});
 
@@ -126,8 +118,8 @@ emCadaBuild((build) => {
 					await page.setViewportSize({ width: largura, height: altura });
 					await page.goto(inicio);
 					await page.getByRole('contentinfo').scrollIntoViewIfNeeded();
-					await expect(botao(page, pausar)).toBeInViewport({ ratio: 1 });
-					const caixa = (await botao(page, pausar).boundingBox())!;
+					await expect(botaoDePausa(page, pausar)).toBeInViewport({ ratio: 1 });
+					const caixa = (await botaoDePausa(page, pausar).boundingBox())!;
 					expect(caixa.x, 'à esquerda').toBeLessThanOrEqual(24);
 					expect(altura - caixa.y - caixa.height, 'em baixo').toBeLessThanOrEqual(24);
 					if (soIcone) expect(caixa.width).toBeLessThanOrEqual(caixa.height);
@@ -139,9 +131,9 @@ emCadaBuild((build) => {
 				test(`a ${largura} px, no fim da página, o botão não tapa o rodapé`, async ({ page }) => {
 					await page.setViewportSize({ width: largura, height: 700 });
 					await page.goto(inicio);
-					await expect(botao(page, pausar)).toBeVisible();
+					await expect(botaoDePausa(page, pausar)).toBeVisible();
 					await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
-					const caixaDoBotao = (await botao(page, pausar).boundingBox())!;
+					const caixaDoBotao = (await botaoDePausa(page, pausar).boundingBox())!;
 					for (const parte of await page.getByRole('contentinfo').locator('a, p').all()) {
 						const caixa = (await parte.boundingBox())!;
 						expect(sobrepoem(caixa, caixaDoBotao), await parte.innerText()).toBe(false);
@@ -152,12 +144,13 @@ emCadaBuild((build) => {
 			test('o botão nunca tapa o elemento com foco', async ({ page }) => {
 				await page.setViewportSize({ width: 320, height: 400 });
 				await page.goto(inicio);
-				await expect(botao(page, pausar)).toBeVisible();
-				const caixaDoBotao = (await botao(page, pausar).boundingBox())!;
+				await expect(botaoDePausa(page, pausar)).toBeVisible();
+				const caixaDoBotao = (await botaoDePausa(page, pausar).boundingBox())!;
 				let verificados = 0;
 				for (; verificados < 40; verificados++) {
 					await page.keyboard.press('Tab');
-					if (await botao(page, pausar).evaluate((b) => b === document.activeElement)) continue;
+					if (await botaoDePausa(page, pausar).evaluate((b) => b === document.activeElement))
+						continue;
 					const foco = await page.evaluate(() => {
 						const e = document.activeElement!;
 						const { x, y, width, height } = e.getBoundingClientRect();
@@ -172,19 +165,19 @@ emCadaBuild((build) => {
 			test('depois de um scroll, o foco não fica por baixo do botão', async ({ page }) => {
 				await page.setViewportSize({ width: 320, height: 400 });
 				await page.goto(inicio);
-				await expect(botao(page, pausar)).toBeVisible();
-				const caixaDoBotao = (await botao(page, pausar).boundingBox())!;
+				await expect(botaoDePausa(page, pausar)).toBeVisible();
+				const caixaDoBotao = (await botaoDePausa(page, pausar).boundingBox())!;
 				// O botão da Hero, a seguir ao de pausa com Tab, fica por baixo dele depois do scroll.
 				const marcar = page
 					.getByRole('region', { name: promessa })
-					.getByRole('link', { name: botaoMarcar, exact: true });
+					.getByRole('link', { name: botao, exact: true });
 				await marcar.evaluate(
 					(e, alvo) => scrollBy(0, e.getBoundingClientRect().top - alvo),
 					caixaDoBotao.y + 4,
 				);
 				expect(sobrepoem((await marcar.boundingBox())!, caixaDoBotao), 'antes do Tab').toBe(true);
 
-				await botao(page, pausar).focus();
+				await botaoDePausa(page, pausar).focus();
 				await page.keyboard.press('Tab');
 				await expect(marcar).toBeFocused();
 				expect(sobrepoem((await marcar.boundingBox())!, caixaDoBotao), 'com foco').toBe(false);
@@ -200,8 +193,8 @@ emCadaBuild((build) => {
 		}) => {
 			await page.goto(caminho);
 			expect(await mexeSe(page)).toBe(false);
-			for (const { pausar } of Object.values(ROTULOS)) {
-				await expect(botao(page, pausar)).toHaveCount(0);
+			for (const { pausar } of Object.values(LINGUAS)) {
+				await expect(botaoDePausa(page, pausar)).toHaveCount(0);
 			}
 		});
 	}
