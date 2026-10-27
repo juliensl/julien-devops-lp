@@ -1,0 +1,45 @@
+---
+// A página 404: só em inglês, a única sem equivalentes noutras línguas, com o aspeto do site e uma
+// ligação para a página principal de cada língua publicada (#54, «Página 404»). Os textos ficam aqui,
+// e não nos dicionários, porque não existe noutras línguas.
+// Serve qualquer endereço inexistente, e também `/` enquanto o francês não estiver publicado: o
+// astro preview e o .htaccess do alojamento mostram-na com o código 404.
+// O Base.astro põe-lhe sempre noindex, por isso fica também fora do sitemap.
+import { CODIGOS_HTML, FASE, NOMES, PREFIXOS } from '../config/site';
+import { valores } from '../config/values';
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+	lingua="en"
+	semEquivalentes
+	titulo={`Page not found · ${valores.nome}`}
+	descricao={`This address doesn't exist on ${valores.nome}'s site.`}
+>
+	<main class="largura py-16 sm:py-24">
+		<p class="etiqueta">Error 404</p>
+		<h1 class="mt-6 max-w-3xl text-[clamp(2.25rem,4.4vw,3.5rem)] leading-[1.1]">
+			This page doesn't exist
+		</h1>
+		<p class="mt-6 max-w-2xl text-lg text-texto-secundario">
+			The link may be broken, or the address mistyped.
+		</p>
+		<p id="paginas-principais" class="mt-10">
+			Go to the home page in:
+		</p>
+		<ul aria-labelledby="paginas-principais" class="mt-4 flex flex-wrap gap-3">
+			{FASE.linguasPublicadas.map((l) => (
+				<li>
+					<a
+						href={PREFIXOS[l]}
+						hreflang={l}
+						lang={CODIGOS_HTML[l]}
+						class="inline-flex min-h-11 items-center rounded-full border border-linha-forte px-5 transition-colors hover:bg-superficie-2"
+					>
+						{NOMES[l]}
+					</a>
+				</li>
+			))}
+		</ul>
+	</main>
+</Base>

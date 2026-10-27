@@ -6,12 +6,13 @@ import tailwindcss from '@tailwindcss/vite';
 
 import { SITE } from './src/config/site';
 import localizedPages from './src/integrations/localized-pages';
+import sitemap from './src/integrations/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
 	site: SITE,
 	trailingSlash: 'always',
-	integrations: [react(), localizedPages()],
+	integrations: [react(), localizedPages(), sitemap()],
 
 	// As 2 fontes do site, alojadas nele: um woff2 por família, gerado por
 	// src/assets/fonts/subset.sh. O Astro cria a fonte de recurso com size-adjust.

@@ -41,3 +41,8 @@ export const LINGUAS = {
 } as const;
 
 export type Lingua = keyof typeof LINGUAS;
+
+/** A mesma página noutra língua: os slugs são iguais nas três, só muda o início. */
+export function equivalente(caminho: string, de: Lingua, para: Lingua) {
+	return LINGUAS[para].inicio + caminho.slice(LINGUAS[de].inicio.length);
+}
