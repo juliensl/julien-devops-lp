@@ -9,7 +9,7 @@ export const en: Dicionario = {
 	promessa,
 	botaoMarcar: 'Book a conversation',
 	cabecalho: {
-		paginaPrincipal: 'home page',
+		destinoDoLogotipo: 'home page',
 		linguas: 'Language',
 		menu: 'Menu',
 	},

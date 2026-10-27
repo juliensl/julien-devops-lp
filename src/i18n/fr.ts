@@ -10,7 +10,7 @@ export const fr: Dicionario = {
 	promessa,
 	botaoMarcar: 'Réserver un échange',
 	cabecalho: {
-		paginaPrincipal: "page d'accueil",
+		destinoDoLogotipo: "page d'accueil",
 		linguas: 'Langue',
 		menu: 'Menu',
 	},

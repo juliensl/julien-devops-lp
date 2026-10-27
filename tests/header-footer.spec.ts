@@ -17,7 +17,7 @@ const botaoDoMenu = (page: Page) =>
 
 emCadaBuild((build) => {
 	const publicadas: readonly Lingua[] = build.fase.linguasPublicadas;
-	const outras = (Object.keys(LINGUAS) as Lingua[]).filter((l) => !publicadas.includes(l));
+	const naoPublicadas = (Object.keys(LINGUAS) as Lingua[]).filter((l) => !publicadas.includes(l));
 
 	for (const { caminho, lingua } of paginas(build)) {
 		if (!lingua) continue;
@@ -49,7 +49,7 @@ emCadaBuild((build) => {
 				await page.goto(caminho);
 				const cabecalho = page.getByRole('banner');
 				await expect(cabecalho).toBeVisible();
-				for (const outra of outras) {
+				for (const outra of naoPublicadas) {
 					await expect(cabecalho.getByText(LINGUAS[outra].nome)).toHaveCount(0);
 				}
 			});

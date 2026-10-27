@@ -11,7 +11,7 @@ export const pt = {
 	botaoMarcar: 'Marcar uma conversa',
 	cabecalho: {
 		/** Junta-se ao nome no logótipo, que leva à página principal. */
-		paginaPrincipal: 'página principal',
+		destinoDoLogotipo: 'página principal',
 		/** O nome do seletor de língua, para os leitores de ecrã. */
 		linguas: 'Língua',
 		/** O botão que abre o menu no telemóvel. */
