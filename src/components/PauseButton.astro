@@ -1,0 +1,95 @@
+---
+// O botão fixo, no canto inferior esquerdo, que pausa e retoma todas as animações automáticas
+// da página (WCAG 2.2.2). Entra nas páginas que as têm: a principal e a de ecologia (#69).
+//
+// O sinal partilhado, que cada animação escuta sem importar nada daqui:
+// - em pausa, <html data-animacao="pausada">; a andar, o atributo não existe;
+// - a cada clique, document recebe o evento «animacao», com detail.pausada.
+// Uma animação em CSS para com :root[data-animacao='pausada'] { animation-play-state: paused }.
+// Com movimento reduzido, o botão não aparece: cada animação vê-o ela própria, com
+// matchMedia('(prefers-reduced-motion: reduce)') ou @media, e fica parada.
+interface Props {
+	/** O nome enquanto as animações andam. */
+	pausar: string;
+	/** O nome em pausa. */
+	retomar: string;
+}
+
+const { pausar, retomar } = Astro.props;
+---
+
+{/* Escondido até o script correr: sem JS, não serviria para nada. */}
+<button
+	type="button"
+	hidden
+	data-pausa-animacao
+	data-pausar={pausar}
+	data-retomar={retomar}
+	class="fixed bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] left-[calc(1rem+env(safe-area-inset-left,0px))] z-30 inline-flex h-10 cursor-pointer items-center gap-2 rounded-full border border-linha-forte bg-fundo/85 pr-3.5 pl-3 text-[0.8125rem] leading-none font-medium text-texto-secundario backdrop-blur-[6px] hover:border-texto hover:text-texto motion-reduce:hidden max-md:w-10 max-md:justify-center max-md:p-0"
+>
+	<span class="icone" aria-hidden="true"></span>
+	{/* No telemóvel, só o ícone: o nome fica para os leitores de ecrã. */}
+	<span data-rotulo class="max-md:sr-only">
+		{pausar}
+	</span>
+</button>
+
+<script>
+	import { depoisDoCarregamento } from '../scripts/after-load';
+
+	const html = document.documentElement;
+	const botoes = document.querySelectorAll<HTMLButtonElement>('[data-pausa-animacao]');
+
+	depoisDoCarregamento(() => {
+		for (const botao of botoes) {
+			botao.addEventListener('click', () => {
+				const pausada = html.dataset.animacao !== 'pausada';
+				if (pausada) html.dataset.animacao = 'pausada';
+				else delete html.dataset.animacao;
+				document.dispatchEvent(new CustomEvent('animacao', { detail: { pausada } }));
+			});
+			botao.hidden = false;
+		}
+	});
+
+	// O nome diz o que o próximo clique faz.
+	document.addEventListener('animacao', () => {
+		const pausada = html.dataset.animacao === 'pausada';
+		for (const botao of botoes) {
+			botao.querySelector('[data-rotulo]')!.textContent = pausada
+				? botao.dataset.retomar!
+				: botao.dataset.pausar!;
+		}
+	});
+</script>
+
+<style>
+	/* Uma página com o botão reserva-lhe o canto: o fim da página sobe acima dele e o elemento com
+	   foco nunca fica por baixo (WCAG 2.4.11). Desde o início, e não só quando o botão aparece,
+	   para a página não saltar. Num ecrã baixo, com o cabeçalho não sobraria espaço para o foco:
+	   aí, o cabeçalho, que ocupa a largura toda, tem prioridade. */
+	@media (prefers-reduced-motion: no-preference) {
+		:global(body:has([data-pausa-animacao])) {
+			padding-bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px));
+		}
+	}
+	@media (prefers-reduced-motion: no-preference) and (min-height: 20rem) {
+		:global(html:has([data-pausa-animacao])) {
+			scroll-padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+		}
+	}
+
+	/* Duas barras; em pausa, um triângulo. */
+	.icone {
+		width: 10px;
+		height: 12px;
+		border-inline: 3px solid currentColor;
+	}
+	:global(:root[data-animacao='pausada']) .icone {
+		width: 0;
+		height: 0;
+		border-inline: 0;
+		border-left: 10px solid currentColor;
+		border-block: 6px solid transparent;
+	}
+</style>
