@@ -17,6 +17,7 @@
 		"lighthouse": "node tests/lighthouse/run.ts",
 		"verificar": "npm run check && npm run format:check && npm run build && npm run build:lancamento && npm test && npm run lighthouse",
 		"confirmar": "playwright test -c playwright.publish.config.ts",
+		"imagem-de-partilha": "node scripts/share-image.ts",
 		"astro": "astro"
 	},
 	"dependencies": {
