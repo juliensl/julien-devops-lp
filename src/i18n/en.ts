@@ -8,6 +8,11 @@ export const en: Dicionario = {
 	designacao: 'Freelance DevOps consultant for SaaS',
 	promessa,
 	botaoMarcar: 'Book a conversation',
+	cabecalho: {
+		destinoDoLogotipo: 'home page',
+		linguas: 'Language',
+		menu: 'Menu',
+	},
 	paginaPrincipal: {
 		descricao: `${promessa} For CTOs of growing SaaS companies.`,
 		hero: {

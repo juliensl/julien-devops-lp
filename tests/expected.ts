@@ -4,9 +4,14 @@
 
 export const SITE = 'https://devops.julienlaffont.com';
 export const PAGINA_DE_MARCACAO = 'https://calendly.com/contact-julienlaffont/appel-cadrage';
+export const LINKEDIN = 'https://www.linkedin.com/in/julien-laffont-4a3623134/';
+export const NOME = 'Julien Laffont';
 
+// No seletor de língua, cada língua mostra o rótulo e diz o nome completo aos leitores de ecrã.
 export const LINGUAS = {
 	fr: {
+		rotulo: 'FR',
+		nome: 'Français',
 		inicio: '/',
 		codigoHtml: 'fr',
 		designacao: 'Consultant DevOps freelance pour SaaS',
@@ -15,6 +20,8 @@ export const LINGUAS = {
 		botao: 'Réserver un échange',
 	},
 	en: {
+		rotulo: 'EN',
+		nome: 'English',
 		inicio: '/en/',
 		codigoHtml: 'en',
 		designacao: 'Freelance DevOps consultant for SaaS',
@@ -22,6 +29,8 @@ export const LINGUAS = {
 		botao: 'Book a conversation',
 	},
 	pt: {
+		rotulo: 'PT',
+		nome: 'Português',
 		inicio: '/pt/',
 		codigoHtml: 'pt-PT',
 		designacao: 'Consultor DevOps freelance para SaaS',

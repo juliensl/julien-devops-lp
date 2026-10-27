@@ -9,6 +9,14 @@ export const pt = {
 	designacao: 'Consultor DevOps freelance para SaaS',
 	promessa,
 	botaoMarcar: 'Marcar uma conversa',
+	cabecalho: {
+		/** Junta-se ao nome no logótipo, que leva à página principal. */
+		destinoDoLogotipo: 'página principal',
+		/** O nome do seletor de língua, para os leitores de ecrã. */
+		linguas: 'Língua',
+		/** O botão que abre o menu no telemóvel. */
+		menu: 'Menu',
+	},
 	paginaPrincipal: {
 		descricao: `${promessa} Para CTO de SaaS em crescimento.`,
 		hero: {

@@ -1,5 +1,8 @@
 ---
 import '../styles/global.css';
+import { Font } from 'astro:assets';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
 import { CODIGOS_HTML, FASE, SITE, type Lingua } from '../config/site';
 import { commit } from '../lib/commit';
 
@@ -25,8 +28,13 @@ const canonical = new URL(Astro.url.pathname, SITE).href;
 		<meta name="commit" content={commit} />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
+		{/* Só a fonte do Hero (a Promessa, em Bona Nova) é pré-carregada. */}
+		<Font cssVariable="--fonte-bona-nova" preload />
+		<Font cssVariable="--fonte-geist" />
 	</head>
-	<body class="bg-white text-neutral-900 antialiased">
+	<body class="antialiased">
+		<Header lingua={lingua} />
 		<slot />
+		<Footer />
 	</body>
 </html>

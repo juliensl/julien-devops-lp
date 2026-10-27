@@ -1,0 +1,71 @@
+---
+// O logótipo: «JULIEN / LAFFONT» em duas linhas, em Bona Nova, à frente de um ∞ fino e contínuo,
+// metade roxo e metade verde. O ∞ fica sobreposto ao nome, nunca por cima nem por baixo dele.
+// Fica por agora (#54): um desenho novo troca só este componente e a imagem de partilha (#61).
+// O texto é o próprio nome, por isso uma ligação à volta do logótipo tem o nome acessível certo.
+// O tamanho segue o font-size de quem o usa.
+import { valores } from '../config/values';
+
+const linhas = valores.nome.split(' ');
+---
+
+<span class="logotipo">
+	<svg class="infinito" viewBox="0 0 120 50" aria-hidden="true">
+		<path class="roxo" d="M60 25C47 6 8 5 8 25S47 44 60 25"></path>
+		<path class="verde" d="M60 25C73 6 112 5 112 25S73 44 60 25"></path>
+	</svg>
+	{linhas.map((linha, i) => (
+		<>
+			{i > 0 && ' '}
+			<span class="linha">{linha}</span>
+		</>
+	))}
+</span>
+
+<style>
+	/* A margem lateral reserva o espaço do ∞, que sai da caixa do nome. */
+	.logotipo {
+		position: relative;
+		display: inline-flex;
+		flex-direction: column;
+		align-items: center;
+		margin-inline: 1.15em;
+		padding: 0.3em 0.2em;
+		font-family: var(--font-titulos);
+		line-height: 1.3;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		white-space: nowrap;
+		color: var(--color-texto);
+	}
+	.infinito {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		width: 165%;
+		height: 150%;
+		/* Sobe um pouco para o cruzamento cair entre as duas linhas. */
+		transform: translate(-50%, calc(-50% - 0.12em));
+		opacity: 0.75;
+	}
+	.infinito path {
+		fill: none;
+		stroke-width: 1.2;
+		stroke-linecap: round;
+		vector-effect: non-scaling-stroke;
+	}
+	.roxo {
+		stroke: var(--color-elemento-roxo);
+	}
+	.verde {
+		stroke: var(--color-elemento-verde);
+	}
+	/* Um halo da cor do fundo apaga o ∞ junto às letras, para não as confundir (o «F» com um «E»). */
+	.linha {
+		position: relative;
+		text-shadow:
+			0 0 2px var(--color-fundo),
+			0 0 3px var(--color-fundo),
+			0 0 6px var(--color-fundo);
+	}
+</style>
