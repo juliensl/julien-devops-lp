@@ -25,5 +25,25 @@ export const fr: Dicionario = {
 				'Les bugs sont repérés dans la pull request, pas par ton client. Et tes devs se remettent à coder au lieu de faire du support.',
 			nota: 'Échange de 45 min sur Google Meet, gratuit.',
 		},
+		etapas: {
+			titulo: 'Cinq étapes, toujours dans le même ordre.',
+			etapas: [
+				{ nome: 'Échange', frase: '45 min sur Google Meet, gratuit.' },
+				{
+					nome: 'Diagnostic',
+					frase:
+						'Gratuit. 2 à 3 jours ouvrés après réception des accès, ou 3 à 5 si le cloud est inclus.',
+				},
+				{
+					nome: "Proposition d'intervention",
+					frase: 'Quels blocs, en combien de temps et pour quel prix fixe.',
+				},
+				{ nome: 'Mise en œuvre', frase: '30 jours calendaires au maximum.' },
+				{
+					nome: 'Livraison et passation',
+					frase: "Documentation et passation, pour que l'équipe soit autonome.",
+				},
+			],
+		},
 	},
 };
