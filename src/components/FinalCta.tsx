@@ -1,42 +1,42 @@
-import type { Lingua } from '../config/site';
-import { valores } from '../config/values';
-import { comEspacosInseparaveis } from '../lib/spaces';
+import type { Language } from '../config/site';
+import { values } from '../config/values';
+import { withNonBreakingSpaces } from '../lib/spaces';
 import BookingButton from './BookingButton';
 
 interface Props {
-	lingua: Lingua;
-	titulo: string;
-	texto: string;
-	textoDoBotao: string;
-	/** Por baixo do botão: 45 min, Google Meet, gratuita e sem compromisso. */
-	conversa: string;
-	/** Só nas línguas que não são a da página de marcação: a marcação está noutra língua. */
-	avisoDaMarcacao: string;
+	language: Language;
+	title: string;
+	text: string;
+	buttonText: string;
+	/** Below the button: 45 min, Google Meet, free and with no commitment. */
+	conversation: string;
+	/** Only in the languages other than the booking page's: the booking is in another language. */
+	bookingNotice: string;
 }
 
-/** O fim da página: «Nunca perdes a infraestrutura.» e o botão, para o CTO decidir ali mesmo. */
+/** The end of the page: "You never lose the infrastructure." and the button, so the CTO decides right there. */
 export default function FinalCta({
-	lingua,
-	titulo,
-	texto,
-	textoDoBotao,
-	conversa,
-	avisoDaMarcacao,
+	language,
+	title,
+	text,
+	buttonText,
+	conversation,
+	bookingNotice,
 }: Props) {
-	const linha =
-		lingua === valores.linguaDaPaginaDeMarcacao ? conversa : `${conversa} ${avisoDaMarcacao}`;
+	const line =
+		language === values.bookingPageLanguage ? conversation : `${conversation} ${bookingNotice}`;
 	return (
 		<section
-			aria-labelledby="cta-final-titulo"
-			className="largura grid min-h-[70svh] content-center justify-items-start gap-6 py-[clamp(5rem,11vw,9rem)]"
+			aria-labelledby="final-cta-title"
+			className="page-width grid min-h-[70svh] content-center justify-items-start gap-6 py-[clamp(5rem,11vw,9rem)]"
 		>
-			<h2 id="cta-final-titulo" className="text-[clamp(2.6rem,6.5vw,5rem)] leading-[1.06]">
-				{comEspacosInseparaveis(titulo)}
+			<h2 id="final-cta-title" className="text-[clamp(2.6rem,6.5vw,5rem)] leading-[1.06]">
+				{withNonBreakingSpaces(title)}
 			</h2>
-			<p className="max-w-2xl text-lg text-texto-secundario">{comEspacosInseparaveis(texto)}</p>
-			{/* A única ligação da secção: o ramo (#73) acaba com 3 folhas junto dela. */}
-			<BookingButton texto={textoDoBotao} />
-			<p className="max-w-2xl text-sm text-texto-secundario">{comEspacosInseparaveis(linha)}</p>
+			<p className="max-w-2xl text-lg text-foreground-secondary">{withNonBreakingSpaces(text)}</p>
+			{/* The section's only link: the branch (#73) ends with 3 leaves next to it. */}
+			<BookingButton text={buttonText} />
+			<p className="max-w-2xl text-sm text-foreground-secondary">{withNonBreakingSpaces(line)}</p>
 		</section>
 	);
 }

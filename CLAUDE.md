@@ -34,3 +34,13 @@ The five default triage labels: `needs-triage`, `needs-info`, `ready-for-agent`,
 ### Domain docs
 
 Single-context: one `CONTEXT.md` and `docs/adr/` at the repo root, created when needed. See `docs/agents/domain.md`.
+
+## Language
+
+- Everything in the repo is in English: code, comments, test titles, messages, scripts, CI and docs.
+- GitHub issues and PR text are written in European Portuguese. `CONTEXT.md` gives the Portuguese name of each term, so issues and code map.
+- Exceptions:
+  - the site copy keeps its languages (the values in `src/i18n/*.ts`);
+  - `data/Pitch - Julien Laffont.txt` stays as Julien's French original;
+  - the `PUBLICACAO_*` secrets keep their names until Julien decides otherwise;
+  - a comment that cites an issue section quotes its Portuguese title verbatim, so it can be found.

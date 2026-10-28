@@ -1,15 +1,15 @@
-// Escreve o sitemap.xml e o robots.txt no fim do build (#54, «SEO»).
-// O sitemap lista as páginas que se deixam indexar, as que não têm noindex no HTML gerado. Assim, a 404
-// (sempre com noindex) e as páginas da Primeira validação ficam de fora sem uma regra própria.
-// As hreflang ficam só no HTML, e não no sitemap.
-// O robots.txt não bloqueia nada: o Google tem de rastrear as páginas para ver o noindex.
+// Writes sitemap.xml and robots.txt at the end of the build (#54, "SEO").
+// The sitemap lists the pages that may be indexed, those without noindex in the generated HTML. That way
+// the 404 (always noindex) and the First review pages stay out without a rule of their own.
+// The hreflang links live only in the HTML, not in the sitemap.
+// robots.txt blocks nothing: Google has to crawl the pages to see the noindex.
 import { globSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { AstroIntegration } from 'astro';
 import { SITE } from '../config/site';
 
-/** A meta tag que o Base.astro põe nas páginas que não se indexam. */
+/** The meta tag that Base.astro puts on the pages that are not indexed. */
 const NOINDEX = /<meta name="robots" content="[^"]*\bnoindex\b/;
 
 export default function sitemap(): AstroIntegration {
@@ -17,10 +17,10 @@ export default function sitemap(): AstroIntegration {
 		name: 'sitemap',
 		hooks: {
 			'astro:build:done': ({ dir }) => {
-				const pasta = fileURLToPath(dir);
-				const urls = globSync('**/*.html', { cwd: pasta })
-					.filter((ficheiro) => !NOINDEX.test(readFileSync(join(pasta, ficheiro), 'utf8')))
-					.map((ficheiro) => new URL(ficheiro.replace(/(^|\/)index\.html$/, '$1'), SITE).href)
+				const outDir = fileURLToPath(dir);
+				const urls = globSync('**/*.html', { cwd: outDir })
+					.filter((file) => !NOINDEX.test(readFileSync(join(outDir, file), 'utf8')))
+					.map((file) => new URL(file.replace(/(^|\/)index\.html$/, '$1'), SITE).href)
 					.sort();
 
 				const xml = [
@@ -29,10 +29,10 @@ export default function sitemap(): AstroIntegration {
 					...urls.map((url) => `\t<url><loc>${url}</loc></url>`),
 					'</urlset>',
 				];
-				writeFileSync(join(pasta, 'sitemap.xml'), `${xml.join('\n')}\n`);
+				writeFileSync(join(outDir, 'sitemap.xml'), `${xml.join('\n')}\n`);
 
 				const robots = ['User-agent: *', 'Allow: /', '', `Sitemap: ${SITE}/sitemap.xml`];
-				writeFileSync(join(pasta, 'robots.txt'), `${robots.join('\n')}\n`);
+				writeFileSync(join(outDir, 'robots.txt'), `${robots.join('\n')}\n`);
 			},
 		},
 	};

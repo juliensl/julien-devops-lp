@@ -1,50 +1,50 @@
-// A identidade visual: as 2 fontes alojadas no site e onde cada uma desenha o texto.
-// O ≥ e o espaço fino inseparável (U+202F) testam-se com o conteúdo real, nos tickets que os trazem.
+// The visual identity: the 2 fonts hosted on the site and where each one renders text.
+// The ≥ and the narrow no-break space (U+202F) are tested with the real content, in the tickets that add them.
 import { expect, test, type Locator } from '@playwright/test';
-import { emCadaBuild, paginas } from './builds';
-import { NOME } from './expected';
+import { inEachBuild, pagesOf } from './builds';
+import { NAME } from './expected';
 
 /**
- * As fontes com que o navegador desenhou o texto de um elemento, pelo nome dentro do ficheiro.
- * Só o Chromium o diz (protocolo DevTools).
+ * The fonts the browser used to render the text of an element, by the name inside the file.
+ * Only Chromium reports this (DevTools protocol).
  */
-async function fontesDesenhadas(elemento: Locator) {
-	await elemento.evaluate((e) => e.setAttribute('data-fontes', ''));
-	const cdp = await elemento.page().context().newCDPSession(elemento.page());
+async function renderedFonts(element: Locator) {
+	await element.evaluate((e) => e.setAttribute('data-fonts', ''));
+	const cdp = await element.page().context().newCDPSession(element.page());
 	await cdp.send('DOM.enable');
 	await cdp.send('CSS.enable');
 	const { root } = await cdp.send('DOM.getDocument');
 	const { nodeId } = await cdp.send('DOM.querySelector', {
 		nodeId: root.nodeId,
-		selector: '[data-fontes]',
+		selector: '[data-fonts]',
 	});
 	const { fonts } = await cdp.send('CSS.getPlatformFontsForNode', { nodeId });
-	await elemento.evaluate((e) => e.removeAttribute('data-fontes'));
-	return fonts.map((f) => (f.isCustomFont ? f.familyName : `${f.familyName} (do sistema)`));
+	await element.evaluate((e) => e.removeAttribute('data-fonts'));
+	return fonts.map((f) => (f.isCustomFont ? f.familyName : `${f.familyName} (system)`));
 }
 
-emCadaBuild((build) => {
-	for (const { caminho } of paginas(build)) {
-		test.describe(caminho, () => {
-			test('carrega as 2 fontes do site e pré-carrega uma só, com crossorigin', async ({
+inEachBuild((build) => {
+	for (const { path } of pagesOf(build)) {
+		test.describe(path, () => {
+			test('loads the 2 site fonts and preloads only one, with crossorigin', async ({
 				page,
 				baseURL,
 				browserName,
 			}) => {
-				const pedidos: string[] = [];
-				page.on('request', (pedido) => {
-					if (pedido.resourceType() === 'font') pedidos.push(pedido.url());
+				const requests: string[] = [];
+				page.on('request', (request) => {
+					if (request.resourceType() === 'font') requests.push(request.url());
 				});
-				await page.goto(caminho, { waitUntil: 'networkidle' });
-				const fontes = [...new Set(pedidos)];
-				expect(fontes).toHaveLength(2);
-				// O WebKit às vezes pede duas vezes a fonte pré-carregada: o astro preview serve-a com
-				// `Cache-Control: no-cache`, e o WebKit volta a pedi-la se o CSS só a pede depois de o preload
-				// acabar. O Chromium usa sempre o preload: nele, um segundo pedido seria um preload perdido.
-				if (browserName === 'chromium') expect(pedidos).toHaveLength(2);
-				for (const fonte of fontes) {
-					expect(fonte.startsWith(`${baseURL}/`), fonte).toBe(true);
-					expect(fonte).toMatch(/\.woff2$/);
+				await page.goto(path, { waitUntil: 'networkidle' });
+				const fonts = [...new Set(requests)];
+				expect(fonts).toHaveLength(2);
+				// WebKit sometimes requests the preloaded font twice: astro preview serves it with
+				// `Cache-Control: no-cache`, and WebKit requests it again if the CSS only asks for it after the preload
+				// has finished. Chromium always uses the preload: there, a second request would be a wasted preload.
+				if (browserName === 'chromium') expect(requests).toHaveLength(2);
+				for (const font of fonts) {
+					expect(font.startsWith(`${baseURL}/`), font).toBe(true);
+					expect(font).toMatch(/\.woff2$/);
 				}
 				const preload = page.locator('link[rel="preload"][as="font"]');
 				await expect(preload).toHaveCount(1);
@@ -53,23 +53,21 @@ emCadaBuild((build) => {
 		});
 	}
 
-	test.describe('no Chromium', () => {
+	test.describe('in Chromium', () => {
 		test.skip(
 			({ browserName }) => browserName !== 'chromium',
-			'só o Chromium diz que fonte desenhou',
+			'only Chromium reports which font it rendered',
 		);
-		const { caminho } = paginas(build).find((p) => p.lingua)!;
+		const { path } = pagesOf(build).find((p) => p.language)!;
 
-		test('os títulos e o logótipo ficam em Bona Nova, e o texto em Geist', async ({ page }) => {
-			await page.goto(caminho, { waitUntil: 'networkidle' });
-			const logotipo = page.getByRole('banner').getByRole('link', { name: NOME });
-			expect(await fontesDesenhadas(page.getByRole('heading', { level: 1 }))).toEqual([
-				'Bona Nova',
+		test('headings and the logo render in Bona Nova, and body text in Geist', async ({ page }) => {
+			await page.goto(path, { waitUntil: 'networkidle' });
+			const logo = page.getByRole('banner').getByRole('link', { name: NAME });
+			expect(await renderedFonts(page.getByRole('heading', { level: 1 }))).toEqual(['Bona Nova']);
+			expect(await renderedFonts(logo.getByText('Laffont'))).toEqual(['Bona Nova']);
+			expect(await renderedFonts(page.getByRole('main').getByRole('paragraph').first())).toEqual([
+				'Geist',
 			]);
-			expect(await fontesDesenhadas(logotipo.getByText('Laffont'))).toEqual(['Bona Nova']);
-			expect(await fontesDesenhadas(page.getByRole('main').getByRole('paragraph').first())).toEqual(
-				['Geist'],
-			);
 		});
 	});
 });

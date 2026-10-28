@@ -1,71 +1,71 @@
 ---
-// O logótipo: «JULIEN / LAFFONT» em duas linhas, em Bona Nova, à frente de um ∞ fino e contínuo,
-// metade roxo e metade verde. O ∞ fica sobreposto ao nome, nunca por cima nem por baixo dele.
-// Fica por agora (#54): um desenho novo troca só este componente e a imagem de partilha (#61).
-// O texto é o próprio nome, por isso uma ligação à volta do logótipo tem o nome acessível certo.
-// O tamanho segue o font-size de quem o usa.
-import { valores } from '../config/values';
+// The logo: "JULIEN / LAFFONT" on two lines, in Bona Nova, in front of a thin, continuous ∞,
+// half purple and half green. The ∞ overlaps the name, never above or below it.
+// It stays for now (#54): a new design only swaps this component and the share image (#61).
+// The text is the name itself, so a link around the logo gets the right accessible name.
+// The size follows the `font-size` of whatever uses it.
+import { values } from '../config/values';
 
-const linhas = valores.nome.split(' ');
+const lines = values.name.split(' ');
 ---
 
-<span class="logotipo">
-	<svg class="infinito" viewBox="0 0 120 50" aria-hidden="true">
-		<path class="roxo" d="M60 25C47 6 8 5 8 25S47 44 60 25"></path>
-		<path class="verde" d="M60 25C73 6 112 5 112 25S73 44 60 25"></path>
+<span class="logo">
+	<svg class="infinity" viewBox="0 0 120 50" aria-hidden="true">
+		<path class="purple" d="M60 25C47 6 8 5 8 25S47 44 60 25"></path>
+		<path class="green" d="M60 25C73 6 112 5 112 25S73 44 60 25"></path>
 	</svg>
-	{linhas.map((linha, i) => (
+	{lines.map((line, i) => (
 		<>
 			{i > 0 && ' '}
-			<span class="linha">{linha}</span>
+			<span class="line">{line}</span>
 		</>
 	))}
 </span>
 
 <style>
-	/* A margem lateral reserva o espaço do ∞, que sai da caixa do nome. */
-	.logotipo {
+	/* The side margin reserves the room for the ∞, which sticks out of the name's box. */
+	.logo {
 		position: relative;
 		display: inline-flex;
 		flex-direction: column;
 		align-items: center;
 		margin-inline: 1.15em;
 		padding: 0.3em 0.2em;
-		font-family: var(--font-titulos);
+		font-family: var(--font-heading);
 		line-height: 1.3;
 		letter-spacing: 0.14em;
 		text-transform: uppercase;
 		white-space: nowrap;
-		color: var(--color-texto);
+		color: var(--color-foreground);
 	}
-	.infinito {
+	.infinity {
 		position: absolute;
 		left: 50%;
 		top: 50%;
 		width: 165%;
 		height: 150%;
-		/* Sobe um pouco para o cruzamento cair entre as duas linhas. */
+		/* Moved up a little so the crossing falls between the two lines. */
 		transform: translate(-50%, calc(-50% - 0.12em));
 		opacity: 0.75;
 	}
-	.infinito path {
+	.infinity path {
 		fill: none;
 		stroke-width: 1.2;
 		stroke-linecap: round;
 		vector-effect: non-scaling-stroke;
 	}
-	.roxo {
-		stroke: var(--color-elemento-roxo);
+	.purple {
+		stroke: var(--color-element-purple);
 	}
-	.verde {
-		stroke: var(--color-elemento-verde);
+	.green {
+		stroke: var(--color-element-green);
 	}
-	/* Um halo da cor do fundo apaga o ∞ junto às letras, para não as confundir (o «F» com um «E»). */
-	.linha {
+	/* A halo in the background color erases the ∞ next to the letters, so they are not misread ("F" as "E"). */
+	.line {
 		position: relative;
 		text-shadow:
-			0 0 2px var(--color-fundo),
-			0 0 3px var(--color-fundo),
-			0 0 6px var(--color-fundo);
+			0 0 2px var(--color-background),
+			0 0 3px var(--color-background),
+			0 0 6px var(--color-background);
 	}
 </style>

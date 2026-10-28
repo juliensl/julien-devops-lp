@@ -1,55 +1,55 @@
-// Os valores esperados, tirados da spec (#54) e não do código.
-// O botão em francês e em inglês, a Promessa em inglês e os nomes do botão de pausa em francês e em
-// inglês são traduções que a estagiária valida antes do Lançamento comercial (#75).
+// The expected values, taken from the spec (#54) and not from the code.
+// The button in French and English, the Promise in English and the pause button names in French and
+// English are translations the intern reviews before the Commercial launch (#75).
 
 export const SITE = 'https://devops.julienlaffont.com';
-export const PAGINA_DE_MARCACAO = 'https://calendly.com/contact-julienlaffont/appel-cadrage';
+export const BOOKING_PAGE = 'https://calendly.com/contact-julienlaffont/appel-cadrage';
 export const LINKEDIN = 'https://www.linkedin.com/in/julien-laffont-4a3623134/';
-export const NOME = 'Julien Laffont';
+export const NAME = 'Julien Laffont';
 
-// No seletor de língua, cada língua mostra o rótulo e diz o nome completo aos leitores de ecrã.
-export const LINGUAS = {
+// In the language switcher, each language shows its label and gives screen readers the full name.
+export const LANGUAGES = {
 	fr: {
-		rotulo: 'FR',
-		nome: 'Français',
-		inicio: '/',
-		codigoHtml: 'fr',
-		designacao: 'Consultant DevOps freelance pour SaaS',
-		promessa:
+		label: 'FR',
+		name: 'Français',
+		prefix: '/',
+		htmlCode: 'fr',
+		designation: 'Consultant DevOps freelance pour SaaS',
+		promise:
 			"En 30 jours, je te livre l'infrastructure devOps nécessaire pour que tu puisses scaler ton SaaS.",
-		botao: 'Réserver un échange',
-		pausar: "Mettre l'animation en pause",
-		retomar: "Reprendre l'animation",
+		button: 'Réserver un échange',
+		pause: "Mettre l'animation en pause",
+		resume: "Reprendre l'animation",
 	},
 	en: {
-		rotulo: 'EN',
-		nome: 'English',
-		inicio: '/en/',
-		codigoHtml: 'en',
-		designacao: 'Freelance DevOps consultant for SaaS',
-		promessa: 'In 30 days, I deliver the DevOps infrastructure you need to scale your SaaS.',
-		botao: 'Book a conversation',
-		pausar: 'Pause animation',
-		retomar: 'Resume animation',
+		label: 'EN',
+		name: 'English',
+		prefix: '/en/',
+		htmlCode: 'en',
+		designation: 'Freelance DevOps consultant for SaaS',
+		promise: 'In 30 days, I deliver the DevOps infrastructure you need to scale your SaaS.',
+		button: 'Book a conversation',
+		pause: 'Pause animation',
+		resume: 'Resume animation',
 	},
 	pt: {
-		rotulo: 'PT',
-		nome: 'Português',
-		inicio: '/pt/',
-		codigoHtml: 'pt-PT',
-		designacao: 'Consultor DevOps freelance para SaaS',
-		promessa:
+		label: 'PT',
+		name: 'Português',
+		prefix: '/pt/',
+		htmlCode: 'pt-PT',
+		designation: 'Consultor DevOps freelance para SaaS',
+		promise:
 			'Em 30 dias, entrego-te a infraestrutura DevOps de que precisas para escalar o teu SaaS.',
-		botao: 'Marcar uma conversa',
-		// O botão de pausa: o nome diz o que um clique faz, como no protótipo validado.
-		pausar: 'Pausar animação',
-		retomar: 'Retomar animação',
+		button: 'Marcar uma conversa',
+		// The pause button: its name says what a click does, as in the approved prototype.
+		pause: 'Pausar animação',
+		resume: 'Retomar animação',
 	},
 } as const;
 
-export type Lingua = keyof typeof LINGUAS;
+export type Language = keyof typeof LANGUAGES;
 
-/** A mesma página noutra língua: os slugs são iguais nas três, só muda o início. */
-export function equivalente(caminho: string, de: Lingua, para: Lingua) {
-	return LINGUAS[para].inicio + caminho.slice(LINGUAS[de].inicio.length);
+/** The same page in another language: the slugs are the same in all three, only the prefix changes. */
+export function equivalent(path: string, from: Language, to: Language) {
+	return LANGUAGES[to].prefix + path.slice(LANGUAGES[from].prefix.length);
 }

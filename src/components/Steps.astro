@@ -1,45 +1,45 @@
 ---
-// As 5 Etapas, da Conversa à Entrega e transferência: o que acontece depois de marcar.
-// No computador, a secção fica presa enquanto o scroll passa pelas Etapas, cerca de meio ecrã
-// cada uma. No telemóvel, com movimento reduzido e sem JS, é uma lista que se lê de seguida.
+// The 5 Steps, from the Conversation to Delivery and handover: what happens after booking.
+// On desktop, the section stays pinned while the scroll goes through the Steps, about half a screen
+// each. On mobile, with reduced motion and without JS, it is a list read straight through.
 interface Props {
-	titulo: string;
-	etapas: { nome: string; frase: string }[];
+	title: string;
+	steps: { name: string; sentence: string }[];
 }
 
-const { titulo, etapas } = Astro.props;
+const { title, steps } = Astro.props;
 ---
 
 <section
-	aria-labelledby="etapas-titulo"
-	data-seccao="etapas"
-	data-etapas
-	style={`--etapas: ${etapas.length}`}
+	aria-labelledby="steps-title"
+	data-section="steps"
+	data-steps
+	style={`--step-count: ${steps.length}`}
 >
-	<div data-palco>
-		<div class="largura grid gap-12 py-[clamp(5rem,11vw,9rem)]">
-			<h2 id="etapas-titulo" class="text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">
-				{titulo}
+	<div data-stage>
+		<div class="page-width grid gap-12 py-[clamp(5rem,11vw,9rem)]">
+			<h2 id="steps-title" class="text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">
+				{title}
 			</h2>
-			{/* No telemóvel, uma Etapa por linha, com o número à esquerda. A partir de 961 px, cinco
-			    colunas em degraus, cada uma um pouco mais abaixo do que a anterior. */}
+			{/* On mobile, one Step per row, with the number on the left. From 961 px, five
+			    staggered columns, each one a little lower than the one before. */}
 			<ol class="grid gap-6 min-[961px]:grid-cols-5 min-[961px]:gap-8">
-				{etapas.map(({ nome, frase }, k) => (
+				{steps.map(({ name, sentence }, k) => (
 					<li
-						data-etapa
+						data-step
 						style={`--k: ${k}`}
 						class="grid grid-cols-[3rem_1fr] gap-x-4 gap-y-2 min-[961px]:grid-cols-1 min-[961px]:content-start min-[961px]:pt-[calc(var(--k)*1.25rem)]"
 					>
 						<span
-							data-numero
-							class="row-span-2 font-titulos text-[2.6rem] leading-none text-verde min-[961px]:row-span-1"
+							data-number
+							class="row-span-2 font-heading text-[2.6rem] leading-none text-green min-[961px]:row-span-1"
 						>
 							{k + 1}
 						</span>
-						<strong class="font-semibold min-[961px]:border-t min-[961px]:border-linha-forte min-[961px]:pt-3">
-							{nome}
+						<strong class="font-semibold min-[961px]:border-t min-[961px]:border-line-strong min-[961px]:pt-3">
+							{name}
 						</strong>
-						<span class="text-[0.9375rem] text-texto-secundario">{frase}</span>
+						<span class="text-[0.9375rem] text-foreground-secondary">{sentence}</span>
 					</li>
 				))}
 			</ol>
@@ -48,78 +48,78 @@ const { titulo, etapas } = Astro.props;
 </section>
 
 <script>
-	import { depoisDoCarregamento } from '../scripts/after-load';
+	import { afterLoad } from '../scripts/after-load';
 
-	/** O computador, como nos Serviços (#54): mais de 960 px e sem movimento reduzido. */
-	const COMPUTADOR = '(min-width: 961px) and (prefers-reduced-motion: no-preference)';
+	/** Desktop, as in the Services (#54): wider than 960 px and no reduced motion. */
+	const DESKTOP = '(min-width: 961px) and (prefers-reduced-motion: no-preference)';
 
-	depoisDoCarregamento(() => {
-		const computador = matchMedia(COMPUTADOR);
+	afterLoad(() => {
+		const desktop = matchMedia(DESKTOP);
 
-		for (const seccao of document.querySelectorAll<HTMLElement>('[data-etapas]')) {
-			const palco = seccao.querySelector<HTMLElement>('[data-palco]')!;
-			const etapas = [...seccao.querySelectorAll<HTMLElement>('[data-etapa]')];
-			let quadroPedido = 0;
+		for (const section of document.querySelectorAll<HTMLElement>('[data-steps]')) {
+			const stage = section.querySelector<HTMLElement>('[data-stage]')!;
+			const steps = [...section.querySelectorAll<HTMLElement>('[data-step]')];
+			let pendingFrame = 0;
 
-			// Com a secção presa, o percurso vai de 0 (o palco prende) a 1 (solta). Cada Etapa tem
-			// a sua fatia do percurso e chega a meio dela, em (k + 0,5) / 5: o número acende.
-			// O ramo (#73) vai acender os números quando chega, com esta mesma conta; com a secção
-			// solta (telemóvel, movimento reduzido, ecrã baixo), os números ficam sempre acesos.
-			const acende = () => {
-				quadroPedido = 0;
-				if (!seccao.hasAttribute('data-presa')) return;
-				const { top, height } = seccao.getBoundingClientRect();
-				const topoDoPalco = parseFloat(getComputedStyle(palco).top);
-				const percurso = (topoDoPalco - top) / (height - palco.offsetHeight);
-				for (const [k, etapa] of etapas.entries()) {
-					etapa.toggleAttribute('data-chegou', percurso >= (k + 0.5) / etapas.length);
+			// With the section pinned, the progress goes from 0 (the stage pins) to 1 (it unpins). Each Step has
+			// its own slice of the progress and reaches its middle at (k + 0.5) / 5: the number lights up.
+			// The branch (#73) will light up the numbers as it reaches them, with this same calculation; with the
+			// section unpinned (mobile, reduced motion, short screen), the numbers are always lit.
+			const lightUp = () => {
+				pendingFrame = 0;
+				if (!section.hasAttribute('data-pinned')) return;
+				const { top, height } = section.getBoundingClientRect();
+				const stageTop = parseFloat(getComputedStyle(stage).top);
+				const progress = (stageTop - top) / (height - stage.offsetHeight);
+				for (const [k, step] of steps.entries()) {
+					step.toggleAttribute('data-reached', progress >= (k + 0.5) / steps.length);
 				}
 			};
 
-			// Presa, as Etapas têm de caber no palco, por baixo do cabeçalho; num ecrã baixo ou com
-			// zoom, não cabem, e a secção fica solta para nada ficar escondido.
-			const prende = () => {
-				seccao.toggleAttribute('data-presa', computador.matches);
-				const conteudo = palco.firstElementChild as HTMLElement;
-				if (conteudo.offsetHeight > palco.clientHeight) seccao.removeAttribute('data-presa');
-				acende();
+			// When pinned, the Steps must fit in the stage, below the header; on a short screen or when
+			// zoomed in, they do not fit, and the section stays unpinned so nothing is hidden.
+			const pin = () => {
+				section.toggleAttribute('data-pinned', desktop.matches);
+				const content = stage.firstElementChild as HTMLElement;
+				if (content.offsetHeight > stage.clientHeight) section.removeAttribute('data-pinned');
+				lightUp();
 			};
 
-			computador.addEventListener('change', prende);
-			addEventListener('resize', prende);
-			addEventListener('scroll', () => (quadroPedido ||= requestAnimationFrame(acende)), {
+			desktop.addEventListener('change', pin);
+			addEventListener('resize', pin);
+			addEventListener('scroll', () => (pendingFrame ||= requestAnimationFrame(lightUp)), {
 				passive: true,
 			});
-			prende();
+			pin();
 		}
 	});
 </script>
 
 <style>
-	/* Presa: a secção ganha meio ecrã de altura por Etapa, e o palco fica parado por baixo do
-	   cabeçalho enquanto ela passa. */
-	[data-presa] {
-		height: calc(100svh - var(--altura-cabecalho) + var(--etapas) * 50svh);
+	/* Pinned: the section gains half a screen of height per Step, and the stage stays still below the
+	   header while the section scrolls past. */
+	[data-pinned] {
+		height: calc(100svh - var(--header-height) + var(--step-count) * 50svh);
 	}
-	[data-presa] [data-palco] {
+	[data-pinned] [data-stage] {
 		position: sticky;
-		top: var(--altura-cabecalho);
+		top: var(--header-height);
 		display: grid;
 		align-content: center;
-		height: calc(100svh - var(--altura-cabecalho));
+		height: calc(100svh - var(--header-height));
 	}
-	/* O palco centra as Etapas: o espaço por cima e por baixo vem dele, não do padding. */
-	[data-presa] [data-palco] > * {
+	/* The stage centers the Steps: the space above and below comes from it, not from the padding. */
+	[data-pinned] [data-stage] > * {
 		padding-block: 0;
 	}
 
-	/* Presa, cada número fica apagado até a sua Etapa chegar. O cinzento das linhas fortes tem
-	   3,5:1 com o fundo, que chega para um número deste tamanho (WCAG 1.4.3, texto grande). */
-	[data-presa] [data-numero] {
-		color: var(--color-linha-forte);
+	/* Pinned, each number stays dimmed until its Step is reached. The `line-strong` gray has
+	   3.5:1 on the background, enough for a number this size (WCAG 1.4.3, large text). */
+	[data-pinned] [data-number] {
+		color: var(--color-line-strong);
 		transition: color 0.35s ease;
 	}
-	[data-presa] [data-chegou] [data-numero] {
-		color: var(--color-verde);
+	[data-pinned] [data-reached] [data-number] {
+		color: var(--color-green);
 	}
 </style>

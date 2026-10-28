@@ -1,24 +1,24 @@
 ---
-// O rodapé de todas as páginas: o nome e o LinkedIn.
-// As partes que chegam com as páginas para onde levam têm o lugar marcado com o ticket.
-import { valores } from '../config/values';
+// The footer of every page: the name and LinkedIn.
+// The parts that arrive with the pages they lead to have their place marked with the ticket.
+import { values } from '../config/values';
 ---
 
-<footer class="mt-20 border-t border-linha text-sm text-texto-secundario">
-	<div class="largura flex flex-wrap items-center gap-x-6 gap-y-3 py-8">
-		<p class="font-titulos text-lg text-texto">{valores.nome}</p>
+<footer class="mt-20 border-t border-line text-sm text-foreground-secondary">
+	<div class="page-width flex flex-wrap items-center gap-x-6 gap-y-3 py-8">
+		<p class="font-heading text-lg text-foreground">{values.name}</p>
 
-		{/* O email no domínio (#71) */}
+		{/* The email on the domain (#71) */}
 
 		<a
-			href={valores.linkedin}
-			class="inline-flex min-h-6 items-center underline underline-offset-3 hover:text-texto"
+			href={values.linkedin}
+			class="inline-flex min-h-6 items-center underline underline-offset-3 hover:text-foreground"
 		>
 			LinkedIn
 		</a>
 
-		{/* Ecologia (#68) */}
+		{/* Ecology (#68) */}
 
-		{/* Informação legal e Política de privacidade (#71) */}
+		{/* Legal information and Privacy policy (#71) */}
 	</div>
 </footer>

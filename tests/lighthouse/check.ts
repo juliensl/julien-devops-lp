@@ -1,260 +1,263 @@
-// O Lighthouse, em modo telemóvel, sobre as páginas de um build (#59).
-// Diz que metas que bloqueiam cada página falha, e mede as que só avisam.
+// Lighthouse, in mobile mode, on the pages of a build (#59).
+// Reports which blocking targets each page fails, and measures the warning-only ones.
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:net';
 import { join } from 'node:path';
 import { chromium } from '@playwright/test';
 import { preview } from 'astro';
 import lighthouse, { generateReport, type Result } from 'lighthouse';
-import type { Pagina } from '../builds.ts';
+import type { SitePage } from '../builds.ts';
 
-/** 1 KB = 1024 bytes, como nos orçamentos do Lighthouse. */
+/** 1 KB = 1024 bytes, as in Lighthouse budgets. */
 const KB = 1024;
-const PAGINA_MAXIMA = 400 * KB;
-const JS_MAXIMO = 75 * KB;
-const FONTES_MAXIMAS = 2;
+const MAX_PAGE_SIZE = 400 * KB;
+const MAX_JS_SIZE = 75 * KB;
+const MAX_FONTS = 2;
 
-/** Uma meta que varia de execução para execução: vê-se no resumo, com a mediana. */
-export interface Meta {
-	nome: string;
-	alvo: string;
-	/** Fora da meta, aparece também como aviso no job. */
-	avisa: boolean;
-	valor: (lhr: Result) => number | null;
-	cumpre: (valor: number) => boolean;
-	formato: (valor: number) => string;
+/** A target that varies from run to run: shown in the summary, as a median. */
+export interface Target {
+	name: string;
+	threshold: string;
+	/** When missed, it also shows as a warning in the job. */
+	warns: boolean;
+	value: (lhr: Result) => number | null;
+	passes: (value: number) => boolean;
+	format: (value: number) => string;
 }
 
-const pontuacao = (categoria: string) => (lhr: Result) => {
-	const pontos = lhr.categories[categoria]?.score;
-	return pontos == null ? null : Math.round(pontos * 100);
+const categoryScore = (category: string) => (lhr: Result) => {
+	const score = lhr.categories[category]?.score;
+	return score == null ? null : Math.round(score * 100);
 };
-const metrica = (auditoria: string) => (lhr: Result) => lhr.audits[auditoria]?.numericValue ?? null;
+const metric = (audit: string) => (lhr: Result) => lhr.audits[audit]?.numericValue ?? null;
 
-/** A pontuação de desempenho. Também escolhe a execução mediana, a do relatório. */
-const DESEMPENHO: Meta = {
-	nome: 'Desempenho',
-	alvo: '≥ 90',
-	avisa: true,
-	valor: pontuacao('performance'),
-	cumpre: (v) => v >= 90,
-	formato: (v) => `${v}`,
+/** The performance score. It also picks the median run, the one in the report. */
+const PERFORMANCE: Target = {
+	name: 'Performance',
+	threshold: '≥ 90',
+	warns: true,
+	value: categoryScore('performance'),
+	passes: (v) => v >= 90,
+	format: (v) => `${v}`,
 };
 
-export const METAS: Meta[] = [
-	DESEMPENHO,
+export const TARGETS: Target[] = [
+	PERFORMANCE,
 	{
-		nome: 'LCP',
-		alvo: '≤ 2,5 s',
-		avisa: true,
-		valor: metrica('largest-contentful-paint'),
-		cumpre: (ms) => ms <= 2500,
-		formato: (ms) => `${formatar(ms / 1000, 1)} s`,
+		name: 'LCP',
+		threshold: '≤ 2.5 s',
+		warns: true,
+		value: metric('largest-contentful-paint'),
+		passes: (ms) => ms <= 2500,
+		format: (ms) => `${formatNumber(ms / 1000, 1)} s`,
 	},
 	{
-		nome: 'TBT',
-		alvo: '≤ 200 ms',
-		avisa: true,
-		valor: metrica('total-blocking-time'),
-		cumpre: (ms) => ms <= 200,
-		formato: (ms) => `${formatar(ms, 0)} ms`,
+		name: 'TBT',
+		threshold: '≤ 200 ms',
+		warns: true,
+		value: metric('total-blocking-time'),
+		passes: (ms) => ms <= 200,
+		format: (ms) => `${formatNumber(ms, 0)} ms`,
 	},
 	{
-		nome: 'CLS',
-		alvo: '≤ 0,1',
-		avisa: false,
-		valor: metrica('cumulative-layout-shift'),
-		cumpre: (v) => v <= 0.1,
-		formato: (v) => formatar(v, 2),
+		name: 'CLS',
+		threshold: '≤ 0.1',
+		warns: false,
+		value: metric('cumulative-layout-shift'),
+		passes: (v) => v <= 0.1,
+		format: (v) => formatNumber(v, 2),
 	},
 	{
-		nome: 'Acessibilidade',
-		alvo: '100',
-		avisa: false,
-		valor: pontuacao('accessibility'),
-		cumpre: (v) => v === 100,
-		formato: (v) => `${v}`,
+		name: 'Accessibility',
+		threshold: '100',
+		warns: false,
+		value: categoryScore('accessibility'),
+		passes: (v) => v === 100,
+		format: (v) => `${v}`,
 	},
 	{
-		nome: 'Boas práticas',
-		alvo: '100',
-		avisa: false,
-		valor: pontuacao('best-practices'),
-		cumpre: (v) => v === 100,
-		formato: (v) => `${v}`,
+		name: 'Best practices',
+		threshold: '100',
+		warns: false,
+		value: categoryScore('best-practices'),
+		passes: (v) => v === 100,
+		format: (v) => `${v}`,
 	},
 ];
 
-export interface Opcoes {
-	/** A pasta do build, servida como no alojamento. */
+export interface Options {
+	/** The build folder, served as on the hosting. */
 	dist: string;
-	paginas: Pagina[];
-	/** A constante `noindex` da fase do build: o SEO exige-o, ou exige páginas indexáveis. */
+	pages: SitePage[];
+	/** The `noindex` constant of the build's phase: SEO requires it, or requires indexable pages. */
 	noindex: boolean;
-	/** Quantas vezes o Lighthouse analisa cada página. As medianas vêm destas execuções. */
-	execucoes: number;
-	/** A pasta onde fica o relatório HTML da execução mediana de cada página. */
-	relatorios?: string;
-	/** Recebe uma linha por execução, para mostrar o progresso. */
-	progresso?: (linha: string) => void;
+	/** How many times Lighthouse analyzes each page. The medians come from these runs. */
+	runs: number;
+	/** The folder that holds the HTML report of each page's median run. */
+	reportsDir?: string;
+	/** Receives one line per run, to show progress. */
+	progress?: (line: string) => void;
 }
 
-export interface Analise {
-	caminho: string;
-	/** As metas que bloqueiam e que alguma execução falhou. */
-	falhas: string[];
-	/** A mediana de cada meta de METAS, pela mesma ordem, ou null se o Lighthouse não a mediu. */
-	medianas: (number | null)[];
+export interface Analysis {
+	path: string;
+	/** The blocking targets that some run failed. */
+	failures: string[];
+	/** The median of each target, in `TARGETS` order, or null if Lighthouse did not measure it. */
+	medians: (number | null)[];
 }
 
-export async function verificarSite(opcoes: Opcoes): Promise<Analise[]> {
-	const servidor = await preview({
-		outDir: opcoes.dist,
+export async function checkSite(options: Options): Promise<Analysis[]> {
+	const server = await preview({
+		outDir: options.dist,
 		server: { port: 0 },
 		logLevel: 'error',
 	});
-	const portaDoChromium = await portaLivre();
-	// O Chromium do Playwright, o mesmo dos testes, em modo headless novo.
-	const navegador = await chromium.launch({
+	const chromiumPort = await freePort();
+	// Playwright's Chromium, the same one the tests use, in new headless mode.
+	const browser = await chromium.launch({
 		channel: 'chromium',
-		args: [`--remote-debugging-port=${portaDoChromium}`],
+		args: [`--remote-debugging-port=${chromiumPort}`],
 	});
-	if (opcoes.relatorios) mkdirSync(opcoes.relatorios, { recursive: true });
+	if (options.reportsDir) mkdirSync(options.reportsDir, { recursive: true });
 
-	const analises: Analise[] = [];
+	const analyses: Analysis[] = [];
 	try {
-		for (const { caminho, lingua } of opcoes.paginas) {
-			const url = `http://localhost:${servidor.port}${caminho}`;
-			const execucoes: Result[] = [];
-			for (let n = 1; n <= opcoes.execucoes; n++) {
-				opcoes.progresso?.(`${opcoes.dist}${caminho}: execução ${n} de ${opcoes.execucoes}`);
-				const resultado = await lighthouse(url, {
-					port: portaDoChromium,
+		for (const { path, language } of options.pages) {
+			const url = `http://localhost:${server.port}${path}`;
+			const runs: Result[] = [];
+			for (let n = 1; n <= options.runs; n++) {
+				options.progress?.(`${options.dist}${path}: run ${n} of ${options.runs}`);
+				const result = await lighthouse(url, {
+					port: chromiumPort,
 					logLevel: 'error',
 					onlyCategories: ['performance', 'accessibility', 'best-practices', 'seo'],
 				});
-				if (!resultado) throw new Error(`O Lighthouse não devolveu resultado para ${caminho}.`);
-				execucoes.push(resultado.lhr);
+				if (!result) throw new Error(`Lighthouse returned no result for ${path}.`);
+				runs.push(result.lhr);
 			}
 
-			// As páginas de erro, sem língua, têm sempre noindex, como na suite Playwright.
-			const deveTerNoindex = opcoes.noindex || !lingua;
-			const falhas = new Set(execucoes.flatMap((lhr) => falhasDe(lhr, deveTerNoindex)));
-			const medianas = METAS.map((meta) => mediana(execucoes.map(meta.valor)));
-			analises.push({ caminho, falhas: [...falhas], medianas });
+			// Error pages, which have no language, always have noindex, as in the Playwright suite.
+			const needsNoindex = options.noindex || !language;
+			const failures = new Set(runs.flatMap((lhr) => failuresOf(lhr, needsNoindex)));
+			const medians = TARGETS.map((target) => median(runs.map(target.value)));
+			analyses.push({ path, failures: [...failures], medians });
 
-			if (opcoes.relatorios) {
-				const desempenho = medianas[METAS.indexOf(DESEMPENHO)];
-				const execucaoMediana =
-					execucoes.find((lhr) => DESEMPENHO.valor(lhr) === desempenho) ?? execucoes[0];
+			if (options.reportsDir) {
+				const medianPerformance = medians[TARGETS.indexOf(PERFORMANCE)];
+				const medianRun =
+					runs.find((lhr) => PERFORMANCE.value(lhr) === medianPerformance) ?? runs[0];
 				writeFileSync(
-					join(opcoes.relatorios, `${nomeDoRelatorio(caminho)}.html`),
-					generateReport(execucaoMediana, 'html'),
+					join(options.reportsDir, `${reportName(path)}.html`),
+					generateReport(medianRun, 'html'),
 				);
 			}
 		}
 	} finally {
-		await navegador.close();
-		await servidor.stop();
+		await browser.close();
+		await server.stop();
 	}
-	return analises;
+	return analyses;
 }
 
-/** As metas que bloqueiam e que esta execução falhou. */
-function falhasDe(lhr: Result, deveTerNoindex: boolean): string[] {
+/** The blocking targets that this run failed. */
+function failuresOf(lhr: Result, needsNoindex: boolean): string[] {
 	if (lhr.runtimeError) {
-		return [`o Lighthouse não conseguiu analisar a página: ${lhr.runtimeError.message}`];
+		return [`Lighthouse could not analyze the page: ${lhr.runtimeError.message}`];
 	}
-	const falhas = falhasDeSeo(lhr, deveTerNoindex);
-	const todosOsPedidos = pedidos(lhr);
-	const peso = soma(todosOsPedidos);
-	if (peso > PAGINA_MAXIMA) falhas.push(`página com ${kb(peso)}, máximo ${kb(PAGINA_MAXIMA)}`);
-	// Só conta o JS dos ficheiros .js. O JS escrito dentro do HTML conta só para o peso da página.
-	const js = soma(todosOsPedidos.filter((p) => p.resourceType === 'Script'));
-	if (js > JS_MAXIMO) falhas.push(`JS com ${kb(js)}, máximo ${kb(JS_MAXIMO)}`);
+	const failures = seoFailures(lhr, needsNoindex);
+	const allRequests = networkRequests(lhr);
+	const pageSize = totalSize(allRequests);
+	if (pageSize > MAX_PAGE_SIZE) {
+		failures.push(`page weighs ${kb(pageSize)}, max ${kb(MAX_PAGE_SIZE)}`);
+	}
+	// Only counts JS from .js files. JS written inside the HTML only counts toward the page weight.
+	const js = totalSize(allRequests.filter((r) => r.resourceType === 'Script'));
+	if (js > MAX_JS_SIZE) failures.push(`JS weighs ${kb(js)}, max ${kb(MAX_JS_SIZE)}`);
 
-	const fontes = todosOsPedidos.filter((p) => p.resourceType === 'Font');
-	if (fontes.length > FONTES_MAXIMAS) {
-		falhas.push(`${fontes.length} fontes, máximo ${FONTES_MAXIMAS}`);
+	const fonts = allRequests.filter((r) => r.resourceType === 'Font');
+	if (fonts.length > MAX_FONTS) {
+		failures.push(`${fonts.length} fonts, max ${MAX_FONTS}`);
 	}
-	for (const { url } of fontes) {
+	for (const { url } of fonts) {
 		const { pathname } = new URL(url);
-		if (!pathname.endsWith('.woff2')) falhas.push(`fonte que não é woff2: ${pathname}`);
+		if (!pathname.endsWith('.woff2')) failures.push(`font not in woff2: ${pathname}`);
 	}
 
-	const origem = new URL(lhr.requestedUrl!).origin;
-	for (const { url } of todosOsPedidos) {
+	const pageOrigin = new URL(lhr.requestedUrl!).origin;
+	for (const { url } of allRequests) {
 		const { protocol, origin } = new URL(url);
-		if (/^(http|ws)s?:$/.test(protocol) && origin !== origem) {
-			falhas.push(`pedido a outro domínio: ${url}`);
+		if (/^(http|ws)s?:$/.test(protocol) && origin !== pageOrigin) {
+			failures.push(`request to another domain: ${url}`);
 		}
 	}
-	return falhas;
+	return failures;
 }
 
-interface Pedido {
+interface NetworkRequest {
 	url: string;
 	resourceType?: string;
 	transferSize?: number;
 }
 
-/** Os pedidos do primeiro carregamento, com o tamanho transferido (comprimido). */
-function pedidos(lhr: Result): Pedido[] {
-	const detalhes = lhr.audits['network-requests']?.details;
-	return detalhes?.type === 'table' ? (detalhes.items as unknown as Pedido[]) : [];
+/** The requests of the first load, with their transferred (compressed) size. */
+function networkRequests(lhr: Result): NetworkRequest[] {
+	const details = lhr.audits['network-requests']?.details;
+	return details?.type === 'table' ? (details.items as unknown as NetworkRequest[]) : [];
 }
 
-function soma(lista: Pedido[]) {
-	return lista.reduce((total, p) => total + (p.transferSize ?? 0), 0);
+function totalSize(requests: NetworkRequest[]) {
+	return requests.reduce((total, r) => total + (r.transferSize ?? 0), 0);
 }
 
 /**
- * O SEO a 100, menos a indexação enquanto a constante `noindex` estiver ligada:
- * aí exige o contrário, que o Lighthouse veja a página bloqueada.
+ * SEO at 100, except indexing while the `noindex` constant is on:
+ * then it requires the opposite, that Lighthouse sees the page as blocked.
  */
-function falhasDeSeo(lhr: Result, deveTerNoindex: boolean): string[] {
-	const falhadas = lhr.categories.seo.auditRefs
+function seoFailures(lhr: Result, needsNoindex: boolean): string[] {
+	const failedAudits = lhr.categories.seo.auditRefs
 		.filter((ref) => ref.weight > 0)
 		.map((ref) => lhr.audits[ref.id])
-		.filter((auditoria) => auditoria.score !== null && auditoria.score < 1);
-	const bloqueada = falhadas.some((auditoria) => auditoria.id === 'is-crawlable');
-	const falhas = deveTerNoindex && !bloqueada ? ['SEO: falta o noindex'] : [];
-	for (const auditoria of falhadas) {
-		if (auditoria.id !== 'is-crawlable' || !deveTerNoindex) falhas.push(`SEO: ${auditoria.title}`);
+		.filter((audit) => audit.score !== null && audit.score < 1);
+	const blocked = failedAudits.some((audit) => audit.id === 'is-crawlable');
+	const failures = needsNoindex && !blocked ? ['SEO: missing noindex'] : [];
+	for (const audit of failedAudits) {
+		if (audit.id !== 'is-crawlable' || !needsNoindex) failures.push(`SEO: ${audit.title}`);
 	}
-	return falhas;
+	return failures;
 }
 
-/** A mediana dos valores medidos. Com um número par deles, a média dos dois do meio. */
-function mediana(valores: (number | null)[]): number | null {
-	const medidos = valores.filter((v) => v !== null).sort((a, b) => a - b);
-	if (!medidos.length) return null;
-	const meio = Math.floor(medidos.length / 2);
-	return medidos.length % 2 ? medidos[meio] : (medidos[meio - 1] + medidos[meio]) / 2;
+/** The median of the measured values. With an even count, the mean of the middle two. */
+function median(values: (number | null)[]): number | null {
+	const measured = values.filter((v) => v !== null).sort((a, b) => a - b);
+	if (!measured.length) return null;
+	const middle = Math.floor(measured.length / 2);
+	return measured.length % 2 ? measured[middle] : (measured[middle - 1] + measured[middle]) / 2;
 }
 
-/** Um número à portuguesa, com `casas` casas decimais: `formatar(2.5, 1)` → `2,5`. */
-function formatar(valor: number, casas: number) {
-	return valor.toLocaleString('pt-PT', {
-		minimumFractionDigits: casas,
-		maximumFractionDigits: casas,
+/** A number with `decimals` decimal places and no grouping: `formatNumber(2.5, 1)` → `2.5`. */
+function formatNumber(value: number, decimals: number) {
+	return value.toLocaleString('en', {
+		useGrouping: false,
+		minimumFractionDigits: decimals,
+		maximumFractionDigits: decimals,
 	});
 }
 
 function kb(bytes: number) {
-	return `${formatar(bytes / KB, 1)} KB`;
+	return `${formatNumber(bytes / KB, 1)} KB`;
 }
 
-/** O nome do relatório de uma página: `/pt/` → `pt`, `/` → `index`, `/404.html` → `404`. */
-function nomeDoRelatorio(caminho: string) {
-	return caminho.replace(/^\/|\/$|\.html$/g, '').replaceAll('/', '-') || 'index';
+/** The report name of a page: `/pt/` → `pt`, `/` → `index`, `/404.html` → `404`. */
+function reportName(path: string) {
+	return path.replace(/^\/|\/$|\.html$/g, '').replaceAll('/', '-') || 'index';
 }
 
-/** Uma porta livre, escolhida pelo sistema, para o Lighthouse falar com o Chromium. */
-async function portaLivre(): Promise<number> {
-	const servidor = createServer().listen(0);
-	await new Promise((pronto) => servidor.once('listening', pronto));
-	const { port } = servidor.address() as { port: number };
-	await new Promise((fechado) => servidor.close(fechado));
+/** A free port, chosen by the OS, for Lighthouse to talk to Chromium. */
+async function freePort(): Promise<number> {
+	const server = createServer().listen(0);
+	await new Promise((ready) => server.once('listening', ready));
+	const { port } = server.address() as { port: number };
+	await new Promise((closed) => server.close(closed));
 	return port;
 }

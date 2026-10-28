@@ -1,17 +1,17 @@
-// A secção Etapas (#65): as 5 Etapas, da Conversa à Entrega e transferência. No computador, a
-// secção fica presa e o número de cada Etapa acende quando chega a sua vez; no telemóvel e com
-// movimento reduzido, não fica presa.
+// The Steps section (#65): the 5 Steps, from the Conversation to the Delivery and handover. On
+// desktop, the section stays pinned and the number of each Step lights up when its turn comes; on a
+// phone and with reduced motion, it is not pinned.
 import { expect, test, type Page } from '@playwright/test';
-import { emCadaBuild } from './builds';
-import { LINGUAS, type Lingua } from './expected';
+import { inEachBuild } from './builds';
+import { LANGUAGES, type Language } from './expected';
 
-// As Etapas, pela ordem, e o que cada frase diz vêm da spec (#54); em português, as frases são as
-// do protótipo v3. O francês e o inglês são traduções que a estagiária valida antes do Lançamento
-// comercial (#75).
-const ESPERADO: Record<Lingua, { titulo: string; etapas: [string, string][] }> = {
+// The Steps, in order, and what each sentence says come from the spec (#54); in Portuguese, the
+// sentences are those of prototype v3. French and English are translations the intern reviews
+// before the Commercial launch (#75).
+const EXPECTED: Record<Language, { title: string; steps: [string, string][] }> = {
 	pt: {
-		titulo: 'Cinco etapas, sempre pela mesma ordem.',
-		etapas: [
+		title: 'Cinco etapas, sempre pela mesma ordem.',
+		steps: [
 			['Conversa', '45 min por Google Meet, gratuita.'],
 			[
 				'Diagnóstico',
@@ -23,8 +23,8 @@ const ESPERADO: Record<Lingua, { titulo: string; etapas: [string, string][] }> =
 		],
 	},
 	fr: {
-		titulo: 'Cinq étapes, toujours dans le même ordre.',
-		etapas: [
+		title: 'Cinq étapes, toujours dans le même ordre.',
+		steps: [
 			['Échange', '45 min sur Google Meet, gratuit.'],
 			[
 				'Diagnostic',
@@ -36,8 +36,8 @@ const ESPERADO: Record<Lingua, { titulo: string; etapas: [string, string][] }> =
 		],
 	},
 	en: {
-		titulo: 'Five steps, always in the same order.',
-		etapas: [
+		title: 'Five steps, always in the same order.',
+		steps: [
 			['Conversation', '45 min on Google Meet, free of charge.'],
 			[
 				'Diagnosis',
@@ -50,140 +50,142 @@ const ESPERADO: Record<Lingua, { titulo: string; etapas: [string, string][] }> =
 	},
 };
 
-/** Um número aceso tem o verde dos dados (#54, «Direção visual»). */
-const ACESO = 'rgb(60, 207, 142)';
+/** A lit number has the data green (#54, "Direção visual"). */
+const LIT_COLOR = 'rgb(60, 207, 142)';
 
-/** Onde o Visitante abre a página. */
-interface Ecra {
-	onde: string;
-	largura: number;
-	altura: number;
-	movimentoReduzido?: boolean;
+/** Where the Visitor opens the page. */
+interface Viewport {
+	label: string;
+	width: number;
+	height: number;
+	reducedMotion?: boolean;
 }
 
-const COMPUTADOR: Ecra = { onde: 'no computador', largura: 1280, altura: 800 };
-const TELEMOVEL: Ecra = { onde: 'no telemóvel', largura: 375, altura: 700 };
-const COM_MOVIMENTO_REDUZIDO: Ecra = {
-	...COMPUTADOR,
-	onde: 'no computador, com movimento reduzido',
-	movimentoReduzido: true,
+const DESKTOP: Viewport = { label: 'on desktop', width: 1280, height: 800 };
+const PHONE: Viewport = { label: 'on a phone', width: 375, height: 700 };
+const REDUCED_MOTION: Viewport = {
+	...DESKTOP,
+	label: 'on desktop, with reduced motion',
+	reducedMotion: true,
 };
-// Presa, uma parte das Etapas ficaria escondida por baixo do ecrã.
-const ECRA_BAIXO: Ecra = {
-	...COMPUTADOR,
-	onde: 'num ecrã baixo, onde as Etapas não cabem',
-	altura: 360,
+// Pinned, part of the Steps would be hidden below the screen.
+const SHORT_SCREEN: Viewport = {
+	...DESKTOP,
+	label: 'on a short screen, where the Steps do not fit',
+	height: 360,
 };
 
-const seccao = (page: Page, lingua: Lingua) =>
-	page.getByRole('region', { name: ESPERADO[lingua].titulo });
+const section = (page: Page, language: Language) =>
+	page.getByRole('region', { name: EXPECTED[language].title });
 
-/** Abre a página nesse ecrã e espera que o JS, que arranca no fim do carregamento, tenha corrido. */
-async function abre(page: Page, caminho: string, ecra: Ecra) {
-	if (ecra.movimentoReduzido) await page.emulateMedia({ reducedMotion: 'reduce' });
-	await page.setViewportSize({ width: ecra.largura, height: ecra.altura });
-	await page.goto(caminho);
-	await page.evaluate(() => new Promise((corrido) => setTimeout(corrido)));
+/** Opens the page on that screen and waits until the JS, which starts once loading ends, has run. */
+async function openPage(page: Page, path: string, viewport: Viewport) {
+	if (viewport.reducedMotion) await page.emulateMedia({ reducedMotion: 'reduce' });
+	await page.setViewportSize({ width: viewport.width, height: viewport.height });
+	await page.goto(path);
+	await page.evaluate(() => new Promise((resolve) => setTimeout(resolve)));
 }
 
-/** As 5 Etapas estão à vista, pela ordem, cada uma com o nome e a frase. */
-async function asCincoEtapasEstaoVisiveis(page: Page, lingua: Lingua) {
-	const etapas = seccao(page, lingua).getByRole('list').getByRole('listitem');
-	await expect(etapas).toHaveCount(5);
-	for (const [k, [nome, frase]] of ESPERADO[lingua].etapas.entries()) {
-		await etapas.nth(k).scrollIntoViewIfNeeded();
-		await expect(etapas.nth(k).getByText(nome, { exact: true })).toBeVisible();
-		await expect(etapas.nth(k).getByText(frase, { exact: true })).toBeVisible();
+/** The 5 Steps are in view, in order, each with its name and sentence. */
+async function expectFiveStepsVisible(page: Page, language: Language) {
+	const steps = section(page, language).getByRole('list').getByRole('listitem');
+	await expect(steps).toHaveCount(5);
+	for (const [k, [name, sentence]] of EXPECTED[language].steps.entries()) {
+		await steps.nth(k).scrollIntoViewIfNeeded();
+		await expect(steps.nth(k).getByText(name, { exact: true })).toBeVisible();
+		await expect(steps.nth(k).getByText(sentence, { exact: true })).toBeVisible();
 	}
 }
 
-/** Leva o início da secção até ao fundo do cabeçalho fixo, onde uma secção presa começa. */
-async function chegaASeccao(page: Page, lingua: Lingua) {
-	const cabecalho = (await page.getByRole('banner').boundingBox())!;
-	await seccao(page, lingua).evaluate(
-		(s, fundoDoCabecalho) => scrollBy(0, s.getBoundingClientRect().top - fundoDoCabecalho),
-		cabecalho.y + cabecalho.height,
+/** Brings the top of the section to the bottom of the sticky header, where a pinned section starts. */
+async function scrollToSection(page: Page, language: Language) {
+	const header = (await page.getByRole('banner').boundingBox())!;
+	await section(page, language).evaluate(
+		(s, headerBottom) => scrollBy(0, s.getBoundingClientRect().top - headerBottom),
+		header.y + header.height,
 	);
 }
 
 /**
- * Desce a página `distancia` px e diz quanto a página desceu de facto e quanto subiu o título da
- * secção. Solta, o título sobe tanto como a página desce; presa, fica no mesmo sítio.
+ * Scrolls the page down `distance` px and says how far the page actually scrolled and how far the
+ * section title rose. Unpinned, the title rises as much as the page scrolls; pinned, it stays put.
  */
-async function desce(page: Page, lingua: Lingua, distancia: number) {
-	const titulo = seccao(page, lingua).getByRole('heading', { level: 2 });
-	const antes = {
-		pagina: await page.evaluate(() => scrollY),
-		titulo: (await titulo.boundingBox())!.y,
+async function scrollDown(page: Page, language: Language, distance: number) {
+	const heading = section(page, language).getByRole('heading', { level: 2 });
+	const before = {
+		scroll: await page.evaluate(() => scrollY),
+		title: (await heading.boundingBox())!.y,
 	};
-	await page.evaluate((d) => scrollBy(0, d), distancia);
+	await page.evaluate((d) => scrollBy(0, d), distance);
 	return {
-		pagina: (await page.evaluate(() => scrollY)) - antes.pagina,
-		titulo: antes.titulo - (await titulo.boundingBox())!.y,
+		scroll: (await page.evaluate(() => scrollY)) - before.scroll,
+		title: before.title - (await heading.boundingBox())!.y,
 	};
 }
 
-emCadaBuild((build) => {
-	for (const lingua of build.fase.linguasPublicadas) {
-		const { inicio } = LINGUAS[lingua];
+inEachBuild((build) => {
+	for (const language of build.phase.publishedLanguages) {
+		const { prefix } = LANGUAGES[language];
 
-		test.describe(inicio, () => {
-			test('no computador, a secção fica presa durante cerca de meio ecrã por Etapa', async ({
+		test.describe(prefix, () => {
+			test('on desktop, the section stays pinned for about half a screen per Step', async ({
 				page,
 			}) => {
-				const { altura } = COMPUTADOR;
-				await abre(page, inicio, COMPUTADOR);
-				await chegaASeccao(page, lingua);
-				// 5 Etapas, cerca de 2,5 ecrãs: presa até 2,25 (menos de 2 px, a borda do cabeçalho),
-				// já solta aos 2,75.
-				const presa = await desce(page, lingua, 2.25 * altura);
-				expect(presa.pagina).toBeCloseTo(2.25 * altura, 0);
-				expect(Math.abs(presa.titulo)).toBeLessThan(2);
-				expect((await desce(page, lingua, 0.5 * altura)).titulo).toBeGreaterThan(0.2 * altura);
+				const { height } = DESKTOP;
+				await openPage(page, prefix, DESKTOP);
+				await scrollToSection(page, language);
+				// 5 Steps, about 2.5 screens: pinned up to 2.25 (less than 2 px, the header border),
+				// already unpinned at 2.75.
+				const stuck = await scrollDown(page, language, 2.25 * height);
+				expect(stuck.scroll).toBeCloseTo(2.25 * height, 0);
+				expect(Math.abs(stuck.title)).toBeLessThan(2);
+				expect((await scrollDown(page, language, 0.5 * height)).title).toBeGreaterThan(
+					0.2 * height,
+				);
 			});
 
-			test('no computador, o número de cada Etapa acende quando chega a sua vez', async ({
+			test('on desktop, the number of each Step lights up when its turn comes', async ({
 				page,
 			}) => {
-				await abre(page, inicio, COMPUTADOR);
-				await chegaASeccao(page, lingua);
-				const etapas = seccao(page, lingua).getByRole('listitem');
-				const numero = (k: number) => etapas.nth(k).getByText(String(k + 1), { exact: true });
+				await openPage(page, prefix, DESKTOP);
+				await scrollToSection(page, language);
+				const steps = section(page, language).getByRole('listitem');
+				const stepNumber = (k: number) => steps.nth(k).getByText(String(k + 1), { exact: true });
 
-				// Cada meio ecrã de scroll acende mais um número, pela ordem.
-				for (let acesos = 0; acesos <= 5; acesos++) {
+				// Each half screen of scroll lights up one more number, in order.
+				for (let lit = 0; lit <= 5; lit++) {
 					for (let k = 0; k < 5; k++) {
-						if (k < acesos) await expect(numero(k), `${acesos} acesos`).toHaveCSS('color', ACESO);
-						else await expect(numero(k), `${acesos} acesos`).not.toHaveCSS('color', ACESO);
+						if (k < lit) await expect(stepNumber(k), `${lit} lit`).toHaveCSS('color', LIT_COLOR);
+						else await expect(stepNumber(k), `${lit} lit`).not.toHaveCSS('color', LIT_COLOR);
 					}
-					await page.evaluate((d) => scrollBy(0, d), 0.5 * COMPUTADOR.altura);
+					await page.evaluate((d) => scrollBy(0, d), 0.5 * DESKTOP.height);
 				}
 			});
 
-			for (const ecra of [TELEMOVEL, COM_MOVIMENTO_REDUZIDO, ECRA_BAIXO]) {
-				test(`${ecra.onde}, a secção não fica presa`, async ({ page }) => {
-					await abre(page, inicio, ecra);
-					await chegaASeccao(page, lingua);
-					const { pagina, titulo } = await desce(page, lingua, 300);
-					expect(pagina, 'a página desceu').toBeGreaterThan(0);
-					expect(titulo).toBeCloseTo(pagina, 0);
+			for (const viewport of [PHONE, REDUCED_MOTION, SHORT_SCREEN]) {
+				test(`${viewport.label}, the section is not pinned`, async ({ page }) => {
+					await openPage(page, prefix, viewport);
+					await scrollToSection(page, language);
+					const { scroll, title } = await scrollDown(page, language, 300);
+					expect(scroll, 'the page scrolled').toBeGreaterThan(0);
+					expect(title).toBeCloseTo(scroll, 0);
 				});
 			}
 
-			for (const ecra of [COMPUTADOR, TELEMOVEL, COM_MOVIMENTO_REDUZIDO]) {
-				test(`${ecra.onde}, as 5 Etapas estão visíveis`, async ({ page }) => {
-					await abre(page, inicio, ecra);
-					await asCincoEtapasEstaoVisiveis(page, lingua);
+			for (const viewport of [DESKTOP, PHONE, REDUCED_MOTION]) {
+				test(`${viewport.label}, the 5 Steps are visible`, async ({ page }) => {
+					await openPage(page, prefix, viewport);
+					await expectFiveStepsVisible(page, language);
 				});
 			}
 
-			test.describe('sem JavaScript', () => {
+			test.describe('without JavaScript', () => {
 				test.use({ javaScriptEnabled: false });
 
-				test('as 5 Etapas estão visíveis', async ({ page }) => {
-					await page.setViewportSize({ width: COMPUTADOR.largura, height: COMPUTADOR.altura });
-					await page.goto(inicio);
-					await asCincoEtapasEstaoVisiveis(page, lingua);
+				test('the 5 Steps are visible', async ({ page }) => {
+					await page.setViewportSize({ width: DESKTOP.width, height: DESKTOP.height });
+					await page.goto(prefix);
+					await expectFiveStepsVisible(page, language);
 				});
 			});
 		});

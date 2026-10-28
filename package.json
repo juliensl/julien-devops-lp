@@ -8,16 +8,16 @@
 	"scripts": {
 		"dev": "astro dev",
 		"build": "astro build",
-		"build:lancamento": "LANCAMENTO_COMERCIAL=1 astro build --outDir dist-lancamento",
+		"build:launch": "COMMERCIAL_LAUNCH=1 astro build --outDir dist-launch",
 		"preview": "astro preview",
 		"check": "astro check",
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
 		"test": "playwright test",
 		"lighthouse": "node tests/lighthouse/run.ts",
-		"verificar": "npm run check && npm run format:check && npm run build && npm run build:lancamento && npm test && npm run lighthouse",
-		"confirmar": "playwright test -c playwright.publish.config.ts",
-		"imagem-de-partilha": "node scripts/share-image.ts",
+		"verify": "npm run check && npm run format:check && npm run build && npm run build:launch && npm test && npm run lighthouse",
+		"confirm": "playwright test -c playwright.publish.config.ts",
+		"share-image": "node scripts/share-image.ts",
 		"astro": "astro"
 	},
 	"dependencies": {

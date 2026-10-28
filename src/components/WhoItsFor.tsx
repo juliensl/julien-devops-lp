@@ -1,62 +1,62 @@
-import { comEspacosInseparaveis } from '../lib/spaces';
+import { withNonBreakingSpaces } from '../lib/spaces';
 import BookingButton from './BookingButton';
 
 interface Props {
-	titulo: string;
-	/** O perfil, em 3 afirmações: o SaaS, o crescimento e a equipa. */
-	perfil: string[];
-	/** Para o CTO de um SaaS que ainda não foi lançado. */
-	aindaNaoLancado: string;
-	tituloDasExclusoes: string;
-	exclusoes: string[];
-	textoDoBotao: string;
+	title: string;
+	/** The profile, in 3 statements: the SaaS, the growth and the team. */
+	profile: string[];
+	/** For the CTO of a SaaS that hasn't launched yet. */
+	notLaunchedYet: string;
+	exclusionsTitle: string;
+	exclusions: string[];
+	buttonText: string;
 }
 
-/** Logo a seguir ao Hero: o CTO percebe se o serviço é para ele, e pode marcar ali mesmo. */
+/** Right after the Hero: the CTO sees whether the service is for them, and can book right there. */
 export default function WhoItsFor({
-	titulo,
-	perfil,
-	aindaNaoLancado,
-	tituloDasExclusoes,
-	exclusoes,
-	textoDoBotao,
+	title,
+	profile,
+	notLaunchedYet,
+	exclusionsTitle,
+	exclusions,
+	buttonText,
 }: Props) {
 	return (
 		<section
-			aria-labelledby="para-quem-titulo"
-			className="largura grid gap-10 py-[clamp(5rem,11vw,9rem)]"
+			aria-labelledby="who-its-for-title"
+			className="page-width grid gap-10 py-[clamp(5rem,11vw,9rem)]"
 		>
-			<h2 id="para-quem-titulo" className="etiqueta font-texto">
-				{titulo}
+			<h2 id="who-its-for-title" className="label font-body">
+				{title}
 			</h2>
 			<ul className="grid gap-x-12 gap-y-8 lg:grid-cols-3">
-				{perfil.map((frase) => (
+				{profile.map((statement) => (
 					<li
-						key={frase}
-						className="border-t-2 border-verde pt-5 font-titulos text-[clamp(1.5rem,2.6vw,2rem)] leading-tight"
+						key={statement}
+						className="border-t-2 border-green pt-5 font-heading text-[clamp(1.5rem,2.6vw,2rem)] leading-tight"
 					>
-						{comEspacosInseparaveis(frase)}
+						{withNonBreakingSpaces(statement)}
 					</li>
 				))}
 			</ul>
-			<p className="max-w-2xl text-lg text-roxo">{comEspacosInseparaveis(aindaNaoLancado)}</p>
+			<p className="max-w-2xl text-lg text-purple">{withNonBreakingSpaces(notLaunchedYet)}</p>
 			<div className="grid gap-4">
-				<h3 id="para-quem-exclusoes" className="text-2xl">
-					{tituloDasExclusoes}
+				<h3 id="who-its-for-exclusions" className="text-2xl">
+					{exclusionsTitle}
 				</h3>
-				<ul aria-labelledby="para-quem-exclusoes" className="grid gap-x-12 md:grid-cols-2">
-					{exclusoes.map((exclusao) => (
+				<ul aria-labelledby="who-its-for-exclusions" className="grid gap-x-12 md:grid-cols-2">
+					{exclusions.map((exclusion) => (
 						<li
-							key={exclusao}
-							className="flex gap-3 border-t border-linha py-4 text-texto-secundario before:mt-[0.8em] before:h-px before:w-3 before:shrink-0 before:bg-linha-forte"
+							key={exclusion}
+							className="flex gap-3 border-t border-line py-4 text-foreground-secondary before:mt-[0.8em] before:h-px before:w-3 before:shrink-0 before:bg-line-strong"
 						>
-							{comEspacosInseparaveis(exclusao)}
+							{withNonBreakingSpaces(exclusion)}
 						</li>
 					))}
 				</ul>
 			</div>
 			<div>
-				<BookingButton texto={textoDoBotao} />
+				<BookingButton text={buttonText} />
 			</div>
 		</section>
 	);

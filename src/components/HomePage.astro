@@ -1,10 +1,10 @@
 ---
-// A página principal: as secções pela ordem da #54, com o ticket que traz cada uma.
-// Cada secção fica no seu lugar, separada das outras por uma linha em branco,
-// para que os PR que acrescentam secções diferentes não entrem em conflito.
-import { type Lingua } from '../config/site';
-import { valores } from '../config/values';
-import { dicionarios } from '../i18n';
+// The home page: the sections in #54's order, with the ticket that brings each one.
+// Each section keeps its own place, separated from the others by a blank line,
+// so that PRs adding different sections don't conflict.
+import { type Language } from '../config/site';
+import { values } from '../config/values';
+import { dictionaries } from '../i18n';
 import Base from '../layouts/Base.astro';
 import AboutJulien from './AboutJulien.astro';
 import FinalCta from './FinalCta';
@@ -17,50 +17,50 @@ import TopDots from './TopDots.astro';
 import WhoItsFor from './WhoItsFor';
 
 interface Props {
-	lingua: Lingua;
+	language: Language;
 }
 
-const { lingua } = Astro.props;
-const t = dicionarios[lingua];
+const { language } = Astro.props;
+const t = dictionaries[language];
 ---
 
 <Base
-	lingua={lingua}
-	titulo={`${valores.nome} · ${t.designacao}`}
-	descricao={t.paginaPrincipal.descricao}
+	language={language}
+	title={`${values.name} · ${t.designation}`}
+	description={t.homePage.description}
 >
 	<main>
 		<TopDots />
-		{/* O botão de pausa é o primeiro foco depois do cabeçalho: para tudo antes de ler. */}
-		<PauseButton {...t.animacao} />
+		{/* The pause button is the first focus after the header: it stops everything before reading. */}
+		<PauseButton {...t.animation} />
 
 		<Hero
-			designacao={t.designacao}
-			promessa={t.promessa}
-			textoDoBotao={t.botaoMarcar}
-			{...t.paginaPrincipal.hero}
+			designation={t.designation}
+			promise={t.promise}
+			buttonText={t.bookButton}
+			{...t.homePage.hero}
 		/>
 
-		<WhoItsFor textoDoBotao={t.botaoMarcar} {...t.paginaPrincipal.paraQuem} />
+		<WhoItsFor buttonText={t.bookButton} {...t.homePage.whoItsFor} />
 
-		<TodayAndAfter {...t.paginaPrincipal.hojeEDepois} />
+		<TodayAndAfter {...t.homePage.todayAndAfter} />
 
-		{/* Serviços (#64) */}
+		{/* Services (#64) */}
 
-		<Steps {...t.paginaPrincipal.etapas} />
+		<Steps {...t.homePage.steps} />
 
-		<Guarantee {...t.paginaPrincipal.garantia} />
+		<Guarantee {...t.homePage.guarantee} />
 
-		{/* Gráfico de fornecedores cloud (#66) */}
+		{/* Cloud provider chart (#66) */}
 
-		<AboutJulien designacao={t.designacao} {...t.paginaPrincipal.quem} />
+		<AboutJulien designation={t.designation} {...t.homePage.about} />
 
-		{/* Testemunhos (#67) */}
+		{/* Testimonials (#67) */}
 
-		{/* Ecologia (#68) */}
+		{/* Ecology (#68) */}
 
-		{/* Perguntas (#70) */}
+		{/* Questions (#70) */}
 
-		<FinalCta lingua={lingua} textoDoBotao={t.botaoMarcar} {...t.paginaPrincipal.ctaFinal} />
+		<FinalCta language={language} buttonText={t.bookButton} {...t.homePage.finalCta} />
 	</main>
 </Base>

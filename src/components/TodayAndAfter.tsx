@@ -1,95 +1,95 @@
 import type { ReactNode } from 'react';
-import { comEspacosInseparaveis } from '../lib/spaces';
+import { withNonBreakingSpaces } from '../lib/spaces';
 
 interface Props {
-	titulo: string;
-	tituloDeHoje: string;
-	/** O que o CTO vive hoje: o problema, em negrito, e o que isso quer dizer. */
-	hoje: { titulo: string; texto: string }[];
-	tituloDoQueJaTentaste: string;
-	jaTentaste: string[];
-	tituloDeDepois: string;
-	depois: string[];
+	title: string;
+	todayTitle: string;
+	/** What the CTO lives with today: the problem, in bold, and what it means. */
+	today: { title: string; text: string }[];
+	alreadyTriedTitle: string;
+	alreadyTried: string[];
+	afterTitle: string;
+	after: string[];
 }
 
-/** Cada item das listas é uma linha aberta, sem caixa, separada da anterior por um traço. */
-const classeDoItem = 'border-t border-linha py-4 text-[1.0625rem]';
+/** Each list item is an open row, with no box, separated from the previous one by a rule. */
+const itemClass = 'border-t border-line py-4 text-[1.0625rem]';
 
-/** O CTO reconhece-se no problema (o que vive e o que já tentou) e vê como fica depois. Sem números. */
+/** The CTO recognizes the problem (what they live with and what they've tried) and sees what comes after. No numbers. */
 export default function TodayAndAfter({
-	titulo,
-	tituloDeHoje,
-	hoje,
-	tituloDoQueJaTentaste,
-	jaTentaste,
-	tituloDeDepois,
-	depois,
+	title,
+	todayTitle,
+	today,
+	alreadyTriedTitle,
+	alreadyTried,
+	afterTitle,
+	after,
 }: Props) {
 	return (
 		<section
-			aria-labelledby="hoje-titulo"
-			className="largura grid gap-12 py-[clamp(5rem,11vw,9rem)]"
+			aria-labelledby="today-title"
+			className="page-width grid gap-12 py-[clamp(5rem,11vw,9rem)]"
 		>
-			<h2 id="hoje-titulo" className="text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">
-				{titulo}
+			<h2 id="today-title" className="text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">
+				{title}
 			</h2>
 			<div className="grid gap-x-20 gap-y-14 lg:grid-cols-2">
 				<div className="grid content-start gap-12">
-					<Lista id="hoje-agora" titulo={tituloDeHoje} classeDoTitulo="text-texto-secundario">
-						{hoje.map((problema) => (
-							<li key={problema.titulo} className={`${classeDoItem} text-texto-secundario`}>
-								<strong className="font-semibold text-texto">
-									{comEspacosInseparaveis(problema.titulo)}
+					<List id="today-now" title={todayTitle} titleClass="text-foreground-secondary">
+						{today.map((problem) => (
+							<li key={problem.title} className={`${itemClass} text-foreground-secondary`}>
+								<strong className="font-semibold text-foreground">
+									{withNonBreakingSpaces(problem.title)}
 								</strong>{' '}
-								{comEspacosInseparaveis(problema.texto)}
+								{withNonBreakingSpaces(problem.text)}
 							</li>
 						))}
-					</Lista>
-					<Lista
-						id="hoje-ja-tentaste"
-						titulo={tituloDoQueJaTentaste}
-						classeDoTitulo="text-texto-secundario"
+					</List>
+					<List
+						id="today-already-tried"
+						title={alreadyTriedTitle}
+						titleClass="text-foreground-secondary"
 					>
-						{jaTentaste.map((tentativa) => (
+						{alreadyTried.map((attempt) => (
 							<li
-								key={tentativa}
-								className={`${classeDoItem} flex gap-3 text-texto-secundario before:mt-[0.8em] before:h-px before:w-3 before:shrink-0 before:bg-linha-forte`}
+								key={attempt}
+								className={`${itemClass} flex gap-3 text-foreground-secondary before:mt-[0.8em] before:h-px before:w-3 before:shrink-0 before:bg-line-strong`}
 							>
-								{comEspacosInseparaveis(tentativa)}
+								{withNonBreakingSpaces(attempt)}
 							</li>
 						))}
-					</Lista>
+					</List>
 				</div>
-				<Lista id="hoje-depois" titulo={tituloDeDepois} classeDoTitulo="text-verde">
-					{depois.map((ganho) => (
+				<List id="today-after" title={afterTitle} titleClass="text-green">
+					{after.map((gain) => (
 						<li
-							key={ganho}
-							className={`${classeDoItem} flex gap-3 text-texto before:mt-[0.6em] before:size-2 before:shrink-0 before:rounded-full before:bg-verde`}
+							key={gain}
+							className={`${itemClass} flex gap-3 text-foreground before:mt-[0.6em] before:size-2 before:shrink-0 before:rounded-full before:bg-green`}
 						>
-							{comEspacosInseparaveis(ganho)}
+							{withNonBreakingSpaces(gain)}
 						</li>
 					))}
-				</Lista>
+				</List>
 			</div>
 		</section>
 	);
 }
 
-function Lista({
+function List({
 	id,
-	titulo,
-	classeDoTitulo,
+	title,
+	titleClass,
 	children,
 }: {
 	id: string;
-	titulo: string;
-	classeDoTitulo: string;
+	title: string;
+	titleClass: string;
 	children: ReactNode;
 }) {
 	return (
 		<div className="grid content-start gap-4">
-			<h3 id={id} className={`etiqueta font-texto ${classeDoTitulo}`}>
-				{titulo}
+			<h3 id={id} className={`label font-body ${titleClass}`}>
+				{title}
 			</h3>
 			<ul aria-labelledby={id} className="grid">
 				{children}

@@ -1,31 +1,31 @@
 ---
-// «Quem é o Julien» (#63): a fotografia, a única imagem da página, ao natural e a cores, com o
-// nome e a Designação em texto visível. Sem faixa colorida: o ramo (#73) dá meia volta ao arco
-// de cima da fotografia e desce até ao fim da secção.
-// É um componente .astro porque a imagem é otimizada no build pelo <Image>, que um TSX não usa.
+// "Quem é o Julien" (#63): the photo, the only image on the page, natural and in color, with the
+// name and the Designation as visible text. No colored band: the branch (#73) goes halfway round
+// the photo's top arch and runs down to the end of the section.
+// It is an .astro component because `<Image>` optimizes the image at build time, and a TSX can't use it.
 import { Image } from 'astro:assets';
-import foto from '../../data/IMG_2030.png';
-import { valores } from '../config/values';
-import { comEspacosInseparaveis } from '../lib/spaces';
+import photo from '../../data/IMG_2030.png';
+import { values } from '../config/values';
+import { withNonBreakingSpaces } from '../lib/spaces';
 
 interface Props {
-	titulo: string;
-	designacao: string;
-	/** Onde e como trabalha: à distância, as línguas, tecnologias standard e tudo documentado. */
-	formaDeTrabalhar: string;
+	title: string;
+	designation: string;
+	/** Where and how he works: remotely, the languages, standard technologies and everything documented. */
+	wayOfWorking: string;
 }
 
-const { titulo, designacao, formaDeTrabalhar } = Astro.props;
+const { title, designation, wayOfWorking } = Astro.props;
 ---
 
 <section
-	aria-labelledby="quem-titulo"
-	class="largura grid items-center gap-x-20 gap-y-12 py-[clamp(5rem,10vw,8rem)] lg:grid-cols-[minmax(0,4fr)_minmax(0,7fr)]"
+	aria-labelledby="about-title"
+	class="page-width grid items-center gap-x-20 gap-y-12 py-[clamp(5rem,10vw,8rem)] lg:grid-cols-[minmax(0,4fr)_minmax(0,7fr)]"
 >
-	{/* Longe do topo: só carrega quando o Visitante lá chega. */}
+	{/* Far from the top: it only loads when the Visitor gets there. */}
 	<Image
-		src={foto}
-		alt={valores.nome}
+		src={photo}
+		alt={values.name}
 		width={560}
 		format="avif"
 		quality={55}
@@ -34,16 +34,16 @@ const { titulo, designacao, formaDeTrabalhar } = Astro.props;
 		class="aspect-4/5 w-full max-w-72 rounded-[999px_999px_14px_14px] object-cover lg:max-w-none"
 	/>
 	<div class="grid gap-6">
-		<h2 id="quem-titulo" class="etiqueta font-texto">
-			{titulo}
+		<h2 id="about-title" class="label font-body">
+			{title}
 		</h2>
 		<div class="grid gap-2">
-			<p class="font-titulos text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">{valores.nome}</p>
-			<p class="text-lg text-roxo">{designacao}</p>
+			<p class="font-heading text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">{values.name}</p>
+			<p class="text-lg text-purple">{designation}</p>
 		</div>
-		<p class="max-w-2xl font-titulos text-[clamp(1.4rem,2.6vw,2rem)] leading-snug">
-			{comEspacosInseparaveis(formaDeTrabalhar)}
+		<p class="max-w-2xl font-heading text-[clamp(1.4rem,2.6vw,2rem)] leading-snug">
+			{withNonBreakingSpaces(wayOfWorking)}
 		</p>
-		{/* As provas (percurso, projetos, clientes) entram aqui quando existirem (#54). */}
+		{/* The proof (career, projects, clients) goes here once it exists (#54). */}
 	</div>
 </section>

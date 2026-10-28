@@ -1,99 +1,99 @@
-import { comEspacosInseparaveis } from '../lib/spaces';
+import { withNonBreakingSpaces } from '../lib/spaces';
 import './Guarantee.css';
 
 interface Props {
-	etiqueta: string;
-	titulo: string;
-	/** O texto validado pelo Julien (#54). */
-	texto: string;
-	/** Os Blocos com que a Garantia se aplica. */
-	aplicaSe: string;
-	tituloDasCondicoes: string;
-	condicoes: string[];
-	tituloDasExclusoes: string;
-	exclusoes: string[];
-	/** A visualização: o número em grande, a barra e as suas legendas, e a nota por baixo. */
-	numero: string;
-	porBaixoDoNumero: string;
-	comServico: string;
-	semServico: string;
-	nota: string;
+	label: string;
+	title: string;
+	/** The text validated by Julien (#54). */
+	text: string;
+	/** The Blocks the Guarantee applies to. */
+	appliesWhen: string;
+	conditionsTitle: string;
+	conditions: string[];
+	exclusionsTitle: string;
+	exclusions: string[];
+	/** The visualization: the large number, the bar and its captions, and the note below. */
+	number: string;
+	belowNumber: string;
+	inService: string;
+	outOfService: string;
+	note: string;
 }
 
 /**
- * A Garantia: o compromisso, quando se aplica, e os 99 % de forma visual, com uma barra da
- * largura da secção em que só a ponta (1 %) muda de cor. Sem equivalência anual nem horas por mês.
- * A barra fica sempre cheia: sem JS, não há a animação de enchimento do protótipo.
+ * The Guarantee: the commitment, when it applies, and the 99% shown visually, with a
+ * section-wide bar in which only the tip (1%) changes color. No yearly equivalent, no hours per month.
+ * The bar is always full: without JS, there is no fill animation like the prototype's.
  */
 export default function Guarantee({
-	etiqueta,
-	titulo,
-	texto,
-	aplicaSe,
-	tituloDasCondicoes,
-	condicoes,
-	tituloDasExclusoes,
-	exclusoes,
-	numero,
-	porBaixoDoNumero,
-	comServico,
-	semServico,
-	nota,
+	label,
+	title,
+	text,
+	appliesWhen,
+	conditionsTitle,
+	conditions,
+	exclusionsTitle,
+	exclusions,
+	number,
+	belowNumber,
+	inService,
+	outOfService,
+	note,
 }: Props) {
 	return (
 		<section
-			aria-labelledby="garantia-titulo"
-			className="largura grid gap-14 py-[clamp(5rem,11vw,9rem)]"
+			aria-labelledby="guarantee-title"
+			className="page-width grid gap-14 py-[clamp(5rem,11vw,9rem)]"
 		>
 			<div className="grid gap-x-16 gap-y-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-end">
 				<div className="grid gap-4">
-					<p className="etiqueta">{etiqueta}</p>
-					<h2 id="garantia-titulo" className="text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">
-						{comEspacosInseparaveis(titulo)}
+					<p className="label">{label}</p>
+					<h2 id="guarantee-title" className="text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">
+						{withNonBreakingSpaces(title)}
 					</h2>
 				</div>
 				<div className="grid gap-4">
-					<p className="max-w-[34rem] text-lg text-texto-secundario">
-						{comEspacosInseparaveis(texto)}
+					<p className="max-w-[34rem] text-lg text-foreground-secondary">
+						{withNonBreakingSpaces(text)}
 					</p>
-					<p className="text-roxo">{comEspacosInseparaveis(aplicaSe)}</p>
+					<p className="text-purple">{withNonBreakingSpaces(appliesWhen)}</p>
 				</div>
 			</div>
 
 			<figure className="grid gap-4">
-				<p className="garantia-numero">{comEspacosInseparaveis(numero)}</p>
-				<p className="mb-6 text-lg">{comEspacosInseparaveis(porBaixoDoNumero)}</p>
-				<div className="garantia-barra" aria-hidden="true">
+				<p className="guarantee-number">{withNonBreakingSpaces(number)}</p>
+				<p className="mb-6 text-lg">{withNonBreakingSpaces(belowNumber)}</p>
+				<div className="guarantee-bar" aria-hidden="true">
 					<span></span>
 					<span></span>
 				</div>
-				<div className="flex justify-between gap-4 text-sm text-texto-secundario">
-					<span>{comEspacosInseparaveis(comServico)}</span>
-					<span className="garantia-sem-servico text-right">
-						{comEspacosInseparaveis(semServico)}
+				<div className="flex justify-between gap-4 text-sm text-foreground-secondary">
+					<span>{withNonBreakingSpaces(inService)}</span>
+					<span className="guarantee-out-of-service text-right">
+						{withNonBreakingSpaces(outOfService)}
 					</span>
 				</div>
-				<figcaption className="text-texto-secundario">{comEspacosInseparaveis(nota)}</figcaption>
+				<figcaption className="text-foreground-secondary">{withNonBreakingSpaces(note)}</figcaption>
 			</figure>
 
 			<div className="grid gap-x-16 gap-y-10 md:grid-cols-2">
-				<Lista id="garantia-condicoes" titulo={tituloDasCondicoes} itens={condicoes} />
-				<Lista id="garantia-exclusoes" titulo={tituloDasExclusoes} itens={exclusoes} />
+				<List id="guarantee-conditions" title={conditionsTitle} items={conditions} />
+				<List id="guarantee-exclusions" title={exclusionsTitle} items={exclusions} />
 			</div>
 		</section>
 	);
 }
 
-function Lista({ id, titulo, itens }: { id: string; titulo: string; itens: string[] }) {
+function List({ id, title, items }: { id: string; title: string; items: string[] }) {
 	return (
 		<div className="grid content-start gap-4">
 			<h3 id={id} className="text-2xl">
-				{titulo}
+				{title}
 			</h3>
 			<ul aria-labelledby={id} className="grid">
-				{itens.map((item) => (
-					<li key={item} className="border-t border-linha py-3 text-texto-secundario">
-						{comEspacosInseparaveis(item)}
+				{items.map((item) => (
+					<li key={item} className="border-t border-line py-3 text-foreground-secondary">
+						{withNonBreakingSpaces(item)}
 					</li>
 				))}
 			</ul>
