@@ -1,0 +1,42 @@
+/* A visualização da Garantia (#63), como o Julien a escolheu no protótipo v3 a 20/10/2026. */
+
+/* O «99 %» em grande, com o degradê do ∞. A cor de recurso serve onde o degradê no texto falta. */
+.garantia-numero {
+	font: 400 clamp(5rem, 16vw, 11rem) / 0.9 var(--font-titulos);
+	color: var(--color-elemento-roxo);
+}
+
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+	.garantia-numero {
+		background: linear-gradient(90deg, var(--color-elemento-roxo), var(--color-elemento-verde));
+		-webkit-background-clip: text;
+		background-clip: text;
+		color: transparent;
+	}
+}
+
+/* A barra da largura da secção: 99 % com o degradê e, depois de um corte, a ponta de 1 %. */
+.garantia-barra {
+	display: flex;
+	gap: 3px;
+	height: 14px;
+}
+
+.garantia-barra > :first-child {
+	flex: 0 1 calc(99% - 3px);
+	border-radius: 999px 0 0 999px;
+	background: linear-gradient(90deg, var(--color-elemento-roxo), var(--color-elemento-verde));
+}
+
+/* O 1 % sem serviço, e a sua legenda, no dourado do protótipo v3 (#e6cf94, 12,7:1 com o fundo).
+   Não está na tabela de cores da #54, por isso fica só aqui. A confirmar na Primeira validação. */
+.garantia-barra > :last-child {
+	flex: 1;
+	min-width: 6px;
+	border-radius: 0 999px 999px 0;
+	background: #e6cf94;
+}
+
+.garantia-sem-servico {
+	color: #e6cf94;
+}
