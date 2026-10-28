@@ -1,6 +1,8 @@
 /* A visualização da Garantia (#63), como o Julien a escolheu no protótipo v3 a 20/10/2026. */
 
-/* O «99 %» em grande, com o degradê do ∞. A cor de recurso serve onde o degradê no texto falta. */
+/* O «99 %» em grande, com o degradê do ∞, como no protótipo. A #54 reserva estas cores fixas ao ∞,
+   ao ramo, à folha e ao logótipo: a confirmar na Primeira validação, com o dourado da ponta.
+   A cor de recurso serve onde o degradê no texto falta. */
 .garantia-numero {
 	font: 400 clamp(5rem, 16vw, 11rem) / 0.9 var(--font-titulos);
 	color: var(--color-elemento-roxo);

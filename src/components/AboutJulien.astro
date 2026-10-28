@@ -6,21 +6,20 @@
 import { Image } from 'astro:assets';
 import foto from '../../data/IMG_2030.png';
 import { valores } from '../config/values';
-import { inseparaveis } from '../lib/spaces';
+import { comEspacosInseparaveis } from '../lib/spaces';
 
 interface Props {
 	titulo: string;
 	designacao: string;
 	/** Onde e como trabalha: à distância, as línguas, tecnologias standard e tudo documentado. */
-	forma: string;
+	formaDeTrabalhar: string;
 }
 
-const { titulo, designacao, forma } = Astro.props;
+const { titulo, designacao, formaDeTrabalhar } = Astro.props;
 ---
 
 <section
 	aria-labelledby="quem-titulo"
-	data-seccao="quem"
 	class="largura grid items-center gap-x-20 gap-y-12 py-[clamp(5rem,10vw,8rem)] lg:grid-cols-[minmax(0,4fr)_minmax(0,7fr)]"
 >
 	{/* Longe do topo: só carrega quando o Visitante lá chega. */}
@@ -32,10 +31,9 @@ const { titulo, designacao, forma } = Astro.props;
 		quality={55}
 		loading="lazy"
 		decoding="async"
-		data-quem-foto
 		class="aspect-4/5 w-full max-w-72 rounded-[999px_999px_14px_14px] object-cover lg:max-w-none"
 	/>
-	<div data-quem-texto class="grid gap-6">
+	<div class="grid gap-6">
 		<h2 id="quem-titulo" class="etiqueta font-texto">
 			{titulo}
 		</h2>
@@ -44,7 +42,7 @@ const { titulo, designacao, forma } = Astro.props;
 			<p class="text-lg text-roxo">{designacao}</p>
 		</div>
 		<p class="max-w-2xl font-titulos text-[clamp(1.4rem,2.6vw,2rem)] leading-snug">
-			{inseparaveis(forma)}
+			{comEspacosInseparaveis(formaDeTrabalhar)}
 		</p>
 		{/* As provas (percurso, projetos, clientes) entram aqui quando existirem (#54). */}
 	</div>

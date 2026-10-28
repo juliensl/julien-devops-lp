@@ -1,6 +1,6 @@
 import type { Lingua } from '../config/site';
 import { valores } from '../config/values';
-import { inseparaveis } from '../lib/spaces';
+import { comEspacosInseparaveis } from '../lib/spaces';
 import BookingButton from './BookingButton';
 
 interface Props {
@@ -28,16 +28,15 @@ export default function FinalCta({
 	return (
 		<section
 			aria-labelledby="cta-final-titulo"
-			data-seccao="cta-final"
 			className="largura grid min-h-[70svh] content-center justify-items-start gap-6 py-[clamp(5rem,11vw,9rem)]"
 		>
 			<h2 id="cta-final-titulo" className="text-[clamp(2.6rem,6.5vw,5rem)] leading-[1.06]">
-				{inseparaveis(titulo)}
+				{comEspacosInseparaveis(titulo)}
 			</h2>
-			<p className="max-w-2xl text-lg text-texto-secundario">{inseparaveis(texto)}</p>
+			<p className="max-w-2xl text-lg text-texto-secundario">{comEspacosInseparaveis(texto)}</p>
 			{/* A única ligação da secção: o ramo (#73) acaba com 3 folhas junto dela. */}
 			<BookingButton texto={textoDoBotao} />
-			<p className="max-w-2xl text-sm text-texto-secundario">{inseparaveis(linha)}</p>
+			<p className="max-w-2xl text-sm text-texto-secundario">{comEspacosInseparaveis(linha)}</p>
 		</section>
 	);
 }

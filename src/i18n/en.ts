@@ -31,7 +31,7 @@ export const en: Dicionario = {
 				'Growing from tens or hundreds to thousands of recurring users.',
 				'A team of usually 5 to 20 people, with at least 3 devs.',
 			],
-			antesDoLancamento: "Haven't launched your SaaS yet? You can still book the conversation.",
+			aindaNaoLancado: "Haven't launched your SaaS yet? You can still book the conversation.",
 			tituloDasExclusoes: 'Not for',
 			exclusoes: [
 				'Teams that already have a CI pipeline, a containerised application and auto-scaling infrastructure.',
@@ -99,7 +99,7 @@ export const en: Dicionario = {
 		},
 		quem: {
 			titulo: 'Who is Julien',
-			forma:
+			formaDeTrabalhar:
 				'I work remotely, in Portuguese, French and English. I use standard technologies, with no lock-in, and document everything so your team can run on its own.',
 		},
 		ctaFinal: {

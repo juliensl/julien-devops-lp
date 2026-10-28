@@ -16,7 +16,7 @@ const ESPERADO = {
 				'A passar de dezenas ou centenas para milhares de utilizadores recorrentes.',
 				'Uma equipa de normalmente 5 a 20 pessoas, com pelo menos 3 devs.',
 			],
-			antesDoLancamento: 'O teu SaaS ainda não foi lançado? Podes marcar a Conversa na mesma.',
+			aindaNaoLancado: 'O teu SaaS ainda não foi lançado? Podes marcar a Conversa na mesma.',
 			naoEPara: 'Não é para',
 			exclusoes: [
 				'Quem já tem pipeline de CI, aplicação contentorizada e infraestrutura com auto-scaling.',
@@ -49,7 +49,7 @@ const ESPERADO = {
 		},
 		quem: {
 			titulo: 'Quem é o Julien',
-			forma:
+			formaDeTrabalhar:
 				'Trabalho à distância, em português, francês e inglês. Uso tecnologias standard, sem lock-in, e documento tudo para a tua equipa ficar autónoma.',
 		},
 		ctaFinal: {
@@ -67,7 +67,7 @@ const ESPERADO = {
 				"Qui passe de quelques dizaines ou centaines à plusieurs milliers d'utilisateurs récurrents.",
 				'Une équipe de 5 à 20 personnes en général, dont au moins 3 devs.',
 			],
-			antesDoLancamento: "Ton SaaS n'est pas encore lancé ? Tu peux réserver l'échange quand même.",
+			aindaNaoLancado: "Ton SaaS n'est pas encore lancé ? Tu peux réserver l'échange quand même.",
 			naoEPara: "Ce n'est pas pour",
 			exclusoes: [
 				'Ceux qui ont déjà une pipeline CI, une application conteneurisée et une infrastructure avec auto-scaling.',
@@ -103,7 +103,7 @@ const ESPERADO = {
 		},
 		quem: {
 			titulo: 'Qui est Julien',
-			forma:
+			formaDeTrabalhar:
 				"Je travaille à distance, en portugais, en français et en anglais. J'utilise des technologies standard, sans lock-in, et je documente tout pour que ton équipe soit autonome.",
 		},
 		ctaFinal: {
@@ -120,7 +120,7 @@ const ESPERADO = {
 				'Growing from tens or hundreds to thousands of recurring users.',
 				'A team of usually 5 to 20 people, with at least 3 devs.',
 			],
-			antesDoLancamento: "Haven't launched your SaaS yet? You can still book the conversation.",
+			aindaNaoLancado: "Haven't launched your SaaS yet? You can still book the conversation.",
 			naoEPara: 'Not for',
 			exclusoes: [
 				'Teams that already have a CI pipeline, a containerised application and auto-scaling infrastructure.',
@@ -153,7 +153,7 @@ const ESPERADO = {
 		},
 		quem: {
 			titulo: 'Who is Julien',
-			forma:
+			formaDeTrabalhar:
 				'I work remotely, in Portuguese, French and English. I use standard technologies, with no lock-in, and document everything so your team can run on its own.',
 		},
 		ctaFinal: {
@@ -172,6 +172,7 @@ emCadaBuild((build) => {
 	for (const lingua of build.fase.linguasPublicadas) {
 		const { inicio, promessa, designacao, botao } = LINGUAS[lingua];
 		const { paraQuem, hoje, garantia, quem, ctaFinal } = ESPERADO[lingua];
+		const seccoes = [paraQuem, hoje, garantia, quem, ctaFinal];
 
 		test.describe(inicio, () => {
 			test(`«${botao}» está no cabeçalho, no Hero, no fim de «${paraQuem.titulo}» e no CTA final`, async ({
@@ -190,11 +191,11 @@ emCadaBuild((build) => {
 					await expect(marcar, sitio).toHaveAttribute('href', PAGINA_DE_MARCACAO);
 					await expect(marcar, sitio).not.toHaveAttribute('target');
 				}
-				// O botão fecha «Para quem é»: vem depois do resto da secção.
-				const ultimoDeParaQuem = sitios.paraQuem.locator(':scope > *').last();
-				await expect(ultimoDeParaQuem.getByRole('link', { name: botao, exact: true })).toHaveCount(
-					1,
-				);
+				// O botão fecha «Para quem é»: fica por baixo das exclusões.
+				const exclusoes = sitios.paraQuem.getByRole('list', { name: paraQuem.naoEPara });
+				const { y, height } = (await exclusoes.boundingBox())!;
+				const marcar = sitios.paraQuem.getByRole('link', { name: botao, exact: true });
+				expect((await marcar.boundingBox())!.y).toBeGreaterThanOrEqual(y + height);
 			});
 
 			test(`«${paraQuem.titulo}» mostra o perfil, a frase para quem ainda não lançou e as 4 exclusões`, async ({
@@ -202,7 +203,7 @@ emCadaBuild((build) => {
 			}) => {
 				await page.goto(inicio);
 				const seccao = page.getByRole('region', { name: paraQuem.titulo });
-				for (const frase of [...paraQuem.perfil, paraQuem.antesDoLancamento]) {
+				for (const frase of [...paraQuem.perfil, paraQuem.aindaNaoLancado]) {
 					await expect(seccao.getByText(frase, { exact: true })).toBeVisible();
 				}
 				const exclusoes = seccao.getByRole('list', { name: paraQuem.naoEPara });
@@ -251,15 +252,16 @@ emCadaBuild((build) => {
 				}
 				await expect(figura).toHaveAccessibleName(garantia.nota);
 
-				// A barra é decorativa: as legendas dizem o mesmo em texto.
-				const barra = figura.locator('[aria-hidden="true"]');
-				const larguraDaSeccao = await seccao.evaluate((e) => {
-					const estilo = getComputedStyle(e);
-					return e.clientWidth - parseFloat(estilo.paddingLeft) - parseFloat(estilo.paddingRight);
-				});
-				const larguraDaBarra = (await barra.boundingBox())!.width;
-				expect(larguraDaBarra).toBeCloseTo(larguraDaSeccao, 0);
-				const ponta = (await barra.locator(':scope > *').last().boundingBox())!;
+				// A barra é decorativa: as legendas dizem o mesmo em texto, e ela só se mede pela forma.
+				// Vai da margem do título à das exclusões, a largura toda do conteúdo.
+				const barra = (await figura.locator('[aria-hidden="true"]').boundingBox())!;
+				const titulo = (await seccao.getByRole('heading', { level: 2 }).boundingBox())!;
+				const exclusoes = seccao.getByRole('list', { name: garantia.listas[1] });
+				const { x, width } = (await exclusoes.boundingBox())!;
+				expect(barra.x).toBeCloseTo(titulo.x, 0);
+				expect(barra.x + barra.width).toBeCloseTo(x + width, 0);
+				const larguraDaBarra = barra.width;
+				const ponta = (await figura.locator('[aria-hidden="true"] > *').last().boundingBox())!;
 				expect(ponta.width / larguraDaBarra).toBeGreaterThan(0.005);
 				expect(ponta.width / larguraDaBarra).toBeLessThan(0.02);
 			});
@@ -267,22 +269,26 @@ emCadaBuild((build) => {
 			test(`«${quem.titulo}»: a fotografia, o nome, a Designação e a forma de trabalhar`, async ({
 				page,
 			}) => {
-				await page.goto(inicio);
+				const imagens: string[] = [];
+				page.on('response', (resposta) => {
+					if (resposta.request().resourceType() === 'image') {
+						imagens.push(resposta.headers()['content-type'] ?? '');
+					}
+				});
+				await page.goto(inicio, { waitUntil: 'networkidle' });
 				const seccao = page.getByRole('region', { name: quem.titulo });
 				await expect(seccao.getByText(NOME, { exact: true })).toBeVisible();
 				await expect(seccao.getByText(designacao, { exact: true })).toBeVisible();
-				await expect(seccao.getByText(quem.forma, { exact: true })).toBeVisible();
+				await expect(seccao.getByText(quem.formaDeTrabalhar, { exact: true })).toBeVisible();
 
-				// A única imagem da página, longe do topo: só carrega quando lá se chega.
-				await expect(page.locator('img')).toHaveCount(1);
+				// Longe do topo: a fotografia só é pedida quando lá se chega.
+				expect(imagens).toEqual([]);
 				const foto = seccao.getByRole('img', { name: NOME, exact: true });
-				await expect(foto).toHaveAttribute('alt', NOME);
-				await expect(foto).toHaveAttribute('loading', 'lazy');
-				await expect(foto).toHaveAttribute('src', /\.avif$/);
 				await foto.scrollIntoViewIfNeeded();
-				await expect
-					.poll(() => foto.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth))
-					.toBeGreaterThan(0);
+				await expect(foto).toBeVisible();
+				// A única imagem da página, em AVIF.
+				await expect(page.locator('img')).toHaveCount(1);
+				await expect.poll(() => imagens).toEqual(['image/avif']);
 			});
 
 			test('as secções ficam nos lugares da #54, de «Para quem é», logo a seguir ao Hero, ao CTA final, no fim', async ({
@@ -292,9 +298,7 @@ emCadaBuild((build) => {
 				const titulos = (
 					await page.getByRole('main').getByRole('heading', { level: 2 }).allTextContents()
 				).map((titulo) => titulo.replace(/\s+/g, ' '));
-				const lugares = [paraQuem, hoje, garantia, quem, ctaFinal].map(({ titulo }) =>
-					titulos.indexOf(titulo),
-				);
+				const lugares = seccoes.map(({ titulo }) => titulos.indexOf(titulo));
 				expect(lugares[0]).toBe(0);
 				expect(lugares).toEqual([...lugares].sort((a, b) => a - b));
 				expect(lugares.at(-1)).toBe(titulos.length - 1);
@@ -302,7 +306,7 @@ emCadaBuild((build) => {
 
 			test('só aparecem os números validados pelo Julien', async ({ page }) => {
 				await page.goto(inicio);
-				for (const { titulo } of [paraQuem, hoje, garantia, quem, ctaFinal]) {
+				for (const { titulo } of seccoes) {
 					const texto = (await page.getByRole('region', { name: titulo }).textContent())!;
 					const numeros = texto.match(/\d+(?:[.,]\d+)?/g) ?? [];
 					for (const numero of numeros) expect(NUMEROS_VALIDADOS, titulo).toContain(numero);
@@ -316,7 +320,7 @@ emCadaBuild((build) => {
 					page,
 				}) => {
 					await page.goto(inicio);
-					for (const { titulo } of [paraQuem, hoje, garantia, quem, ctaFinal]) {
+					for (const { titulo } of seccoes) {
 						await expect(page.getByRole('region', { name: titulo })).toBeVisible();
 					}
 					const figura = page.getByRole('region', { name: garantia.titulo }).getByRole('figure');
@@ -332,7 +336,7 @@ emCadaBuild((build) => {
 				page,
 			}) => {
 				await page.goto(inicio);
-				for (const { titulo } of [paraQuem, hoje, garantia, quem, ctaFinal]) {
+				for (const { titulo } of seccoes) {
 					const texto = await page.getByRole('region', { name: titulo }).textContent();
 					expect(texto, titulo).not.toMatch(/\d /);
 					expect(texto, titulo).not.toMatch(/\d\s(a|à|e|et|to|and) [\d€]/);

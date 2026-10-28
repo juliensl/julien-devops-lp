@@ -36,7 +36,7 @@ export const pt = {
 				'A passar de dezenas ou centenas para milhares de utilizadores recorrentes.',
 				'Uma equipa de normalmente 5 a 20 pessoas, com pelo menos 3 devs.',
 			],
-			antesDoLancamento: 'O teu SaaS ainda não foi lançado? Podes marcar a Conversa na mesma.',
+			aindaNaoLancado: 'O teu SaaS ainda não foi lançado? Podes marcar a Conversa na mesma.',
 			tituloDasExclusoes: 'Não é para',
 			exclusoes: [
 				'Quem já tem pipeline de CI, aplicação contentorizada e infraestrutura com auto-scaling.',
@@ -104,7 +104,7 @@ export const pt = {
 		},
 		quem: {
 			titulo: 'Quem é o Julien',
-			forma:
+			formaDeTrabalhar:
 				'Trabalho à distância, em português, francês e inglês. Uso tecnologias standard, sem lock-in, e documento tudo para a tua equipa ficar autónoma.',
 		},
 		ctaFinal: {

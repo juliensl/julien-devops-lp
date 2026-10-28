@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { inseparaveis } from '../lib/spaces';
+import { comEspacosInseparaveis } from '../lib/spaces';
 
 interface Props {
 	titulo: string;
@@ -13,7 +13,7 @@ interface Props {
 }
 
 /** Cada item das listas é uma linha aberta, sem caixa, separada da anterior por um traço. */
-const linha = 'border-t border-linha py-4 text-[1.0625rem]';
+const classeDoItem = 'border-t border-linha py-4 text-[1.0625rem]';
 
 /** O CTO reconhece-se no problema (o que vive e o que já tentou) e vê como fica depois. Sem números. */
 export default function TodayAndAfter({
@@ -28,7 +28,6 @@ export default function TodayAndAfter({
 	return (
 		<section
 			aria-labelledby="hoje-titulo"
-			data-seccao="hoje"
 			className="largura grid gap-12 py-[clamp(5rem,11vw,9rem)]"
 		>
 			<h2 id="hoje-titulo" className="text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">
@@ -36,38 +35,38 @@ export default function TodayAndAfter({
 			</h2>
 			<div className="grid gap-x-20 gap-y-14 lg:grid-cols-2">
 				<div className="grid content-start gap-12">
-					<Lista id="hoje-agora" titulo={tituloDeHoje} corDoTitulo="text-texto-secundario">
+					<Lista id="hoje-agora" titulo={tituloDeHoje} classeDoTitulo="text-texto-secundario">
 						{hoje.map((problema) => (
-							<li key={problema.titulo} className={`${linha} text-texto-secundario`}>
+							<li key={problema.titulo} className={`${classeDoItem} text-texto-secundario`}>
 								<strong className="font-semibold text-texto">
-									{inseparaveis(problema.titulo)}
+									{comEspacosInseparaveis(problema.titulo)}
 								</strong>{' '}
-								{inseparaveis(problema.texto)}
+								{comEspacosInseparaveis(problema.texto)}
 							</li>
 						))}
 					</Lista>
 					<Lista
 						id="hoje-ja-tentaste"
 						titulo={tituloDoQueJaTentaste}
-						corDoTitulo="text-texto-secundario"
+						classeDoTitulo="text-texto-secundario"
 					>
 						{jaTentaste.map((tentativa) => (
 							<li
 								key={tentativa}
-								className={`${linha} flex gap-3 text-texto-secundario before:mt-[0.8em] before:h-px before:w-3 before:shrink-0 before:bg-linha-forte`}
+								className={`${classeDoItem} flex gap-3 text-texto-secundario before:mt-[0.8em] before:h-px before:w-3 before:shrink-0 before:bg-linha-forte`}
 							>
-								{inseparaveis(tentativa)}
+								{comEspacosInseparaveis(tentativa)}
 							</li>
 						))}
 					</Lista>
 				</div>
-				<Lista id="hoje-depois" titulo={tituloDeDepois} corDoTitulo="text-verde">
+				<Lista id="hoje-depois" titulo={tituloDeDepois} classeDoTitulo="text-verde">
 					{depois.map((ganho) => (
 						<li
 							key={ganho}
-							className={`${linha} flex gap-3 text-texto before:mt-[0.6em] before:size-2 before:shrink-0 before:rounded-full before:bg-verde`}
+							className={`${classeDoItem} flex gap-3 text-texto before:mt-[0.6em] before:size-2 before:shrink-0 before:rounded-full before:bg-verde`}
 						>
-							{inseparaveis(ganho)}
+							{comEspacosInseparaveis(ganho)}
 						</li>
 					))}
 				</Lista>
@@ -79,17 +78,17 @@ export default function TodayAndAfter({
 function Lista({
 	id,
 	titulo,
-	corDoTitulo,
+	classeDoTitulo,
 	children,
 }: {
 	id: string;
 	titulo: string;
-	corDoTitulo: string;
+	classeDoTitulo: string;
 	children: ReactNode;
 }) {
 	return (
 		<div className="grid content-start gap-4">
-			<h3 id={id} className={`etiqueta font-texto ${corDoTitulo}`}>
+			<h3 id={id} className={`etiqueta font-texto ${classeDoTitulo}`}>
 				{titulo}
 			</h3>
 			<ul aria-labelledby={id} className="grid">

@@ -32,7 +32,7 @@ export const fr: Dicionario = {
 				"Qui passe de quelques dizaines ou centaines à plusieurs milliers d'utilisateurs récurrents.",
 				'Une équipe de 5 à 20 personnes en général, dont au moins 3 devs.',
 			],
-			antesDoLancamento: "Ton SaaS n'est pas encore lancé ? Tu peux réserver l'échange quand même.",
+			aindaNaoLancado: "Ton SaaS n'est pas encore lancé ? Tu peux réserver l'échange quand même.",
 			tituloDasExclusoes: "Ce n'est pas pour",
 			exclusoes: [
 				'Ceux qui ont déjà une pipeline CI, une application conteneurisée et une infrastructure avec auto-scaling.',
@@ -107,7 +107,7 @@ export const fr: Dicionario = {
 		},
 		quem: {
 			titulo: 'Qui est Julien',
-			forma:
+			formaDeTrabalhar:
 				"Je travaille à distance, en portugais, en français et en anglais. J'utilise des technologies standard, sans lock-in, et je documente tout pour que ton équipe soit autonome.",
 		},
 		ctaFinal: {
