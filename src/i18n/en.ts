@@ -75,6 +75,26 @@ export const en: Dicionario = {
 				'The infrastructure keeps up with the load, and you see problems before your customers do.',
 			],
 		},
+		etapas: {
+			titulo: 'Five steps, always in the same order.',
+			etapas: [
+				{ nome: 'Conversation', frase: '45 min on Google Meet, free of charge.' },
+				{
+					nome: 'Diagnosis',
+					frase:
+						'Free. 2 to 3 business days once access is granted, or 3 to 5 if it includes the cloud.',
+				},
+				{
+					nome: 'Intervention proposal',
+					frase: 'Which blocks, in what timeframe and at what fixed price.',
+				},
+				{ nome: 'Implementation', frase: 'At most 30 calendar days.' },
+				{
+					nome: 'Delivery and handover',
+					frase: 'Documentation and handover, so the team can be self-sufficient.',
+				},
+			],
+		},
 		garantia: {
 			etiqueta: 'The Guarantee',
 			titulo: 'Available at least 99% of the time, every month.',
