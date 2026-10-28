@@ -3,34 +3,38 @@
 
 export const SITE = 'https://devops.julienlaffont.com';
 
-export const LINGUAS = ['fr', 'en', 'pt'] as const;
-export type Lingua = (typeof LINGUAS)[number];
+export const LANGUAGES = ['fr', 'en', 'pt'] as const;
+export type Language = (typeof LANGUAGES)[number];
 
 /** O início dos URLs de cada língua. O francês, Língua por defeito, fica em `/`. */
-export const PREFIXOS: Record<Lingua, string> = { fr: '/', en: '/en/', pt: '/pt/' };
+export const PREFIXES: Record<Language, string> = { fr: '/', en: '/en/', pt: '/pt/' };
 
 /** O valor de `<html lang>` em cada língua. */
-export const CODIGOS_HTML: Record<Lingua, string> = { fr: 'fr', en: 'en', pt: 'pt-PT' };
+export const HTML_CODES: Record<Language, string> = { fr: 'fr', en: 'en', pt: 'pt-PT' };
 
 /** O nome de cada língua na própria língua, que o seletor diz aos leitores de ecrã. */
-export const NOMES: Record<Lingua, string> = { fr: 'Français', en: 'English', pt: 'Português' };
+export const LANGUAGE_NAMES: Record<Language, string> = {
+	fr: 'Français',
+	en: 'English',
+	pt: 'Português',
+};
 
 /** O que uma fase da página publica: só as línguas publicadas têm páginas. */
-export interface Fase {
-	linguasPublicadas: readonly Lingua[];
+export interface Phase {
+	publishedLanguages: readonly Language[];
 	/** Põe `noindex` em todas as páginas. A verificação de SEO lê este mesmo valor. */
 	noindex: boolean;
 }
 
-export const PRIMEIRA_VALIDACAO: Fase = { linguasPublicadas: ['pt'], noindex: true };
-export const LANCAMENTO_COMERCIAL: Fase = { linguasPublicadas: LINGUAS, noindex: false };
+export const FIRST_REVIEW: Phase = { publishedLanguages: ['pt'], noindex: true };
+export const COMMERCIAL_LAUNCH: Phase = { publishedLanguages: LANGUAGES, noindex: false };
 
 /** A fase do site publicado. */
-export const FASE_ATUAL: Fase = PRIMEIRA_VALIDACAO;
+export const CURRENT_PHASE: Phase = FIRST_REVIEW;
 
 /**
  * A fase que este build gera: a atual, ou o Lançamento comercial no build de teste
  * (`LANCAMENTO_COMERCIAL=1`), que verifica já o que só existe com várias línguas.
  */
-export const FASE: Fase =
-	process.env.LANCAMENTO_COMERCIAL === '1' ? LANCAMENTO_COMERCIAL : FASE_ATUAL;
+export const PHASE: Phase =
+	process.env.LANCAMENTO_COMERCIAL === '1' ? COMMERCIAL_LAUNCH : CURRENT_PHASE;

@@ -12,11 +12,11 @@
 </div>
 
 <script>
-	import { depoisDoCarregamento } from '../scripts/after-load';
+	import { afterLoad } from '../scripts/after-load';
 
-	depoisDoCarregamento(() => {
-		for (const pontos of document.querySelectorAll<HTMLElement>('[data-dots]')) {
-			pontos.dataset.moving = '';
+	afterLoad(() => {
+		for (const dots of document.querySelectorAll<HTMLElement>('[data-dots]')) {
+			dots.dataset.moving = '';
 		}
 	});
 </script>

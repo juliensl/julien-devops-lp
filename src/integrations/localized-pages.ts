@@ -9,20 +9,20 @@
 import { globSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import type { AstroIntegration } from 'astro';
-import { FASE, PREFIXOS } from '../config/site';
+import { PHASE, PREFIXES } from '../config/site';
 
 export default function localizedPages(): AstroIntegration {
 	return {
 		name: 'localized-pages',
 		hooks: {
 			'astro:config:setup': ({ config, injectRoute }) => {
-				const raiz = fileURLToPath(new URL('src/localized-pages/', config.root));
-				for (const lingua of FASE.linguasPublicadas) {
-					for (const ficheiro of globSync('**/*.astro', { cwd: `${raiz}${lingua}` })) {
-						const pagina = ficheiro.replace(/\.astro$/, '').replace(/(^|\/)index$/, '');
+				const pagesDir = fileURLToPath(new URL('src/localized-pages/', config.root));
+				for (const language of PHASE.publishedLanguages) {
+					for (const file of globSync('**/*.astro', { cwd: `${pagesDir}${language}` })) {
+						const page = file.replace(/\.astro$/, '').replace(/(^|\/)index$/, '');
 						injectRoute({
-							pattern: `${PREFIXOS[lingua]}${pagina}`,
-							entrypoint: `${raiz}${lingua}/${ficheiro}`,
+							pattern: `${PREFIXES[language]}${page}`,
+							entrypoint: `${pagesDir}${language}/${file}`,
 						});
 					}
 				}

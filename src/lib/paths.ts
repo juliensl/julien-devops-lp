@@ -1,14 +1,14 @@
-import { PREFIXOS, type Lingua } from '../config/site';
+import { PREFIXES, type Language } from '../config/site';
 
 /**
  * A mesma página noutra língua. Os slugs são iguais nas três línguas, por isso só muda o início:
  * `/pt/questions/` → `/questions/` em francês e `/en/questions/` em inglês.
  */
-export function caminhoNaLingua(caminho: string, de: Lingua, para: Lingua): string {
-	if (!caminho.startsWith(PREFIXOS[de])) {
+export function pathInLanguage(path: string, from: Language, to: Language): string {
+	if (!path.startsWith(PREFIXES[from])) {
 		throw new Error(
-			`O caminho ${caminho} não começa por ${PREFIXOS[de]}, o início da língua ${de}.`,
+			`O caminho ${path} não começa por ${PREFIXES[from]}, o início da língua ${from}.`,
 		);
 	}
-	return PREFIXOS[para] + caminho.slice(PREFIXOS[de].length);
+	return PREFIXES[to] + path.slice(PREFIXES[from].length);
 }

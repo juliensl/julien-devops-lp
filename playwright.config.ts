@@ -24,8 +24,8 @@ export default defineConfig({
 		{ name: 'lighthouse', testMatch: 'lighthouse/**/*.spec.ts' },
 	],
 	webServer: BUILDS.map((build) => ({
-		command: `npx astro preview --outDir ${build.dist} --port ${build.porta} --ignore-lock`,
-		port: build.porta,
+		command: `npx astro preview --outDir ${build.dist} --port ${build.port} --ignore-lock`,
+		port: build.port,
 		reuseExistingServer: !process.env.CI,
 	})),
 });

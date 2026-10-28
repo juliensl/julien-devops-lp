@@ -1,170 +1,176 @@
 // A moldura comum a todas as páginas: o cabeçalho fixo, com o logótipo, o seletor de língua
 // e o botão de marcação, e o rodapé.
 import { expect, test, type Page } from '@playwright/test';
-import { emCadaBuild, paginas } from './builds';
-import { equivalente, LINGUAS, LINKEDIN, NOME, PAGINA_DE_MARCACAO, type Lingua } from './expected';
+import { inEachBuild, pagesOf } from './builds';
+import { equivalent, LANGUAGES, LINKEDIN, NAME, BOOKING_PAGE, type Language } from './expected';
 
-const TELEMOVEIS = [320, 375];
+const PHONE_WIDTHS = [320, 375];
 
 /** O botão que abre o menu do telemóvel: o <summary> do menu <details>. */
-const botaoDoMenu = (page: Page) =>
+const menuButton = (page: Page) =>
 	page.getByRole('banner').locator('summary').filter({ visible: true });
 
-emCadaBuild((build) => {
-	const publicadas: readonly Lingua[] = build.fase.linguasPublicadas;
-	const naoPublicadas = (Object.keys(LINGUAS) as Lingua[]).filter((l) => !publicadas.includes(l));
+inEachBuild((build) => {
+	const publishedLanguages: readonly Language[] = build.phase.publishedLanguages;
+	const unpublishedLanguages = (Object.keys(LANGUAGES) as Language[]).filter(
+		(l) => !publishedLanguages.includes(l),
+	);
 
-	for (const { caminho, lingua } of paginas(build)) {
-		if (!lingua) continue;
-		const { rotulo, nome, botao, inicio } = LINGUAS[lingua];
-		const outrasPublicadas = publicadas.filter((l) => l !== lingua);
+	for (const { path, language } of pagesOf(build)) {
+		if (!language) continue;
+		const { label, name, button, prefix } = LANGUAGES[language];
+		const otherLanguages = publishedLanguages.filter((l) => l !== language);
 
-		test.describe(caminho, () => {
+		test.describe(path, () => {
 			test('o seletor leva à página equivalente noutra língua publicada', async ({ page }) => {
-				await page.goto(caminho);
-				const cabecalho = page.getByRole('banner');
-				for (const outra of outrasPublicadas) {
-					const ligacao = cabecalho.getByRole('link', { name: LINGUAS[outra].nome });
-					await expect(ligacao).toBeVisible();
-					await expect(ligacao).toHaveAccessibleName(new RegExp(`^${LINGUAS[outra].rotulo}\\b`));
-					await expect(ligacao).toHaveAttribute('href', equivalente(caminho, lingua, outra));
+				await page.goto(path);
+				const header = page.getByRole('banner');
+				for (const other of otherLanguages) {
+					const link = header.getByRole('link', { name: LANGUAGES[other].name });
+					await expect(link).toBeVisible();
+					await expect(link).toHaveAccessibleName(new RegExp(`^${LANGUAGES[other].label}\\b`));
+					await expect(link).toHaveAttribute('href', equivalent(path, language, other));
 				}
 			});
 
 			test('a língua atual fica marcada e não é uma ligação', async ({ page }) => {
-				await page.goto(caminho);
-				const cabecalho = page.getByRole('banner');
-				await expect(cabecalho.getByRole('link', { name: nome })).toHaveCount(0);
+				await page.goto(path);
+				const header = page.getByRole('banner');
+				await expect(header.getByRole('link', { name })).toHaveCount(0);
 				await expect(
-					cabecalho.locator('[aria-current]').filter({ hasText: rotulo, visible: true }),
-				).toHaveText(new RegExp(`^${rotulo}\\b.*${nome}`));
+					header.locator('[aria-current]').filter({ hasText: label, visible: true }),
+				).toHaveText(new RegExp(`^${label}\\b.*${name}`));
 			});
 
 			test('o seletor só mostra as línguas publicadas', async ({ page }) => {
-				await page.goto(caminho);
-				const cabecalho = page.getByRole('banner');
-				await expect(cabecalho).toBeVisible();
-				for (const outra of naoPublicadas) {
-					await expect(cabecalho.getByText(LINGUAS[outra].nome)).toHaveCount(0);
+				await page.goto(path);
+				const header = page.getByRole('banner');
+				await expect(header).toBeVisible();
+				for (const other of unpublishedLanguages) {
+					await expect(header.getByText(LANGUAGES[other].name)).toHaveCount(0);
 				}
 			});
 
 			test('o logótipo, com o nome visível no nome acessível, leva à página principal', async ({
 				page,
 			}) => {
-				await page.goto(caminho);
-				const logotipo = page.getByRole('banner').getByRole('link', { name: NOME });
-				await expect(logotipo).toBeVisible();
-				await expect(logotipo).toHaveAccessibleName(new RegExp(`^${NOME}`, 'i'));
-				await expect(logotipo).toHaveAttribute('href', inicio);
+				await page.goto(path);
+				const logo = page.getByRole('banner').getByRole('link', { name: NAME });
+				await expect(logo).toBeVisible();
+				await expect(logo).toHaveAccessibleName(new RegExp(`^${NAME}`, 'i'));
+				await expect(logo).toHaveAttribute('href', prefix);
 			});
 
 			test('o cabeçalho fica fixo no topo, com o botão, ao fazer scroll', async ({ page }) => {
 				await page.setViewportSize({ width: 1280, height: 400 });
-				await page.goto(caminho);
+				await page.goto(path);
 				await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
 				expect(await page.evaluate(() => scrollY)).toBeGreaterThan(0);
-				const cabecalho = page.getByRole('banner');
-				expect((await cabecalho.boundingBox())?.y).toBe(0);
-				await expect(cabecalho.getByRole('link', { name: botao, exact: true })).toBeInViewport();
+				const header = page.getByRole('banner');
+				expect((await header.boundingBox())?.y).toBe(0);
+				await expect(header.getByRole('link', { name: button, exact: true })).toBeInViewport();
 			});
 
 			test('o cabeçalho nunca tapa o elemento com foco', async ({ page }) => {
 				// A andar para trás, o foco entra por cima, junto ao cabeçalho. O Chromium centra o elemento
 				// com foco, por isso só num ecrã baixo (zoom grande, telemóvel deitado) chega ao cabeçalho.
 				await page.setViewportSize({ width: 375, height: 150 });
-				await page.goto(caminho);
+				await page.goto(path);
 				await page.getByRole('contentinfo').getByRole('link').last().focus();
-				const fundoDoCabecalho = await page
+				const headerBottom = await page
 					.getByRole('banner')
 					.evaluate((e) => e.getBoundingClientRect().bottom);
-				let verificados = 0;
-				for (; verificados < 30; verificados++) {
-					const foco = await page.evaluate(() => {
+				let checked = 0;
+				for (; checked < 30; checked++) {
+					const focused = await page.evaluate(() => {
 						const e = document.activeElement!;
 						return {
-							noCabecalho: !!e.closest('header'),
-							topo: e.getBoundingClientRect().top,
-							descricao: e.outerHTML.slice(0, 80),
+							inHeader: !!e.closest('header'),
+							top: e.getBoundingClientRect().top,
+							description: e.outerHTML.slice(0, 80),
 						};
 					});
-					if (foco.noCabecalho) break;
-					expect(foco.topo, foco.descricao).toBeGreaterThanOrEqual(fundoDoCabecalho);
+					if (focused.inHeader) break;
+					expect(focused.top, focused.description).toBeGreaterThanOrEqual(headerBottom);
 					await page.keyboard.press('Shift+Tab');
 				}
-				expect(verificados, 'elementos com foco fora do cabeçalho').toBeGreaterThan(1);
+				expect(checked, 'elementos com foco fora do cabeçalho').toBeGreaterThan(1);
 			});
 
 			test('o rodapé tem o nome e leva ao LinkedIn', async ({ page }) => {
-				await page.goto(caminho);
-				const rodape = page.getByRole('contentinfo');
-				await expect(rodape.getByText(NOME, { exact: true })).toBeVisible();
-				await expect(rodape.getByRole('link', { name: 'LinkedIn' })).toHaveAttribute(
+				await page.goto(path);
+				const footer = page.getByRole('contentinfo');
+				await expect(footer.getByText(NAME, { exact: true })).toBeVisible();
+				await expect(footer.getByRole('link', { name: 'LinkedIn' })).toHaveAttribute(
 					'href',
 					LINKEDIN,
 				);
 			});
 
 			test('o botão do cabeçalho tem um alvo de toque de 44×44 px', async ({ page }) => {
-				for (const largura of [...TELEMOVEIS, 1280]) {
-					await page.setViewportSize({ width: largura, height: 700 });
-					await page.goto(caminho);
-					const marcar = page.getByRole('banner').getByRole('link', { name: botao, exact: true });
-					const caixa = (await marcar.boundingBox())!;
-					expect(caixa.width, `${largura} px`).toBeGreaterThanOrEqual(44);
-					expect(caixa.height, `${largura} px`).toBeGreaterThanOrEqual(44);
+				for (const width of [...PHONE_WIDTHS, 1280]) {
+					await page.setViewportSize({ width, height: 700 });
+					await page.goto(path);
+					const bookButton = page
+						.getByRole('banner')
+						.getByRole('link', { name: button, exact: true });
+					const box = (await bookButton.boundingBox())!;
+					expect(box.width, `${width} px`).toBeGreaterThanOrEqual(44);
+					expect(box.height, `${width} px`).toBeGreaterThanOrEqual(44);
 				}
 			});
 
-			for (const largura of TELEMOVEIS) {
-				test.describe(`no telemóvel, a ${largura} px`, () => {
-					test.use({ viewport: { width: largura, height: 700 } });
+			for (const width of PHONE_WIDTHS) {
+				test.describe(`no telemóvel, a ${width} px`, () => {
+					test.use({ viewport: { width, height: 700 } });
 
 					test('o botão de marcação fica visível no cabeçalho', async ({ page }) => {
-						await page.goto(caminho);
-						const marcar = page.getByRole('banner').getByRole('link', { name: botao, exact: true });
-						await expect(marcar).toBeInViewport({ ratio: 1 });
-						await expect(marcar).toHaveAttribute('href', PAGINA_DE_MARCACAO);
+						await page.goto(path);
+						const bookButton = page
+							.getByRole('banner')
+							.getByRole('link', { name: button, exact: true });
+						await expect(bookButton).toBeInViewport({ ratio: 1 });
+						await expect(bookButton).toHaveAttribute('href', BOOKING_PAGE);
 						await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
-						await expect(marcar).toBeInViewport({ ratio: 1 });
+						await expect(bookButton).toBeInViewport({ ratio: 1 });
 					});
 
 					test('as línguas passam para o menu, que fecha ao clicar fora e com Escape', async ({
 						page,
 					}) => {
-						await page.goto(caminho);
-						const atual = page
+						await page.goto(path);
+						const current = page
 							.getByRole('banner')
 							.locator('[aria-current]')
-							.filter({ hasText: rotulo, visible: true });
-						await expect(atual).toHaveCount(0);
+							.filter({ hasText: label, visible: true });
+						await expect(current).toHaveCount(0);
 
-						await botaoDoMenu(page).click();
-						await expect(atual).toBeVisible();
+						await menuButton(page).click();
+						await expect(current).toBeVisible();
 						await page.getByRole('main').click({ position: { x: 5, y: 300 } });
-						await expect(atual).toHaveCount(0);
+						await expect(current).toHaveCount(0);
 
-						await botaoDoMenu(page).click();
-						await expect(atual).toBeVisible();
+						await menuButton(page).click();
+						await expect(current).toBeVisible();
 						await page.keyboard.press('Escape');
-						await expect(atual).toHaveCount(0);
-						await expect(botaoDoMenu(page)).toBeFocused();
+						await expect(current).toHaveCount(0);
+						await expect(menuButton(page)).toBeFocused();
 					});
 
-					if (outrasPublicadas.length > 0) {
+					if (otherLanguages.length > 0) {
 						test('o menu fecha depois de escolher uma língua', async ({ page }) => {
-							const outra = outrasPublicadas[0];
-							await page.goto(caminho);
-							await botaoDoMenu(page).click();
+							const other = otherLanguages[0];
+							await page.goto(path);
+							await menuButton(page).click();
 							// O teste cancela a navegação depois de a página tratar o clique, para ver o menu.
 							await page.evaluate(() =>
-								window.addEventListener('click', (evento) => evento.preventDefault()),
+								window.addEventListener('click', (event) => event.preventDefault()),
 							);
-							const ligacao = page
+							const link = page
 								.getByRole('banner')
-								.getByRole('link', { name: LINGUAS[outra].nome });
-							await ligacao.click();
-							await expect(ligacao).toBeHidden();
+								.getByRole('link', { name: LANGUAGES[other].name });
+							await link.click();
+							await expect(link).toBeHidden();
 						});
 					}
 
@@ -172,18 +178,18 @@ emCadaBuild((build) => {
 						test.use({ javaScriptEnabled: false });
 
 						test('o menu abre e mostra as línguas publicadas', async ({ page }) => {
-							await page.goto(caminho);
-							const cabecalho = page.getByRole('banner');
-							const atual = cabecalho
+							await page.goto(path);
+							const header = page.getByRole('banner');
+							const current = header
 								.locator('[aria-current]')
-								.filter({ hasText: rotulo, visible: true });
-							await expect(atual).toHaveCount(0);
-							await botaoDoMenu(page).click();
-							await expect(atual).toBeVisible();
-							for (const outra of outrasPublicadas) {
+								.filter({ hasText: label, visible: true });
+							await expect(current).toHaveCount(0);
+							await menuButton(page).click();
+							await expect(current).toBeVisible();
+							for (const other of otherLanguages) {
 								await expect(
-									cabecalho.getByRole('link', { name: LINGUAS[outra].nome }),
-								).toHaveAttribute('href', equivalente(caminho, lingua, outra));
+									header.getByRole('link', { name: LANGUAGES[other].name }),
+								).toHaveAttribute('href', equivalent(path, language, other));
 							}
 						});
 					});

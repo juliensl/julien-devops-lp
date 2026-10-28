@@ -1,78 +1,77 @@
 // Tradução do português, a validar pela estagiária antes do Lançamento comercial (#75).
 // A Promessa e a Designação são as validadas pelo Julien.
-import type { Dicionario } from './pt';
+import type { Dictionary } from './pt';
 
-const promessa =
+const promise =
 	"En 30 jours, je te livre l'infrastructure devOps nécessaire pour que tu puisses scaler ton SaaS.";
 
-export const fr: Dicionario = {
-	designacao: 'Consultant DevOps freelance pour SaaS',
-	promessa,
-	botaoMarcar: 'Réserver un échange',
-	cabecalho: {
-		destinoDoLogotipo: "page d'accueil",
-		linguas: 'Langue',
+export const fr: Dictionary = {
+	designation: 'Consultant DevOps freelance pour SaaS',
+	promise,
+	bookButton: 'Réserver un échange',
+	header: {
+		logoTarget: "page d'accueil",
+		languages: 'Langue',
 		menu: 'Menu',
 	},
-	animacao: {
-		pausar: "Mettre l'animation en pause",
-		retomar: "Reprendre l'animation",
+	animation: {
+		pause: "Mettre l'animation en pause",
+		resume: "Reprendre l'animation",
 	},
-	paginaPrincipal: {
-		descricao: `${promessa} Pour les CTO de SaaS en croissance.`,
+	homePage: {
+		description: `${promise} Pour les CTO de SaaS en croissance.`,
 		hero: {
-			apoio:
+			support:
 				'Les bugs sont repérés dans la pull request, pas par ton client. Et tes devs se remettent à coder au lieu de faire du support.',
-			nota: 'Échange de 45 min sur Google Meet, gratuit.',
+			note: 'Échange de 45 min sur Google Meet, gratuit.',
 		},
-		paraQuem: {
-			titulo: 'Pour qui',
-			perfil: [
+		whoItsFor: {
+			title: 'Pour qui',
+			profile: [
 				'Un SaaS web ou mobile, déjà lancé.',
 				"Qui passe de quelques dizaines ou centaines à plusieurs milliers d'utilisateurs récurrents.",
 				'Une équipe de 5 à 20 personnes en général, dont au moins 3 devs.',
 			],
-			aindaNaoLancado: "Ton SaaS n'est pas encore lancé ? Tu peux réserver l'échange quand même.",
-			tituloDasExclusoes: "Ce n'est pas pour",
-			exclusoes: [
+			notLaunchedYet: "Ton SaaS n'est pas encore lancé ? Tu peux réserver l'échange quand même.",
+			exclusionsTitle: "Ce n'est pas pour",
+			exclusions: [
 				'Ceux qui ont déjà une pipeline CI, une application conteneurisée et une infrastructure avec auto-scaling.',
 				"Ce qui n'est ni web ni mobile.",
 				"Ceux qui refusent 100 à 500 €/mois de services et d'infrastructure.",
 				'Le secteur militaire.',
 			],
 		},
-		hojeEDepois: {
-			titulo: "Aujourd'hui, et après.",
-			tituloDeHoje: "Aujourd'hui",
-			hoje: [
+		todayAndAfter: {
+			title: "Aujourd'hui, et après.",
+			todayTitle: "Aujourd'hui",
+			today: [
 				{
-					titulo: 'Une fonctionnalité en casse une autre.',
-					texto: "La régression est devenue normale, et c'est le client qui la découvre.",
+					title: 'Une fonctionnalité en casse une autre.',
+					text: "La régression est devenue normale, et c'est le client qui la découvre.",
 				},
 				{
-					titulo: 'Tes devs font du support.',
-					texto: 'Ils répondent à des tickets au lieu de coder.',
+					title: 'Tes devs font du support.',
+					text: 'Ils répondent à des tickets au lieu de coder.',
 				},
 				{
-					titulo: 'Les tests se font à la main.',
-					texto: "Des journées entières, par quelqu'un dont ce n'est pas le métier.",
+					title: 'Les tests se font à la main.',
+					text: "Des journées entières, par quelqu'un dont ce n'est pas le métier.",
 				},
 				{
-					titulo: 'Personne ne sait si ça tient.',
-					texto:
-						"Ça tourne avec les clients d'aujourd'hui. Avec beaucoup plus, personne ne sait le dire.",
+					title: 'Personne ne sait si ça tient.',
+					text: "Ça tourne avec les clients d'aujourd'hui. Avec beaucoup plus, personne ne sait le dire.",
 				},
 			],
-			tituloDoQueJaTentaste: 'Ce que tu as déjà essayé',
-			jaTentaste: [
+			alreadyTriedTitle: 'Ce que tu as déjà essayé',
+			alreadyTried: [
 				"Un freelance DevOps exécutant, qui n'apporte pas d'expertise.",
 				'Tester à la main, ou via un stagiaire.',
 				"Des outils de test que les devs doivent lancer en local, et qu'ils ne lancent jamais.",
 				'Demander à un dev de monter en compétence : des semaines perdues, un résultat médiocre.',
 				'Des freelances qui codent chacun à leur manière : chaque départ emporte la connaissance.',
 			],
-			tituloDeDepois: 'Après',
-			depois: [
+			afterTitle: 'Après',
+			after: [
 				'Les bugs sont attrapés dans la pull request, pas par ton client.',
 				"Tes devs récupèrent les journées qu'ils passaient en support.",
 				"Ton équipe grandit sans craindre qu'un junior casse la prod.",
@@ -80,63 +79,61 @@ export const fr: Dicionario = {
 				"L'infrastructure suit la charge, et tu vois les problèmes avant tes clients.",
 			],
 		},
-		etapas: {
-			titulo: 'Cinq étapes, toujours dans le même ordre.',
-			etapas: [
-				{ nome: 'Échange', frase: '45 min sur Google Meet, gratuit.' },
+		steps: {
+			title: 'Cinq étapes, toujours dans le même ordre.',
+			steps: [
+				{ name: 'Échange', sentence: '45 min sur Google Meet, gratuit.' },
 				{
-					nome: 'Diagnostic',
-					frase:
+					name: 'Diagnostic',
+					sentence:
 						'Gratuit. 2 à 3 jours ouvrés après réception des accès, ou 3 à 5 si le cloud est inclus.',
 				},
 				{
-					nome: "Proposition d'intervention",
-					frase: 'Quels blocs, en combien de temps et pour quel prix fixe.',
+					name: "Proposition d'intervention",
+					sentence: 'Quels blocs, en combien de temps et pour quel prix fixe.',
 				},
-				{ nome: 'Mise en œuvre', frase: '30 jours calendaires au maximum.' },
+				{ name: 'Mise en œuvre', sentence: '30 jours calendaires au maximum.' },
 				{
-					nome: 'Livraison et passation',
-					frase: "Documentation et passation, pour que l'équipe soit autonome.",
+					name: 'Livraison et passation',
+					sentence: "Documentation et passation, pour que l'équipe soit autonome.",
 				},
 			],
 		},
-		garantia: {
-			etiqueta: 'La Garantie',
-			titulo: 'Disponible au moins 99 % du temps, chaque mois.',
-			texto:
-				"En 30 jours, je livre l'infrastructure. Pendant les 3 mois suivants, elle est disponible au moins 99 % du temps chaque mois. Sinon, je continue à travailler sans facturer jusqu'à y arriver.",
-			aplicaSe:
+		guarantee: {
+			label: 'La Garantie',
+			title: 'Disponible au moins 99 % du temps, chaque mois.',
+			text: "En 30 jours, je livre l'infrastructure. Pendant les 3 mois suivants, elle est disponible au moins 99 % du temps chaque mois. Sinon, je continue à travailler sans facturer jusqu'à y arriver.",
+			appliesWhen:
 				"S'applique quand tu prends les blocs 3 et 4 (et le 2, si l'application n'est pas encore conteneurisée).",
-			tituloDasCondicoes: 'Conditions',
-			condicoes: [
+			conditionsTitle: 'Conditions',
+			conditions: [
 				'Un test écrit pour chaque bug corrigé.',
 				'Aucun dev ne passe outre un test au rouge.',
 				'Un accès en lecture au dépôt.',
 				'Une personne technique qui répond sous 48 h.',
 			],
-			tituloDasExclusoes: 'Exclusions',
-			exclusoes: [
+			exclusionsTitle: 'Exclusions',
+			exclusions: [
 				'Les pannes du fournisseur cloud.',
 				'Les modifications qui ne sont pas passées par la pipeline.',
 			],
-			numero: '99 %',
-			porBaixoDoNumero: 'du temps, chaque mois',
-			comServico: 'avec service',
-			semServico: 'au plus 1 % sans service',
-			nota: 'Pendant les 3 mois qui suivent la livraison.',
+			number: '99 %',
+			belowNumber: 'du temps, chaque mois',
+			inService: 'avec service',
+			outOfService: 'au plus 1 % sans service',
+			note: 'Pendant les 3 mois qui suivent la livraison.',
 		},
-		quem: {
-			titulo: 'Qui est Julien',
-			formaDeTrabalhar:
+		about: {
+			title: 'Qui est Julien',
+			wayOfWorking:
 				"Je travaille à distance, en portugais, en français et en anglais. J'utilise des technologies standard, sans lock-in, et je documente tout pour que ton équipe soit autonome.",
 		},
-		ctaFinal: {
-			titulo: "Tu ne perds jamais l'infrastructure.",
-			texto:
-				"Même si ton équipe ne se lance pas tout de suite dans les tests, tu gardes une pipeline propre, documentée et aux standards du marché, prête pour le jour où tu décides d'y aller.",
-			conversa: 'Échange de 45 min sur Google Meet, gratuit et sans engagement.',
+		finalCta: {
+			title: "Tu ne perds jamais l'infrastructure.",
+			text: "Même si ton équipe ne se lance pas tout de suite dans les tests, tu gardes une pipeline propre, documentée et aux standards du marché, prête pour le jour où tu décides d'y aller.",
+			conversation: 'Échange de 45 min sur Google Meet, gratuit et sans engagement.',
 			// Não aparece enquanto a página de marcação estiver em francês (values.ts).
-			avisoDaMarcacao:
+			bookingNotice:
 				"La page de réservation est en français, mais l'échange peut se faire en anglais ou en portugais.",
 		},
 	},

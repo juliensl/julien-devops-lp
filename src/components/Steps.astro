@@ -3,28 +3,28 @@
 // No computador, a secção fica presa enquanto o scroll passa pelas Etapas, cerca de meio ecrã
 // cada uma. No telemóvel, com movimento reduzido e sem JS, é uma lista que se lê de seguida.
 interface Props {
-	titulo: string;
-	etapas: { nome: string; frase: string }[];
+	title: string;
+	steps: { name: string; sentence: string }[];
 }
 
-const { titulo, etapas } = Astro.props;
+const { title, steps } = Astro.props;
 ---
 
 <section
 	aria-labelledby="steps-title"
 	data-section="steps"
 	data-steps
-	style={`--step-count: ${etapas.length}`}
+	style={`--step-count: ${steps.length}`}
 >
 	<div data-stage>
 		<div class="page-width grid gap-12 py-[clamp(5rem,11vw,9rem)]">
 			<h2 id="steps-title" class="text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">
-				{titulo}
+				{title}
 			</h2>
 			{/* No telemóvel, uma Etapa por linha, com o número à esquerda. A partir de 961 px, cinco
 			    colunas em degraus, cada uma um pouco mais abaixo do que a anterior. */}
 			<ol class="grid gap-6 min-[961px]:grid-cols-5 min-[961px]:gap-8">
-				{etapas.map(({ nome, frase }, k) => (
+				{steps.map(({ name, sentence }, k) => (
 					<li
 						data-step
 						style={`--k: ${k}`}
@@ -37,9 +37,9 @@ const { titulo, etapas } = Astro.props;
 							{k + 1}
 						</span>
 						<strong class="font-semibold min-[961px]:border-t min-[961px]:border-line-strong min-[961px]:pt-3">
-							{nome}
+							{name}
 						</strong>
-						<span class="text-[0.9375rem] text-foreground-secondary">{frase}</span>
+						<span class="text-[0.9375rem] text-foreground-secondary">{sentence}</span>
 					</li>
 				))}
 			</ol>
@@ -48,49 +48,49 @@ const { titulo, etapas } = Astro.props;
 </section>
 
 <script>
-	import { depoisDoCarregamento } from '../scripts/after-load';
+	import { afterLoad } from '../scripts/after-load';
 
 	/** O computador, como nos Serviços (#54): mais de 960 px e sem movimento reduzido. */
-	const COMPUTADOR = '(min-width: 961px) and (prefers-reduced-motion: no-preference)';
+	const DESKTOP = '(min-width: 961px) and (prefers-reduced-motion: no-preference)';
 
-	depoisDoCarregamento(() => {
-		const computador = matchMedia(COMPUTADOR);
+	afterLoad(() => {
+		const desktop = matchMedia(DESKTOP);
 
-		for (const seccao of document.querySelectorAll<HTMLElement>('[data-steps]')) {
-			const palco = seccao.querySelector<HTMLElement>('[data-stage]')!;
-			const etapas = [...seccao.querySelectorAll<HTMLElement>('[data-step]')];
-			let quadroPedido = 0;
+		for (const section of document.querySelectorAll<HTMLElement>('[data-steps]')) {
+			const stage = section.querySelector<HTMLElement>('[data-stage]')!;
+			const steps = [...section.querySelectorAll<HTMLElement>('[data-step]')];
+			let pendingFrame = 0;
 
 			// Com a secção presa, o percurso vai de 0 (o palco prende) a 1 (solta). Cada Etapa tem
 			// a sua fatia do percurso e chega a meio dela, em (k + 0,5) / 5: o número acende.
 			// O ramo (#73) vai acender os números quando chega, com esta mesma conta; com a secção
 			// solta (telemóvel, movimento reduzido, ecrã baixo), os números ficam sempre acesos.
-			const acende = () => {
-				quadroPedido = 0;
-				if (!seccao.hasAttribute('data-pinned')) return;
-				const { top, height } = seccao.getBoundingClientRect();
-				const topoDoPalco = parseFloat(getComputedStyle(palco).top);
-				const percurso = (topoDoPalco - top) / (height - palco.offsetHeight);
-				for (const [k, etapa] of etapas.entries()) {
-					etapa.toggleAttribute('data-reached', percurso >= (k + 0.5) / etapas.length);
+			const lightUp = () => {
+				pendingFrame = 0;
+				if (!section.hasAttribute('data-pinned')) return;
+				const { top, height } = section.getBoundingClientRect();
+				const stageTop = parseFloat(getComputedStyle(stage).top);
+				const progress = (stageTop - top) / (height - stage.offsetHeight);
+				for (const [k, step] of steps.entries()) {
+					step.toggleAttribute('data-reached', progress >= (k + 0.5) / steps.length);
 				}
 			};
 
 			// Presa, as Etapas têm de caber no palco, por baixo do cabeçalho; num ecrã baixo ou com
 			// zoom, não cabem, e a secção fica solta para nada ficar escondido.
-			const prende = () => {
-				seccao.toggleAttribute('data-pinned', computador.matches);
-				const conteudo = palco.firstElementChild as HTMLElement;
-				if (conteudo.offsetHeight > palco.clientHeight) seccao.removeAttribute('data-pinned');
-				acende();
+			const pin = () => {
+				section.toggleAttribute('data-pinned', desktop.matches);
+				const content = stage.firstElementChild as HTMLElement;
+				if (content.offsetHeight > stage.clientHeight) section.removeAttribute('data-pinned');
+				lightUp();
 			};
 
-			computador.addEventListener('change', prende);
-			addEventListener('resize', prende);
-			addEventListener('scroll', () => (quadroPedido ||= requestAnimationFrame(acende)), {
+			desktop.addEventListener('change', pin);
+			addEventListener('resize', pin);
+			addEventListener('scroll', () => (pendingFrame ||= requestAnimationFrame(lightUp)), {
 				passive: true,
 			});
-			prende();
+			pin();
 		}
 	});
 </script>

@@ -1,56 +1,56 @@
 // Os dois builds que a suite verifica, e as páginas que cada um gerou.
 import { existsSync, globSync } from 'node:fs';
 import { test } from '@playwright/test';
-import { FASE_ATUAL, LANCAMENTO_COMERCIAL, type Fase } from '../src/config/site.ts';
-import { LINGUAS, type Lingua } from './expected.ts';
+import { CURRENT_PHASE, COMMERCIAL_LAUNCH, type Phase } from '../src/config/site.ts';
+import { LANGUAGES, type Language } from './expected.ts';
 
 export const BUILDS = [
-	{ nome: 'publicado', dist: 'dist', porta: 4331, fase: FASE_ATUAL, comando: 'npm run build' },
+	{ name: 'publicado', dist: 'dist', port: 4331, phase: CURRENT_PHASE, command: 'npm run build' },
 	{
-		nome: 'Lançamento comercial',
+		name: 'Lançamento comercial',
 		dist: 'dist-lancamento',
-		porta: 4332,
-		fase: LANCAMENTO_COMERCIAL,
-		comando: 'npm run build:lancamento',
+		port: 4332,
+		phase: COMMERCIAL_LAUNCH,
+		command: 'npm run build:lancamento',
 	},
-] satisfies { nome: string; dist: string; porta: number; fase: Fase; comando: string }[];
+] satisfies { name: string; dist: string; port: number; phase: Phase; command: string }[];
 
 export type Build = (typeof BUILDS)[number];
 
 /** Declara os testes uma vez por build, cada um no seu servidor. */
-export function emCadaBuild(testes: (build: Build) => void) {
+export function inEachBuild(tests: (build: Build) => void) {
 	for (const build of BUILDS) {
-		test.describe(`build ${build.nome}`, () => {
-			test.use({ baseURL: `http://localhost:${build.porta}` });
-			testes(build);
+		test.describe(`build ${build.name}`, () => {
+			test.use({ baseURL: `http://localhost:${build.port}` });
+			tests(build);
 		});
 	}
 }
 
-export interface Pagina {
-	caminho: string;
+export interface SitePage {
+	path: string;
 	/** A língua, pelo início do caminho. As páginas de erro (`/404.html`) não têm. */
-	lingua?: Lingua;
+	language?: Language;
 }
 
 /** Todas as páginas HTML do build: `pt/index.html` → `/pt/`. */
-export function paginas(build: Build): Pagina[] {
+export function pagesOf(build: Build): SitePage[] {
 	if (!existsSync(build.dist)) {
-		throw new Error(`Falta a pasta ${build.dist}. Corre primeiro «${build.comando}».`);
+		throw new Error(`Falta a pasta ${build.dist}. Corre primeiro «${build.command}».`);
 	}
-	return paginasDe(build.dist);
+	return pagesIn(build.dist);
 }
 
 /** Todas as páginas HTML de uma pasta, como se fosse um build. */
-export function paginasDe(pasta: string): Pagina[] {
-	return globSync('**/*.html', { cwd: pasta })
-		.map((ficheiro) => `/${ficheiro.replace(/(^|\/)index\.html$/, '$1')}`)
+export function pagesIn(folder: string): SitePage[] {
+	return globSync('**/*.html', { cwd: folder })
+		.map((file) => `/${file.replace(/(^|\/)index\.html$/, '$1')}`)
 		.sort()
-		.map((caminho) => ({ caminho, lingua: caminho.endsWith('/') ? linguaDe(caminho) : undefined }));
+		.map((path) => ({ path, language: path.endsWith('/') ? languageOf(path) : undefined }));
 }
 
 /** O francês não tem prefixo: é a língua de tudo o que não começa por outra. */
-function linguaDe(caminho: string): Lingua {
-	const outras = (Object.keys(LINGUAS) as Lingua[]).filter((l) => LINGUAS[l].inicio !== '/');
-	return outras.find((l) => caminho.startsWith(LINGUAS[l].inicio)) ?? 'fr';
+function languageOf(path: string): Language {
+	const others = (Object.keys(LANGUAGES) as Language[]).filter((l) => LANGUAGES[l].prefix !== '/');
+	return others.find((l) => path.startsWith(LANGUAGES[l].prefix)) ?? 'fr';
 }

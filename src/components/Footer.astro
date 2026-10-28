@@ -1,17 +1,17 @@
 ---
 // O rodapé de todas as páginas: o nome e o LinkedIn.
 // As partes que chegam com as páginas para onde levam têm o lugar marcado com o ticket.
-import { valores } from '../config/values';
+import { values } from '../config/values';
 ---
 
 <footer class="mt-20 border-t border-line text-sm text-foreground-secondary">
 	<div class="page-width flex flex-wrap items-center gap-x-6 gap-y-3 py-8">
-		<p class="font-heading text-lg text-foreground">{valores.nome}</p>
+		<p class="font-heading text-lg text-foreground">{values.name}</p>
 
 		{/* O email no domínio (#71) */}
 
 		<a
-			href={valores.linkedin}
+			href={values.linkedin}
 			class="inline-flex min-h-6 items-center underline underline-offset-3 hover:text-foreground"
 		>
 			LinkedIn

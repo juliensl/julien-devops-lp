@@ -2,4 +2,4 @@
 // Designação em inglês (#54). O ficheiro em public/ é gerado por scripts/share-image.ts.
 // Sem imports, porque esse script também lê este ficheiro, fora do Astro.
 
-export const IMAGEM_DE_PARTILHA = { caminho: '/og-image.png', largura: 1200, altura: 630 };
+export const SHARE_IMAGE = { path: '/og-image.png', width: 1200, height: 630 };

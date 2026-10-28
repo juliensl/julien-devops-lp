@@ -1,37 +1,37 @@
 import { expect, test } from '@playwright/test';
-import { emCadaBuild } from './builds';
-import { LINGUAS, PAGINA_DE_MARCACAO } from './expected';
+import { inEachBuild } from './builds';
+import { LANGUAGES, BOOKING_PAGE } from './expected';
 
-emCadaBuild((build) => {
-	for (const lingua of build.fase.linguasPublicadas) {
-		const { inicio, designacao, promessa, botao } = LINGUAS[lingua];
+inEachBuild((build) => {
+	for (const language of build.phase.publishedLanguages) {
+		const { prefix, designation, promise, button } = LANGUAGES[language];
 
-		test(`${inicio}: o Hero mostra a Designação e a Promessa`, async ({ page }) => {
-			await page.goto(inicio);
-			await expect(page.getByRole('heading', { level: 1 })).toHaveText(promessa);
+		test(`${prefix}: o Hero mostra a Designação e a Promessa`, async ({ page }) => {
+			await page.goto(prefix);
+			await expect(page.getByRole('heading', { level: 1 })).toHaveText(promise);
 			// A Designação aparece também em «Quem é o Julien» (#54).
-			const hero = page.getByRole('region', { name: promessa });
-			await expect(hero.getByText(designacao, { exact: true })).toBeVisible();
+			const hero = page.getByRole('region', { name: promise });
+			await expect(hero.getByText(designation, { exact: true })).toBeVisible();
 		});
 
-		test(`${inicio}: o título tem a Designação e a descrição parte da Promessa`, async ({
+		test(`${prefix}: o título tem a Designação e a descrição parte da Promessa`, async ({
 			page,
 		}) => {
-			await page.goto(inicio);
-			await expect(page).toHaveTitle(`Julien Laffont · ${designacao}`);
-			const descricao = await page.locator('meta[name="description"]').getAttribute('content');
-			expect(descricao).toMatch(new RegExp(`^${RegExp.escape(promessa)} \\S`));
+			await page.goto(prefix);
+			await expect(page).toHaveTitle(`Julien Laffont · ${designation}`);
+			const description = await page.locator('meta[name="description"]').getAttribute('content');
+			expect(description).toMatch(new RegExp(`^${RegExp.escape(promise)} \\S`));
 		});
 
-		test(`${inicio}: «${botao}» leva à página de marcação, no mesmo separador`, async ({
+		test(`${prefix}: «${button}» leva à página de marcação, no mesmo separador`, async ({
 			page,
 		}) => {
-			await page.goto(inicio);
-			const botoes = page.getByRole('link', { name: botao, exact: true });
-			await expect(botoes.first()).toBeVisible();
-			for (const botao of await botoes.all()) {
-				await expect(botao).toHaveAttribute('href', PAGINA_DE_MARCACAO);
-				await expect(botao).not.toHaveAttribute('target');
+			await page.goto(prefix);
+			const buttons = page.getByRole('link', { name: button, exact: true });
+			await expect(buttons.first()).toBeVisible();
+			for (const button of await buttons.all()) {
+				await expect(button).toHaveAttribute('href', BOOKING_PAGE);
+				await expect(button).not.toHaveAttribute('target');
 			}
 		});
 	}

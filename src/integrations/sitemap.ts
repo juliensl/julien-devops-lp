@@ -17,10 +17,10 @@ export default function sitemap(): AstroIntegration {
 		name: 'sitemap',
 		hooks: {
 			'astro:build:done': ({ dir }) => {
-				const pasta = fileURLToPath(dir);
-				const urls = globSync('**/*.html', { cwd: pasta })
-					.filter((ficheiro) => !NOINDEX.test(readFileSync(join(pasta, ficheiro), 'utf8')))
-					.map((ficheiro) => new URL(ficheiro.replace(/(^|\/)index\.html$/, '$1'), SITE).href)
+				const outDir = fileURLToPath(dir);
+				const urls = globSync('**/*.html', { cwd: outDir })
+					.filter((file) => !NOINDEX.test(readFileSync(join(outDir, file), 'utf8')))
+					.map((file) => new URL(file.replace(/(^|\/)index\.html$/, '$1'), SITE).href)
 					.sort();
 
 				const xml = [
@@ -29,10 +29,10 @@ export default function sitemap(): AstroIntegration {
 					...urls.map((url) => `\t<url><loc>${url}</loc></url>`),
 					'</urlset>',
 				];
-				writeFileSync(join(pasta, 'sitemap.xml'), `${xml.join('\n')}\n`);
+				writeFileSync(join(outDir, 'sitemap.xml'), `${xml.join('\n')}\n`);
 
 				const robots = ['User-agent: *', 'Allow: /', '', `Sitemap: ${SITE}/sitemap.xml`];
-				writeFileSync(join(pasta, 'robots.txt'), `${robots.join('\n')}\n`);
+				writeFileSync(join(outDir, 'robots.txt'), `${robots.join('\n')}\n`);
 			},
 		},
 	};

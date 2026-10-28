@@ -4,9 +4,9 @@
 // Fica por agora (#54): um desenho novo troca só este componente e a imagem de partilha (#61).
 // O texto é o próprio nome, por isso uma ligação à volta do logótipo tem o nome acessível certo.
 // O tamanho segue o font-size de quem o usa.
-import { valores } from '../config/values';
+import { values } from '../config/values';
 
-const linhas = valores.nome.split(' ');
+const lines = values.name.split(' ');
 ---
 
 <span class="logo">
@@ -14,10 +14,10 @@ const linhas = valores.nome.split(' ');
 		<path class="purple" d="M60 25C47 6 8 5 8 25S47 44 60 25"></path>
 		<path class="green" d="M60 25C73 6 112 5 112 25S73 44 60 25"></path>
 	</svg>
-	{linhas.map((linha, i) => (
+	{lines.map((line, i) => (
 		<>
 			{i > 0 && ' '}
-			<span class="line">{linha}</span>
+			<span class="line">{line}</span>
 		</>
 	))}
 </span>

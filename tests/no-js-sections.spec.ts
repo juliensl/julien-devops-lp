@@ -1,315 +1,313 @@
 // As secções da página principal que não precisam de JavaScript (#63): «Para quem é», «Hoje, e
 // depois», a Garantia, «Quem é o Julien» e o CTA final.
 import { expect, test } from '@playwright/test';
-import { emCadaBuild } from './builds';
-import { LINGUAS, NOME, PAGINA_DE_MARCACAO, type Lingua } from './expected';
+import { inEachBuild } from './builds';
+import { LANGUAGES, NAME, BOOKING_PAGE, type Language } from './expected';
 
 // Os valores esperados, tirados da spec (#54). Em português, os textos validados estão tal como
 // a spec os dá; o francês e o inglês são traduções que a estagiária valida antes do Lançamento
 // comercial (#75). A página de marcação está em francês: o aviso só aparece nas outras línguas.
-const ESPERADO = {
+const EXPECTED = {
 	pt: {
-		paraQuem: {
-			titulo: 'Para quem é',
-			perfil: [
+		whoItsFor: {
+			title: 'Para quem é',
+			profile: [
 				'Um SaaS web ou mobile, já lançado.',
 				'A passar de dezenas ou centenas para milhares de utilizadores recorrentes.',
 				'Uma equipa de normalmente 5 a 20 pessoas, com pelo menos 3 devs.',
 			],
-			aindaNaoLancado: 'O teu SaaS ainda não foi lançado? Podes marcar a Conversa na mesma.',
-			naoEPara: 'Não é para',
-			exclusoes: [
+			notLaunchedYet: 'O teu SaaS ainda não foi lançado? Podes marcar a Conversa na mesma.',
+			notFor: 'Não é para',
+			exclusions: [
 				'Quem já tem pipeline de CI, aplicação contentorizada e infraestrutura com auto-scaling.',
 				'O que não é web nem mobile.',
 				'Quem recusa 100 a 500 €/mês de serviços e infraestrutura.',
 				'O setor militar.',
 			],
 		},
-		hoje: {
-			titulo: 'Hoje, e depois.',
-			listas: ['Hoje', 'O que já tentaste', 'Depois'],
+		todayAndAfter: {
+			title: 'Hoje, e depois.',
+			lists: ['Hoje', 'O que já tentaste', 'Depois'],
 		},
-		garantia: {
-			titulo: 'Disponível pelo menos 99 % do tempo, em cada mês.',
-			texto:
-				'Em 30 dias, entrego a infraestrutura. Nos 3 meses seguintes, ela está disponível pelo menos 99 % do tempo em cada mês. Se não estiver, continuo a trabalhar sem faturar até chegar lá.',
-			aplicaSe:
+		guarantee: {
+			title: 'Disponível pelo menos 99 % do tempo, em cada mês.',
+			text: 'Em 30 dias, entrego a infraestrutura. Nos 3 meses seguintes, ela está disponível pelo menos 99 % do tempo em cada mês. Se não estiver, continuo a trabalhar sem faturar até chegar lá.',
+			appliesWhen:
 				'Aplica-se quando contratas os blocos 3 e 4 (e o 2, se a aplicação ainda não estiver contentorizada).',
-			listas: ['Condições', 'Exclusões'],
-			condicoes: [
+			lists: ['Condições', 'Exclusões'],
+			conditions: [
 				'Um teste escrito para cada bug corrigido.',
 				'Nenhum dev passa à frente de um teste a vermelho.',
 				'Acesso de leitura ao repositório.',
 				'Uma pessoa técnica que responde em 48 h.',
 			],
-			exclusoes: ['Falhas do fornecedor cloud.', 'Alterações que não passaram pela pipeline.'],
-			numero: '99 %',
-			legendas: ['com serviço', 'no máximo 1 % sem serviço'],
-			nota: 'Nos 3 meses seguintes à entrega.',
+			exclusions: ['Falhas do fornecedor cloud.', 'Alterações que não passaram pela pipeline.'],
+			number: '99 %',
+			captions: ['com serviço', 'no máximo 1 % sem serviço'],
+			note: 'Nos 3 meses seguintes à entrega.',
 		},
-		quem: {
-			titulo: 'Quem é o Julien',
-			formaDeTrabalhar:
+		about: {
+			title: 'Quem é o Julien',
+			wayOfWorking:
 				'Trabalho à distância, em português, francês e inglês. Uso tecnologias standard, sem lock-in, e documento tudo para a tua equipa ficar autónoma.',
 		},
-		ctaFinal: {
-			titulo: 'Nunca perdes a infraestrutura.',
-			conversa: 'Conversa de 45 min por Google Meet, gratuita e sem compromisso.',
-			aviso:
+		finalCta: {
+			title: 'Nunca perdes a infraestrutura.',
+			conversation: 'Conversa de 45 min por Google Meet, gratuita e sem compromisso.',
+			bookingNotice:
 				'A página de marcação está em francês, mas a Conversa pode ser em inglês ou em português.',
 		},
 	},
 	fr: {
-		paraQuem: {
-			titulo: 'Pour qui',
-			perfil: [
+		whoItsFor: {
+			title: 'Pour qui',
+			profile: [
 				'Un SaaS web ou mobile, déjà lancé.',
 				"Qui passe de quelques dizaines ou centaines à plusieurs milliers d'utilisateurs récurrents.",
 				'Une équipe de 5 à 20 personnes en général, dont au moins 3 devs.',
 			],
-			aindaNaoLancado: "Ton SaaS n'est pas encore lancé ? Tu peux réserver l'échange quand même.",
-			naoEPara: "Ce n'est pas pour",
-			exclusoes: [
+			notLaunchedYet: "Ton SaaS n'est pas encore lancé ? Tu peux réserver l'échange quand même.",
+			notFor: "Ce n'est pas pour",
+			exclusions: [
 				'Ceux qui ont déjà une pipeline CI, une application conteneurisée et une infrastructure avec auto-scaling.',
 				"Ce qui n'est ni web ni mobile.",
 				"Ceux qui refusent 100 à 500 €/mois de services et d'infrastructure.",
 				'Le secteur militaire.',
 			],
 		},
-		hoje: {
-			titulo: "Aujourd'hui, et après.",
-			listas: ["Aujourd'hui", 'Ce que tu as déjà essayé', 'Après'],
+		todayAndAfter: {
+			title: "Aujourd'hui, et après.",
+			lists: ["Aujourd'hui", 'Ce que tu as déjà essayé', 'Après'],
 		},
-		garantia: {
-			titulo: 'Disponible au moins 99 % du temps, chaque mois.',
-			texto:
-				"En 30 jours, je livre l'infrastructure. Pendant les 3 mois suivants, elle est disponible au moins 99 % du temps chaque mois. Sinon, je continue à travailler sans facturer jusqu'à y arriver.",
-			aplicaSe:
+		guarantee: {
+			title: 'Disponible au moins 99 % du temps, chaque mois.',
+			text: "En 30 jours, je livre l'infrastructure. Pendant les 3 mois suivants, elle est disponible au moins 99 % du temps chaque mois. Sinon, je continue à travailler sans facturer jusqu'à y arriver.",
+			appliesWhen:
 				"S'applique quand tu prends les blocs 3 et 4 (et le 2, si l'application n'est pas encore conteneurisée).",
-			listas: ['Conditions', 'Exclusions'],
-			condicoes: [
+			lists: ['Conditions', 'Exclusions'],
+			conditions: [
 				'Un test écrit pour chaque bug corrigé.',
 				'Aucun dev ne passe outre un test au rouge.',
 				'Un accès en lecture au dépôt.',
 				'Une personne technique qui répond sous 48 h.',
 			],
-			exclusoes: [
+			exclusions: [
 				'Les pannes du fournisseur cloud.',
 				'Les modifications qui ne sont pas passées par la pipeline.',
 			],
-			numero: '99 %',
-			legendas: ['avec service', 'au plus 1 % sans service'],
-			nota: 'Pendant les 3 mois qui suivent la livraison.',
+			number: '99 %',
+			captions: ['avec service', 'au plus 1 % sans service'],
+			note: 'Pendant les 3 mois qui suivent la livraison.',
 		},
-		quem: {
-			titulo: 'Qui est Julien',
-			formaDeTrabalhar:
+		about: {
+			title: 'Qui est Julien',
+			wayOfWorking:
 				"Je travaille à distance, en portugais, en français et en anglais. J'utilise des technologies standard, sans lock-in, et je documente tout pour que ton équipe soit autonome.",
 		},
-		ctaFinal: {
-			titulo: "Tu ne perds jamais l'infrastructure.",
-			conversa: 'Échange de 45 min sur Google Meet, gratuit et sans engagement.',
-			aviso: undefined,
+		finalCta: {
+			title: "Tu ne perds jamais l'infrastructure.",
+			conversation: 'Échange de 45 min sur Google Meet, gratuit et sans engagement.',
+			bookingNotice: undefined,
 		},
 	},
 	en: {
-		paraQuem: {
-			titulo: "Who it's for",
-			perfil: [
+		whoItsFor: {
+			title: "Who it's for",
+			profile: [
 				'A web or mobile SaaS, already launched.',
 				'Growing from tens or hundreds to thousands of recurring users.',
 				'A team of usually 5 to 20 people, with at least 3 devs.',
 			],
-			aindaNaoLancado: "Haven't launched your SaaS yet? You can still book the conversation.",
-			naoEPara: 'Not for',
-			exclusoes: [
+			notLaunchedYet: "Haven't launched your SaaS yet? You can still book the conversation.",
+			notFor: 'Not for',
+			exclusions: [
 				'Teams that already have a CI pipeline, a containerised application and auto-scaling infrastructure.',
 				"Anything that isn't web or mobile.",
 				'Teams that turn down €100 to €500 a month for services and infrastructure.',
 				'The military sector.',
 			],
 		},
-		hoje: {
-			titulo: 'Today, and after.',
-			listas: ['Today', "What you've already tried", 'After'],
+		todayAndAfter: {
+			title: 'Today, and after.',
+			lists: ['Today', "What you've already tried", 'After'],
 		},
-		garantia: {
-			titulo: 'Available at least 99% of the time, every month.',
-			texto:
-				"In 30 days, I deliver the infrastructure. For the next 3 months, it is available at least 99% of the time every month. If it isn't, I keep working without billing until it is.",
-			aplicaSe:
+		guarantee: {
+			title: 'Available at least 99% of the time, every month.',
+			text: "In 30 days, I deliver the infrastructure. For the next 3 months, it is available at least 99% of the time every month. If it isn't, I keep working without billing until it is.",
+			appliesWhen:
 				"Applies when you take blocks 3 and 4 (and 2, if the application isn't containerised yet).",
-			listas: ['Conditions', 'Exclusions'],
-			condicoes: [
+			lists: ['Conditions', 'Exclusions'],
+			conditions: [
 				'A test written for every bug fixed.',
 				'No dev pushes past a failing test.',
 				'Read access to the repository.',
 				'A technical contact who replies within 48 h.',
 			],
-			exclusoes: ['Cloud provider outages.', "Changes that didn't go through the pipeline."],
-			numero: '99%',
-			legendas: ['in service', 'at most 1% out of service'],
-			nota: 'For the 3 months after delivery.',
+			exclusions: ['Cloud provider outages.', "Changes that didn't go through the pipeline."],
+			number: '99%',
+			captions: ['in service', 'at most 1% out of service'],
+			note: 'For the 3 months after delivery.',
 		},
-		quem: {
-			titulo: 'Who is Julien',
-			formaDeTrabalhar:
+		about: {
+			title: 'Who is Julien',
+			wayOfWorking:
 				'I work remotely, in Portuguese, French and English. I use standard technologies, with no lock-in, and document everything so your team can run on its own.',
 		},
-		ctaFinal: {
-			titulo: 'You never lose the infrastructure.',
-			conversa: '45-min conversation on Google Meet, free and with no commitment.',
-			aviso: 'The booking page is in French, but the conversation can be in English or Portuguese.',
+		finalCta: {
+			title: 'You never lose the infrastructure.',
+			conversation: '45-min conversation on Google Meet, free and with no commitment.',
+			bookingNotice:
+				'The booking page is in French, but the conversation can be in English or Portuguese.',
 		},
 	},
-} satisfies Record<Lingua, unknown>;
+} satisfies Record<Language, unknown>;
 
 // Os números que o Julien validou (#54, «Só se publica o que está validado»): 30 dias, 99 % (e o 1 %
 // que falta), 100 a 500 €/mês, 5 a 20 pessoas, 3 devs, 45 min, 48 h, 3 meses e os números dos Blocos.
-const NUMEROS_VALIDADOS = ['1', '2', '3', '4', '5', '20', '30', '45', '48', '99', '100', '500'];
+const APPROVED_NUMBERS = ['1', '2', '3', '4', '5', '20', '30', '45', '48', '99', '100', '500'];
 
-emCadaBuild((build) => {
-	for (const lingua of build.fase.linguasPublicadas) {
-		const { inicio, promessa, designacao, botao } = LINGUAS[lingua];
-		const { paraQuem, hoje, garantia, quem, ctaFinal } = ESPERADO[lingua];
-		const seccoes = [paraQuem, hoje, garantia, quem, ctaFinal];
+inEachBuild((build) => {
+	for (const language of build.phase.publishedLanguages) {
+		const { prefix, promise, designation, button } = LANGUAGES[language];
+		const { whoItsFor, todayAndAfter, guarantee, about, finalCta } = EXPECTED[language];
+		const sections = [whoItsFor, todayAndAfter, guarantee, about, finalCta];
 
-		test.describe(inicio, () => {
-			test(`«${botao}» está no cabeçalho, no Hero, no fim de «${paraQuem.titulo}» e no CTA final`, async ({
+		test.describe(prefix, () => {
+			test(`«${button}» está no cabeçalho, no Hero, no fim de «${whoItsFor.title}» e no CTA final`, async ({
 				page,
 			}) => {
-				await page.goto(inicio);
-				const sitios = {
-					cabecalho: page.getByRole('banner'),
-					hero: page.getByRole('region', { name: promessa }),
-					paraQuem: page.getByRole('region', { name: paraQuem.titulo }),
-					ctaFinal: page.getByRole('region', { name: ctaFinal.titulo }),
+				await page.goto(prefix);
+				const places = {
+					header: page.getByRole('banner'),
+					hero: page.getByRole('region', { name: promise }),
+					whoItsFor: page.getByRole('region', { name: whoItsFor.title }),
+					finalCta: page.getByRole('region', { name: finalCta.title }),
 				};
-				for (const [sitio, regiao] of Object.entries(sitios)) {
-					const marcar = regiao.getByRole('link', { name: botao, exact: true });
-					await expect(marcar, sitio).toHaveCount(1);
-					await expect(marcar, sitio).toHaveAttribute('href', PAGINA_DE_MARCACAO);
-					await expect(marcar, sitio).not.toHaveAttribute('target');
+				for (const [place, region] of Object.entries(places)) {
+					const bookButton = region.getByRole('link', { name: button, exact: true });
+					await expect(bookButton, place).toHaveCount(1);
+					await expect(bookButton, place).toHaveAttribute('href', BOOKING_PAGE);
+					await expect(bookButton, place).not.toHaveAttribute('target');
 				}
 				// O botão fecha «Para quem é»: fica por baixo das exclusões.
-				const exclusoes = sitios.paraQuem.getByRole('list', { name: paraQuem.naoEPara });
-				const { y, height } = (await exclusoes.boundingBox())!;
-				const marcar = sitios.paraQuem.getByRole('link', { name: botao, exact: true });
-				expect((await marcar.boundingBox())!.y).toBeGreaterThanOrEqual(y + height);
+				const exclusions = places.whoItsFor.getByRole('list', { name: whoItsFor.notFor });
+				const { y, height } = (await exclusions.boundingBox())!;
+				const bookButton = places.whoItsFor.getByRole('link', { name: button, exact: true });
+				expect((await bookButton.boundingBox())!.y).toBeGreaterThanOrEqual(y + height);
 			});
 
-			test(`«${paraQuem.titulo}» mostra o perfil, a frase para quem ainda não lançou e as 4 exclusões`, async ({
+			test(`«${whoItsFor.title}» mostra o perfil, a frase para quem ainda não lançou e as 4 exclusões`, async ({
 				page,
 			}) => {
-				await page.goto(inicio);
-				const seccao = page.getByRole('region', { name: paraQuem.titulo });
-				for (const frase of [...paraQuem.perfil, paraQuem.aindaNaoLancado]) {
-					await expect(seccao.getByText(frase, { exact: true })).toBeVisible();
+				await page.goto(prefix);
+				const section = page.getByRole('region', { name: whoItsFor.title });
+				for (const sentence of [...whoItsFor.profile, whoItsFor.notLaunchedYet]) {
+					await expect(section.getByText(sentence, { exact: true })).toBeVisible();
 				}
-				const exclusoes = seccao.getByRole('list', { name: paraQuem.naoEPara });
-				await expect(exclusoes.getByRole('listitem')).toHaveText(paraQuem.exclusoes);
+				const exclusions = section.getByRole('list', { name: whoItsFor.notFor });
+				await expect(exclusions.getByRole('listitem')).toHaveText(whoItsFor.exclusions);
 			});
 
-			test(`«${hoje.titulo}»: o que o CTO vive, o que já tentou e a transformação, sem números`, async ({
+			test(`«${todayAndAfter.title}»: o que o CTO vive, o que já tentou e a transformação, sem números`, async ({
 				page,
 			}) => {
-				await page.goto(inicio);
-				const seccao = page.getByRole('region', { name: hoje.titulo });
-				for (const lista of hoje.listas) {
-					const itens = seccao.getByRole('list', { name: lista }).getByRole('listitem');
-					await expect(itens.first(), lista).toBeVisible();
+				await page.goto(prefix);
+				const section = page.getByRole('region', { name: todayAndAfter.title });
+				for (const list of todayAndAfter.lists) {
+					const items = section.getByRole('list', { name: list }).getByRole('listitem');
+					await expect(items.first(), list).toBeVisible();
 				}
-				expect(await seccao.textContent()).not.toMatch(/\d/);
+				expect(await section.textContent()).not.toMatch(/\d/);
 			});
 
 			test('a Garantia: o compromisso, quando se aplica, as 4 condições e as 2 exclusões', async ({
 				page,
 			}) => {
-				await page.goto(inicio);
-				const seccao = page.getByRole('region', { name: garantia.titulo });
-				for (const frase of [garantia.texto, garantia.aplicaSe]) {
-					await expect(seccao.getByText(frase, { exact: true })).toBeVisible();
+				await page.goto(prefix);
+				const section = page.getByRole('region', { name: guarantee.title });
+				for (const sentence of [guarantee.text, guarantee.appliesWhen]) {
+					await expect(section.getByText(sentence, { exact: true })).toBeVisible();
 				}
-				const [condicoes, exclusoes] = garantia.listas.map((nome) =>
-					seccao.getByRole('list', { name: nome }).getByRole('listitem'),
+				const [conditions, exclusions] = guarantee.lists.map((name) =>
+					section.getByRole('list', { name }).getByRole('listitem'),
 				);
-				await expect(condicoes).toHaveText(garantia.condicoes);
-				await expect(exclusoes).toHaveText(garantia.exclusoes);
+				await expect(conditions).toHaveText(guarantee.conditions);
+				await expect(exclusions).toHaveText(guarantee.exclusions);
 			});
 
 			test('a Garantia mostra os 99 % em grande e uma barra da largura da secção em que só 1 % muda de cor', async ({
 				page,
 			}) => {
-				await page.goto(inicio);
-				const seccao = page.getByRole('region', { name: garantia.titulo });
-				const figura = seccao.getByRole('figure');
-				const numero = figura.getByText(garantia.numero, { exact: true });
-				await expect(numero).toBeVisible();
-				const tamanho = await numero.evaluate((e) => parseFloat(getComputedStyle(e).fontSize));
-				expect(tamanho).toBeGreaterThanOrEqual(80);
-				for (const texto of garantia.legendas) {
-					await expect(figura.getByText(texto, { exact: true })).toBeVisible();
+				await page.goto(prefix);
+				const section = page.getByRole('region', { name: guarantee.title });
+				const figure = section.getByRole('figure');
+				const percentage = figure.getByText(guarantee.number, { exact: true });
+				await expect(percentage).toBeVisible();
+				const fontSize = await percentage.evaluate((e) => parseFloat(getComputedStyle(e).fontSize));
+				expect(fontSize).toBeGreaterThanOrEqual(80);
+				for (const text of guarantee.captions) {
+					await expect(figure.getByText(text, { exact: true })).toBeVisible();
 				}
-				await expect(figura).toHaveAccessibleName(garantia.nota);
+				await expect(figure).toHaveAccessibleName(guarantee.note);
 
 				// A barra é decorativa: as legendas dizem o mesmo em texto, e ela só se mede pela forma.
 				// Vai da margem do título à das exclusões, a largura toda do conteúdo.
-				const barra = (await figura.locator('[aria-hidden="true"]').boundingBox())!;
-				const titulo = (await seccao.getByRole('heading', { level: 2 }).boundingBox())!;
-				const exclusoes = seccao.getByRole('list', { name: garantia.listas[1] });
-				const { x, width } = (await exclusoes.boundingBox())!;
-				expect(barra.x).toBeCloseTo(titulo.x, 0);
-				expect(barra.x + barra.width).toBeCloseTo(x + width, 0);
-				const larguraDaBarra = barra.width;
-				const ponta = (await figura.locator('[aria-hidden="true"] > *').last().boundingBox())!;
-				expect(ponta.width / larguraDaBarra).toBeGreaterThan(0.005);
-				expect(ponta.width / larguraDaBarra).toBeLessThan(0.02);
+				const bar = (await figure.locator('[aria-hidden="true"]').boundingBox())!;
+				const heading = (await section.getByRole('heading', { level: 2 }).boundingBox())!;
+				const exclusions = section.getByRole('list', { name: guarantee.lists[1] });
+				const { x, width } = (await exclusions.boundingBox())!;
+				expect(bar.x).toBeCloseTo(heading.x, 0);
+				expect(bar.x + bar.width).toBeCloseTo(x + width, 0);
+				const barWidth = bar.width;
+				const tip = (await figure.locator('[aria-hidden="true"] > *').last().boundingBox())!;
+				expect(tip.width / barWidth).toBeGreaterThan(0.005);
+				expect(tip.width / barWidth).toBeLessThan(0.02);
 			});
 
-			test(`«${quem.titulo}»: a fotografia, o nome, a Designação e a forma de trabalhar`, async ({
+			test(`«${about.title}»: a fotografia, o nome, a Designação e a forma de trabalhar`, async ({
 				page,
 			}) => {
-				const imagens: string[] = [];
-				page.on('response', (resposta) => {
-					if (resposta.request().resourceType() === 'image') {
-						imagens.push(resposta.headers()['content-type'] ?? '');
+				const images: string[] = [];
+				page.on('response', (response) => {
+					if (response.request().resourceType() === 'image') {
+						images.push(response.headers()['content-type'] ?? '');
 					}
 				});
-				await page.goto(inicio, { waitUntil: 'networkidle' });
-				const seccao = page.getByRole('region', { name: quem.titulo });
-				await expect(seccao.getByText(NOME, { exact: true })).toBeVisible();
-				await expect(seccao.getByText(designacao, { exact: true })).toBeVisible();
-				await expect(seccao.getByText(quem.formaDeTrabalhar, { exact: true })).toBeVisible();
+				await page.goto(prefix, { waitUntil: 'networkidle' });
+				const section = page.getByRole('region', { name: about.title });
+				await expect(section.getByText(NAME, { exact: true })).toBeVisible();
+				await expect(section.getByText(designation, { exact: true })).toBeVisible();
+				await expect(section.getByText(about.wayOfWorking, { exact: true })).toBeVisible();
 
 				// Longe do topo: a fotografia só é pedida quando lá se chega.
-				expect(imagens).toEqual([]);
-				const foto = seccao.getByRole('img', { name: NOME, exact: true });
-				await foto.scrollIntoViewIfNeeded();
-				await expect(foto).toBeVisible();
+				expect(images).toEqual([]);
+				const photo = section.getByRole('img', { name: NAME, exact: true });
+				await photo.scrollIntoViewIfNeeded();
+				await expect(photo).toBeVisible();
 				// A única imagem da página, em AVIF.
 				await expect(page.locator('img')).toHaveCount(1);
-				await expect.poll(() => imagens).toEqual(['image/avif']);
+				await expect.poll(() => images).toEqual(['image/avif']);
 			});
 
 			test('as secções ficam nos lugares da #54, de «Para quem é», logo a seguir ao Hero, ao CTA final, no fim', async ({
 				page,
 			}) => {
-				await page.goto(inicio);
-				const titulos = (
+				await page.goto(prefix);
+				const titles = (
 					await page.getByRole('main').getByRole('heading', { level: 2 }).allTextContents()
-				).map((titulo) => titulo.replace(/\s+/g, ' '));
-				const lugares = seccoes.map(({ titulo }) => titulos.indexOf(titulo));
-				expect(lugares[0]).toBe(0);
-				expect(lugares).toEqual([...lugares].sort((a, b) => a - b));
-				expect(lugares.at(-1)).toBe(titulos.length - 1);
+				).map((title) => title.replace(/\s+/g, ' '));
+				const positions = sections.map(({ title }) => titles.indexOf(title));
+				expect(positions[0]).toBe(0);
+				expect(positions).toEqual([...positions].sort((a, b) => a - b));
+				expect(positions.at(-1)).toBe(titles.length - 1);
 			});
 
 			test('só aparecem os números validados pelo Julien', async ({ page }) => {
-				await page.goto(inicio);
-				for (const { titulo } of seccoes) {
-					const texto = (await page.getByRole('region', { name: titulo }).textContent())!;
-					const numeros = texto.match(/\d+(?:[.,]\d+)?/g) ?? [];
-					for (const numero of numeros) expect(NUMEROS_VALIDADOS, titulo).toContain(numero);
+				await page.goto(prefix);
+				for (const { title } of sections) {
+					const text = (await page.getByRole('region', { name: title }).textContent())!;
+					const numbers = text.match(/\d+(?:[.,]\d+)?/g) ?? [];
+					for (const value of numbers) expect(APPROVED_NUMBERS, title).toContain(value);
 				}
 			});
 
@@ -319,15 +317,15 @@ emCadaBuild((build) => {
 				test('as cinco secções aparecem completas, com a barra da Garantia cheia', async ({
 					page,
 				}) => {
-					await page.goto(inicio);
-					for (const { titulo } of seccoes) {
-						await expect(page.getByRole('region', { name: titulo })).toBeVisible();
+					await page.goto(prefix);
+					for (const { title } of sections) {
+						await expect(page.getByRole('region', { name: title })).toBeVisible();
 					}
-					const figura = page.getByRole('region', { name: garantia.titulo }).getByRole('figure');
-					await expect(figura.getByText(garantia.numero, { exact: true })).toBeVisible();
-					const barra = figura.locator('[aria-hidden="true"]');
-					const comServico = (await barra.locator(':scope > *').first().boundingBox())!;
-					expect(comServico.width / (await barra.boundingBox())!.width).toBeGreaterThan(0.95);
+					const figure = page.getByRole('region', { name: guarantee.title }).getByRole('figure');
+					await expect(figure.getByText(guarantee.number, { exact: true })).toBeVisible();
+					const bar = figure.locator('[aria-hidden="true"]');
+					const inService = (await bar.locator(':scope > *').first().boundingBox())!;
+					expect(inService.width / (await bar.boundingBox())!.width).toBeGreaterThan(0.95);
 				});
 			});
 
@@ -335,29 +333,31 @@ emCadaBuild((build) => {
 			test('um número nunca fica longe do que mede, um intervalo nunca se parte, e « ? : » nunca começam uma linha', async ({
 				page,
 			}) => {
-				await page.goto(inicio);
-				for (const { titulo } of seccoes) {
-					const texto = await page.getByRole('region', { name: titulo }).textContent();
-					expect(texto, titulo).not.toMatch(/\d /);
-					expect(texto, titulo).not.toMatch(/\d\s(a|à|e|et|to|and) [\d€]/);
-					expect(texto, titulo).not.toMatch(/ [?!:;»]/);
+				await page.goto(prefix);
+				for (const { title } of sections) {
+					const text = await page.getByRole('region', { name: title }).textContent();
+					expect(text, title).not.toMatch(/\d /);
+					expect(text, title).not.toMatch(/\d\s(a|à|e|et|to|and) [\d€]/);
+					expect(text, title).not.toMatch(/ [?!:;»]/);
 				}
 			});
 
 			test(
-				ctaFinal.aviso
+				finalCta.bookingNotice
 					? 'por baixo do botão do CTA final: a Conversa e o aviso de que a marcação é em francês'
 					: 'por baixo do botão do CTA final: a Conversa, sem aviso sobre a língua da marcação',
 				async ({ page }) => {
-					await page.goto(inicio);
-					const seccao = page.getByRole('region', { name: ctaFinal.titulo });
-					const linha = seccao.getByText(ctaFinal.conversa);
-					await expect(linha).toHaveText(
-						ctaFinal.aviso ? `${ctaFinal.conversa} ${ctaFinal.aviso}` : ctaFinal.conversa,
+					await page.goto(prefix);
+					const section = page.getByRole('region', { name: finalCta.title });
+					const line = section.getByText(finalCta.conversation);
+					await expect(line).toHaveText(
+						finalCta.bookingNotice
+							? `${finalCta.conversation} ${finalCta.bookingNotice}`
+							: finalCta.conversation,
 					);
-					const marcar = seccao.getByRole('link', { name: botao, exact: true });
-					const { y, height } = (await marcar.boundingBox())!;
-					expect((await linha.boundingBox())!.y).toBeGreaterThanOrEqual(y + height);
+					const bookButton = section.getByRole('link', { name: button, exact: true });
+					const { y, height } = (await bookButton.boundingBox())!;
+					expect((await line.boundingBox())!.y).toBeGreaterThanOrEqual(y + height);
 				},
 			);
 		});

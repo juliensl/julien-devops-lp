@@ -1,23 +1,23 @@
-import { comEspacosInseparaveis } from '../lib/spaces';
+import { withNonBreakingSpaces } from '../lib/spaces';
 import './Guarantee.css';
 
 interface Props {
-	etiqueta: string;
-	titulo: string;
+	label: string;
+	title: string;
 	/** O texto validado pelo Julien (#54). */
-	texto: string;
+	text: string;
 	/** Os Blocos com que a Garantia se aplica. */
-	aplicaSe: string;
-	tituloDasCondicoes: string;
-	condicoes: string[];
-	tituloDasExclusoes: string;
-	exclusoes: string[];
+	appliesWhen: string;
+	conditionsTitle: string;
+	conditions: string[];
+	exclusionsTitle: string;
+	exclusions: string[];
 	/** A visualização: o número em grande, a barra e as suas legendas, e a nota por baixo. */
-	numero: string;
-	porBaixoDoNumero: string;
-	comServico: string;
-	semServico: string;
-	nota: string;
+	number: string;
+	belowNumber: string;
+	inService: string;
+	outOfService: string;
+	note: string;
 }
 
 /**
@@ -26,19 +26,19 @@ interface Props {
  * A barra fica sempre cheia: sem JS, não há a animação de enchimento do protótipo.
  */
 export default function Guarantee({
-	etiqueta,
-	titulo,
-	texto,
-	aplicaSe,
-	tituloDasCondicoes,
-	condicoes,
-	tituloDasExclusoes,
-	exclusoes,
-	numero,
-	porBaixoDoNumero,
-	comServico,
-	semServico,
-	nota,
+	label,
+	title,
+	text,
+	appliesWhen,
+	conditionsTitle,
+	conditions,
+	exclusionsTitle,
+	exclusions,
+	number,
+	belowNumber,
+	inService,
+	outOfService,
+	note,
 }: Props) {
 	return (
 		<section
@@ -47,53 +47,53 @@ export default function Guarantee({
 		>
 			<div className="grid gap-x-16 gap-y-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-end">
 				<div className="grid gap-4">
-					<p className="label">{etiqueta}</p>
+					<p className="label">{label}</p>
 					<h2 id="guarantee-title" className="text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">
-						{comEspacosInseparaveis(titulo)}
+						{withNonBreakingSpaces(title)}
 					</h2>
 				</div>
 				<div className="grid gap-4">
 					<p className="max-w-[34rem] text-lg text-foreground-secondary">
-						{comEspacosInseparaveis(texto)}
+						{withNonBreakingSpaces(text)}
 					</p>
-					<p className="text-purple">{comEspacosInseparaveis(aplicaSe)}</p>
+					<p className="text-purple">{withNonBreakingSpaces(appliesWhen)}</p>
 				</div>
 			</div>
 
 			<figure className="grid gap-4">
-				<p className="guarantee-number">{comEspacosInseparaveis(numero)}</p>
-				<p className="mb-6 text-lg">{comEspacosInseparaveis(porBaixoDoNumero)}</p>
+				<p className="guarantee-number">{withNonBreakingSpaces(number)}</p>
+				<p className="mb-6 text-lg">{withNonBreakingSpaces(belowNumber)}</p>
 				<div className="guarantee-bar" aria-hidden="true">
 					<span></span>
 					<span></span>
 				</div>
 				<div className="flex justify-between gap-4 text-sm text-foreground-secondary">
-					<span>{comEspacosInseparaveis(comServico)}</span>
+					<span>{withNonBreakingSpaces(inService)}</span>
 					<span className="guarantee-out-of-service text-right">
-						{comEspacosInseparaveis(semServico)}
+						{withNonBreakingSpaces(outOfService)}
 					</span>
 				</div>
-				<figcaption className="text-foreground-secondary">{comEspacosInseparaveis(nota)}</figcaption>
+				<figcaption className="text-foreground-secondary">{withNonBreakingSpaces(note)}</figcaption>
 			</figure>
 
 			<div className="grid gap-x-16 gap-y-10 md:grid-cols-2">
-				<Lista id="guarantee-conditions" titulo={tituloDasCondicoes} itens={condicoes} />
-				<Lista id="guarantee-exclusions" titulo={tituloDasExclusoes} itens={exclusoes} />
+				<List id="guarantee-conditions" title={conditionsTitle} items={conditions} />
+				<List id="guarantee-exclusions" title={exclusionsTitle} items={exclusions} />
 			</div>
 		</section>
 	);
 }
 
-function Lista({ id, titulo, itens }: { id: string; titulo: string; itens: string[] }) {
+function List({ id, title, items }: { id: string; title: string; items: string[] }) {
 	return (
 		<div className="grid content-start gap-4">
 			<h3 id={id} className="text-2xl">
-				{titulo}
+				{title}
 			</h3>
 			<ul aria-labelledby={id} className="grid">
-				{itens.map((item) => (
+				{items.map((item) => (
 					<li key={item} className="border-t border-line py-3 text-foreground-secondary">
-						{comEspacosInseparaveis(item)}
+						{withNonBreakingSpaces(item)}
 					</li>
 				))}
 			</ul>

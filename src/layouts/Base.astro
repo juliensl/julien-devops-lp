@@ -3,58 +3,59 @@ import '../styles/global.css';
 import { Font } from 'astro:assets';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
-import { IMAGEM_DE_PARTILHA } from '../config/share-image';
-import { CODIGOS_HTML, FASE, SITE, type Lingua } from '../config/site';
-import { valores } from '../config/values';
-import { dicionarios } from '../i18n';
+import { SHARE_IMAGE } from '../config/share-image';
+import { HTML_CODES, PHASE, SITE, type Language } from '../config/site';
+import { values } from '../config/values';
+import { dictionaries } from '../i18n';
 import { commit } from '../lib/commit';
-import { caminhoNaLingua } from '../lib/paths';
+import { pathInLanguage } from '../lib/paths';
 
 interface Props {
-	lingua: Lingua;
+	language: Language;
 	/**
 	 * A página só existe nesta língua (a 404): tem sempre noindex, não tem canonical, hreflang nem
 	 * Open Graph (ninguém a partilha), e o cabeçalho não tem seletor de língua.
 	 */
-	semEquivalentes?: boolean;
-	titulo: string;
-	descricao: string;
+	noEquivalents?: boolean;
+	title: string;
+	description: string;
 }
 
-const { lingua, semEquivalentes = false, titulo, descricao } = Astro.props;
+const { language, noEquivalents = false, title, description } = Astro.props;
 const canonical = new URL(Astro.url.pathname, SITE).href;
 /** A mesma página noutra língua, com o URL absoluto. */
-const naLingua = (l: Lingua) => new URL(caminhoNaLingua(Astro.url.pathname, lingua, l), SITE).href;
+const urlInLanguage = (l: Language) =>
+	new URL(pathInLanguage(Astro.url.pathname, language, l), SITE).href;
 ---
 
 <!doctype html>
-<html lang={CODIGOS_HTML[lingua]}>
+<html lang={HTML_CODES[language]}>
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>{titulo}</title>
-		<meta name="description" content={descricao} />
-		{(FASE.noindex || semEquivalentes) && <meta name="robots" content="noindex" />}
-		{!semEquivalentes && (
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		{(PHASE.noindex || noEquivalents) && <meta name="robots" content="noindex" />}
+		{!noEquivalents && (
 			<>
 				<link rel="canonical" href={canonical} />
 				{/* O hreflang: a página em cada língua publicada, com os códigos fr, en e pt.
 				    O x-default aponta para o inglês, e só quando o inglês estiver publicado. */}
-				{FASE.linguasPublicadas.map((l) => (
-					<link rel="alternate" hreflang={l} href={naLingua(l)} />
+				{PHASE.publishedLanguages.map((l) => (
+					<link rel="alternate" hreflang={l} href={urlInLanguage(l)} />
 				))}
-				{FASE.linguasPublicadas.includes('en') && (
-					<link rel="alternate" hreflang="x-default" href={naLingua('en')} />
+				{PHASE.publishedLanguages.includes('en') && (
+					<link rel="alternate" hreflang="x-default" href={urlInLanguage('en')} />
 				)}
 				{/* O título e a descrição na língua da página; a imagem é a mesma nas três, em inglês. */}
 				<meta property="og:type" content="website" />
 				<meta property="og:url" content={canonical} />
-				<meta property="og:title" content={titulo} />
-				<meta property="og:description" content={descricao} />
-				<meta property="og:image" content={new URL(IMAGEM_DE_PARTILHA.caminho, SITE).href} />
-				<meta property="og:image:width" content={String(IMAGEM_DE_PARTILHA.largura)} />
-				<meta property="og:image:height" content={String(IMAGEM_DE_PARTILHA.altura)} />
-				<meta property="og:image:alt" content={`${valores.nome}, ${dicionarios.en.designacao}`} />
+				<meta property="og:title" content={title} />
+				<meta property="og:description" content={description} />
+				<meta property="og:image" content={new URL(SHARE_IMAGE.path, SITE).href} />
+				<meta property="og:image:width" content={String(SHARE_IMAGE.width)} />
+				<meta property="og:image:height" content={String(SHARE_IMAGE.height)} />
+				<meta property="og:image:alt" content={`${values.name}, ${dictionaries.en.designation}`} />
 			</>
 		)}
 		<meta name="commit" content={commit} />
@@ -65,7 +66,7 @@ const naLingua = (l: Lingua) => new URL(caminhoNaLingua(Astro.url.pathname, ling
 		<Font cssVariable="--font-geist" />
 	</head>
 	<body class="antialiased">
-		<Header lingua={lingua} semEquivalentes={semEquivalentes} />
+		<Header language={language} noEquivalents={noEquivalents} />
 		<slot />
 		<Footer />
 	</body>

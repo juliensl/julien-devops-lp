@@ -5,8 +5,8 @@
  * nunca começam uma linha. É o U+00A0, que as duas fontes do site têm: a Geist não tem o espaço
  * fino (U+202F), que viria da fonte de recurso (#60).
  */
-export function comEspacosInseparaveis(texto: string): string {
-	return texto
+export function withNonBreakingSpaces(text: string): string {
+	return text
 		.replace(/(\d) (a|à|e|et|to|and) (?=[\d€])/g, '$1 $2 ')
 		.replace(/(\d) /g, '$1 ')
 		.replace(/ ([?!:;»])/g, ' $1')

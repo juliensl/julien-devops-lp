@@ -4,18 +4,18 @@
 // de cima da fotografia e desce até ao fim da secção.
 // É um componente .astro porque a imagem é otimizada no build pelo <Image>, que um TSX não usa.
 import { Image } from 'astro:assets';
-import foto from '../../data/IMG_2030.png';
-import { valores } from '../config/values';
-import { comEspacosInseparaveis } from '../lib/spaces';
+import photo from '../../data/IMG_2030.png';
+import { values } from '../config/values';
+import { withNonBreakingSpaces } from '../lib/spaces';
 
 interface Props {
-	titulo: string;
-	designacao: string;
+	title: string;
+	designation: string;
 	/** Onde e como trabalha: à distância, as línguas, tecnologias standard e tudo documentado. */
-	formaDeTrabalhar: string;
+	wayOfWorking: string;
 }
 
-const { titulo, designacao, formaDeTrabalhar } = Astro.props;
+const { title, designation, wayOfWorking } = Astro.props;
 ---
 
 <section
@@ -24,8 +24,8 @@ const { titulo, designacao, formaDeTrabalhar } = Astro.props;
 >
 	{/* Longe do topo: só carrega quando o Visitante lá chega. */}
 	<Image
-		src={foto}
-		alt={valores.nome}
+		src={photo}
+		alt={values.name}
 		width={560}
 		format="avif"
 		quality={55}
@@ -35,14 +35,14 @@ const { titulo, designacao, formaDeTrabalhar } = Astro.props;
 	/>
 	<div class="grid gap-6">
 		<h2 id="about-title" class="label font-body">
-			{titulo}
+			{title}
 		</h2>
 		<div class="grid gap-2">
-			<p class="font-heading text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">{valores.nome}</p>
-			<p class="text-lg text-purple">{designacao}</p>
+			<p class="font-heading text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">{values.name}</p>
+			<p class="text-lg text-purple">{designation}</p>
 		</div>
 		<p class="max-w-2xl font-heading text-[clamp(1.4rem,2.6vw,2rem)] leading-snug">
-			{comEspacosInseparaveis(formaDeTrabalhar)}
+			{withNonBreakingSpaces(wayOfWorking)}
 		</p>
 		{/* As provas (percurso, projetos, clientes) entram aqui quando existirem (#54). */}
 	</div>

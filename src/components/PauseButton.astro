@@ -10,12 +10,12 @@
 // matchMedia('(prefers-reduced-motion: reduce)') ou @media, e fica parada.
 interface Props {
 	/** O nome enquanto as animações andam. */
-	pausar: string;
+	pause: string;
 	/** O nome em pausa. */
-	retomar: string;
+	resume: string;
 }
 
-const { pausar, retomar } = Astro.props;
+const { pause, resume } = Astro.props;
 ---
 
 {/* Escondido até o script correr: sem JS, não serviria para nada. */}
@@ -23,41 +23,41 @@ const { pausar, retomar } = Astro.props;
 	type="button"
 	hidden
 	data-pause-animation
-	data-pause={pausar}
-	data-resume={retomar}
+	data-pause={pause}
+	data-resume={resume}
 	class="fixed bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] left-[calc(1rem+env(safe-area-inset-left,0px))] z-30 inline-flex h-10 cursor-pointer items-center gap-2 rounded-full border border-line-strong bg-background/85 pr-3.5 pl-3 text-[0.8125rem] leading-none font-medium text-foreground-secondary backdrop-blur-[6px] hover:border-foreground hover:text-foreground motion-reduce:hidden max-md:w-10 max-md:justify-center max-md:p-0"
 >
 	<span class="icon" aria-hidden="true"></span>
 	{/* No telemóvel, só o ícone: o nome fica para os leitores de ecrã. */}
 	<span data-label class="max-md:sr-only">
-		{pausar}
+		{pause}
 	</span>
 </button>
 
 <script>
-	import { depoisDoCarregamento } from '../scripts/after-load';
+	import { afterLoad } from '../scripts/after-load';
 
-	depoisDoCarregamento(() => {
+	afterLoad(() => {
 		const html = document.documentElement;
-		const botoes = document.querySelectorAll<HTMLButtonElement>('[data-pause-animation]');
+		const buttons = document.querySelectorAll<HTMLButtonElement>('[data-pause-animation]');
 
-		for (const botao of botoes) {
-			botao.addEventListener('click', () => {
-				const pausada = html.dataset.animation !== 'paused';
-				if (pausada) html.dataset.animation = 'paused';
+		for (const button of buttons) {
+			button.addEventListener('click', () => {
+				const paused = html.dataset.animation !== 'paused';
+				if (paused) html.dataset.animation = 'paused';
 				else delete html.dataset.animation;
-				document.dispatchEvent(new CustomEvent('animation', { detail: { pausada } }));
+				document.dispatchEvent(new CustomEvent('animation', { detail: { paused } }));
 			});
-			botao.hidden = false;
+			button.hidden = false;
 		}
 
 		// O nome diz o que o próximo clique faz.
 		document.addEventListener('animation', () => {
-			const pausada = html.dataset.animation === 'paused';
-			for (const botao of botoes) {
-				botao.querySelector('[data-label]')!.textContent = pausada
-					? botao.dataset.resume!
-					: botao.dataset.pause!;
+			const paused = html.dataset.animation === 'paused';
+			for (const button of buttons) {
+				button.querySelector('[data-label]')!.textContent = paused
+					? button.dataset.resume!
+					: button.dataset.pause!;
 			}
 		});
 	});
