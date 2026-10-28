@@ -1,54 +1,54 @@
 #!/usr/bin/env bash
-# A Publicação: envia o dist/ para a pasta-alvo na Infomaniak, por SFTP, em três passagens,
-# para que nenhum Visitante veja o site publicado a meio:
-#   1. _astro/: o CSS e o JS têm o hash no nome, por isso os novos não substituem nenhum;
-#   2. o HTML e o resto, que já encontram no servidor os ficheiros de _astro/ de que precisam;
-#   3. as remoções: tudo o que já não está no dist, incluindo os _astro/ antigos.
-# Cada Publicação reenvia tudo (--transfer-all): o lftp não compara o conteúdo dos ficheiros.
-# Cada ficheiro vai primeiro para um nome temporário (.in.*) e só depois toma o lugar do antigo.
-# Como o SFTP não muda o nome por cima de um ficheiro, o lftp apaga o antigo logo antes:
-# o ficheiro falta só durante esse pedido, e não durante o envio todo.
+# Publishing: sends dist/ to the target folder at Infomaniak, over SFTP, in three passes,
+# so that no Visitor sees the published site halfway:
+#   1. _astro/: the CSS and JS have the hash in their name, so the new ones replace none;
+#   2. the HTML and the rest, which already find on the server the _astro/ files they need;
+#   3. the deletions: everything no longer in dist, including the old _astro/ files.
+# Each Publishing resends everything (--transfer-all): lftp does not compare file contents.
+# Each file first goes to a temporary name (.in.*) and only then takes the old one's place.
+# Since SFTP does not rename over a file, lftp deletes the old one just before:
+# the file is missing only during that request, not during the whole upload.
 #
-# Lê do ambiente os 3 secrets: PUBLICACAO_CHAVE_SSH, PUBLICACAO_SERVIDOR e PUBLICACAO_UTILIZADOR.
-# Só liga se a chave do servidor for a que está em known_hosts, nesta pasta.
+# Reads the 3 secrets from the environment: PUBLISH_SSH_KEY, PUBLISH_SERVER and PUBLISH_USER.
+# Only connects if the server key is the one in known_hosts, in this folder.
 set -euo pipefail
 
-# A pasta do site, tal como a conta FTP + SSH a vê. O login começa na raiz do alojamento (#57).
-# Nunca a raiz do alojamento: a passagem 3 apagaria tudo o resto, incluindo a chave da CI.
-PASTA_ALVO=sites/devops.julienlaffont.com
+# The site folder, as the FTP + SSH account sees it. The login starts at the hosting root (#57).
+# Never the hosting root: pass 3 would delete everything else, including the CI key.
+TARGET_DIR=sites/devops.julienlaffont.com
 
-aqui=$(dirname "$(realpath "$0")")
-cd "$aqui/.."
+here=$(dirname "$(realpath "$0")")
+cd "$here/.."
 
-case $PASTA_ALVO in
+case $TARGET_DIR in
 '' | . | ./ | /)
-	echo "::error::PASTA_ALVO não pode ser a raiz do alojamento." >&2
+	echo "::error::TARGET_DIR cannot be the hosting root." >&2
 	exit 1
 	;;
 esac
-if ! grep -q '^[^#]' "$aqui/known_hosts"; then
-	echo "::error::Falta a chave do servidor em publish/known_hosts (#57)." >&2
+if ! grep -q '^[^#]' "$here/known_hosts"; then
+	echo "::error::The server key is missing from publish/known_hosts (#57)." >&2
 	exit 1
 fi
 
-chave=$(mktemp)
-trap 'rm -f "$chave"' EXIT
-printf '%s\n' "$PUBLICACAO_CHAVE_SSH" | tr -d '\r' >"$chave"
+key=$(mktemp)
+trap 'rm -f "$key"' EXIT
+printf '%s\n' "$PUBLISH_SSH_KEY" | tr -d '\r' >"$key"
 
-ligacao="ssh -a -x -i $chave -o IdentitiesOnly=yes -o BatchMode=yes"
-ligacao+=" -o StrictHostKeyChecking=yes -o UserKnownHostsFile=$aqui/known_hosts"
-enviar='mirror --reverse --transfer-all --verbose'
+connection="ssh -a -x -i $key -o IdentitiesOnly=yes -o BatchMode=yes"
+connection+=" -o StrictHostKeyChecking=yes -o UserKnownHostsFile=$here/known_hosts"
+upload='mirror --reverse --transfer-all --verbose'
 
-# Poucas tentativas: a Infomaniak bane o IP depois de vários logins falhados.
-lftp <<FIM
+# Few retries: Infomaniak bans the IP after several failed logins.
+lftp <<EOF_LFTP
 set cmd:fail-exit yes
 set net:max-retries 2
 set net:reconnect-interval-base 5
 set net:timeout 30
 set xfer:use-temp-file yes
-set sftp:connect-program "$ligacao"
-open --user "$PUBLICACAO_UTILIZADOR" --password "" "sftp://$PUBLICACAO_SERVIDOR"
-$enviar dist/_astro $PASTA_ALVO/_astro
-$enviar --exclude ^_astro/ dist $PASTA_ALVO
-mirror --reverse --delete --only-missing --verbose dist $PASTA_ALVO
-FIM
+set sftp:connect-program "$connection"
+open --user "$PUBLISH_USER" --password "" "sftp://$PUBLISH_SERVER"
+$upload dist/_astro $TARGET_DIR/_astro
+$upload --exclude ^_astro/ dist $TARGET_DIR
+mirror --reverse --delete --only-missing --verbose dist $TARGET_DIR
+EOF_LFTP

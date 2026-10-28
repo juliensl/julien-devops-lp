@@ -2,7 +2,7 @@
 // Screenshots the logo of the built site, with the site's fonts, colors and background, so the
 // image never drifts from it. It only needs to run again when the logo, the English Designation
 // or the colors change:
-//   npm run build && npm run imagem-de-partilha
+//   npm run build && npm run share-image
 import { existsSync } from 'node:fs';
 import { chromium } from '@playwright/test';
 import { preview } from 'astro';

@@ -34,7 +34,7 @@ export const CURRENT_PHASE: Phase = FIRST_REVIEW;
 
 /**
  * The phase this build generates: the current one, or the Commercial launch in the test build
- * (`LANCAMENTO_COMERCIAL=1`), which checks now what only exists with several languages.
+ * (`COMMERCIAL_LAUNCH=1`), which checks now what only exists with several languages.
  */
 export const PHASE: Phase =
-	process.env.LANCAMENTO_COMERCIAL === '1' ? COMMERCIAL_LAUNCH : CURRENT_PHASE;
+	process.env.COMMERCIAL_LAUNCH === '1' ? COMMERCIAL_LAUNCH : CURRENT_PHASE;

@@ -1,5 +1,5 @@
 dist/
-dist-lancamento/
+dist-launch/
 .astro/
 .claude/
 .orca/

@@ -1,5 +1,5 @@
 // The confirmation after each Publishing run: the published site is this build.
-// Runs with `npm run confirmar`, against devops.julienlaffont.com, after `npm run build`.
+// Runs with `npm run confirm`, against devops.julienlaffont.com, after `npm run build`.
 import { execSync } from 'node:child_process';
 import { expect, test } from '@playwright/test';
 import { BUILDS, pagesOf } from '../builds';

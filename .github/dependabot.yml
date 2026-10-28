@@ -1,4 +1,4 @@
-# Uma vez por mês, um PR para as actions e outro para o npm.
+# Once a month, one PR for the actions and another for npm.
 version: 2
 updates:
   - package-ecosystem: github-actions

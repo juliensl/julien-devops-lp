@@ -8,10 +8,10 @@ export const BUILDS = [
 	{ name: 'published', dist: 'dist', port: 4331, phase: CURRENT_PHASE, command: 'npm run build' },
 	{
 		name: 'commercial launch',
-		dist: 'dist-lancamento',
+		dist: 'dist-launch',
 		port: 4332,
 		phase: COMMERCIAL_LAUNCH,
-		command: 'npm run build:lancamento',
+		command: 'npm run build:launch',
 	},
 ] satisfies { name: string; dist: string; port: number; phase: Phase; command: string }[];
 

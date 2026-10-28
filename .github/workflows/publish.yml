@@ -1,11 +1,11 @@
-# Depois de cada merge na main: repete as verificações que bloqueiam, faz a Publicação
-# na Infomaniak e confirma que cada página publicada responde com este commit.
-# Os merges só de documentação não correm este workflow.
-# Se alguma coisa falhar, o job fica vermelho e o GitHub envia um email a quem fez o merge.
+# After each merge into main: repeats the blocking checks, does the Publishing
+# to Infomaniak and confirms that each published page answers with this commit.
+# Documentation-only merges do not run this workflow.
+# If anything fails, the job turns red and GitHub emails whoever merged.
 #
-# Voltar atrás: um PR de revert, pelo caminho normal. Em urgência, «Re-run all jobs»
-# numa execução antiga publica de novo esse commit.
-name: Publicação
+# Rolling back: a revert PR, the normal way. In an emergency, "Re-run all jobs"
+# on an older run publishes that commit again.
+name: Publish
 
 on:
   push:
@@ -20,15 +20,15 @@ on:
 permissions:
   contents: read
 
-# Uma Publicação de cada vez, nunca cancelada a meio. Se chegarem várias enquanto
-# uma corre, o GitHub guarda só a mais recente, que publica tudo.
+# One Publishing at a time, never cancelled halfway. If several arrive while
+# one runs, GitHub keeps only the most recent, which publishes everything.
 concurrency:
-  group: publicacao
+  group: publish
   cancel-in-progress: false
 
 jobs:
-  publicar:
-    name: Verificar e publicar
+  publish:
+    name: Verify and publish
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -41,45 +41,46 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
 
-      # As mesmas verificações que bloqueiam um PR, sem as metas de desempenho do Lighthouse.
+      # The same checks that block a PR, without the Lighthouse performance targets.
       - uses: ./.github/actions/verify
         with:
-          desempenho: false
+          performance: false
 
-      # Enquanto o Julien não criar os secrets (#57), a Publicação é saltada com um aviso.
-      - name: Secrets da Publicação
+      # Until Julien creates the secrets (#57), Publishing is skipped with a warning.
+      # The secrets keep their Portuguese names (PUBLICACAO_*) until Julien decides otherwise.
+      - name: Publishing secrets
         id: secrets
         env:
-          TEM_CHAVE: ${{ secrets.PUBLICACAO_CHAVE_SSH != '' }}
-          TEM_SERVIDOR: ${{ secrets.PUBLICACAO_SERVIDOR != '' }}
-          TEM_UTILIZADOR: ${{ secrets.PUBLICACAO_UTILIZADOR != '' }}
+          HAS_KEY: ${{ secrets.PUBLICACAO_CHAVE_SSH != '' }}
+          HAS_SERVER: ${{ secrets.PUBLICACAO_SERVIDOR != '' }}
+          HAS_USER: ${{ secrets.PUBLICACAO_UTILIZADOR != '' }}
         run: |
-          falta=()
-          [[ $TEM_CHAVE == true ]] || falta+=(PUBLICACAO_CHAVE_SSH)
-          [[ $TEM_SERVIDOR == true ]] || falta+=(PUBLICACAO_SERVIDOR)
-          [[ $TEM_UTILIZADOR == true ]] || falta+=(PUBLICACAO_UTILIZADOR)
-          if ((${#falta[@]} == 0)); then
-            echo 'publicar=true' >>"$GITHUB_OUTPUT"
+          missing=()
+          [[ $HAS_KEY == true ]] || missing+=(PUBLICACAO_CHAVE_SSH)
+          [[ $HAS_SERVER == true ]] || missing+=(PUBLICACAO_SERVIDOR)
+          [[ $HAS_USER == true ]] || missing+=(PUBLICACAO_UTILIZADOR)
+          if ((${#missing[@]} == 0)); then
+            echo 'publish=true' >>"$GITHUB_OUTPUT"
             exit 0
           fi
-          aviso="Publicação saltada. Faltam os secrets: ${falta[*]} (#57)."
-          echo "::warning title=Publicação saltada::$aviso"
-          echo "### ⚠️ $aviso" >>"$GITHUB_STEP_SUMMARY"
+          warning="Publishing skipped. Missing secrets: ${missing[*]} (#57)."
+          echo "::warning title=Publishing skipped::$warning"
+          echo "### ⚠️ $warning" >>"$GITHUB_STEP_SUMMARY"
 
-      - name: Instalar o lftp
-        if: steps.secrets.outputs.publicar == 'true'
+      - name: Install lftp
+        if: steps.secrets.outputs.publish == 'true'
         timeout-minutes: 5
         run: sudo apt-get update && sudo apt-get install --yes --no-install-recommends lftp
 
-      - name: Publicação
-        if: steps.secrets.outputs.publicar == 'true'
+      - name: Publishing
+        if: steps.secrets.outputs.publish == 'true'
         timeout-minutes: 10
         env:
-          PUBLICACAO_CHAVE_SSH: ${{ secrets.PUBLICACAO_CHAVE_SSH }}
-          PUBLICACAO_SERVIDOR: ${{ secrets.PUBLICACAO_SERVIDOR }}
-          PUBLICACAO_UTILIZADOR: ${{ secrets.PUBLICACAO_UTILIZADOR }}
+          PUBLISH_SSH_KEY: ${{ secrets.PUBLICACAO_CHAVE_SSH }}
+          PUBLISH_SERVER: ${{ secrets.PUBLICACAO_SERVIDOR }}
+          PUBLISH_USER: ${{ secrets.PUBLICACAO_UTILIZADOR }}
         run: publish/publish.sh
 
-      - name: Confirmação
-        if: steps.secrets.outputs.publicar == 'true'
-        run: npm run confirmar
+      - name: Confirmation
+        if: steps.secrets.outputs.publish == 'true'
+        run: npm run confirm

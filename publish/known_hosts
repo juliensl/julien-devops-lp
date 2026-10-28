@@ -1,4 +1,4 @@
-# A chave do servidor SFTP da Infomaniak. A Publicação só liga se o servidor tiver esta chave.
-# ED25519 SHA256:TGNuzbdk4Nak309M0Z3l0x5TQ2cXmQgcWV3A7zJycdA, confirmada pelo Julien a 28/10/2026 (#57).
-# Se a Infomaniak mudar a chave, a Publicação fica vermelha: confirma-se a nova e troca-se esta linha.
+# The Infomaniak SFTP server key. Publishing only connects if the server has this key.
+# ED25519 SHA256:TGNuzbdk4Nak309M0Z3l0x5TQ2cXmQgcWV3A7zJycdA, confirmed by Julien on 2026-10-28 (#57).
+# If Infomaniak changes the key, Publishing turns red: confirm the new one and replace this line.
 rl6jrr.ftp.infomaniak.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBaQykPdle+c115/xKu1vR7W6p1o1ZpNsJu4OJfDqP7r

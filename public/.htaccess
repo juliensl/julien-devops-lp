@@ -1,27 +1,27 @@
-# Lido só pelo Apache da Infomaniak: o astro preview e a suite Playwright ignoram-no.
-# Verifica-se com a confirmação depois de cada Publicação (npm run confirmar)
-# e à mão no Lançamento comercial: compressão, cache e HTTPS (#54).
-# O rewrite e os cabeçalhos são obrigatórios: se o Apache não os tiver, o site dá 500
-# e a confirmação fica vermelha. A compressão só entra se o Apache a tiver.
+# Read only by the Infomaniak Apache: astro preview and the Playwright suite ignore it.
+# Checked by the confirmation after each Publishing (npm run confirm)
+# and by hand at the Commercial launch: compression, cache and HTTPS (#54).
+# The rewrite and the headers are required: if Apache lacks them, the site returns 500
+# and the confirmation turns red. Compression only applies if Apache has it.
 
 RewriteEngine On
 
-# HTTPS forçado, com 301. Atrás de um proxy, o HTTPS chega em X-Forwarded-Proto,
-# e testar só %{HTTPS} daria um ciclo de redirecionamentos.
+# HTTPS forced, with a 301. Behind a proxy, HTTPS arrives in X-Forwarded-Proto,
+# and testing only %{HTTPS} would cause a redirect loop.
 RewriteCond %{HTTPS} !=on
 RewriteCond %{HTTP:X-Forwarded-Proto} !=https
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 
-# Uma pasta sem index.html dá a página 404, e não 403 nem a lista dos ficheiros.
-# É o caso de / antes do Lançamento comercial, e de /_astro/.
+# A folder without index.html returns the 404 page, not a 403 or the file list.
+# That is the case of / before the Commercial launch, and of /_astro/.
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteCond %{REQUEST_FILENAME}/index.html !-f
 RewriteRule ^ - [R=404,L]
 
 ErrorDocument 404 /404.html
 
-# Os ficheiros de _astro/ têm o hash no nome e nunca mudam. O HTML confirma sempre
-# com o servidor, para que os Visitantes vejam logo a última Publicação.
+# The _astro/ files have the hash in their name and never change. HTML always
+# revalidates with the server, so that Visitors see the latest Publishing right away.
 Header set Cache-Control "public, max-age=31536000, immutable" "expr=%{REQUEST_URI} =~ m#^/_astro/#"
 Header set Cache-Control "no-cache" "expr=%{CONTENT_TYPE} =~ m#^text/html#"
 

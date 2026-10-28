@@ -1,13 +1,13 @@
 // Lighthouse in mobile mode on every page of both builds (#59), as in CI.
-// On PRs, dist gets 3 runs per page (blocks and warns) and dist-lancamento 1 (blocking only).
-// On main, before Publishing, DESEMPENHO=false leaves 1 run and only the blocking checks.
+// On PRs, dist gets 3 runs per page (blocks and warns) and dist-launch 1 (blocking only).
+// On main, before Publishing, PERFORMANCE=false leaves 1 run and only the blocking checks.
 // The summary goes to the job (or to the terminal). The HTML reports go to lighthouse-report/.
 import { appendFileSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { BUILDS, pagesOf, type Build } from '../builds.ts';
 import { TARGETS, checkSite, type Analysis } from './check.ts';
 
-const WITH_PERFORMANCE = process.env.DESEMPENHO !== 'false';
+const WITH_PERFORMANCE = process.env.PERFORMANCE !== 'false';
 const REPORTS_DIR = 'lighthouse-report';
 const ON_GITHUB = process.env.GITHUB_ACTIONS === 'true';
 const [published] = BUILDS;

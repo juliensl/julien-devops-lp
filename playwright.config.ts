@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 import { BUILDS } from './tests/builds';
 
-// The suite runs against the builds already made (npm run build and npm run build:lancamento),
+// The suite runs against the builds already made (npm run build and npm run build:launch),
 // each served by astro preview on its own port.
 // The Publishing confirmation (tests/publish/) has its own config: playwright.publish.config.ts.
 // The tests of the Lighthouse checker (tests/lighthouse/) run only once, in their own project.
