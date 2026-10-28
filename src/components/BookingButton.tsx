@@ -13,7 +13,7 @@ export default function BookingButton({ texto, compacto = false }: Props) {
 	return (
 		<a
 			href={valores.paginaDeMarcacao}
-			className={`inline-flex min-h-11 min-w-11 items-center justify-center rounded-full bg-acao py-1 text-center leading-tight font-semibold text-branco transition-colors hover:bg-acao-hover ${tamanho}`}
+			className={`inline-flex min-h-11 min-w-11 items-center justify-center rounded-full bg-action py-1 text-center leading-tight font-semibold text-white transition-colors hover:bg-action-hover ${tamanho}`}
 		>
 			{texto}
 		</a>

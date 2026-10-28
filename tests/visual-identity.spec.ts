@@ -9,17 +9,17 @@ import { NOME } from './expected';
  * Só o Chromium o diz (protocolo DevTools).
  */
 async function fontesDesenhadas(elemento: Locator) {
-	await elemento.evaluate((e) => e.setAttribute('data-fontes', ''));
+	await elemento.evaluate((e) => e.setAttribute('data-fonts', ''));
 	const cdp = await elemento.page().context().newCDPSession(elemento.page());
 	await cdp.send('DOM.enable');
 	await cdp.send('CSS.enable');
 	const { root } = await cdp.send('DOM.getDocument');
 	const { nodeId } = await cdp.send('DOM.querySelector', {
 		nodeId: root.nodeId,
-		selector: '[data-fontes]',
+		selector: '[data-fonts]',
 	});
 	const { fonts } = await cdp.send('CSS.getPlatformFontsForNode', { nodeId });
-	await elemento.evaluate((e) => e.removeAttribute('data-fontes'));
+	await elemento.evaluate((e) => e.removeAttribute('data-fonts'));
 	return fonts.map((f) => (f.isCustomFont ? f.familyName : `${f.familyName} (do sistema)`));
 }
 

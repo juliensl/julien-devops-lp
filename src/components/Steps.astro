@@ -11,14 +11,14 @@ const { titulo, etapas } = Astro.props;
 ---
 
 <section
-	aria-labelledby="etapas-titulo"
-	data-seccao="etapas"
-	data-etapas
-	style={`--etapas: ${etapas.length}`}
+	aria-labelledby="steps-title"
+	data-section="steps"
+	data-steps
+	style={`--step-count: ${etapas.length}`}
 >
-	<div data-palco>
-		<div class="largura grid gap-12 py-[clamp(5rem,11vw,9rem)]">
-			<h2 id="etapas-titulo" class="text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">
+	<div data-stage>
+		<div class="page-width grid gap-12 py-[clamp(5rem,11vw,9rem)]">
+			<h2 id="steps-title" class="text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">
 				{titulo}
 			</h2>
 			{/* No telemóvel, uma Etapa por linha, com o número à esquerda. A partir de 961 px, cinco
@@ -26,20 +26,20 @@ const { titulo, etapas } = Astro.props;
 			<ol class="grid gap-6 min-[961px]:grid-cols-5 min-[961px]:gap-8">
 				{etapas.map(({ nome, frase }, k) => (
 					<li
-						data-etapa
+						data-step
 						style={`--k: ${k}`}
 						class="grid grid-cols-[3rem_1fr] gap-x-4 gap-y-2 min-[961px]:grid-cols-1 min-[961px]:content-start min-[961px]:pt-[calc(var(--k)*1.25rem)]"
 					>
 						<span
-							data-numero
-							class="row-span-2 font-titulos text-[2.6rem] leading-none text-verde min-[961px]:row-span-1"
+							data-number
+							class="row-span-2 font-heading text-[2.6rem] leading-none text-green min-[961px]:row-span-1"
 						>
 							{k + 1}
 						</span>
-						<strong class="font-semibold min-[961px]:border-t min-[961px]:border-linha-forte min-[961px]:pt-3">
+						<strong class="font-semibold min-[961px]:border-t min-[961px]:border-line-strong min-[961px]:pt-3">
 							{nome}
 						</strong>
-						<span class="text-[0.9375rem] text-texto-secundario">{frase}</span>
+						<span class="text-[0.9375rem] text-foreground-secondary">{frase}</span>
 					</li>
 				))}
 			</ol>
@@ -56,9 +56,9 @@ const { titulo, etapas } = Astro.props;
 	depoisDoCarregamento(() => {
 		const computador = matchMedia(COMPUTADOR);
 
-		for (const seccao of document.querySelectorAll<HTMLElement>('[data-etapas]')) {
-			const palco = seccao.querySelector<HTMLElement>('[data-palco]')!;
-			const etapas = [...seccao.querySelectorAll<HTMLElement>('[data-etapa]')];
+		for (const seccao of document.querySelectorAll<HTMLElement>('[data-steps]')) {
+			const palco = seccao.querySelector<HTMLElement>('[data-stage]')!;
+			const etapas = [...seccao.querySelectorAll<HTMLElement>('[data-step]')];
 			let quadroPedido = 0;
 
 			// Com a secção presa, o percurso vai de 0 (o palco prende) a 1 (solta). Cada Etapa tem
@@ -67,21 +67,21 @@ const { titulo, etapas } = Astro.props;
 			// solta (telemóvel, movimento reduzido, ecrã baixo), os números ficam sempre acesos.
 			const acende = () => {
 				quadroPedido = 0;
-				if (!seccao.hasAttribute('data-presa')) return;
+				if (!seccao.hasAttribute('data-pinned')) return;
 				const { top, height } = seccao.getBoundingClientRect();
 				const topoDoPalco = parseFloat(getComputedStyle(palco).top);
 				const percurso = (topoDoPalco - top) / (height - palco.offsetHeight);
 				for (const [k, etapa] of etapas.entries()) {
-					etapa.toggleAttribute('data-chegou', percurso >= (k + 0.5) / etapas.length);
+					etapa.toggleAttribute('data-reached', percurso >= (k + 0.5) / etapas.length);
 				}
 			};
 
 			// Presa, as Etapas têm de caber no palco, por baixo do cabeçalho; num ecrã baixo ou com
 			// zoom, não cabem, e a secção fica solta para nada ficar escondido.
 			const prende = () => {
-				seccao.toggleAttribute('data-presa', computador.matches);
+				seccao.toggleAttribute('data-pinned', computador.matches);
 				const conteudo = palco.firstElementChild as HTMLElement;
-				if (conteudo.offsetHeight > palco.clientHeight) seccao.removeAttribute('data-presa');
+				if (conteudo.offsetHeight > palco.clientHeight) seccao.removeAttribute('data-pinned');
 				acende();
 			};
 
@@ -98,28 +98,28 @@ const { titulo, etapas } = Astro.props;
 <style>
 	/* Presa: a secção ganha meio ecrã de altura por Etapa, e o palco fica parado por baixo do
 	   cabeçalho enquanto ela passa. */
-	[data-presa] {
-		height: calc(100svh - var(--altura-cabecalho) + var(--etapas) * 50svh);
+	[data-pinned] {
+		height: calc(100svh - var(--header-height) + var(--step-count) * 50svh);
 	}
-	[data-presa] [data-palco] {
+	[data-pinned] [data-stage] {
 		position: sticky;
-		top: var(--altura-cabecalho);
+		top: var(--header-height);
 		display: grid;
 		align-content: center;
-		height: calc(100svh - var(--altura-cabecalho));
+		height: calc(100svh - var(--header-height));
 	}
 	/* O palco centra as Etapas: o espaço por cima e por baixo vem dele, não do padding. */
-	[data-presa] [data-palco] > * {
+	[data-pinned] [data-stage] > * {
 		padding-block: 0;
 	}
 
 	/* Presa, cada número fica apagado até a sua Etapa chegar. O cinzento das linhas fortes tem
 	   3,5:1 com o fundo, que chega para um número deste tamanho (WCAG 1.4.3, texto grande). */
-	[data-presa] [data-numero] {
-		color: var(--color-linha-forte);
+	[data-pinned] [data-number] {
+		color: var(--color-line-strong);
 		transition: color 0.35s ease;
 	}
-	[data-presa] [data-chegou] [data-numero] {
-		color: var(--color-verde);
+	[data-pinned] [data-reached] [data-number] {
+		color: var(--color-green);
 	}
 </style>

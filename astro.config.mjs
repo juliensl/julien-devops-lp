@@ -20,7 +20,7 @@ export default defineConfig({
 		{
 			provider: fontProviders.local(),
 			name: 'Bona Nova',
-			cssVariable: '--fonte-bona-nova',
+			cssVariable: '--font-bona-nova',
 			fallbacks: ['Georgia', 'serif'],
 			options: {
 				variants: [{ src: ['./src/assets/fonts/bona-nova.woff2'], weight: 400, style: 'normal' }],
@@ -29,7 +29,7 @@ export default defineConfig({
 		{
 			provider: fontProviders.local(),
 			name: 'Geist',
-			cssVariable: '--fonte-geist',
+			cssVariable: '--font-geist',
 			fallbacks: ['sans-serif'],
 			options: {
 				variants: [{ src: ['./src/assets/fonts/geist.woff2'], weight: '100 900', style: 'normal' }],

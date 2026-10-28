@@ -26,7 +26,7 @@ const alvo = grande ? 'min-h-11 min-w-11' : 'min-h-7 min-w-7';
 		{FASE.linguasPublicadas.map((l, i) => (
 			<li class="flex items-center">
 				{i > 0 && (
-					<span aria-hidden="true" class="px-0.5 text-texto-secundario">
+					<span aria-hidden="true" class="px-0.5 text-foreground-secondary">
 						·
 					</span>
 				)}
@@ -36,7 +36,7 @@ const alvo = grande ? 'min-h-11 min-w-11' : 'min-h-7 min-w-7';
 						lang={CODIGOS_HTML[l]}
 						class:list={[
 							alvo,
-							'inline-flex items-center justify-center text-texto underline decoration-verde decoration-2 underline-offset-4',
+							'inline-flex items-center justify-center text-foreground underline decoration-green decoration-2 underline-offset-4',
 						]}
 					>
 						{l.toUpperCase()}
@@ -49,7 +49,7 @@ const alvo = grande ? 'min-h-11 min-w-11' : 'min-h-7 min-w-7';
 						lang={CODIGOS_HTML[l]}
 						class:list={[
 							alvo,
-							'inline-flex items-center justify-center rounded-md text-texto-secundario transition-colors hover:bg-superficie-2 hover:text-texto',
+							'inline-flex items-center justify-center rounded-md text-foreground-secondary transition-colors hover:bg-surface-2 hover:text-foreground',
 						]}
 					>
 						{l.toUpperCase()}

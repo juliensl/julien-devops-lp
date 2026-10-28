@@ -27,16 +27,16 @@ export default function FinalCta({
 		lingua === valores.linguaDaPaginaDeMarcacao ? conversa : `${conversa} ${avisoDaMarcacao}`;
 	return (
 		<section
-			aria-labelledby="cta-final-titulo"
-			className="largura grid min-h-[70svh] content-center justify-items-start gap-6 py-[clamp(5rem,11vw,9rem)]"
+			aria-labelledby="final-cta-title"
+			className="page-width grid min-h-[70svh] content-center justify-items-start gap-6 py-[clamp(5rem,11vw,9rem)]"
 		>
-			<h2 id="cta-final-titulo" className="text-[clamp(2.6rem,6.5vw,5rem)] leading-[1.06]">
+			<h2 id="final-cta-title" className="text-[clamp(2.6rem,6.5vw,5rem)] leading-[1.06]">
 				{comEspacosInseparaveis(titulo)}
 			</h2>
-			<p className="max-w-2xl text-lg text-texto-secundario">{comEspacosInseparaveis(texto)}</p>
+			<p className="max-w-2xl text-lg text-foreground-secondary">{comEspacosInseparaveis(texto)}</p>
 			{/* A única ligação da secção: o ramo (#73) acaba com 3 folhas junto dela. */}
 			<BookingButton texto={textoDoBotao} />
-			<p className="max-w-2xl text-sm text-texto-secundario">{comEspacosInseparaveis(linha)}</p>
+			<p className="max-w-2xl text-sm text-foreground-secondary">{comEspacosInseparaveis(linha)}</p>
 		</section>
 	);
 }

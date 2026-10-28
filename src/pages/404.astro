@@ -16,25 +16,25 @@ import Base from '../layouts/Base.astro';
 	titulo={`Page not found · ${valores.nome}`}
 	descricao={`This address doesn't exist on ${valores.nome}'s site.`}
 >
-	<main class="largura py-16 sm:py-24">
-		<p class="etiqueta">Error 404</p>
+	<main class="page-width py-16 sm:py-24">
+		<p class="label">Error 404</p>
 		<h1 class="mt-6 max-w-3xl text-[clamp(2.25rem,4.4vw,3.5rem)] leading-[1.1]">
 			This page doesn't exist
 		</h1>
-		<p class="mt-6 max-w-2xl text-lg text-texto-secundario">
+		<p class="mt-6 max-w-2xl text-lg text-foreground-secondary">
 			The link may be broken, or the address mistyped.
 		</p>
-		<p id="paginas-principais" class="mt-10">
+		<p id="main-pages" class="mt-10">
 			Go to the home page in:
 		</p>
-		<ul aria-labelledby="paginas-principais" class="mt-4 flex flex-wrap gap-3">
+		<ul aria-labelledby="main-pages" class="mt-4 flex flex-wrap gap-3">
 			{FASE.linguasPublicadas.map((l) => (
 				<li>
 					<a
 						href={PREFIXOS[l]}
 						hreflang={l}
 						lang={CODIGOS_HTML[l]}
-						class="inline-flex min-h-11 items-center rounded-full border border-linha-forte px-5 transition-colors hover:bg-superficie-2"
+						class="inline-flex min-h-11 items-center rounded-full border border-line-strong px-5 transition-colors hover:bg-surface-2"
 					>
 						{NOMES[l]}
 					</a>

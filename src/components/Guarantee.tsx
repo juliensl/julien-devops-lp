@@ -42,43 +42,43 @@ export default function Guarantee({
 }: Props) {
 	return (
 		<section
-			aria-labelledby="garantia-titulo"
-			className="largura grid gap-14 py-[clamp(5rem,11vw,9rem)]"
+			aria-labelledby="guarantee-title"
+			className="page-width grid gap-14 py-[clamp(5rem,11vw,9rem)]"
 		>
 			<div className="grid gap-x-16 gap-y-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-end">
 				<div className="grid gap-4">
-					<p className="etiqueta">{etiqueta}</p>
-					<h2 id="garantia-titulo" className="text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">
+					<p className="label">{etiqueta}</p>
+					<h2 id="guarantee-title" className="text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">
 						{comEspacosInseparaveis(titulo)}
 					</h2>
 				</div>
 				<div className="grid gap-4">
-					<p className="max-w-[34rem] text-lg text-texto-secundario">
+					<p className="max-w-[34rem] text-lg text-foreground-secondary">
 						{comEspacosInseparaveis(texto)}
 					</p>
-					<p className="text-roxo">{comEspacosInseparaveis(aplicaSe)}</p>
+					<p className="text-purple">{comEspacosInseparaveis(aplicaSe)}</p>
 				</div>
 			</div>
 
 			<figure className="grid gap-4">
-				<p className="garantia-numero">{comEspacosInseparaveis(numero)}</p>
+				<p className="guarantee-number">{comEspacosInseparaveis(numero)}</p>
 				<p className="mb-6 text-lg">{comEspacosInseparaveis(porBaixoDoNumero)}</p>
-				<div className="garantia-barra" aria-hidden="true">
+				<div className="guarantee-bar" aria-hidden="true">
 					<span></span>
 					<span></span>
 				</div>
-				<div className="flex justify-between gap-4 text-sm text-texto-secundario">
+				<div className="flex justify-between gap-4 text-sm text-foreground-secondary">
 					<span>{comEspacosInseparaveis(comServico)}</span>
-					<span className="garantia-sem-servico text-right">
+					<span className="guarantee-out-of-service text-right">
 						{comEspacosInseparaveis(semServico)}
 					</span>
 				</div>
-				<figcaption className="text-texto-secundario">{comEspacosInseparaveis(nota)}</figcaption>
+				<figcaption className="text-foreground-secondary">{comEspacosInseparaveis(nota)}</figcaption>
 			</figure>
 
 			<div className="grid gap-x-16 gap-y-10 md:grid-cols-2">
-				<Lista id="garantia-condicoes" titulo={tituloDasCondicoes} itens={condicoes} />
-				<Lista id="garantia-exclusoes" titulo={tituloDasExclusoes} itens={exclusoes} />
+				<Lista id="guarantee-conditions" titulo={tituloDasCondicoes} itens={condicoes} />
+				<Lista id="guarantee-exclusions" titulo={tituloDasExclusoes} itens={exclusoes} />
 			</div>
 		</section>
 	);
@@ -92,7 +92,7 @@ function Lista({ id, titulo, itens }: { id: string; titulo: string; itens: strin
 			</h3>
 			<ul aria-labelledby={id} className="grid">
 				{itens.map((item) => (
-					<li key={item} className="border-t border-linha py-3 text-texto-secundario">
+					<li key={item} className="border-t border-line py-3 text-foreground-secondary">
 						{comEspacosInseparaveis(item)}
 					</li>
 				))}

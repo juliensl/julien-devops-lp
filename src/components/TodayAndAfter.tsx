@@ -13,7 +13,7 @@ interface Props {
 }
 
 /** Cada item das listas é uma linha aberta, sem caixa, separada da anterior por um traço. */
-const classeDoItem = 'border-t border-linha py-4 text-[1.0625rem]';
+const classeDoItem = 'border-t border-line py-4 text-[1.0625rem]';
 
 /** O CTO reconhece-se no problema (o que vive e o que já tentou) e vê como fica depois. Sem números. */
 export default function TodayAndAfter({
@@ -27,18 +27,18 @@ export default function TodayAndAfter({
 }: Props) {
 	return (
 		<section
-			aria-labelledby="hoje-titulo"
-			className="largura grid gap-12 py-[clamp(5rem,11vw,9rem)]"
+			aria-labelledby="today-title"
+			className="page-width grid gap-12 py-[clamp(5rem,11vw,9rem)]"
 		>
-			<h2 id="hoje-titulo" className="text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">
+			<h2 id="today-title" className="text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">
 				{titulo}
 			</h2>
 			<div className="grid gap-x-20 gap-y-14 lg:grid-cols-2">
 				<div className="grid content-start gap-12">
-					<Lista id="hoje-agora" titulo={tituloDeHoje} classeDoTitulo="text-texto-secundario">
+					<Lista id="today-now" titulo={tituloDeHoje} classeDoTitulo="text-foreground-secondary">
 						{hoje.map((problema) => (
-							<li key={problema.titulo} className={`${classeDoItem} text-texto-secundario`}>
-								<strong className="font-semibold text-texto">
+							<li key={problema.titulo} className={`${classeDoItem} text-foreground-secondary`}>
+								<strong className="font-semibold text-foreground">
 									{comEspacosInseparaveis(problema.titulo)}
 								</strong>{' '}
 								{comEspacosInseparaveis(problema.texto)}
@@ -46,25 +46,25 @@ export default function TodayAndAfter({
 						))}
 					</Lista>
 					<Lista
-						id="hoje-ja-tentaste"
+						id="today-already-tried"
 						titulo={tituloDoQueJaTentaste}
-						classeDoTitulo="text-texto-secundario"
+						classeDoTitulo="text-foreground-secondary"
 					>
 						{jaTentaste.map((tentativa) => (
 							<li
 								key={tentativa}
-								className={`${classeDoItem} flex gap-3 text-texto-secundario before:mt-[0.8em] before:h-px before:w-3 before:shrink-0 before:bg-linha-forte`}
+								className={`${classeDoItem} flex gap-3 text-foreground-secondary before:mt-[0.8em] before:h-px before:w-3 before:shrink-0 before:bg-line-strong`}
 							>
 								{comEspacosInseparaveis(tentativa)}
 							</li>
 						))}
 					</Lista>
 				</div>
-				<Lista id="hoje-depois" titulo={tituloDeDepois} classeDoTitulo="text-verde">
+				<Lista id="today-after" titulo={tituloDeDepois} classeDoTitulo="text-green">
 					{depois.map((ganho) => (
 						<li
 							key={ganho}
-							className={`${classeDoItem} flex gap-3 text-texto before:mt-[0.6em] before:size-2 before:shrink-0 before:rounded-full before:bg-verde`}
+							className={`${classeDoItem} flex gap-3 text-foreground before:mt-[0.6em] before:size-2 before:shrink-0 before:rounded-full before:bg-green`}
 						>
 							{comEspacosInseparaveis(ganho)}
 						</li>
@@ -88,7 +88,7 @@ function Lista({
 }) {
 	return (
 		<div className="grid content-start gap-4">
-			<h3 id={id} className={`etiqueta font-texto ${classeDoTitulo}`}>
+			<h3 id={id} className={`label font-body ${classeDoTitulo}`}>
 				{titulo}
 			</h3>
 			<ul aria-labelledby={id} className="grid">

@@ -5,25 +5,25 @@
 // compõe sem redesenhar a página.
 ---
 
-<div class="pontos" data-pontos aria-hidden="true">
-	<div class="camada roxos"></div>
-	<div class="camada verdes"></div>
-	<div class="camada verdes outros"></div>
+<div class="dots" data-dots aria-hidden="true">
+	<div class="layer purples"></div>
+	<div class="layer greens"></div>
+	<div class="layer greens others"></div>
 </div>
 
 <script>
 	import { depoisDoCarregamento } from '../scripts/after-load';
 
 	depoisDoCarregamento(() => {
-		for (const pontos of document.querySelectorAll<HTMLElement>('[data-pontos]')) {
-			pontos.dataset.aAndar = '';
+		for (const pontos of document.querySelectorAll<HTMLElement>('[data-dots]')) {
+			pontos.dataset.moving = '';
 		}
 	});
 </script>
 
 <style>
 	/* Por baixo do conteúdo e do cabeçalho; as camadas, maiores do que o ecrã, ficam cortadas. */
-	.pontos {
+	.dots {
 		position: fixed;
 		inset: 0 0 auto;
 		z-index: -1;
@@ -32,61 +32,61 @@
 		pointer-events: none;
 		mask-image: linear-gradient(#000 35%, transparent);
 	}
-	.camada {
+	.layer {
 		position: absolute;
 		inset: -200px;
 		will-change: transform;
 	}
-	.roxos {
+	.purples {
 		background-image: radial-gradient(
 			circle,
-			color-mix(in srgb, var(--color-roxo) 30%, transparent) 1.1px,
+			color-mix(in srgb, var(--color-purple) 30%, transparent) 1.1px,
 			transparent 1.7px
 		);
 		background-size: 28px 28px;
 	}
-	.verdes {
+	.greens {
 		background-image: radial-gradient(
 			circle,
-			color-mix(in srgb, var(--color-verde) 85%, transparent) 1.7px,
+			color-mix(in srgb, var(--color-green) 85%, transparent) 1.7px,
 			transparent 2.4px
 		);
 		background-size: 168px 140px;
 		background-position: 42px 28px;
 	}
-	.outros {
+	.others {
 		background-position: 126px 98px;
 	}
 
 	/* Com movimento reduzido, ficam parados. */
 	@media (prefers-reduced-motion: no-preference) {
-		.roxos {
-			animation: deriva-roxos 22s linear infinite;
+		.purples {
+			animation: drift-purples 22s linear infinite;
 		}
-		.verdes {
+		.greens {
 			animation:
-				deriva-verdes 40s linear infinite,
-				brilho 7s ease-in-out infinite;
+				drift-greens 40s linear infinite,
+				glow 7s ease-in-out infinite;
 		}
 		/* A segunda camada verde anda ao contrário e brilha desencontrada da primeira. */
-		.outros {
+		.others {
 			animation-direction: reverse, normal;
 			animation-delay:
 				0s,
 				-3.5s;
 		}
 	}
-	@keyframes deriva-roxos {
+	@keyframes drift-purples {
 		to {
 			transform: translate3d(28px, 28px, 0);
 		}
 	}
-	@keyframes deriva-verdes {
+	@keyframes drift-greens {
 		to {
 			transform: translate3d(-168px, 140px, 0);
 		}
 	}
-	@keyframes brilho {
+	@keyframes glow {
 		0%,
 		100% {
 			opacity: 0.25;
@@ -97,11 +97,11 @@
 	}
 
 	/* Parados até o script os pôr a andar, depois do carregamento. Depois, param com o botão de
-	   pausa, que põe <html data-animacao="pausada">. */
-	.camada {
+	   pausa, que põe <html data-animation="paused">. */
+	.layer {
 		animation-play-state: paused;
 	}
-	:global(:root:not([data-animacao='pausada'])) [data-a-andar] .camada {
+	:global(:root:not([data-animation='paused'])) [data-moving] .layer {
 		animation-play-state: running;
 	}
 </style>

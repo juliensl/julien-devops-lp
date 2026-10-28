@@ -61,8 +61,8 @@ const naLingua = (l: Lingua) => new URL(caminhoNaLingua(Astro.url.pathname, ling
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
 		{/* Só a fonte do Hero (a Promessa, em Bona Nova) é pré-carregada. */}
-		<Font cssVariable="--fonte-bona-nova" preload />
-		<Font cssVariable="--fonte-geist" />
+		<Font cssVariable="--font-bona-nova" preload />
+		<Font cssVariable="--font-geist" />
 	</head>
 	<body class="antialiased">
 		<Header lingua={lingua} semEquivalentes={semEquivalentes} />

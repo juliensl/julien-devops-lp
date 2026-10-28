@@ -25,7 +25,7 @@ try {
 	// cabeçalho passa para o centro, maior, com a Designação por baixo.
 	await pagina.goto(`http://localhost:${servidor.port}/404.html`, { waitUntil: 'networkidle' });
 	await pagina.evaluate((designacao) => {
-		const logotipo = document.querySelector<HTMLElement>('header .logotipo')!;
+		const logotipo = document.querySelector<HTMLElement>('header .logo')!;
 		logotipo.style.fontSize = '4.5rem';
 		// O traço do ∞ tem uma espessura fixa: maior, para não desaparecer quando a imagem é reduzida.
 		for (const traco of logotipo.querySelectorAll<SVGPathElement>('path')) {
@@ -33,7 +33,7 @@ try {
 		}
 		const texto = document.createElement('p');
 		texto.textContent = designacao;
-		texto.style.cssText = 'margin-top: 3.5rem; font-size: 2.5rem; color: var(--color-texto)';
+		texto.style.cssText = 'margin-top: 3.5rem; font-size: 2.5rem; color: var(--color-foreground)';
 		const cena = document.createElement('div');
 		cena.style.cssText = 'margin: auto; display: flex; flex-direction: column; align-items: center';
 		cena.append(logotipo, texto);

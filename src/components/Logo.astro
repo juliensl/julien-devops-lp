@@ -9,36 +9,36 @@ import { valores } from '../config/values';
 const linhas = valores.nome.split(' ');
 ---
 
-<span class="logotipo">
-	<svg class="infinito" viewBox="0 0 120 50" aria-hidden="true">
-		<path class="roxo" d="M60 25C47 6 8 5 8 25S47 44 60 25"></path>
-		<path class="verde" d="M60 25C73 6 112 5 112 25S73 44 60 25"></path>
+<span class="logo">
+	<svg class="infinity" viewBox="0 0 120 50" aria-hidden="true">
+		<path class="purple" d="M60 25C47 6 8 5 8 25S47 44 60 25"></path>
+		<path class="green" d="M60 25C73 6 112 5 112 25S73 44 60 25"></path>
 	</svg>
 	{linhas.map((linha, i) => (
 		<>
 			{i > 0 && ' '}
-			<span class="linha">{linha}</span>
+			<span class="line">{linha}</span>
 		</>
 	))}
 </span>
 
 <style>
 	/* A margem lateral reserva o espaço do ∞, que sai da caixa do nome. */
-	.logotipo {
+	.logo {
 		position: relative;
 		display: inline-flex;
 		flex-direction: column;
 		align-items: center;
 		margin-inline: 1.15em;
 		padding: 0.3em 0.2em;
-		font-family: var(--font-titulos);
+		font-family: var(--font-heading);
 		line-height: 1.3;
 		letter-spacing: 0.14em;
 		text-transform: uppercase;
 		white-space: nowrap;
-		color: var(--color-texto);
+		color: var(--color-foreground);
 	}
-	.infinito {
+	.infinity {
 		position: absolute;
 		left: 50%;
 		top: 50%;
@@ -48,24 +48,24 @@ const linhas = valores.nome.split(' ');
 		transform: translate(-50%, calc(-50% - 0.12em));
 		opacity: 0.75;
 	}
-	.infinito path {
+	.infinity path {
 		fill: none;
 		stroke-width: 1.2;
 		stroke-linecap: round;
 		vector-effect: non-scaling-stroke;
 	}
-	.roxo {
-		stroke: var(--color-elemento-roxo);
+	.purple {
+		stroke: var(--color-element-purple);
 	}
-	.verde {
-		stroke: var(--color-elemento-verde);
+	.green {
+		stroke: var(--color-element-green);
 	}
 	/* Um halo da cor do fundo apaga o ∞ junto às letras, para não as confundir (o «F» com um «E»). */
-	.linha {
+	.line {
 		position: relative;
 		text-shadow:
-			0 0 2px var(--color-fundo),
-			0 0 3px var(--color-fundo),
-			0 0 6px var(--color-fundo);
+			0 0 2px var(--color-background),
+			0 0 3px var(--color-background),
+			0 0 6px var(--color-background);
 	}
 </style>

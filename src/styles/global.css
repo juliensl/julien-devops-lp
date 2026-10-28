@@ -3,55 +3,55 @@
 /*
  * A identidade visual validada pelo Julien (#54, «Direção visual»).
  * Só existem estas cores e estas fontes: as classes do Tailwind usam-nas pelo nome
- * (bg-fundo, text-texto-secundario, font-titulos…).
+ * (bg-background, text-foreground-secondary, font-heading…).
  */
 @theme {
 	--color-*: initial;
 	/* Fundo, com um brilho roxo e outro verde (no body, abaixo). */
-	--color-fundo: #0e0c12;
-	--color-superficie: #17141f;
-	--color-superficie-2: #1f1b29;
-	--color-texto: #f2eef7;
-	--color-texto-secundario: #b3aac2;
+	--color-background: #0e0c12;
+	--color-surface: #17141f;
+	--color-surface-2: #1f1b29;
+	--color-foreground: #f2eef7;
+	--color-foreground-secondary: #b3aac2;
 	/* Botões, com texto branco: 5,5:1 com o texto, 3,5:1 com o fundo. */
-	--color-acao: #7446ea;
-	--color-acao-hover: #6538d6;
-	--color-branco: #ffffff;
+	--color-action: #7446ea;
+	--color-action-hover: #6538d6;
+	--color-white: #ffffff;
 	/* Roxo dos textos: 6,3:1. Verde das etiquetas e dos dados: 9,7:1. */
-	--color-roxo: #a17cff;
-	--color-verde: #3ccf8e;
+	--color-purple: #a17cff;
+	--color-green: #3ccf8e;
 	/* Verde forte dos contornos, decorativo. */
-	--color-verde-forte: #23915f;
+	--color-green-strong: #23915f;
 	/* Cores fixas do ∞, do ramo, da folha e do logótipo, decorativas. */
-	--color-elemento-roxo: #c3a6ff;
-	--color-elemento-verde: #86d9a8;
+	--color-element-purple: #c3a6ff;
+	--color-element-green: #86d9a8;
 	/* Linhas de separação; a forte tem 3,5:1 com o fundo e serve de contorno a um controlo. */
-	--color-linha: #2a2533;
-	--color-linha-forte: #6d6480;
+	--color-line: #2a2533;
+	--color-line-strong: #6d6480;
 }
 
 /* Bona Nova nos títulos e no logótipo; Geist no texto, nos dados e na interface. As variáveis
-   --fonte-* vêm da API de fontes do Astro (astro.config.mjs), com a fonte de recurso. */
+   --font-* vêm da API de fontes do Astro (astro.config.mjs), com a fonte de recurso. */
 @theme inline {
 	--font-*: initial;
-	--font-titulos: var(--fonte-bona-nova);
-	--font-texto: var(--fonte-geist);
-	--default-font-family: var(--fonte-geist);
+	--font-heading: var(--font-bona-nova);
+	--font-body: var(--font-geist);
+	--default-font-family: var(--font-geist);
 }
 
 @layer base {
 	:root {
-		--altura-cabecalho: 3.75rem;
+		--header-height: 3.75rem;
 
 		@variant md {
-			--altura-cabecalho: 4.25rem;
+			--header-height: 4.25rem;
 		}
 	}
 
 	html {
 		color-scheme: dark;
 		/* O cabeçalho fixo nunca tapa o elemento com foco nem o destino de uma âncora (WCAG 2.4.11). */
-		scroll-padding-top: calc(var(--altura-cabecalho) + 1rem);
+		scroll-padding-top: calc(var(--header-height) + 1rem);
 	}
 
 	/* A página ocupa pelo menos o ecrã: numa página curta, o rodapé fica em baixo. */
@@ -62,20 +62,20 @@
 		/* Uma palavra comprida nunca obriga a scroll horizontal, mesmo a 320 px. */
 		overflow-wrap: break-word;
 		line-height: 1.65;
-		color: var(--color-texto);
+		color: var(--color-foreground);
 		/* Um brilho roxo, em cima à esquerda, e outro verde, à direita. */
 		background:
 			radial-gradient(
 				1100px 700px at 12% -8%,
-				color-mix(in srgb, var(--color-roxo) 20%, transparent),
+				color-mix(in srgb, var(--color-purple) 20%, transparent),
 				transparent 60%
 			),
 			radial-gradient(
 				900px 700px at 105% 35%,
-				color-mix(in srgb, var(--color-verde) 10%, transparent),
+				color-mix(in srgb, var(--color-green) 10%, transparent),
 				transparent 60%
 			),
-			var(--color-fundo);
+			var(--color-background);
 		background-repeat: no-repeat;
 	}
 
@@ -87,19 +87,19 @@
 	h1,
 	h2,
 	h3 {
-		font-family: var(--font-titulos);
+		font-family: var(--font-heading);
 		font-weight: 400;
 		text-wrap: balance;
 	}
 
 	:focus-visible {
-		outline: 2px solid var(--color-verde);
+		outline: 2px solid var(--color-green);
 		outline-offset: 3px;
 	}
 }
 
 /* A largura do conteúdo, igual no cabeçalho, nas secções e no rodapé. */
-@utility largura {
+@utility page-width {
 	width: 100%;
 	max-width: 76rem;
 	margin-inline: auto;
@@ -107,11 +107,11 @@
 }
 
 /* As etiquetas por cima dos títulos, como a Designação no Hero. */
-@utility etiqueta {
+@utility label {
 	font-size: 0.75rem;
 	line-height: 1.4;
 	font-weight: 500;
 	letter-spacing: 0.14em;
 	text-transform: uppercase;
-	color: var(--color-verde);
+	color: var(--color-green);
 }
