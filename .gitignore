@@ -35,3 +35,6 @@ test-results/
 
 # relatórios do Lighthouse
 lighthouse-report/
+
+# agent plans and lessons (local only)
+tasks/
