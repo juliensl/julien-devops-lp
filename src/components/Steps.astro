@@ -1,0 +1,123 @@
+---
+// As 5 Etapas, da Conversa à Entrega e transferência: o que acontece depois de marcar.
+// No computador, a secção fica presa enquanto o scroll passa pelas Etapas, cerca de meio ecrã
+// cada uma. No telemóvel, com movimento reduzido e sem JS, é uma lista que se lê de seguida.
+interface Props {
+	titulo: string;
+	etapas: { nome: string; frase: string }[];
+}
+
+const { titulo, etapas } = Astro.props;
+---
+
+<section
+	aria-labelledby="etapas-titulo"
+	data-seccao="etapas"
+	data-etapas
+	style={`--etapas: ${etapas.length}`}
+>
+	<div data-palco>
+		<div class="largura grid gap-12 py-[clamp(5rem,11vw,9rem)]">
+			<h2 id="etapas-titulo" class="text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">
+				{titulo}
+			</h2>
+			{/* No telemóvel, uma Etapa por linha, com o número à esquerda. A partir de 961 px, cinco
+			    colunas em degraus, cada uma um pouco mais abaixo do que a anterior. */}
+			<ol class="grid gap-6 min-[961px]:grid-cols-5 min-[961px]:gap-8">
+				{etapas.map(({ nome, frase }, k) => (
+					<li
+						data-etapa
+						style={`--k: ${k}`}
+						class="grid grid-cols-[3rem_1fr] gap-x-4 gap-y-2 min-[961px]:grid-cols-1 min-[961px]:content-start min-[961px]:pt-[calc(var(--k)*1.25rem)]"
+					>
+						<span
+							data-numero
+							class="row-span-2 font-titulos text-[2.6rem] leading-none text-verde min-[961px]:row-span-1"
+						>
+							{k + 1}
+						</span>
+						<strong class="font-semibold min-[961px]:border-t min-[961px]:border-linha-forte min-[961px]:pt-3">
+							{nome}
+						</strong>
+						<span class="text-[0.9375rem] text-texto-secundario">{frase}</span>
+					</li>
+				))}
+			</ol>
+		</div>
+	</div>
+</section>
+
+<script>
+	import { depoisDoCarregamento } from '../scripts/after-load';
+
+	/** O computador, como nos Serviços (#54): mais de 960 px e sem movimento reduzido. */
+	const COMPUTADOR = '(min-width: 961px) and (prefers-reduced-motion: no-preference)';
+
+	depoisDoCarregamento(() => {
+		const computador = matchMedia(COMPUTADOR);
+
+		for (const seccao of document.querySelectorAll<HTMLElement>('[data-etapas]')) {
+			const palco = seccao.querySelector<HTMLElement>('[data-palco]')!;
+			const etapas = [...seccao.querySelectorAll<HTMLElement>('[data-etapa]')];
+			let pedido = 0;
+
+			// Com a secção presa, o percurso vai de 0 (o palco prende) a 1 (solta). Cada Etapa tem
+			// a sua fatia do percurso e chega a meio dela, em (k + 0,5) / 5: o número acende.
+			const acende = () => {
+				pedido = 0;
+				if (!seccao.hasAttribute('data-presa')) return;
+				const { top, height } = seccao.getBoundingClientRect();
+				const topoDoPalco = parseFloat(getComputedStyle(palco).top);
+				const percurso = (topoDoPalco - top) / (height - palco.offsetHeight);
+				for (const [k, etapa] of etapas.entries()) {
+					etapa.toggleAttribute('data-chegou', percurso >= (k + 0.5) / etapas.length);
+				}
+			};
+
+			// Presa, as Etapas têm de caber no palco, por baixo do cabeçalho; num ecrã baixo ou com
+			// zoom, não cabem, e a secção fica solta para nada ficar escondido.
+			const prende = () => {
+				seccao.toggleAttribute('data-presa', computador.matches);
+				const conteudo = palco.firstElementChild as HTMLElement;
+				if (conteudo.offsetHeight > palco.clientHeight) seccao.removeAttribute('data-presa');
+				acende();
+			};
+
+			computador.addEventListener('change', prende);
+			addEventListener('resize', prende);
+			addEventListener('scroll', () => (pedido ||= requestAnimationFrame(acende)), {
+				passive: true,
+			});
+			prende();
+		}
+	});
+</script>
+
+<style>
+	/* Presa: a secção ganha meio ecrã de altura por Etapa, e o palco fica parado por baixo do
+	   cabeçalho enquanto ela passa. */
+	[data-presa] {
+		height: calc(100svh - var(--altura-cabecalho) + var(--etapas) * 50svh);
+	}
+	[data-presa] [data-palco] {
+		position: sticky;
+		top: var(--altura-cabecalho);
+		display: grid;
+		align-content: center;
+		height: calc(100svh - var(--altura-cabecalho));
+	}
+	/* O palco centra as Etapas: o espaço por cima e por baixo vem dele, não do padding. */
+	[data-presa] [data-palco] > * {
+		padding-block: 0;
+	}
+
+	/* Presa, cada número fica apagado até a sua Etapa chegar. O cinzento das linhas fortes tem
+	   3,5:1 com o fundo, que chega para um número deste tamanho (WCAG 1.4.3, texto grande). */
+	[data-presa] [data-numero] {
+		color: var(--color-linha-forte);
+		transition: color 0.35s ease;
+	}
+	[data-presa] [data-chegou] [data-numero] {
+		color: var(--color-verde);
+	}
+</style>

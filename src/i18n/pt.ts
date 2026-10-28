@@ -29,6 +29,27 @@ export const pt = {
 				'Os bugs são apanhados no pull request, não pelo teu cliente. E os teus devs voltam a programar em vez de fazer suporte.',
 			nota: 'Conversa de 45 min por Google Meet, gratuita.',
 		},
+		/** As 5 Etapas, pela ordem do glossário, cada uma com uma frase. */
+		etapas: {
+			titulo: 'Cinco etapas, sempre pela mesma ordem.',
+			etapas: [
+				{ nome: 'Conversa', frase: '45 min por Google Meet, gratuita.' },
+				{
+					nome: 'Diagnóstico',
+					frase:
+						'Gratuito. 2 a 3 dias úteis depois de receber os acessos, ou 3 a 5 se incluir a cloud.',
+				},
+				{
+					nome: 'Proposta de intervenção',
+					frase: 'Que blocos, em que prazo e por que preço fixo.',
+				},
+				{ nome: 'Implementação', frase: 'No máximo 30 dias, a contar do início.' },
+				{
+					nome: 'Entrega e transferência',
+					frase: 'Documentação e transferência para a equipa ficar autónoma.',
+				},
+			],
+		},
 	},
 };
 

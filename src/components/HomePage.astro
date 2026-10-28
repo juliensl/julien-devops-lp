@@ -8,6 +8,7 @@ import { dicionarios } from '../i18n';
 import Base from '../layouts/Base.astro';
 import Hero from './Hero';
 import PauseButton from './PauseButton.astro';
+import Steps from './Steps.astro';
 import TopDots from './TopDots.astro';
 
 interface Props {
@@ -41,7 +42,7 @@ const t = dicionarios[lingua];
 
 		{/* Serviços (#64) */}
 
-		{/* Etapas (#65) */}
+		<Steps {...t.paginaPrincipal.etapas} />
 
 		{/* Garantia (#63) */}
 
