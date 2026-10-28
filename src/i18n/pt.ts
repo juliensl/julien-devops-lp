@@ -17,6 +17,11 @@ export const pt = {
 		/** O botão que abre o menu no telemóvel. */
 		menu: 'Menu',
 	},
+	/** O botão fixo que pausa as animações automáticas: o nome diz o que um clique faz. */
+	animacao: {
+		pausar: 'Pausar animação',
+		retomar: 'Retomar animação',
+	},
 	paginaPrincipal: {
 		descricao: `${promessa} Para CTO de SaaS em crescimento.`,
 		hero: {

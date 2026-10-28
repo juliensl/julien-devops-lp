@@ -1,6 +1,6 @@
 // Os valores esperados, tirados da spec (#54) e não do código.
-// O botão em francês e em inglês e a Promessa em inglês são traduções
-// que a estagiária valida antes do Lançamento comercial (#75).
+// O botão em francês e em inglês, a Promessa em inglês e os nomes do botão de pausa em francês e em
+// inglês são traduções que a estagiária valida antes do Lançamento comercial (#75).
 
 export const SITE = 'https://devops.julienlaffont.com';
 export const PAGINA_DE_MARCACAO = 'https://calendly.com/contact-julienlaffont/appel-cadrage';
@@ -18,6 +18,8 @@ export const LINGUAS = {
 		promessa:
 			"En 30 jours, je te livre l'infrastructure devOps nécessaire pour que tu puisses scaler ton SaaS.",
 		botao: 'Réserver un échange',
+		pausar: "Mettre l'animation en pause",
+		retomar: "Reprendre l'animation",
 	},
 	en: {
 		rotulo: 'EN',
@@ -27,6 +29,8 @@ export const LINGUAS = {
 		designacao: 'Freelance DevOps consultant for SaaS',
 		promessa: 'In 30 days, I deliver the DevOps infrastructure you need to scale your SaaS.',
 		botao: 'Book a conversation',
+		pausar: 'Pause animation',
+		retomar: 'Resume animation',
 	},
 	pt: {
 		rotulo: 'PT',
@@ -37,7 +41,15 @@ export const LINGUAS = {
 		promessa:
 			'Em 30 dias, entrego-te a infraestrutura DevOps de que precisas para escalar o teu SaaS.',
 		botao: 'Marcar uma conversa',
+		// O botão de pausa: o nome diz o que um clique faz, como no protótipo validado.
+		pausar: 'Pausar animação',
+		retomar: 'Retomar animação',
 	},
 } as const;
 
 export type Lingua = keyof typeof LINGUAS;
+
+/** A mesma página noutra língua: os slugs são iguais nas três, só muda o início. */
+export function equivalente(caminho: string, de: Lingua, para: Lingua) {
+	return LINGUAS[para].inicio + caminho.slice(LINGUAS[de].inicio.length);
+}

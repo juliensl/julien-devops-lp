@@ -2,14 +2,9 @@
 // e o botão de marcação, e o rodapé.
 import { expect, test, type Page } from '@playwright/test';
 import { emCadaBuild, paginas } from './builds';
-import { LINGUAS, LINKEDIN, NOME, PAGINA_DE_MARCACAO, type Lingua } from './expected';
+import { equivalente, LINGUAS, LINKEDIN, NOME, PAGINA_DE_MARCACAO, type Lingua } from './expected';
 
 const TELEMOVEIS = [320, 375];
-
-/** A mesma página noutra língua: os slugs são iguais nas três, só muda o início. */
-function equivalente(caminho: string, de: Lingua, para: Lingua) {
-	return LINGUAS[para].inicio + caminho.slice(LINGUAS[de].inicio.length);
-}
 
 /** O botão que abre o menu do telemóvel: o <summary> do menu <details>. */
 const botaoDoMenu = (page: Page) =>
