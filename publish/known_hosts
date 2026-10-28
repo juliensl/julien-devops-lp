@@ -1,2 +1,4 @@
 # A chave do servidor SFTP da Infomaniak. A Publicação só liga se o servidor tiver esta chave.
-# A linha chega na #57, depois de o Julien confirmar a impressão digital no primeiro login.
+# ED25519 SHA256:TGNuzbdk4Nak309M0Z3l0x5TQ2cXmQgcWV3A7zJycdA, confirmada pelo Julien a 28/10/2026 (#57).
+# Se a Infomaniak mudar a chave, a Publicação fica vermelha: confirma-se a nova e troca-se esta linha.
+rl6jrr.ftp.infomaniak.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBaQykPdle+c115/xKu1vR7W6p1o1ZpNsJu4OJfDqP7r
