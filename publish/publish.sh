@@ -13,7 +13,7 @@
 # Só liga se a chave do servidor for a que está em known_hosts, nesta pasta.
 set -euo pipefail
 
-# A pasta do site, tal como a conta FTP + SSH a vê. A confirmar no primeiro login (#57).
+# A pasta do site, tal como a conta FTP + SSH a vê. O login começa na raiz do alojamento (#57).
 # Nunca a raiz do alojamento: a passagem 3 apagaria tudo o resto, incluindo a chave da CI.
 PASTA_ALVO=sites/devops.julienlaffont.com
 
