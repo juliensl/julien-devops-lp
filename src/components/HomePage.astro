@@ -7,6 +7,8 @@ import { valores } from '../config/values';
 import { dicionarios } from '../i18n';
 import Base from '../layouts/Base.astro';
 import Hero from './Hero';
+import PauseButton from './PauseButton.astro';
+import TopDots from './TopDots.astro';
 
 interface Props {
 	lingua: Lingua;
@@ -22,7 +24,9 @@ const t = dicionarios[lingua];
 	descricao={t.paginaPrincipal.descricao}
 >
 	<main>
-		{/* Pontos no topo (#62) */}
+		<TopDots />
+		{/* O botão de pausa é o primeiro foco depois do cabeçalho: para tudo antes de ler. */}
+		<PauseButton {...t.animacao} />
 
 		<Hero
 			designacao={t.designacao}
