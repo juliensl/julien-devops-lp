@@ -38,7 +38,7 @@ export const fr: Dicionario = {
 					nome: "Proposition d'intervention",
 					frase: 'Quels blocs, en combien de temps et pour quel prix fixe.',
 				},
-				{ nome: 'Mise en œuvre', frase: 'Au maximum 30 jours, à compter du début.' },
+				{ nome: 'Mise en œuvre', frase: '30 jours calendaires au maximum.' },
 				{
 					nome: 'Livraison et passation',
 					frase: "Documentation et passation, pour que l'équipe soit autonome.",

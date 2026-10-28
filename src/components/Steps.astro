@@ -59,12 +59,14 @@ const { titulo, etapas } = Astro.props;
 		for (const seccao of document.querySelectorAll<HTMLElement>('[data-etapas]')) {
 			const palco = seccao.querySelector<HTMLElement>('[data-palco]')!;
 			const etapas = [...seccao.querySelectorAll<HTMLElement>('[data-etapa]')];
-			let pedido = 0;
+			let quadroPedido = 0;
 
 			// Com a secção presa, o percurso vai de 0 (o palco prende) a 1 (solta). Cada Etapa tem
 			// a sua fatia do percurso e chega a meio dela, em (k + 0,5) / 5: o número acende.
+			// O ramo (#73) vai acender os números quando chega, com esta mesma conta; com a secção
+			// solta (telemóvel, movimento reduzido, ecrã baixo), os números ficam sempre acesos.
 			const acende = () => {
-				pedido = 0;
+				quadroPedido = 0;
 				if (!seccao.hasAttribute('data-presa')) return;
 				const { top, height } = seccao.getBoundingClientRect();
 				const topoDoPalco = parseFloat(getComputedStyle(palco).top);
@@ -85,7 +87,7 @@ const { titulo, etapas } = Astro.props;
 
 			computador.addEventListener('change', prende);
 			addEventListener('resize', prende);
-			addEventListener('scroll', () => (pedido ||= requestAnimationFrame(acende)), {
+			addEventListener('scroll', () => (quadroPedido ||= requestAnimationFrame(acende)), {
 				passive: true,
 			});
 			prende();
