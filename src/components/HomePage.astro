@@ -6,10 +6,15 @@ import { type Lingua } from '../config/site';
 import { valores } from '../config/values';
 import { dicionarios } from '../i18n';
 import Base from '../layouts/Base.astro';
+import AboutJulien from './AboutJulien.astro';
+import FinalCta from './FinalCta';
+import Guarantee from './Guarantee';
 import Hero from './Hero';
 import PauseButton from './PauseButton.astro';
 import Steps from './Steps.astro';
+import TodayAndAfter from './TodayAndAfter';
 import TopDots from './TopDots.astro';
+import WhoItsFor from './WhoItsFor';
 
 interface Props {
 	lingua: Lingua;
@@ -36,19 +41,19 @@ const t = dicionarios[lingua];
 			{...t.paginaPrincipal.hero}
 		/>
 
-		{/* Para quem é (#63) */}
+		<WhoItsFor textoDoBotao={t.botaoMarcar} {...t.paginaPrincipal.paraQuem} />
 
-		{/* Hoje, e depois (#63) */}
+		<TodayAndAfter {...t.paginaPrincipal.hojeEDepois} />
 
 		{/* Serviços (#64) */}
 
 		<Steps {...t.paginaPrincipal.etapas} />
 
-		{/* Garantia (#63) */}
+		<Guarantee {...t.paginaPrincipal.garantia} />
 
 		{/* Gráfico de fornecedores cloud (#66) */}
 
-		{/* Quem é o Julien (#63) */}
+		<AboutJulien designacao={t.designacao} {...t.paginaPrincipal.quem} />
 
 		{/* Testemunhos (#67) */}
 
@@ -56,6 +61,6 @@ const t = dicionarios[lingua];
 
 		{/* Perguntas (#70) */}
 
-		{/* CTA final (#63) */}
+		<FinalCta lingua={lingua} textoDoBotao={t.botaoMarcar} {...t.paginaPrincipal.ctaFinal} />
 	</main>
 </Base>
