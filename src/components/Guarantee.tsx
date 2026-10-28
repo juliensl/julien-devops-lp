@@ -4,15 +4,15 @@ import './Guarantee.css';
 interface Props {
 	label: string;
 	title: string;
-	/** O texto validado pelo Julien (#54). */
+	/** The text validated by Julien (#54). */
 	text: string;
-	/** Os Blocos com que a Garantia se aplica. */
+	/** The Blocks the Guarantee applies to. */
 	appliesWhen: string;
 	conditionsTitle: string;
 	conditions: string[];
 	exclusionsTitle: string;
 	exclusions: string[];
-	/** A visualização: o número em grande, a barra e as suas legendas, e a nota por baixo. */
+	/** The visualization: the large number, the bar and its captions, and the note below. */
 	number: string;
 	belowNumber: string;
 	inService: string;
@@ -21,9 +21,9 @@ interface Props {
 }
 
 /**
- * A Garantia: o compromisso, quando se aplica, e os 99 % de forma visual, com uma barra da
- * largura da secção em que só a ponta (1 %) muda de cor. Sem equivalência anual nem horas por mês.
- * A barra fica sempre cheia: sem JS, não há a animação de enchimento do protótipo.
+ * The Guarantee: the commitment, when it applies, and the 99% shown visually, with a
+ * section-wide bar in which only the tip (1%) changes color. No yearly equivalent, no hours per month.
+ * The bar is always full: without JS, there is no fill animation like the prototype's.
  */
 export default function Guarantee({
 	label,

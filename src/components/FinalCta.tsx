@@ -8,13 +8,13 @@ interface Props {
 	title: string;
 	text: string;
 	buttonText: string;
-	/** Por baixo do botão: 45 min, Google Meet, gratuita e sem compromisso. */
+	/** Below the button: 45 min, Google Meet, free and with no commitment. */
 	conversation: string;
-	/** Só nas línguas que não são a da página de marcação: a marcação está noutra língua. */
+	/** Only in the languages other than the booking page's: the booking is in another language. */
 	bookingNotice: string;
 }
 
-/** O fim da página: «Nunca perdes a infraestrutura.» e o botão, para o CTO decidir ali mesmo. */
+/** The end of the page: "You never lose the infrastructure." and the button, so the CTO decides right there. */
 export default function FinalCta({
 	language,
 	title,
@@ -34,7 +34,7 @@ export default function FinalCta({
 				{withNonBreakingSpaces(title)}
 			</h2>
 			<p className="max-w-2xl text-lg text-foreground-secondary">{withNonBreakingSpaces(text)}</p>
-			{/* A única ligação da secção: o ramo (#73) acaba com 3 folhas junto dela. */}
+			{/* The section's only link: the branch (#73) ends with 3 leaves next to it. */}
 			<BookingButton text={buttonText} />
 			<p className="max-w-2xl text-sm text-foreground-secondary">{withNonBreakingSpaces(line)}</p>
 		</section>

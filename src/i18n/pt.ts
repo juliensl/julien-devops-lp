@@ -1,6 +1,6 @@
-// Os textos em português, a Língua de referência.
-// O francês e o inglês são tipados a partir deste ficheiro: um texto em falta faz falhar o astro check.
-// Os textos não levam HTML: as ligações, os negritos e os espaços inseparáveis montam-se nos componentes.
+// The texts in Portuguese, the Reference language.
+// French and English are typed from this file: a missing text makes `astro check` fail.
+// The texts carry no HTML: links, bold text and non-breaking spaces are added in the components.
 
 const promise =
 	'Em 30 dias, entrego-te a infraestrutura DevOps de que precisas para escalar o teu SaaS.';
@@ -12,14 +12,14 @@ export const pt = {
 	promise,
 	bookButton: 'Marcar uma conversa',
 	header: {
-		/** Junta-se ao nome no logótipo, que leva à página principal. */
+		/** Appended to the name in the logo, which links to the home page. */
 		logoTarget: 'página principal',
-		/** O nome do seletor de língua, para os leitores de ecrã. */
+		/** The name of the language switcher, for screen readers. */
 		languages: 'Língua',
-		/** O botão que abre o menu no telemóvel. */
+		/** The button that opens the menu on mobile. */
 		menu: 'Menu',
 	},
-	/** O botão fixo que pausa as animações automáticas: o nome diz o que um clique faz. */
+	/** The fixed button that pauses the automatic animations: its name says what a click does. */
 	animation: {
 		pause: 'Pausar animação',
 		resume: 'Retomar animação',
@@ -82,8 +82,8 @@ export const pt = {
 				'A infraestrutura acompanha a carga, e vês os problemas antes dos clientes.',
 			],
 		},
-		/** As 5 Etapas, pela ordem do glossário, cada uma com uma frase. Uma língua com menos de 5
-		 * faz falhar o astro check. */
+		/** The 5 Steps, in glossary order, each with one sentence. A language with fewer than 5
+		 * makes `astro check` fail. */
 		steps: {
 			title: 'Cinco etapas, sempre pela mesma ordem.',
 			steps: [

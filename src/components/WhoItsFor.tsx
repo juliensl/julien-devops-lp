@@ -3,16 +3,16 @@ import BookingButton from './BookingButton';
 
 interface Props {
 	title: string;
-	/** O perfil, em 3 afirmações: o SaaS, o crescimento e a equipa. */
+	/** The profile, in 3 statements: the SaaS, the growth and the team. */
 	profile: string[];
-	/** Para o CTO de um SaaS que ainda não foi lançado. */
+	/** For the CTO of a SaaS that hasn't launched yet. */
 	notLaunchedYet: string;
 	exclusionsTitle: string;
 	exclusions: string[];
 	buttonText: string;
 }
 
-/** Logo a seguir ao Hero: o CTO percebe se o serviço é para ele, e pode marcar ali mesmo. */
+/** Right after the Hero: the CTO sees whether the service is for them, and can book right there. */
 export default function WhoItsFor({
 	title,
 	profile,

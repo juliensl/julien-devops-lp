@@ -1,15 +1,15 @@
 ---
-// O seletor de língua: FR · EN · PT, só com as línguas publicadas, gerado no build e sem JS.
-// Cada ligação leva à mesma página na outra língua e diz o nome completo aos leitores de ecrã.
-// A língua atual fica marcada e não é uma ligação. Sem bandeiras.
+// The language switcher: FR · EN · PT, only the published languages, generated at build time, no JS.
+// Each link leads to the same page in the other language and gives screen readers the full name.
+// The current language is marked and is not a link. No flags.
 import { HTML_CODES, PHASE, LANGUAGE_NAMES, type Language } from '../config/site';
 import { pathInLanguage } from '../lib/paths';
 
 interface Props {
 	language: Language;
-	/** O nome do seletor, na língua da página. */
+	/** The switcher's name, in the page's language. */
 	label: string;
-	/** No menu do telemóvel: letras e alvos de toque maiores. */
+	/** In the mobile menu: larger letters and touch targets. */
 	large?: boolean;
 	class?: string;
 }

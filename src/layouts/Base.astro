@@ -13,8 +13,8 @@ import { pathInLanguage } from '../lib/paths';
 interface Props {
 	language: Language;
 	/**
-	 * A página só existe nesta língua (a 404): tem sempre noindex, não tem canonical, hreflang nem
-	 * Open Graph (ninguém a partilha), e o cabeçalho não tem seletor de língua.
+	 * The page only exists in this language (the 404): it always has `noindex`, has no canonical,
+	 * hreflang or Open Graph (nobody shares it), and the header has no language switcher.
 	 */
 	noEquivalents?: boolean;
 	title: string;
@@ -23,7 +23,7 @@ interface Props {
 
 const { language, noEquivalents = false, title, description } = Astro.props;
 const canonical = new URL(Astro.url.pathname, SITE).href;
-/** A mesma página noutra língua, com o URL absoluto. */
+/** The same page in another language, as an absolute URL. */
 const urlInLanguage = (l: Language) =>
 	new URL(pathInLanguage(Astro.url.pathname, language, l), SITE).href;
 ---
@@ -39,15 +39,15 @@ const urlInLanguage = (l: Language) =>
 		{!noEquivalents && (
 			<>
 				<link rel="canonical" href={canonical} />
-				{/* O hreflang: a página em cada língua publicada, com os códigos fr, en e pt.
-				    O x-default aponta para o inglês, e só quando o inglês estiver publicado. */}
+				{/* The hreflang: the page in each published language, with the codes `fr`, `en` and `pt`.
+				    `x-default` points to English, and only once English is published. */}
 				{PHASE.publishedLanguages.map((l) => (
 					<link rel="alternate" hreflang={l} href={urlInLanguage(l)} />
 				))}
 				{PHASE.publishedLanguages.includes('en') && (
 					<link rel="alternate" hreflang="x-default" href={urlInLanguage('en')} />
 				)}
-				{/* O título e a descrição na língua da página; a imagem é a mesma nas três, em inglês. */}
+				{/* The title and the description in the page's language; the image is the same in all three, in English. */}
 				<meta property="og:type" content="website" />
 				<meta property="og:url" content={canonical} />
 				<meta property="og:title" content={title} />
@@ -61,7 +61,7 @@ const urlInLanguage = (l: Language) =>
 		<meta name="commit" content={commit} />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
-		{/* Só a fonte do Hero (a Promessa, em Bona Nova) é pré-carregada. */}
+		{/* Only the Hero font (the Promise, in Bona Nova) is preloaded. */}
 		<Font cssVariable="--font-bona-nova" preload />
 		<Font cssVariable="--font-geist" />
 	</head>

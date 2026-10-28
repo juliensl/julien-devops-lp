@@ -1,10 +1,10 @@
-// O que o Google e o LinkedIn leem das páginas (#54, «SEO»).
-// O noindex de cada fase e o canonical verificam-se em todas as páginas, em all-pages.spec.ts.
+// What Google and LinkedIn read from the pages (#54, "SEO").
+// The noindex of each phase and the canonical are checked on every page, in all-pages.spec.ts.
 import { expect, test, type Page } from '@playwright/test';
 import { inEachBuild, pagesOf } from './builds';
 import { equivalent, LANGUAGES, NAME, SITE, type Language } from './expected';
 
-/** Abre a página e devolve as etiquetas `hreflang` dela, como { código: URL }. Um código repetido falha. */
+/** Opens the page and returns its `hreflang` tags, as { code: URL }. A repeated code fails. */
 async function hreflang(page: Page, path: string): Promise<Record<string, string>> {
 	await page.goto(path);
 	const tags = await page
@@ -12,7 +12,7 @@ async function hreflang(page: Page, path: string): Promise<Record<string, string
 		.evaluateAll((links) =>
 			links.map((l) => [l.getAttribute('hreflang')!, l.getAttribute('href')!] as const),
 		);
-	expect(new Set(tags.map(([code]) => code)).size, 'códigos repetidos').toBe(tags.length);
+	expect(new Set(tags.map(([code]) => code)).size, 'repeated codes').toBe(tags.length);
 	return Object.fromEntries(tags);
 }
 
@@ -21,13 +21,13 @@ inEachBuild((build) => {
 	const languagePages = pagesOf(build).filter((p) => p.language);
 
 	for (const { path, language } of languagePages) {
-		test(`${path}: o hreflang tem a página em cada língua publicada e o x-default em inglês`, async ({
+		test(`${path}: the hreflang has the page in each published language and the x-default in English`, async ({
 			page,
 		}) => {
-			// Os códigos do hreflang são fr, en e pt, sem região.
+			// The hreflang codes are fr, en and pt, with no region.
 			const expected: Record<string, string> = {};
 			for (const l of publishedLanguages) expected[l] = `${SITE}${equivalent(path, language!, l)}`;
-			// Sem o inglês publicado, o x-default apontaria para uma página que não existe.
+			// Without English published, the x-default would point to a page that does not exist.
 			if (publishedLanguages.includes('en')) {
 				expected['x-default'] = `${SITE}${equivalent(path, language!, 'en')}`;
 			}
@@ -35,13 +35,13 @@ inEachBuild((build) => {
 		});
 	}
 
-	test('os hreflang são recíprocos', async ({ page }) => {
+	test('the hreflang tags are reciprocal', async ({ page }) => {
 		let checked = 0;
 		for (const { path, language } of languagePages) {
 			for (const [code, url] of Object.entries(await hreflang(page, path))) {
 				if (code === 'x-default') continue;
 				const otherTags = await hreflang(page, new URL(url).pathname);
-				expect(otherTags[language!], `${url} aponta de volta para ${path}`).toBe(`${SITE}${path}`);
+				expect(otherTags[language!], `${url} points back to ${path}`).toBe(`${SITE}${path}`);
 				checked++;
 			}
 		}
@@ -49,7 +49,7 @@ inEachBuild((build) => {
 	});
 
 	for (const { path } of languagePages) {
-		test(`${path}: o Open Graph tem o título e a descrição da página e a imagem em inglês`, async ({
+		test(`${path}: the Open Graph has the page title and description and the image in English`, async ({
 			page,
 			request,
 		}) => {
@@ -61,7 +61,7 @@ inEachBuild((build) => {
 			const description = await page.locator('meta[name="description"]').getAttribute('content');
 			await expect(og('description')).toHaveAttribute('content', description!);
 
-			// Uma só imagem, em inglês, para as três línguas: o logótipo e a Designação.
+			// A single image, in English, for all three languages: the logo and the Designation.
 			await expect(og('image')).toHaveCount(1);
 			const image = new URL((await og('image').getAttribute('content'))!);
 			expect(image.origin).toBe(SITE);
@@ -75,14 +75,14 @@ inEachBuild((build) => {
 			const response = await request.get(image.pathname);
 			expect(response.status()).toBe(200);
 			expect(response.headers()['content-type']).toBe('image/png');
-			// A largura e a altura estão no cabeçalho IHDR do PNG, a seguir à assinatura.
+			// The width and height are in the IHDR header of the PNG, right after the signature.
 			const png = await response.body();
 			expect([png.readUInt32BE(16), png.readUInt32BE(20)]).toEqual([1200, 630]);
 		});
 	}
 
 	for (const { path } of pagesOf(build).filter((p) => !p.language)) {
-		test(`${path}: uma página sem língua não tem canonical, hreflang nem Open Graph`, async ({
+		test(`${path}: a page with no language has no canonical, hreflang or Open Graph`, async ({
 			page,
 		}) => {
 			await page.goto(path);
@@ -92,26 +92,26 @@ inEachBuild((build) => {
 		});
 	}
 
-	test('o sitemap.xml só lista as páginas indexáveis, sem a 404', async ({ page, request }) => {
+	test('the sitemap.xml only lists indexable pages, without the 404', async ({ page, request }) => {
 		const response = await request.get('/sitemap.xml');
 		expect(response.status()).toBe(200);
-		// O astro preview diz text/xml, e o Apache application/xml: os dois valem para um sitemap.
+		// astro preview says text/xml, and Apache says application/xml: both are valid for a sitemap.
 		expect(response.headers()['content-type']).toMatch(/^(application|text)\/xml\b/);
 		const xml = await response.text();
 		const urls = await page.evaluate((xml) => {
 			const parsed = new DOMParser().parseFromString(xml, 'application/xml');
-			if (parsed.querySelector('parsererror')) throw new Error(`XML inválido:\n${xml}`);
+			if (parsed.querySelector('parsererror')) throw new Error(`Invalid XML:\n${xml}`);
 			const root = parsed.documentElement;
 			if (
 				root.localName !== 'urlset' ||
 				root.namespaceURI !== 'http://www.sitemaps.org/schemas/sitemap/0.9'
 			) {
-				throw new Error(`Não é um sitemap: ${root.outerHTML.slice(0, 120)}`);
+				throw new Error(`Not a sitemap: ${root.outerHTML.slice(0, 120)}`);
 			}
 			return [...root.querySelectorAll('url > loc')].map((loc) => loc.textContent);
 		}, xml);
 
-		// Com o noindex da fase, nenhuma página é indexável: o sitemap fica vazio.
+		// With the noindex of the phase, no page is indexable: the sitemap stays empty.
 		const indexable = build.phase.noindex ? [] : languagePages.map((p) => `${SITE}${p.path}`);
 		expect(urls.toSorted()).toEqual(indexable.toSorted());
 		for (const url of urls) {
@@ -121,7 +121,7 @@ inEachBuild((build) => {
 		expect(urls).not.toContain(`${SITE}/404.html`);
 	});
 
-	test('o robots.txt aponta para o sitemap e não bloqueia o rastreio', async ({ request }) => {
+	test('the robots.txt points to the sitemap and does not block crawling', async ({ request }) => {
 		const response = await request.get('/robots.txt');
 		expect(response.status()).toBe(200);
 		expect(response.headers()['content-type']).toMatch(/^text\/plain\b/);
@@ -132,7 +132,7 @@ inEachBuild((build) => {
 	});
 
 	for (const { path } of pagesOf(build)) {
-		test(`${path}: não tem dados estruturados schema.org`, async ({ page }) => {
+		test(`${path}: has no schema.org structured data`, async ({ page }) => {
 			await page.goto(path);
 			await expect(
 				page.locator('script[type="application/ld+json"], [itemscope], [itemtype], [typeof]'),

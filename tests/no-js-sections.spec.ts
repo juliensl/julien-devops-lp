@@ -1,12 +1,12 @@
-// As secções da página principal que não precisam de JavaScript (#63): «Para quem é», «Hoje, e
-// depois», a Garantia, «Quem é o Julien» e o CTA final.
+// The home page sections that need no JavaScript (#63): "Para quem é", "Hoje, e depois", the
+// Guarantee, "Quem é o Julien" and the final CTA.
 import { expect, test } from '@playwright/test';
 import { inEachBuild } from './builds';
 import { LANGUAGES, NAME, BOOKING_PAGE, type Language } from './expected';
 
-// Os valores esperados, tirados da spec (#54). Em português, os textos validados estão tal como
-// a spec os dá; o francês e o inglês são traduções que a estagiária valida antes do Lançamento
-// comercial (#75). A página de marcação está em francês: o aviso só aparece nas outras línguas.
+// The expected values, taken from the spec (#54). In Portuguese, the approved texts are exactly as
+// the spec gives them; French and English are translations the intern reviews before the Commercial
+// launch (#75). The booking page is in French: the notice only appears in the other languages.
 const EXPECTED = {
 	pt: {
 		whoItsFor: {
@@ -162,8 +162,8 @@ const EXPECTED = {
 	},
 } satisfies Record<Language, unknown>;
 
-// Os números que o Julien validou (#54, «Só se publica o que está validado»): 30 dias, 99 % (e o 1 %
-// que falta), 100 a 500 €/mês, 5 a 20 pessoas, 3 devs, 45 min, 48 h, 3 meses e os números dos Blocos.
+// The numbers Julien approved (#54, "Só se publica o que está validado"): 30 days, 99 % (and the
+// remaining 1 %), 100 to 500 €/month, 5 to 20 people, 3 devs, 45 min, 48 h, 3 months and the Block numbers.
 const APPROVED_NUMBERS = ['1', '2', '3', '4', '5', '20', '30', '45', '48', '99', '100', '500'];
 
 inEachBuild((build) => {
@@ -173,7 +173,7 @@ inEachBuild((build) => {
 		const sections = [whoItsFor, todayAndAfter, guarantee, about, finalCta];
 
 		test.describe(prefix, () => {
-			test(`«${button}» está no cabeçalho, no Hero, no fim de «${whoItsFor.title}» e no CTA final`, async ({
+			test(`"${button}" is in the header, in the Hero, at the end of "${whoItsFor.title}" and in the final CTA`, async ({
 				page,
 			}) => {
 				await page.goto(prefix);
@@ -189,14 +189,14 @@ inEachBuild((build) => {
 					await expect(bookButton, place).toHaveAttribute('href', BOOKING_PAGE);
 					await expect(bookButton, place).not.toHaveAttribute('target');
 				}
-				// O botão fecha «Para quem é»: fica por baixo das exclusões.
+				// The button closes "Para quem é": it sits below the exclusions.
 				const exclusions = places.whoItsFor.getByRole('list', { name: whoItsFor.notFor });
 				const { y, height } = (await exclusions.boundingBox())!;
 				const bookButton = places.whoItsFor.getByRole('link', { name: button, exact: true });
 				expect((await bookButton.boundingBox())!.y).toBeGreaterThanOrEqual(y + height);
 			});
 
-			test(`«${whoItsFor.title}» mostra o perfil, a frase para quem ainda não lançou e as 4 exclusões`, async ({
+			test(`"${whoItsFor.title}" shows the profile, the sentence for those not launched yet and the 4 exclusions`, async ({
 				page,
 			}) => {
 				await page.goto(prefix);
@@ -208,7 +208,7 @@ inEachBuild((build) => {
 				await expect(exclusions.getByRole('listitem')).toHaveText(whoItsFor.exclusions);
 			});
 
-			test(`«${todayAndAfter.title}»: o que o CTO vive, o que já tentou e a transformação, sem números`, async ({
+			test(`"${todayAndAfter.title}": what the CTO lives with, what they already tried and the change, with no numbers`, async ({
 				page,
 			}) => {
 				await page.goto(prefix);
@@ -220,7 +220,7 @@ inEachBuild((build) => {
 				expect(await section.textContent()).not.toMatch(/\d/);
 			});
 
-			test('a Garantia: o compromisso, quando se aplica, as 4 condições e as 2 exclusões', async ({
+			test('the Guarantee: the commitment, when it applies, the 4 conditions and the 2 exclusions', async ({
 				page,
 			}) => {
 				await page.goto(prefix);
@@ -235,7 +235,7 @@ inEachBuild((build) => {
 				await expect(exclusions).toHaveText(guarantee.exclusions);
 			});
 
-			test('a Garantia mostra os 99 % em grande e uma barra da largura da secção em que só 1 % muda de cor', async ({
+			test('the Guarantee shows the 99 % large and a section-wide bar where only 1 % changes colour', async ({
 				page,
 			}) => {
 				await page.goto(prefix);
@@ -250,8 +250,8 @@ inEachBuild((build) => {
 				}
 				await expect(figure).toHaveAccessibleName(guarantee.note);
 
-				// A barra é decorativa: as legendas dizem o mesmo em texto, e ela só se mede pela forma.
-				// Vai da margem do título à das exclusões, a largura toda do conteúdo.
+				// The bar is decorative: the captions say the same in text, and it is only measured by its shape.
+				// It runs from the edge of the title to that of the exclusions, the full width of the content.
 				const bar = (await figure.locator('[aria-hidden="true"]').boundingBox())!;
 				const heading = (await section.getByRole('heading', { level: 2 }).boundingBox())!;
 				const exclusions = section.getByRole('list', { name: guarantee.lists[1] });
@@ -264,7 +264,7 @@ inEachBuild((build) => {
 				expect(tip.width / barWidth).toBeLessThan(0.02);
 			});
 
-			test(`«${about.title}»: a fotografia, o nome, a Designação e a forma de trabalhar`, async ({
+			test(`"${about.title}": the photo, the name, the Designation and the way of working`, async ({
 				page,
 			}) => {
 				const images: string[] = [];
@@ -279,17 +279,17 @@ inEachBuild((build) => {
 				await expect(section.getByText(designation, { exact: true })).toBeVisible();
 				await expect(section.getByText(about.wayOfWorking, { exact: true })).toBeVisible();
 
-				// Longe do topo: a fotografia só é pedida quando lá se chega.
+				// Far from the top: the photo is only requested when it is reached.
 				expect(images).toEqual([]);
 				const photo = section.getByRole('img', { name: NAME, exact: true });
 				await photo.scrollIntoViewIfNeeded();
 				await expect(photo).toBeVisible();
-				// A única imagem da página, em AVIF.
+				// The only image on the page, in AVIF.
 				await expect(page.locator('img')).toHaveCount(1);
 				await expect.poll(() => images).toEqual(['image/avif']);
 			});
 
-			test('as secções ficam nos lugares da #54, de «Para quem é», logo a seguir ao Hero, ao CTA final, no fim', async ({
+			test('the sections are where #54 puts them, from "Para quem é", right after the Hero, to the final CTA, at the end', async ({
 				page,
 			}) => {
 				await page.goto(prefix);
@@ -302,7 +302,7 @@ inEachBuild((build) => {
 				expect(positions.at(-1)).toBe(titles.length - 1);
 			});
 
-			test('só aparecem os números validados pelo Julien', async ({ page }) => {
+			test('only the numbers approved by Julien appear', async ({ page }) => {
 				await page.goto(prefix);
 				for (const { title } of sections) {
 					const text = (await page.getByRole('region', { name: title }).textContent())!;
@@ -311,12 +311,10 @@ inEachBuild((build) => {
 				}
 			});
 
-			test.describe('sem JavaScript', () => {
+			test.describe('without JavaScript', () => {
 				test.use({ javaScriptEnabled: false });
 
-				test('as cinco secções aparecem completas, com a barra da Garantia cheia', async ({
-					page,
-				}) => {
+				test('the five sections appear in full, with the Guarantee bar full', async ({ page }) => {
 					await page.goto(prefix);
 					for (const { title } of sections) {
 						await expect(page.getByRole('region', { name: title })).toBeVisible();
@@ -329,8 +327,8 @@ inEachBuild((build) => {
 				});
 			});
 
-			// Só um espaço normal deixa partir a linha.
-			test('um número nunca fica longe do que mede, um intervalo nunca se parte, e « ? : » nunca começam uma linha', async ({
+			// Only a normal space allows a line break.
+			test('a number never sits apart from what it measures, a range never breaks, and ? ! : ; » never start a line', async ({
 				page,
 			}) => {
 				await page.goto(prefix);
@@ -344,8 +342,8 @@ inEachBuild((build) => {
 
 			test(
 				finalCta.bookingNotice
-					? 'por baixo do botão do CTA final: a Conversa e o aviso de que a marcação é em francês'
-					: 'por baixo do botão do CTA final: a Conversa, sem aviso sobre a língua da marcação',
+					? 'below the final CTA button: the Conversation and the notice that booking is in French'
+					: 'below the final CTA button: the Conversation, with no notice about the booking language',
 				async ({ page }) => {
 					await page.goto(prefix);
 					const section = page.getByRole('region', { name: finalCta.title });

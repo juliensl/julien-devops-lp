@@ -1,10 +1,10 @@
 ---
-// A página 404: só em inglês, a única sem equivalentes noutras línguas, com o aspeto do site e uma
-// ligação para a página principal de cada língua publicada (#54, «Página 404»). Os textos ficam aqui,
-// e não nos dicionários, porque não existe noutras línguas.
-// Serve qualquer endereço inexistente, e também `/` enquanto o francês não estiver publicado: o
-// astro preview e o .htaccess do alojamento mostram-na com o código 404.
-// O Base.astro põe-lhe sempre noindex, por isso fica também fora do sitemap.
+// The 404 page: English only, the only one with no equivalents in other languages, with the site's
+// look and a link to the home page of each published language (#54, "Página 404"). Its texts live here,
+// not in the dictionaries, because it doesn't exist in other languages.
+// It serves any address that doesn't exist, and also `/` while French is not published:
+// `astro preview` and the host's `.htaccess` show it with the 404 status code.
+// `Base.astro` always gives it `noindex`, so it also stays out of the sitemap.
 import { HTML_CODES, PHASE, LANGUAGE_NAMES, PREFIXES } from '../config/site';
 import { values } from '../config/values';
 import Base from '../layouts/Base.astro';

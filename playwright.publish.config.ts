@@ -1,8 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 import { SITE } from './tests/expected';
 
-// A confirmação depois de cada Publicação (npm run confirmar): pede ao site publicado
-// as páginas do dist, sem servidor local. URL_PUBLICADO aponta-a para outro endereço.
+// The confirmation after each Publishing run (npm run confirmar): requests the dist pages from the
+// published site, with no local server. URL_PUBLICADO points it at another address.
 export default defineConfig({
 	testDir: 'tests/publish',
 	forbidOnly: !!process.env.CI,

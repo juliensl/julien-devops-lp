@@ -1,37 +1,37 @@
 @import 'tailwindcss';
 
 /*
- * A identidade visual validada pelo Julien (#54, «Direção visual»).
- * Só existem estas cores e estas fontes: as classes do Tailwind usam-nas pelo nome
+ * The visual identity approved by Julien (#54, "Direção visual").
+ * Only these colors and fonts exist: the Tailwind classes use them by name
  * (bg-background, text-foreground-secondary, font-heading…).
  */
 @theme {
 	--color-*: initial;
-	/* Fundo, com um brilho roxo e outro verde (no body, abaixo). */
+	/* Background, with a purple glow and a green one (on the body, below). */
 	--color-background: #0e0c12;
 	--color-surface: #17141f;
 	--color-surface-2: #1f1b29;
 	--color-foreground: #f2eef7;
 	--color-foreground-secondary: #b3aac2;
-	/* Botões, com texto branco: 5,5:1 com o texto, 3,5:1 com o fundo. */
+	/* Buttons, with white text: 5.5:1 with the text, 3.5:1 with the background. */
 	--color-action: #7446ea;
 	--color-action-hover: #6538d6;
 	--color-white: #ffffff;
-	/* Roxo dos textos: 6,3:1. Verde das etiquetas e dos dados: 9,7:1. */
+	/* Purple for text: 6.3:1. Green for labels and data: 9.7:1. */
 	--color-purple: #a17cff;
 	--color-green: #3ccf8e;
-	/* Verde forte dos contornos, decorativo. */
+	/* Strong green for outlines, decorative. */
 	--color-green-strong: #23915f;
-	/* Cores fixas do ∞, do ramo, da folha e do logótipo, decorativas. */
+	/* Fixed colors of the ∞, the branch, the leaf and the logo, decorative. */
 	--color-element-purple: #c3a6ff;
 	--color-element-green: #86d9a8;
-	/* Linhas de separação; a forte tem 3,5:1 com o fundo e serve de contorno a um controlo. */
+	/* Separator lines; the strong one has 3.5:1 with the background and can outline a control. */
 	--color-line: #2a2533;
 	--color-line-strong: #6d6480;
 }
 
-/* Bona Nova nos títulos e no logótipo; Geist no texto, nos dados e na interface. As variáveis
-   --font-* vêm da API de fontes do Astro (astro.config.mjs), com a fonte de recurso. */
+/* Bona Nova for headings and the logo; Geist for text, data and the interface. The
+   --font-* variables come from the Astro fonts API (astro.config.mjs), with the fallback font. */
 @theme inline {
 	--font-*: initial;
 	--font-heading: var(--font-bona-nova);
@@ -50,20 +50,20 @@
 
 	html {
 		color-scheme: dark;
-		/* O cabeçalho fixo nunca tapa o elemento com foco nem o destino de uma âncora (WCAG 2.4.11). */
+		/* The sticky header never covers the focused element or an anchor target (WCAG 2.4.11). */
 		scroll-padding-top: calc(var(--header-height) + 1rem);
 	}
 
-	/* A página ocupa pelo menos o ecrã: numa página curta, o rodapé fica em baixo. */
+	/* The page fills at least the screen: on a short page, the footer stays at the bottom. */
 	body {
 		display: flex;
 		flex-direction: column;
 		min-height: 100svh;
-		/* Uma palavra comprida nunca obriga a scroll horizontal, mesmo a 320 px. */
+		/* A long word never forces horizontal scrolling, even at 320 px. */
 		overflow-wrap: break-word;
 		line-height: 1.65;
 		color: var(--color-foreground);
-		/* Um brilho roxo, em cima à esquerda, e outro verde, à direita. */
+		/* A purple glow at the top left, and a green one on the right. */
 		background:
 			radial-gradient(
 				1100px 700px at 12% -8%,
@@ -83,7 +83,7 @@
 		flex-grow: 1;
 	}
 
-	/* A Bona Nova só tem o peso 400: um título nunca fica em negrito falso. */
+	/* Bona Nova only has weight 400: a heading never gets a faux bold. */
 	h1,
 	h2,
 	h3 {
@@ -98,7 +98,7 @@
 	}
 }
 
-/* A largura do conteúdo, igual no cabeçalho, nas secções e no rodapé. */
+/* The content width, the same in the header, the sections and the footer. */
 @utility page-width {
 	width: 100%;
 	max-width: 76rem;
@@ -106,7 +106,7 @@
 	padding-inline: 1.25rem;
 }
 
-/* As etiquetas por cima dos títulos, como a Designação no Hero. */
+/* The labels above headings, like the Designation in the Hero. */
 @utility label {
 	font-size: 0.75rem;
 	line-height: 1.4;

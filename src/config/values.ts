@@ -1,13 +1,13 @@
-// Os valores únicos: iguais nas três línguas e guardados só aqui.
-// Se algum faltar ou não for válido, o build falha.
+// The shared values: the same in all three languages and stored only here.
+// If any is missing or invalid, the build fails.
 import { z } from 'astro/zod';
 import { LANGUAGES } from './site';
 
 const schema = z.object({
 	name: z.string().trim().min(1),
-	/** A página de marcação da Conversa, em francês para as três línguas (#10). */
+	/** The booking page for the Conversation, in French for all three languages (#10). */
 	bookingPage: z.url({ protocol: /^https$/ }),
-	/** Nas outras línguas, o CTA final avisa que a página de marcação está nesta. */
+	/** In the other languages, the final CTA warns that the booking page is in this one. */
 	bookingPageLanguage: z.enum(LANGUAGES),
 	linkedin: z.url({ protocol: /^https$/ }),
 });
@@ -21,7 +21,7 @@ const result = schema.safeParse({
 
 if (!result.success) {
 	throw new Error(
-		`Valores únicos em falta ou inválidos em src/config/values.ts:\n${z.prettifyError(result.error)}`,
+		`Missing or invalid shared values in src/config/values.ts:\n${z.prettifyError(result.error)}`,
 	);
 }
 

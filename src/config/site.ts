@@ -1,40 +1,40 @@
-// O domínio, as línguas e o que cada fase da página publica.
-// O PR do Lançamento comercial muda só este ficheiro: FASE_ATUAL passa a LANCAMENTO_COMERCIAL.
+// The domain, the languages and what each phase of the page publishes.
+// The Commercial launch PR changes only this file: `CURRENT_PHASE` becomes `COMMERCIAL_LAUNCH`.
 
 export const SITE = 'https://devops.julienlaffont.com';
 
 export const LANGUAGES = ['fr', 'en', 'pt'] as const;
 export type Language = (typeof LANGUAGES)[number];
 
-/** O início dos URLs de cada língua. O francês, Língua por defeito, fica em `/`. */
+/** The start of each language's URLs. French, the Default language, sits at `/`. */
 export const PREFIXES: Record<Language, string> = { fr: '/', en: '/en/', pt: '/pt/' };
 
-/** O valor de `<html lang>` em cada língua. */
+/** The value of `<html lang>` in each language. */
 export const HTML_CODES: Record<Language, string> = { fr: 'fr', en: 'en', pt: 'pt-PT' };
 
-/** O nome de cada língua na própria língua, que o seletor diz aos leitores de ecrã. */
+/** Each language's name in that language, which the switcher reads out to screen readers. */
 export const LANGUAGE_NAMES: Record<Language, string> = {
 	fr: 'Français',
 	en: 'English',
 	pt: 'Português',
 };
 
-/** O que uma fase da página publica: só as línguas publicadas têm páginas. */
+/** What a phase of the page publishes: only the published languages have pages. */
 export interface Phase {
 	publishedLanguages: readonly Language[];
-	/** Põe `noindex` em todas as páginas. A verificação de SEO lê este mesmo valor. */
+	/** Puts `noindex` on every page. The SEO check reads this same value. */
 	noindex: boolean;
 }
 
 export const FIRST_REVIEW: Phase = { publishedLanguages: ['pt'], noindex: true };
 export const COMMERCIAL_LAUNCH: Phase = { publishedLanguages: LANGUAGES, noindex: false };
 
-/** A fase do site publicado. */
+/** The phase of the published site. */
 export const CURRENT_PHASE: Phase = FIRST_REVIEW;
 
 /**
- * A fase que este build gera: a atual, ou o Lançamento comercial no build de teste
- * (`LANCAMENTO_COMERCIAL=1`), que verifica já o que só existe com várias línguas.
+ * The phase this build generates: the current one, or the Commercial launch in the test build
+ * (`LANCAMENTO_COMERCIAL=1`), which checks now what only exists with several languages.
  */
 export const PHASE: Phase =
 	process.env.LANCAMENTO_COMERCIAL === '1' ? COMMERCIAL_LAUNCH : CURRENT_PHASE;

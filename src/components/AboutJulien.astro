@@ -1,8 +1,8 @@
 ---
-// «Quem é o Julien» (#63): a fotografia, a única imagem da página, ao natural e a cores, com o
-// nome e a Designação em texto visível. Sem faixa colorida: o ramo (#73) dá meia volta ao arco
-// de cima da fotografia e desce até ao fim da secção.
-// É um componente .astro porque a imagem é otimizada no build pelo <Image>, que um TSX não usa.
+// "Quem é o Julien" (#63): the photo, the only image on the page, natural and in color, with the
+// name and the Designation as visible text. No colored band: the branch (#73) goes halfway round
+// the photo's top arch and runs down to the end of the section.
+// It is an .astro component because `<Image>` optimizes the image at build time, and a TSX can't use it.
 import { Image } from 'astro:assets';
 import photo from '../../data/IMG_2030.png';
 import { values } from '../config/values';
@@ -11,7 +11,7 @@ import { withNonBreakingSpaces } from '../lib/spaces';
 interface Props {
 	title: string;
 	designation: string;
-	/** Onde e como trabalha: à distância, as línguas, tecnologias standard e tudo documentado. */
+	/** Where and how he works: remotely, the languages, standard technologies and everything documented. */
 	wayOfWorking: string;
 }
 
@@ -22,7 +22,7 @@ const { title, designation, wayOfWorking } = Astro.props;
 	aria-labelledby="about-title"
 	class="page-width grid items-center gap-x-20 gap-y-12 py-[clamp(5rem,10vw,8rem)] lg:grid-cols-[minmax(0,4fr)_minmax(0,7fr)]"
 >
-	{/* Longe do topo: só carrega quando o Visitante lá chega. */}
+	{/* Far from the top: it only loads when the Visitor gets there. */}
 	<Image
 		src={photo}
 		alt={values.name}
@@ -44,6 +44,6 @@ const { title, designation, wayOfWorking } = Astro.props;
 		<p class="max-w-2xl font-heading text-[clamp(1.4rem,2.6vw,2rem)] leading-snug">
 			{withNonBreakingSpaces(wayOfWorking)}
 		</p>
-		{/* As provas (percurso, projetos, clientes) entram aqui quando existirem (#54). */}
+		{/* The proof (career, projects, clients) goes here once it exists (#54). */}
 	</div>
 </section>

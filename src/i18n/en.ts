@@ -1,5 +1,5 @@
-// Tradução do português, a validar pela estagiária antes do Lançamento comercial (#75).
-// A Designação é a validada pelo Julien.
+// Translated from Portuguese, to be reviewed by the intern before the Commercial launch (#75).
+// The Designation is the one Julien approved.
 import type { Dictionary } from './pt';
 
 const promise = 'In 30 days, I deliver the DevOps infrastructure you need to scale your SaaS.';

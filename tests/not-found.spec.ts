@@ -1,5 +1,5 @@
-// A página 404: só em inglês, com o aspeto do site e um caminho de volta (#54, «Página 404»).
-// Serve qualquer endereço inexistente, e também `/` enquanto o francês não estiver publicado.
+// The 404 page: English only, with the look of the site and a way back (#54, "Página 404").
+// It serves any address that does not exist, and also `/` while French is not published.
 import { expect, test } from '@playwright/test';
 import { inEachBuild } from './builds';
 import { LANGUAGES, NAME, type Language } from './expected';
@@ -15,7 +15,7 @@ inEachBuild((build) => {
 	if (!publishedLanguages.includes('fr')) missingPaths.push('/');
 
 	for (const path of missingPaths) {
-		test(`${path} responde 404 e mostra a 404, em inglês`, async ({ page }) => {
+		test(`${path} answers 404 and shows the 404, in English`, async ({ page }) => {
 			const response = await page.goto(path);
 			expect(response?.status()).toBe(404);
 			await expect(page.locator('html')).toHaveAttribute('lang', 'en');
@@ -23,7 +23,7 @@ inEachBuild((build) => {
 		});
 	}
 
-	test('a 404 leva à página principal de cada língua publicada', async ({ page }) => {
+	test('the 404 links to the home page of each published language', async ({ page }) => {
 		await page.goto(missingPaths[0]);
 		const main = page.getByRole('main');
 		for (const language of publishedLanguages) {
@@ -37,12 +37,10 @@ inEachBuild((build) => {
 		}
 	});
 
-	test('o cabeçalho da 404 tem o logótipo e não tem seletor de língua nem menu', async ({
-		page,
-	}) => {
+	test('the 404 header has the logo and no language switcher or menu', async ({ page }) => {
 		await page.goto(missingPaths[0]);
 		const header = page.getByRole('banner');
-		// A primeira língua publicada: o francês, Língua por defeito, quando está publicado.
+		// The first published language: French, the Default language, when it is published.
 		await expect(header.getByRole('link', { name: NAME })).toHaveAttribute(
 			'href',
 			LANGUAGES[publishedLanguages[0]].prefix,
@@ -50,7 +48,7 @@ inEachBuild((build) => {
 		for (const { name } of Object.values(LANGUAGES)) {
 			await expect(header.getByText(name)).toHaveCount(0);
 		}
-		// O menu do telemóvel só teria as línguas: o botão que o abre (o <summary>) não existe.
+		// The phone menu would only hold the languages: the button that opens it (the `<summary>`) does not exist.
 		await expect(header.locator('summary')).toHaveCount(0);
 	});
 });

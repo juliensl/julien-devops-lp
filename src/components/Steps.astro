@@ -1,7 +1,7 @@
 ---
-// As 5 Etapas, da Conversa à Entrega e transferência: o que acontece depois de marcar.
-// No computador, a secção fica presa enquanto o scroll passa pelas Etapas, cerca de meio ecrã
-// cada uma. No telemóvel, com movimento reduzido e sem JS, é uma lista que se lê de seguida.
+// The 5 Steps, from the Conversation to Delivery and handover: what happens after booking.
+// On desktop, the section stays pinned while the scroll goes through the Steps, about half a screen
+// each. On mobile, with reduced motion and without JS, it is a list read straight through.
 interface Props {
 	title: string;
 	steps: { name: string; sentence: string }[];
@@ -21,8 +21,8 @@ const { title, steps } = Astro.props;
 			<h2 id="steps-title" class="text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">
 				{title}
 			</h2>
-			{/* No telemóvel, uma Etapa por linha, com o número à esquerda. A partir de 961 px, cinco
-			    colunas em degraus, cada uma um pouco mais abaixo do que a anterior. */}
+			{/* On mobile, one Step per row, with the number on the left. From 961 px, five
+			    staggered columns, each one a little lower than the one before. */}
 			<ol class="grid gap-6 min-[961px]:grid-cols-5 min-[961px]:gap-8">
 				{steps.map(({ name, sentence }, k) => (
 					<li
@@ -50,7 +50,7 @@ const { title, steps } = Astro.props;
 <script>
 	import { afterLoad } from '../scripts/after-load';
 
-	/** O computador, como nos Serviços (#54): mais de 960 px e sem movimento reduzido. */
+	/** Desktop, as in the Services (#54): wider than 960 px and no reduced motion. */
 	const DESKTOP = '(min-width: 961px) and (prefers-reduced-motion: no-preference)';
 
 	afterLoad(() => {
@@ -61,10 +61,10 @@ const { title, steps } = Astro.props;
 			const steps = [...section.querySelectorAll<HTMLElement>('[data-step]')];
 			let pendingFrame = 0;
 
-			// Com a secção presa, o percurso vai de 0 (o palco prende) a 1 (solta). Cada Etapa tem
-			// a sua fatia do percurso e chega a meio dela, em (k + 0,5) / 5: o número acende.
-			// O ramo (#73) vai acender os números quando chega, com esta mesma conta; com a secção
-			// solta (telemóvel, movimento reduzido, ecrã baixo), os números ficam sempre acesos.
+			// With the section pinned, the progress goes from 0 (the stage pins) to 1 (it unpins). Each Step has
+			// its own slice of the progress and reaches its middle at (k + 0.5) / 5: the number lights up.
+			// The branch (#73) will light up the numbers as it reaches them, with this same calculation; with the
+			// section unpinned (mobile, reduced motion, short screen), the numbers are always lit.
 			const lightUp = () => {
 				pendingFrame = 0;
 				if (!section.hasAttribute('data-pinned')) return;
@@ -76,8 +76,8 @@ const { title, steps } = Astro.props;
 				}
 			};
 
-			// Presa, as Etapas têm de caber no palco, por baixo do cabeçalho; num ecrã baixo ou com
-			// zoom, não cabem, e a secção fica solta para nada ficar escondido.
+			// When pinned, the Steps must fit in the stage, below the header; on a short screen or when
+			// zoomed in, they do not fit, and the section stays unpinned so nothing is hidden.
 			const pin = () => {
 				section.toggleAttribute('data-pinned', desktop.matches);
 				const content = stage.firstElementChild as HTMLElement;
@@ -96,8 +96,8 @@ const { title, steps } = Astro.props;
 </script>
 
 <style>
-	/* Presa: a secção ganha meio ecrã de altura por Etapa, e o palco fica parado por baixo do
-	   cabeçalho enquanto ela passa. */
+	/* Pinned: the section gains half a screen of height per Step, and the stage stays still below the
+	   header while the section scrolls past. */
 	[data-pinned] {
 		height: calc(100svh - var(--header-height) + var(--step-count) * 50svh);
 	}
@@ -108,13 +108,13 @@ const { title, steps } = Astro.props;
 		align-content: center;
 		height: calc(100svh - var(--header-height));
 	}
-	/* O palco centra as Etapas: o espaço por cima e por baixo vem dele, não do padding. */
+	/* The stage centers the Steps: the space above and below comes from it, not from the padding. */
 	[data-pinned] [data-stage] > * {
 		padding-block: 0;
 	}
 
-	/* Presa, cada número fica apagado até a sua Etapa chegar. O cinzento das linhas fortes tem
-	   3,5:1 com o fundo, que chega para um número deste tamanho (WCAG 1.4.3, texto grande). */
+	/* Pinned, each number stays dimmed until its Step is reached. The `line-strong` gray has
+	   3.5:1 on the background, enough for a number this size (WCAG 1.4.3, large text). */
 	[data-pinned] [data-number] {
 		color: var(--color-line-strong);
 		transition: color 0.35s ease;

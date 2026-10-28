@@ -8,7 +8,7 @@ interface Props {
 	note: string;
 }
 
-/** O topo da página principal: a Designação, a Promessa e o botão. O ∞ chega com #72. */
+/** The top of the home page: the Designation, the Promise and the button. The ∞ comes with #72. */
 export default function Hero({ designation, promise, support, buttonText, note }: Props) {
 	return (
 		<section aria-labelledby="promise" className="page-width py-16 sm:py-24">

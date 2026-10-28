@@ -4,7 +4,7 @@ import { withNonBreakingSpaces } from '../lib/spaces';
 interface Props {
 	title: string;
 	todayTitle: string;
-	/** O que o CTO vive hoje: o problema, em negrito, e o que isso quer dizer. */
+	/** What the CTO lives with today: the problem, in bold, and what it means. */
 	today: { title: string; text: string }[];
 	alreadyTriedTitle: string;
 	alreadyTried: string[];
@@ -12,10 +12,10 @@ interface Props {
 	after: string[];
 }
 
-/** Cada item das listas é uma linha aberta, sem caixa, separada da anterior por um traço. */
+/** Each list item is an open row, with no box, separated from the previous one by a rule. */
 const itemClass = 'border-t border-line py-4 text-[1.0625rem]';
 
-/** O CTO reconhece-se no problema (o que vive e o que já tentou) e vê como fica depois. Sem números. */
+/** The CTO recognizes the problem (what they live with and what they've tried) and sees what comes after. No numbers. */
 export default function TodayAndAfter({
 	title,
 	todayTitle,

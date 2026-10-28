@@ -1,8 +1,8 @@
 ---
-// Os pontos decorativos no topo da página principal: pequenos roxos numa grelha, e verdes, mais
-// espaçados, a brilhar. Ficam fixos no topo do ecrã, por baixo do conteúdo, e desaparecem
-// para baixo (protótipo v3, «como os da Arkoder»). Só mexem transform e opacity, que a GPU
-// compõe sem redesenhar a página.
+// The decorative dots at the top of the home page: small purple ones on a grid, and green ones,
+// more spaced out, glowing. They stay fixed at the top of the screen, behind the content, and fade
+// out downwards (prototype v3, "like the Arkoder ones"). They only animate `transform` and `opacity`,
+// which the GPU composites without repainting the page.
 ---
 
 <div class="dots" data-dots aria-hidden="true">
@@ -22,7 +22,7 @@
 </script>
 
 <style>
-	/* Por baixo do conteúdo e do cabeçalho; as camadas, maiores do que o ecrã, ficam cortadas. */
+	/* Behind the content and the header; the layers, larger than the screen, are clipped. */
 	.dots {
 		position: fixed;
 		inset: 0 0 auto;
@@ -58,7 +58,7 @@
 		background-position: 126px 98px;
 	}
 
-	/* Com movimento reduzido, ficam parados. */
+	/* With reduced motion, they stay still. */
 	@media (prefers-reduced-motion: no-preference) {
 		.purples {
 			animation: drift-purples 22s linear infinite;
@@ -68,7 +68,7 @@
 				drift-greens 40s linear infinite,
 				glow 7s ease-in-out infinite;
 		}
-		/* A segunda camada verde anda ao contrário e brilha desencontrada da primeira. */
+		/* The second green layer moves the other way and glows out of step with the first. */
 		.others {
 			animation-direction: reverse, normal;
 			animation-delay:
@@ -96,8 +96,8 @@
 		}
 	}
 
-	/* Parados até o script os pôr a andar, depois do carregamento. Depois, param com o botão de
-	   pausa, que põe <html data-animation="paused">. */
+	/* Paused until the script sets them moving, after load. Then they stop with the pause
+	   button, which sets `<html data-animation="paused">`. */
 	.layer {
 		animation-play-state: paused;
 	}

@@ -1,24 +1,24 @@
 ---
-// O botão fixo, no canto inferior esquerdo, que pausa e retoma todas as animações automáticas
-// da página (WCAG 2.2.2). Entra nas páginas que as têm: a principal e a de ecologia (#69).
+// The fixed button, in the bottom-left corner, that pauses and resumes every automatic animation
+// on the page (WCAG 2.2.2). It goes on the pages that have them: the home page and the ecology one (#69).
 //
-// O sinal partilhado, que cada animação escuta sem importar nada daqui:
-// - em pausa, <html data-animation="paused">; a andar, o atributo não existe;
-// - a cada clique, document recebe o evento «animation», com detail.pausada.
-// Uma animação em CSS para com :root[data-animation='paused'] { animation-play-state: paused }.
-// Com movimento reduzido, o botão não aparece: cada animação vê-o ela própria, com
-// matchMedia('(prefers-reduced-motion: reduce)') ou @media, e fica parada.
+// The shared signal, which each animation listens to without importing anything from here:
+// - when paused, `<html data-animation="paused">`; when running, the attribute is absent;
+// - on each click, `document` receives the `animation` event, with `detail.paused`.
+// A CSS animation stops with `:root[data-animation='paused'] { animation-play-state: paused }`.
+// With reduced motion, the button doesn't show: each animation checks it on its own, with
+// `matchMedia('(prefers-reduced-motion: reduce)')` or `@media`, and stays still.
 interface Props {
-	/** O nome enquanto as animações andam. */
+	/** The label while the animations run. */
 	pause: string;
-	/** O nome em pausa. */
+	/** The label while paused. */
 	resume: string;
 }
 
 const { pause, resume } = Astro.props;
 ---
 
-{/* Escondido até o script correr: sem JS, não serviria para nada. */}
+{/* Hidden until the script runs: without JS, it would be useless. */}
 <button
 	type="button"
 	hidden
@@ -28,7 +28,7 @@ const { pause, resume } = Astro.props;
 	class="fixed bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] left-[calc(1rem+env(safe-area-inset-left,0px))] z-30 inline-flex h-10 cursor-pointer items-center gap-2 rounded-full border border-line-strong bg-background/85 pr-3.5 pl-3 text-[0.8125rem] leading-none font-medium text-foreground-secondary backdrop-blur-[6px] hover:border-foreground hover:text-foreground motion-reduce:hidden max-md:w-10 max-md:justify-center max-md:p-0"
 >
 	<span class="icon" aria-hidden="true"></span>
-	{/* No telemóvel, só o ícone: o nome fica para os leitores de ecrã. */}
+	{/* On mobile, only the icon: the label is left to screen readers. */}
 	<span data-label class="max-md:sr-only">
 		{pause}
 	</span>
@@ -51,7 +51,7 @@ const { pause, resume } = Astro.props;
 			button.hidden = false;
 		}
 
-		// O nome diz o que o próximo clique faz.
+		// The label says what the next click does.
 		document.addEventListener('animation', () => {
 			const paused = html.dataset.animation === 'paused';
 			for (const button of buttons) {
@@ -64,10 +64,10 @@ const { pause, resume } = Astro.props;
 </script>
 
 <style>
-	/* Uma página com o botão reserva-lhe o canto: o fim da página sobe acima dele e o elemento com
-	   foco nunca fica por baixo (WCAG 2.4.11). Desde o início, e não só quando o botão aparece,
-	   para a página não saltar. Num ecrã baixo, com o cabeçalho não sobraria espaço para o foco:
-	   aí, o cabeçalho, que ocupa a largura toda, tem prioridade. */
+	/* A page with the button reserves the corner for it: the end of the page rises above it and the
+	   focused element never ends up underneath (WCAG 2.4.11). From the start, not only once the button
+	   shows, so the page doesn't jump. On a short screen, the header would leave no room for the focus:
+	   there, the header, which spans the full width, takes priority. */
 	@media (prefers-reduced-motion: no-preference) {
 		:global(body:has([data-pause-animation])) {
 			padding-bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px));
@@ -79,7 +79,7 @@ const { pause, resume } = Astro.props;
 		}
 	}
 
-	/* Duas barras; em pausa, um triângulo. */
+	/* Two bars; when paused, a triangle. */
 	.icon {
 		width: 10px;
 		height: 12px;

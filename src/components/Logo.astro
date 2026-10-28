@@ -1,9 +1,9 @@
 ---
-// O logótipo: «JULIEN / LAFFONT» em duas linhas, em Bona Nova, à frente de um ∞ fino e contínuo,
-// metade roxo e metade verde. O ∞ fica sobreposto ao nome, nunca por cima nem por baixo dele.
-// Fica por agora (#54): um desenho novo troca só este componente e a imagem de partilha (#61).
-// O texto é o próprio nome, por isso uma ligação à volta do logótipo tem o nome acessível certo.
-// O tamanho segue o font-size de quem o usa.
+// The logo: "JULIEN / LAFFONT" on two lines, in Bona Nova, in front of a thin, continuous ∞,
+// half purple and half green. The ∞ overlaps the name, never above or below it.
+// It stays for now (#54): a new design only swaps this component and the share image (#61).
+// The text is the name itself, so a link around the logo gets the right accessible name.
+// The size follows the `font-size` of whatever uses it.
 import { values } from '../config/values';
 
 const lines = values.name.split(' ');
@@ -23,7 +23,7 @@ const lines = values.name.split(' ');
 </span>
 
 <style>
-	/* A margem lateral reserva o espaço do ∞, que sai da caixa do nome. */
+	/* The side margin reserves the room for the ∞, which sticks out of the name's box. */
 	.logo {
 		position: relative;
 		display: inline-flex;
@@ -44,7 +44,7 @@ const lines = values.name.split(' ');
 		top: 50%;
 		width: 165%;
 		height: 150%;
-		/* Sobe um pouco para o cruzamento cair entre as duas linhas. */
+		/* Moved up a little so the crossing falls between the two lines. */
 		transform: translate(-50%, calc(-50% - 0.12em));
 		opacity: 0.75;
 	}
@@ -60,7 +60,7 @@ const lines = values.name.split(' ');
 	.green {
 		stroke: var(--color-element-green);
 	}
-	/* Um halo da cor do fundo apaga o ∞ junto às letras, para não as confundir (o «F» com um «E»). */
+	/* A halo in the background color erases the ∞ next to the letters, so they are not misread ("F" as "E"). */
 	.line {
 		position: relative;
 		text-shadow:

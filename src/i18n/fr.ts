@@ -1,5 +1,5 @@
-// Tradução do português, a validar pela estagiária antes do Lançamento comercial (#75).
-// A Promessa e a Designação são as validadas pelo Julien.
+// Translated from Portuguese, to be reviewed by the intern before the Commercial launch (#75).
+// The Promise and the Designation are the ones Julien approved.
 import type { Dictionary } from './pt';
 
 const promise =
@@ -132,7 +132,7 @@ export const fr: Dictionary = {
 			title: "Tu ne perds jamais l'infrastructure.",
 			text: "Même si ton équipe ne se lance pas tout de suite dans les tests, tu gardes une pipeline propre, documentée et aux standards du marché, prête pour le jour où tu décides d'y aller.",
 			conversation: 'Échange de 45 min sur Google Meet, gratuit et sans engagement.',
-			// Não aparece enquanto a página de marcação estiver em francês (values.ts).
+			// Not shown while the booking page is in French (values.ts).
 			bookingNotice:
 				"La page de réservation est en français, mais l'échange peut se faire en anglais ou en portugais.",
 		},

@@ -1,9 +1,9 @@
 ---
-// O cabeçalho fixo de todas as páginas: o logótipo, o seletor de língua e o botão.
-// No telemóvel, as línguas passam para um menu <details>, que abre sem JS; o botão fica sempre à vista.
-// Numa página sem equivalentes noutras línguas (a 404), o cabeçalho fica só com o logótipo e o botão,
-// e o logótipo leva à página principal da primeira língua publicada.
-// As partes que chegam com as páginas para onde levam têm o lugar marcado com o ticket.
+// The sticky header of every page: the logo, the language switcher and the button.
+// On mobile, the languages move into a `<details>` menu, which opens without JS; the button always stays visible.
+// On a page with no equivalents in other languages (the 404), the header keeps only the logo and the button,
+// and the logo leads to the home page of the first published language.
+// The parts that arrive with the pages they lead to have their place marked with the ticket.
 import { PHASE, PREFIXES, type Language } from '../config/site';
 import { dictionaries } from '../i18n';
 import BookingButton from './BookingButton';
@@ -12,7 +12,7 @@ import Logo from './Logo.astro';
 
 interface Props {
 	language: Language;
-	/** A página só existe nesta língua (a 404): não há seletor nem menu. */
+	/** The page only exists in this language (the 404): no switcher and no menu. */
 	noEquivalents?: boolean;
 }
 
@@ -31,9 +31,9 @@ const t = dictionaries[language];
 		</a>
 
 		<div class="ml-auto flex items-center gap-4">
-			{/* «Os teus desafios» e o submenu (#70) */}
+			{/* "Os teus desafios" and the submenu (#70) */}
 
-			{/* 🍃 Ecologia (#68) */}
+			{/* 🍃 Ecology (#68) */}
 
 			{!noEquivalents && (
 				<LanguageSwitcher language={language} label={t.header.languages} class="max-md:hidden" />
@@ -56,9 +56,9 @@ const t = dictionaries[language];
 					<span class="sr-only">{t.header.menu}</span>
 				</summary>
 				<div class="absolute top-[calc(100%+0.625rem)] right-0 grid w-[min(20rem,calc(100vw-2.5rem))] gap-2 rounded-xl border border-line bg-surface p-4 shadow-[0_18px_40px_rgb(0_0_0/0.5)]">
-					{/* «Os teus desafios» (#70) */}
+					{/* "Os teus desafios" (#70) */}
 
-					{/* Ecologia (#68): abaixo de 360 px, fica só aqui */}
+					{/* Ecology (#68): below 360 px, it only lives here */}
 
 					<LanguageSwitcher language={language} label={t.header.languages} large />
 				</div>
@@ -68,8 +68,8 @@ const t = dictionaries[language];
 </header>
 
 <script>
-	// Os menus <details data-menu> abrem e fecham sem JS. O JS só os fecha também ao clicar fora,
-	// com Escape e depois de escolher uma ligação.
+	// The `<details data-menu>` menus open and close without JS. JS only adds closing them on a click
+	// outside, on Escape and after a link is chosen.
 	const openMenus = () => document.querySelectorAll<HTMLDetailsElement>('details[data-menu][open]');
 
 	document.addEventListener('click', (event) => {

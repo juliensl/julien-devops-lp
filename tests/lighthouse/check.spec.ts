@@ -1,6 +1,6 @@
-// O verificador do Lighthouse (#59), sobre um site de teste com páginas que falham cada meta.
-// Corre o Lighthouse a sério, numa execução por página: se uma atualização dele mudar o
-// relatório e uma meta deixar de disparar, estes testes ficam vermelhos.
+// The Lighthouse checker (#59), on a test site with pages that fail each target.
+// Runs the real Lighthouse, one run per page: if a Lighthouse update changes the
+// report and a target stops firing, these tests turn red.
 import { randomBytes } from 'node:crypto';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -8,7 +8,7 @@ import { expect, test } from '@playwright/test';
 import { pagesIn } from '../builds';
 import { checkSite } from './check';
 
-// Cada teste analisa as suas páginas com o Lighthouse, uma de cada vez.
+// Each test analyzes its pages with Lighthouse, one at a time.
 test.describe.configure({ timeout: 120_000 });
 
 interface TestPageOptions {
@@ -17,28 +17,28 @@ interface TestPageOptions {
 	body?: string;
 }
 
-/** Uma página que cumpre todas as metas, a não ser que `head` ou `body` a estraguem. */
+/** A page that meets every target, unless `head` or `body` break it. */
 function testPage({ noindex = true, head = '', body = '' }: TestPageOptions = {}) {
 	return `<!doctype html>
-<html lang="pt-PT">
+<html lang="en">
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>Página de teste</title>
-		<meta name="description" content="Uma página de teste do verificador do Lighthouse." />
+		<title>Test page</title>
+		<meta name="description" content="A test page for the Lighthouse checker." />
 		${noindex ? '<meta name="robots" content="noindex" />' : ''}
 		${head}
 	</head>
 	<body>
 		<main>
-			<h1>Página de teste</h1>
+			<h1>Test page</h1>
 			${body}
 		</main>
 	</body>
 </html>`;
 }
 
-/** Escreve o site de teste na pasta de resultados do teste e devolve a pasta. */
+/** Writes the test site into the test's output folder and returns the folder. */
 function createSite(files: Record<string, string>) {
 	const folder = test.info().outputPath('site');
 	for (const [path, content] of Object.entries(files)) {
@@ -49,14 +49,14 @@ function createSite(files: Record<string, string>) {
 }
 
 /**
- * Texto que a compressão quase não reduz: `kb` KB de bytes ao acaso, em base64.
- * Comprimido, fica com cerca de `kb` KB.
+ * Text that compression barely shrinks: `kb` KB of random bytes, in base64.
+ * Compressed, it stays at about `kb` KB.
  */
 function randomText(kb: number) {
 	return randomBytes(kb * 1024).toString('base64');
 }
 
-/** Analisa todas as páginas do site, uma execução cada, e devolve as falhas de cada uma. */
+/** Analyzes every page of the site, one run each, and returns the failures of each page. */
 async function failuresByPage(folder: string, { noindex = true } = {}) {
 	const analyses = await checkSite({
 		dist: folder,
@@ -67,52 +67,52 @@ async function failuresByPage(folder: string, { noindex = true } = {}) {
 	return Object.fromEntries(analyses.map((a) => [a.path, a.failures]));
 }
 
-test('com o noindex ligado, o SEO exige o noindex em cada página', async () => {
+test('with noindex on, SEO requires noindex on every page', async () => {
 	const folder = createSite({
-		'com-noindex/index.html': testPage(),
-		'sem-noindex/index.html': testPage({ noindex: false }),
+		'with-noindex/index.html': testPage(),
+		'without-noindex/index.html': testPage({ noindex: false }),
 	});
 	expect(await failuresByPage(folder)).toEqual({
-		'/com-noindex/': [],
-		'/sem-noindex/': ['SEO: falta o noindex'],
+		'/with-noindex/': [],
+		'/without-noindex/': ['SEO: missing noindex'],
 	});
 });
 
-test('com o noindex desligado, o SEO exige páginas indexáveis, menos as de erro', async () => {
+test('with noindex off, SEO requires indexable pages, except error pages', async () => {
 	const folder = createSite({
-		'indexavel/index.html': testPage({ noindex: false }),
-		'bloqueada/index.html': testPage(),
+		'indexable/index.html': testPage({ noindex: false }),
+		'blocked/index.html': testPage(),
 		'404.html': testPage({ noindex: false }),
 	});
 	expect(await failuresByPage(folder, { noindex: false })).toEqual({
-		'/404.html': ['SEO: falta o noindex'],
-		'/bloqueada/': ['SEO: Page is blocked from indexing'],
-		'/indexavel/': [],
+		'/404.html': ['SEO: missing noindex'],
+		'/blocked/': ['SEO: Page is blocked from indexing'],
+		'/indexable/': [],
 	});
 });
 
-test('o JS comprimido não passa de 75 KB', async () => {
+test('compressed JS stays within 75 KB', async () => {
 	const folder = createSite({
-		'js/index.html': testPage({ body: '<script src="/dados.js"></script>' }),
-		'dados.js': `window.dados = '${randomText(100)}';`,
+		'js/index.html': testPage({ body: '<script src="/data.js"></script>' }),
+		'data.js': `window.data = '${randomText(100)}';`,
 	});
 	expect(await failuresByPage(folder)).toEqual({
-		'/js/': [expect.stringMatching(/^JS com \d+,\d KB, máximo 75,0 KB$/)],
+		'/js/': [expect.stringMatching(/^JS weighs \d+\.\d KB, max 75\.0 KB$/)],
 	});
 });
 
-test('a página comprimida não passa de 400 KB', async () => {
+test('compressed page stays within 400 KB', async () => {
 	const folder = createSite({
-		'pesada/index.html': testPage({ head: '<link rel="stylesheet" href="/estilos.css" />' }),
-		'estilos.css': `/* ${randomText(420)} */`,
+		'heavy/index.html': testPage({ head: '<link rel="stylesheet" href="/styles.css" />' }),
+		'styles.css': `/* ${randomText(420)} */`,
 	});
 	expect(await failuresByPage(folder)).toEqual({
-		'/pesada/': [expect.stringMatching(/^página com \d+,\d KB, máximo 400,0 KB$/)],
+		'/heavy/': [expect.stringMatching(/^page weighs \d+\.\d KB, max 400\.0 KB$/)],
 	});
 });
 
-test('carrega no máximo 2 fontes, todas woff2', async () => {
-	// Cada fonte serve um texto visível, para o navegador a ir buscar.
+test('loads at most 2 fonts, all woff2', async () => {
+	// Each font styles visible text, so that the browser fetches it.
 	const styles = ['a.woff2', 'b.woff2', 'c.ttf']
 		.map(
 			(font, i) =>
@@ -120,27 +120,27 @@ test('carrega no máximo 2 fontes, todas woff2', async () => {
 		)
 		.join('\n');
 	const folder = createSite({
-		'fontes/index.html': testPage({
+		'fonts/index.html': testPage({
 			head: `<style>${styles}</style>`,
-			body: '<p class="f0">Um</p><p class="f1">Dois</p><p class="f2">Três</p>',
+			body: '<p class="f0">One</p><p class="f1">Two</p><p class="f2">Three</p>',
 		}),
 		'a.woff2': randomText(1),
 		'b.woff2': randomText(1),
 		'c.ttf': randomText(1),
 	});
 	expect(await failuresByPage(folder)).toEqual({
-		'/fontes/': ['3 fontes, máximo 2', 'fonte que não é woff2: /c.ttf'],
+		'/fonts/': ['3 fonts, max 2', 'font not in woff2: /c.ttf'],
 	});
 });
 
-test('não faz pedidos a outros domínios', async () => {
-	// O domínio .invalid nunca existe: o pedido falha logo, mas fica registado.
+test('makes no requests to other domains', async () => {
+	// The .invalid domain never exists: the request fails at once, but is still recorded.
 	const folder = createSite({
-		'externa/index.html': testPage({
+		'external/index.html': testPage({
 			body: '<img src="https://outro-dominio.invalid/imagem.png" alt="" width="10" height="10" />',
 		}),
 	});
 	expect(await failuresByPage(folder)).toEqual({
-		'/externa/': ['pedido a outro domínio: https://outro-dominio.invalid/imagem.png'],
+		'/external/': ['request to another domain: https://outro-dominio.invalid/imagem.png'],
 	});
 });

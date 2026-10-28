@@ -6,15 +6,15 @@ inEachBuild((build) => {
 	for (const language of build.phase.publishedLanguages) {
 		const { prefix, designation, promise, button } = LANGUAGES[language];
 
-		test(`${prefix}: o Hero mostra a Designação e a Promessa`, async ({ page }) => {
+		test(`${prefix}: the Hero shows the Designation and the Promise`, async ({ page }) => {
 			await page.goto(prefix);
 			await expect(page.getByRole('heading', { level: 1 })).toHaveText(promise);
-			// A Designação aparece também em «Quem é o Julien» (#54).
+			// The Designation also appears in "Quem é o Julien" (#54).
 			const hero = page.getByRole('region', { name: promise });
 			await expect(hero.getByText(designation, { exact: true })).toBeVisible();
 		});
 
-		test(`${prefix}: o título tem a Designação e a descrição parte da Promessa`, async ({
+		test(`${prefix}: the title has the Designation and the description starts with the Promise`, async ({
 			page,
 		}) => {
 			await page.goto(prefix);
@@ -23,9 +23,7 @@ inEachBuild((build) => {
 			expect(description).toMatch(new RegExp(`^${RegExp.escape(promise)} \\S`));
 		});
 
-		test(`${prefix}: «${button}» leva à página de marcação, no mesmo separador`, async ({
-			page,
-		}) => {
+		test(`${prefix}: "${button}" leads to the booking page, in the same tab`, async ({ page }) => {
 			await page.goto(prefix);
 			const buttons = page.getByRole('link', { name: button, exact: true });
 			await expect(buttons.first()).toBeVisible();

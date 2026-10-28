@@ -1,12 +1,12 @@
-// A identidade visual: as 2 fontes alojadas no site e onde cada uma desenha o texto.
-// O ≥ e o espaço fino inseparável (U+202F) testam-se com o conteúdo real, nos tickets que os trazem.
+// The visual identity: the 2 fonts hosted on the site and where each one renders text.
+// The ≥ and the narrow no-break space (U+202F) are tested with the real content, in the tickets that add them.
 import { expect, test, type Locator } from '@playwright/test';
 import { inEachBuild, pagesOf } from './builds';
 import { NAME } from './expected';
 
 /**
- * As fontes com que o navegador desenhou o texto de um elemento, pelo nome dentro do ficheiro.
- * Só o Chromium o diz (protocolo DevTools).
+ * The fonts the browser used to render the text of an element, by the name inside the file.
+ * Only Chromium reports this (DevTools protocol).
  */
 async function renderedFonts(element: Locator) {
 	await element.evaluate((e) => e.setAttribute('data-fonts', ''));
@@ -20,13 +20,13 @@ async function renderedFonts(element: Locator) {
 	});
 	const { fonts } = await cdp.send('CSS.getPlatformFontsForNode', { nodeId });
 	await element.evaluate((e) => e.removeAttribute('data-fonts'));
-	return fonts.map((f) => (f.isCustomFont ? f.familyName : `${f.familyName} (do sistema)`));
+	return fonts.map((f) => (f.isCustomFont ? f.familyName : `${f.familyName} (system)`));
 }
 
 inEachBuild((build) => {
 	for (const { path } of pagesOf(build)) {
 		test.describe(path, () => {
-			test('carrega as 2 fontes do site e pré-carrega uma só, com crossorigin', async ({
+			test('loads the 2 site fonts and preloads only one, with crossorigin', async ({
 				page,
 				baseURL,
 				browserName,
@@ -38,9 +38,9 @@ inEachBuild((build) => {
 				await page.goto(path, { waitUntil: 'networkidle' });
 				const fonts = [...new Set(requests)];
 				expect(fonts).toHaveLength(2);
-				// O WebKit às vezes pede duas vezes a fonte pré-carregada: o astro preview serve-a com
-				// `Cache-Control: no-cache`, e o WebKit volta a pedi-la se o CSS só a pede depois de o preload
-				// acabar. O Chromium usa sempre o preload: nele, um segundo pedido seria um preload perdido.
+				// WebKit sometimes requests the preloaded font twice: astro preview serves it with
+				// `Cache-Control: no-cache`, and WebKit requests it again if the CSS only asks for it after the preload
+				// has finished. Chromium always uses the preload: there, a second request would be a wasted preload.
 				if (browserName === 'chromium') expect(requests).toHaveLength(2);
 				for (const font of fonts) {
 					expect(font.startsWith(`${baseURL}/`), font).toBe(true);
@@ -53,14 +53,14 @@ inEachBuild((build) => {
 		});
 	}
 
-	test.describe('no Chromium', () => {
+	test.describe('in Chromium', () => {
 		test.skip(
 			({ browserName }) => browserName !== 'chromium',
-			'só o Chromium diz que fonte desenhou',
+			'only Chromium reports which font it rendered',
 		);
 		const { path } = pagesOf(build).find((p) => p.language)!;
 
-		test('os títulos e o logótipo ficam em Bona Nova, e o texto em Geist', async ({ page }) => {
+		test('headings and the logo render in Bona Nova, and body text in Geist', async ({ page }) => {
 			await page.goto(path, { waitUntil: 'networkidle' });
 			const logo = page.getByRole('banner').getByRole('link', { name: NAME });
 			expect(await renderedFonts(page.getByRole('heading', { level: 1 }))).toEqual(['Bona Nova']);

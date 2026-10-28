@@ -1,10 +1,10 @@
 import { defineConfig, devices } from '@playwright/test';
 import { BUILDS } from './tests/builds';
 
-// A suite corre sobre os builds já feitos (npm run build e npm run build:lancamento),
-// cada um servido pelo astro preview na sua porta.
-// A confirmação da Publicação (tests/publish/) tem a sua config: playwright.publish.config.ts.
-// Os testes do verificador do Lighthouse (tests/lighthouse/) correm uma só vez, no seu projeto.
+// The suite runs against the builds already made (npm run build and npm run build:lancamento),
+// each served by astro preview on its own port.
+// The Publishing confirmation (tests/publish/) has its own config: playwright.publish.config.ts.
+// The tests of the Lighthouse checker (tests/lighthouse/) run only once, in their own project.
 export default defineConfig({
 	testDir: 'tests',
 	fullyParallel: true,

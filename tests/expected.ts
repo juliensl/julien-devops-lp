@@ -1,13 +1,13 @@
-// Os valores esperados, tirados da spec (#54) e não do código.
-// O botão em francês e em inglês, a Promessa em inglês e os nomes do botão de pausa em francês e em
-// inglês são traduções que a estagiária valida antes do Lançamento comercial (#75).
+// The expected values, taken from the spec (#54) and not from the code.
+// The button in French and English, the Promise in English and the pause button names in French and
+// English are translations the intern reviews before the Commercial launch (#75).
 
 export const SITE = 'https://devops.julienlaffont.com';
 export const BOOKING_PAGE = 'https://calendly.com/contact-julienlaffont/appel-cadrage';
 export const LINKEDIN = 'https://www.linkedin.com/in/julien-laffont-4a3623134/';
 export const NAME = 'Julien Laffont';
 
-// No seletor de língua, cada língua mostra o rótulo e diz o nome completo aos leitores de ecrã.
+// In the language switcher, each language shows its label and gives screen readers the full name.
 export const LANGUAGES = {
 	fr: {
 		label: 'FR',
@@ -41,7 +41,7 @@ export const LANGUAGES = {
 		promise:
 			'Em 30 dias, entrego-te a infraestrutura DevOps de que precisas para escalar o teu SaaS.',
 		button: 'Marcar uma conversa',
-		// O botão de pausa: o nome diz o que um clique faz, como no protótipo validado.
+		// The pause button: its name says what a click does, as in the approved prototype.
 		pause: 'Pausar animação',
 		resume: 'Retomar animação',
 	},
@@ -49,7 +49,7 @@ export const LANGUAGES = {
 
 export type Language = keyof typeof LANGUAGES;
 
-/** A mesma página noutra língua: os slugs são iguais nas três, só muda o início. */
+/** The same page in another language: the slugs are the same in all three, only the prefix changes. */
 export function equivalent(path: string, from: Language, to: Language) {
 	return LANGUAGES[to].prefix + path.slice(LANGUAGES[from].prefix.length);
 }

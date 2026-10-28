@@ -1,6 +1,6 @@
-// O JavaScript da página arranca depois do carregamento (#54, «Animações e JavaScript»).
+// The page's JavaScript starts after the page has loaded (#54, "Animações e JavaScript").
 
-/** Corre `arranque` quando a página acabar de carregar, ou já, se já acabou. */
+/** Runs `start` when the page finishes loading, or right away if it already has. */
 export function afterLoad(start: () => void) {
 	if (document.readyState === 'complete') start();
 	else addEventListener('load', start, { once: true });

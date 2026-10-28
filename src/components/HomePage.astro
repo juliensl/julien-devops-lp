@@ -1,7 +1,7 @@
 ---
-// A página principal: as secções pela ordem da #54, com o ticket que traz cada uma.
-// Cada secção fica no seu lugar, separada das outras por uma linha em branco,
-// para que os PR que acrescentam secções diferentes não entrem em conflito.
+// The home page: the sections in #54's order, with the ticket that brings each one.
+// Each section keeps its own place, separated from the others by a blank line,
+// so that PRs adding different sections don't conflict.
 import { type Language } from '../config/site';
 import { values } from '../config/values';
 import { dictionaries } from '../i18n';
@@ -31,7 +31,7 @@ const t = dictionaries[language];
 >
 	<main>
 		<TopDots />
-		{/* O botão de pausa é o primeiro foco depois do cabeçalho: para tudo antes de ler. */}
+		{/* The pause button is the first focus after the header: it stops everything before reading. */}
 		<PauseButton {...t.animation} />
 
 		<Hero
@@ -45,21 +45,21 @@ const t = dictionaries[language];
 
 		<TodayAndAfter {...t.homePage.todayAndAfter} />
 
-		{/* Serviços (#64) */}
+		{/* Services (#64) */}
 
 		<Steps {...t.homePage.steps} />
 
 		<Guarantee {...t.homePage.guarantee} />
 
-		{/* Gráfico de fornecedores cloud (#66) */}
+		{/* Cloud provider chart (#66) */}
 
 		<AboutJulien designation={t.designation} {...t.homePage.about} />
 
-		{/* Testemunhos (#67) */}
+		{/* Testimonials (#67) */}
 
-		{/* Ecologia (#68) */}
+		{/* Ecology (#68) */}
 
-		{/* Perguntas (#70) */}
+		{/* Questions (#70) */}
 
 		<FinalCta language={language} buttonText={t.bookButton} {...t.homePage.finalCta} />
 	</main>

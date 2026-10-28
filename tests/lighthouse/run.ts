@@ -1,7 +1,7 @@
-// O Lighthouse em modo telemóvel sobre todas as páginas dos dois builds (#59), como na CI.
-// Nos PR, o dist tem 3 execuções por página (bloqueia e avisa) e o dist-lancamento 1 (só o que
-// bloqueia). Na main, antes da Publicação, DESEMPENHO=false deixa 1 execução e só o que bloqueia.
-// O resumo vai para o job (ou para o terminal). Os relatórios HTML ficam em lighthouse-report/.
+// Lighthouse in mobile mode on every page of both builds (#59), as in CI.
+// On PRs, dist gets 3 runs per page (blocks and warns) and dist-lancamento 1 (blocking only).
+// On main, before Publishing, DESEMPENHO=false leaves 1 run and only the blocking checks.
+// The summary goes to the job (or to the terminal). The HTML reports go to lighthouse-report/.
 import { appendFileSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { BUILDS, pagesOf, type Build } from '../builds.ts';
@@ -12,14 +12,14 @@ const REPORTS_DIR = 'lighthouse-report';
 const ON_GITHUB = process.env.GITHUB_ACTIONS === 'true';
 const [published] = BUILDS;
 
-/** No GitHub, uma anotação no job, além do resumo. Fora dele, basta o resumo no terminal. */
+/** On GitHub, a job annotation besides the summary. Elsewhere, the terminal summary is enough. */
 function annotate(level: 'error' | 'warning', text: string) {
 	if (ON_GITHUB) console.log(`::${level}::${text}`);
 }
 
 /**
- * O desempenho mede-se no site publicado, com a mediana de 3 execuções.
- * O build do Lançamento comercial só verifica o que bloqueia, que não varia: basta 1.
+ * Performance is measured on the published site, as the median of 3 runs.
+ * The Commercial launch build only checks what blocks, which does not vary: 1 is enough.
  */
 function runsFor(build: Build) {
 	return WITH_PERFORMANCE && build === published ? 3 : 1;
@@ -27,9 +27,9 @@ function runsFor(build: Build) {
 
 function summary(build: Build, analyses: Analysis[]): string[] {
 	const lines = [
-		`## Lighthouse em modo telemóvel: \`${build.dist}\` (${build.name})`,
+		`## Lighthouse in mobile mode: \`${build.dist}\` (${build.name})`,
 		'',
-		'### Metas que bloqueiam',
+		'### Blocking targets',
 		'',
 	];
 	const withFailures = analyses.filter((a) => a.failures.length);
@@ -40,19 +40,18 @@ function summary(build: Build, analyses: Analysis[]): string[] {
 		}
 	}
 	if (!withFailures.length) {
-		const passing =
-			analyses.length === 1 ? 'A página cumpre' : `As ${analyses.length} páginas cumprem`;
-		lines.push(`${passing} o SEO, os pesos, as fontes e os pedidos.`);
+		const passing = analyses.length === 1 ? 'The page passes' : `All ${analyses.length} pages pass`;
+		lines.push(`${passing} the SEO, weight, font and request checks.`);
 	}
 	if (runsFor(build) === 1) return lines;
 
 	lines.push(
 		'',
-		'### Desempenho (só avisa)',
+		'### Performance (warning only)',
 		'',
-		`Mediana de ${runsFor(build)} execuções. A negrito, o que está fora da meta.`,
+		`Median of ${runsFor(build)} runs. Values outside the target are in bold.`,
 		'',
-		`| Página | ${TARGETS.map((t) => `${t.name} (${t.threshold})`).join(' | ')} |`,
+		`| Page | ${TARGETS.map((t) => `${t.name} (${t.threshold})`).join(' | ')} |`,
 		`| --- | ${TARGETS.map(() => '---:').join(' | ')} |`,
 	);
 	for (const { path, medians } of analyses) {
@@ -63,7 +62,7 @@ function summary(build: Build, analyses: Analysis[]): string[] {
 			if (target.warns) {
 				annotate(
 					'warning',
-					`Lighthouse ${build.dist}${path}: ${target.name} ${target.format(value)}, meta ${target.threshold}`,
+					`Lighthouse ${build.dist}${path}: ${target.name} ${target.format(value)}, target ${target.threshold}`,
 				);
 			}
 			return `**${target.format(value)}**`;
@@ -94,6 +93,8 @@ if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMM
 else console.log(`\n${text}`);
 
 if (failed) {
-	console.error(`Há metas do Lighthouse que bloqueiam por cumprir. Vê o resumo e ${REPORTS_DIR}/.`);
+	console.error(
+		`Some blocking Lighthouse targets are not met. See the summary and ${REPORTS_DIR}/.`,
+	);
 	process.exitCode = 1;
 }

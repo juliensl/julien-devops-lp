@@ -1,13 +1,13 @@
 import { values } from '../config/values';
 
 interface Props {
-	/** «Marcar uma conversa», sempre com o mesmo texto em cada língua. */
+	/** "Book a conversation", always with the same text in each language. */
 	text: string;
-	/** Mais pequeno, para o cabeçalho, mas sempre com o alvo de toque de 44×44 px. */
+	/** Smaller, for the header, but always with the 44×44 px touch target. */
 	compact?: boolean;
 }
 
-/** Ligação simples para a página de marcação, no mesmo separador. */
+/** A plain link to the booking page, in the same tab. */
 export default function BookingButton({ text, compact = false }: Props) {
 	const size = compact ? 'px-3 text-[0.8125rem] sm:px-4 sm:text-[0.9375rem]' : 'px-6 text-base';
 	return (

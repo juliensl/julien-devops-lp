@@ -1,5 +1,5 @@
-// As verificações que valem para todas as páginas geradas, em cada build.
-// Uma página nova entra aqui sozinha, porque a lista vem da pasta do build.
+// The checks that apply to every generated page, in each build.
+// A new page is included automatically, because the list comes from the build folder.
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 import { inEachBuild, pagesOf } from './builds';
@@ -11,9 +11,9 @@ const WIDTHS = [320, 375, 820, 1440];
 inEachBuild((build) => {
 	for (const { path, language } of pagesOf(build)) {
 		test.describe(path, () => {
-			test('o <head> tem o noindex da fase e o commit', async ({ page }) => {
+			test('the <head> has the phase noindex and the commit', async ({ page }) => {
 				await page.goto(path);
-				// As páginas de erro, sem língua, têm sempre noindex (#54).
+				// Error pages, which have no language, always have noindex (#54).
 				const robots = page.locator('meta[name="robots"]');
 				if (build.phase.noindex || !language) {
 					await expect(robots).toHaveAttribute('content', /\bnoindex\b/);
@@ -27,7 +27,7 @@ inEachBuild((build) => {
 			});
 
 			if (language) {
-				test('o canonical é o URL absoluto da página', async ({ page }) => {
+				test('the canonical is the absolute URL of the page', async ({ page }) => {
 					await page.goto(path);
 					await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
 						'href',
@@ -36,7 +36,7 @@ inEachBuild((build) => {
 				});
 			}
 
-			test('o axe não encontra violações A e AA', async ({ page }) => {
+			test('axe finds no A or AA violations', async ({ page }) => {
 				await page.goto(path);
 				const { violations } = await new AxeBuilder({ page }).withTags(WCAG_LEVELS).analyze();
 				const failures = violations.map(
@@ -45,7 +45,7 @@ inEachBuild((build) => {
 				expect(failures).toEqual([]);
 			});
 
-			test('não faz pedidos a outros domínios', async ({ page, baseURL }) => {
+			test('makes no requests to other domains', async ({ page, baseURL }) => {
 				const origin = new URL(baseURL!).origin;
 				const external: string[] = [];
 				page.on('request', (request) => {
@@ -57,7 +57,7 @@ inEachBuild((build) => {
 				expect(external).toEqual([]);
 			});
 
-			test('não põe cookies nem guarda nada no navegador', async ({ page, context }) => {
+			test('sets no cookies and stores nothing in the browser', async ({ page, context }) => {
 				await page.goto(path, { waitUntil: 'networkidle' });
 				expect(await context.storageState({ indexedDB: true })).toEqual({
 					cookies: [],
@@ -66,7 +66,7 @@ inEachBuild((build) => {
 				expect(await page.evaluate(() => sessionStorage.length)).toBe(0);
 			});
 
-			test('não tem erros de JavaScript', async ({ page }) => {
+			test('has no JavaScript errors', async ({ page }) => {
 				const errors: string[] = [];
 				page.on('pageerror', (error) => errors.push(error.message));
 				page.on('console', (message) => {
@@ -77,7 +77,7 @@ inEachBuild((build) => {
 			});
 
 			for (const width of WIDTHS) {
-				test(`não tem scroll horizontal a ${width} px`, async ({ page }) => {
+				test(`has no horizontal scroll at ${width} px`, async ({ page }) => {
 					await page.setViewportSize({ width, height: 900 });
 					await page.goto(path);
 					const overflow = await page.evaluate(

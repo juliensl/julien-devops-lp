@@ -1,18 +1,18 @@
-// As animações automáticas e o botão de pausa (WCAG 2.2.2): o botão para e retoma tudo o que se mexe
-// sozinho na página, e não aparece com movimento reduzido, porque aí nada se mexe.
+// The automatic animations and the pause button (WCAG 2.2.2): the button stops and resumes everything
+// that moves by itself on the page, and does not appear with reduced motion, because then nothing moves.
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 import { inEachBuild, pagesOf } from './builds';
 import { LANGUAGES } from './expected';
 
-// As páginas com animações automáticas: por agora, só a principal. A de ecologia junta-se com #69.
+// The pages with automatic animations: for now, only the home page. The ecology page joins with #69.
 const ANIMATED_PAGES = new Set<string>(Object.values(LANGUAGES).map(({ prefix }) => prefix));
 
 const WCAG_LEVELS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22a', 'wcag22aa'];
 
 const pauseButton = (page: Page, name: string) => page.getByRole('button', { name, exact: true });
 
-/** Duas fotografias do ecrã, com 1 s de intervalo: diferentes se alguma coisa se mexeu. */
+/** Two screenshots, 1 s apart: different if anything moved. */
 async function isMoving(page: Page) {
 	const before = await page.screenshot();
 	await page.waitForTimeout(1000);
@@ -30,26 +30,24 @@ inEachBuild((build) => {
 		const { prefix, promise, button, pause, resume } = LANGUAGES[language];
 
 		test.describe(prefix, () => {
-			test('o botão de pausa para as animações automáticas e retoma-as', async ({ page }) => {
+			test('the pause button stops the automatic animations and resumes them', async ({ page }) => {
 				await page.goto(prefix);
-				expect(await isMoving(page), 'antes da pausa').toBe(true);
+				expect(await isMoving(page), 'before the pause').toBe(true);
 
 				await pauseButton(page, pause).click();
 				await expect(pauseButton(page, resume)).toBeVisible();
-				// No WebKit, a pausa chega ao ecrã uns frames depois do clique: espera-se que assente.
-				await expect
-					.poll(() => isMoving(page), { message: 'em pausa', timeout: 10_000 })
-					.toBe(false);
+				// In WebKit, the pause reaches the screen a few frames after the click: wait for it to settle.
+				await expect.poll(() => isMoving(page), { message: 'paused', timeout: 10_000 }).toBe(false);
 				const { violations } = await new AxeBuilder({ page }).withTags(WCAG_LEVELS).analyze();
 				expect(violations.map((v) => v.id)).toEqual([]);
 
-				// Com o teclado.
+				// With the keyboard.
 				await pauseButton(page, resume).press('Enter');
 				await expect(pauseButton(page, pause)).toBeVisible();
-				expect(await isMoving(page), 'depois de retomar').toBe(true);
+				expect(await isMoving(page), 'after resuming').toBe(true);
 			});
 
-			test('a pausa não fica guardada: ao recarregar, tudo volta a andar', async ({
+			test('the pause is not saved: on reload, everything moves again', async ({
 				page,
 				context,
 			}) => {
@@ -67,8 +65,8 @@ inEachBuild((build) => {
 				expect(await isMoving(page)).toBe(true);
 			});
 
-			test('nada arranca antes de a página acabar de carregar', async ({ page }) => {
-				// O carregamento só acaba quando chegam as fontes: o teste segura-as.
+			test('nothing starts before the page finishes loading', async ({ page }) => {
+				// Loading only ends when the fonts arrive: the test holds them back.
 				let releaseFonts!: () => void;
 				const fonts = new Promise<void>((release) => (releaseFonts = release));
 				await page.route('**/*.woff2', async (route) => {
@@ -76,32 +74,34 @@ inEachBuild((build) => {
 					await route.continue();
 				});
 				await page.goto(prefix, { waitUntil: 'domcontentloaded' });
-				// Sem as fontes, o Playwright não tira fotografias: pergunta-se ao navegador o que anda.
+				// Without the fonts, Playwright takes no screenshots: ask the browser what is running.
 				await page.waitForTimeout(500);
 				const running = await page.evaluate(
 					() => document.getAnimations().filter((a) => a.playState === 'running').length,
 				);
-				expect(running, 'animações a andar durante o carregamento').toBe(0);
+				expect(running, 'animations running during loading').toBe(0);
 				await expect(pauseButton(page, pause)).toBeHidden();
 
 				releaseFonts();
 				await page.waitForLoadState('load');
 				await expect(pauseButton(page, pause)).toBeVisible();
-				expect(await isMoving(page), 'depois do carregamento').toBe(true);
+				expect(await isMoving(page), 'after loading').toBe(true);
 			});
 
-			test('com movimento reduzido, nada se mexe e o botão não aparece', async ({ page }) => {
+			test('with reduced motion, nothing moves and the button does not appear', async ({
+				page,
+			}) => {
 				await page.emulateMedia({ reducedMotion: 'reduce' });
 				await page.goto(prefix);
 				expect(await isMoving(page)).toBe(false);
 				await expect(pauseButton(page, pause)).toBeHidden();
 			});
 
-			test.describe('sem JavaScript', () => {
+			test.describe('without JavaScript', () => {
 				test.use({ javaScriptEnabled: false });
 
-				// Sem JS, o botão não funcionaria: então nada se pode mexer.
-				test('nada se mexe e o botão não aparece', async ({ page }) => {
+				// Without JS, the button would not work: so nothing may move.
+				test('nothing moves and the button does not appear', async ({ page }) => {
 					await page.goto(prefix);
 					expect(await isMoving(page)).toBe(false);
 					await expect(pauseButton(page, pause)).toBeHidden();
@@ -112,7 +112,7 @@ inEachBuild((build) => {
 				{ width: 375, iconOnly: true },
 				{ width: 1280, iconOnly: false },
 			]) {
-				test(`a ${width} px, o botão fica fixo no canto inferior esquerdo, ${iconOnly ? 'só com o ícone' : 'com o nome à vista'}`, async ({
+				test(`at ${width} px, the button stays fixed in the bottom left corner, ${iconOnly ? 'icon only' : 'with its name visible'}`, async ({
 					page,
 				}) => {
 					const height = 700;
@@ -121,15 +121,17 @@ inEachBuild((build) => {
 					await page.getByRole('contentinfo').scrollIntoViewIfNeeded();
 					await expect(pauseButton(page, pause)).toBeInViewport({ ratio: 1 });
 					const box = (await pauseButton(page, pause).boundingBox())!;
-					expect(box.x, 'à esquerda').toBeLessThanOrEqual(24);
-					expect(height - box.y - box.height, 'em baixo').toBeLessThanOrEqual(24);
+					expect(box.x, 'on the left').toBeLessThanOrEqual(24);
+					expect(height - box.y - box.height, 'at the bottom').toBeLessThanOrEqual(24);
 					if (iconOnly) expect(box.width).toBeLessThanOrEqual(box.height);
 					else expect(box.width).toBeGreaterThan(2 * box.height);
 				});
 			}
 
 			for (const width of [320, 1280]) {
-				test(`a ${width} px, no fim da página, o botão não tapa o rodapé`, async ({ page }) => {
+				test(`at ${width} px, at the end of the page, the button does not cover the footer`, async ({
+					page,
+				}) => {
 					await page.setViewportSize({ width, height: 700 });
 					await page.goto(prefix);
 					await expect(pauseButton(page, pause)).toBeVisible();
@@ -142,7 +144,7 @@ inEachBuild((build) => {
 				});
 			}
 
-			test('o botão nunca tapa o elemento com foco', async ({ page }) => {
+			test('the button never covers the focused element', async ({ page }) => {
 				await page.setViewportSize({ width: 320, height: 400 });
 				await page.goto(prefix);
 				await expect(pauseButton(page, pause)).toBeVisible();
@@ -160,15 +162,15 @@ inEachBuild((build) => {
 					if (focused.atEnd) break;
 					expect(overlap(focused, buttonBox), focused.description.slice(0, 80)).toBe(false);
 				}
-				expect(checked, 'elementos com foco').toBeGreaterThan(2);
+				expect(checked, 'focused elements').toBeGreaterThan(2);
 			});
 
-			test('depois de um scroll, o foco não fica por baixo do botão', async ({ page }) => {
+			test('after a scroll, focus does not stay under the button', async ({ page }) => {
 				await page.setViewportSize({ width: 320, height: 400 });
 				await page.goto(prefix);
 				await expect(pauseButton(page, pause)).toBeVisible();
 				const buttonBox = (await pauseButton(page, pause).boundingBox())!;
-				// O botão da Hero, a seguir ao de pausa com Tab, fica por baixo dele depois do scroll.
+				// The Hero button, next after the pause button with Tab, ends up under it after the scroll.
 				const bookButton = page
 					.getByRole('region', { name: promise })
 					.getByRole('link', { name: button, exact: true });
@@ -176,12 +178,12 @@ inEachBuild((build) => {
 					(e, target) => scrollBy(0, e.getBoundingClientRect().top - target),
 					buttonBox.y + 4,
 				);
-				expect(overlap((await bookButton.boundingBox())!, buttonBox), 'antes do Tab').toBe(true);
+				expect(overlap((await bookButton.boundingBox())!, buttonBox), 'before Tab').toBe(true);
 
 				await pauseButton(page, pause).focus();
 				await page.keyboard.press('Tab');
 				await expect(bookButton).toBeFocused();
-				expect(overlap((await bookButton.boundingBox())!, buttonBox), 'com foco').toBe(false);
+				expect(overlap((await bookButton.boundingBox())!, buttonBox), 'focused').toBe(false);
 			});
 		});
 	}
@@ -189,7 +191,7 @@ inEachBuild((build) => {
 	for (const { path } of pagesOf(build)) {
 		if (ANIMATED_PAGES.has(path)) continue;
 
-		test(`${path}: sem animações automáticas, nada se mexe e não há botão de pausa`, async ({
+		test(`${path}: without automatic animations, nothing moves and there is no pause button`, async ({
 			page,
 		}) => {
 			await page.goto(path);

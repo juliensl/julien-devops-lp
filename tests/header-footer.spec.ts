@@ -1,12 +1,12 @@
-// A moldura comum a todas as páginas: o cabeçalho fixo, com o logótipo, o seletor de língua
-// e o botão de marcação, e o rodapé.
+// The frame shared by every page: the sticky header, with the logo, the language switcher
+// and the booking button, and the footer.
 import { expect, test, type Page } from '@playwright/test';
 import { inEachBuild, pagesOf } from './builds';
 import { equivalent, LANGUAGES, LINKEDIN, NAME, BOOKING_PAGE, type Language } from './expected';
 
 const PHONE_WIDTHS = [320, 375];
 
-/** O botão que abre o menu do telemóvel: o <summary> do menu <details>. */
+/** The button that opens the phone menu: the `<summary>` of the `<details>` menu. */
 const menuButton = (page: Page) =>
 	page.getByRole('banner').locator('summary').filter({ visible: true });
 
@@ -22,7 +22,9 @@ inEachBuild((build) => {
 		const otherLanguages = publishedLanguages.filter((l) => l !== language);
 
 		test.describe(path, () => {
-			test('o seletor leva à página equivalente noutra língua publicada', async ({ page }) => {
+			test('the switcher leads to the same page in another published language', async ({
+				page,
+			}) => {
 				await page.goto(path);
 				const header = page.getByRole('banner');
 				for (const other of otherLanguages) {
@@ -33,7 +35,7 @@ inEachBuild((build) => {
 				}
 			});
 
-			test('a língua atual fica marcada e não é uma ligação', async ({ page }) => {
+			test('the current language is marked and is not a link', async ({ page }) => {
 				await page.goto(path);
 				const header = page.getByRole('banner');
 				await expect(header.getByRole('link', { name })).toHaveCount(0);
@@ -42,7 +44,7 @@ inEachBuild((build) => {
 				).toHaveText(new RegExp(`^${label}\\b.*${name}`));
 			});
 
-			test('o seletor só mostra as línguas publicadas', async ({ page }) => {
+			test('the switcher only shows published languages', async ({ page }) => {
 				await page.goto(path);
 				const header = page.getByRole('banner');
 				await expect(header).toBeVisible();
@@ -51,7 +53,7 @@ inEachBuild((build) => {
 				}
 			});
 
-			test('o logótipo, com o nome visível no nome acessível, leva à página principal', async ({
+			test('the logo, with its visible name in its accessible name, leads to the home page', async ({
 				page,
 			}) => {
 				await page.goto(path);
@@ -61,7 +63,7 @@ inEachBuild((build) => {
 				await expect(logo).toHaveAttribute('href', prefix);
 			});
 
-			test('o cabeçalho fica fixo no topo, com o botão, ao fazer scroll', async ({ page }) => {
+			test('the header stays at the top, with the button, when scrolling', async ({ page }) => {
 				await page.setViewportSize({ width: 1280, height: 400 });
 				await page.goto(path);
 				await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
@@ -71,9 +73,9 @@ inEachBuild((build) => {
 				await expect(header.getByRole('link', { name: button, exact: true })).toBeInViewport();
 			});
 
-			test('o cabeçalho nunca tapa o elemento com foco', async ({ page }) => {
-				// A andar para trás, o foco entra por cima, junto ao cabeçalho. O Chromium centra o elemento
-				// com foco, por isso só num ecrã baixo (zoom grande, telemóvel deitado) chega ao cabeçalho.
+			test('the header never covers the focused element', async ({ page }) => {
+				// Going backwards, focus comes in from above, next to the header. Chromium centres the focused
+				// element, so it only reaches the header on a short screen (high zoom, phone in landscape).
 				await page.setViewportSize({ width: 375, height: 150 });
 				await page.goto(path);
 				await page.getByRole('contentinfo').getByRole('link').last().focus();
@@ -94,10 +96,10 @@ inEachBuild((build) => {
 					expect(focused.top, focused.description).toBeGreaterThanOrEqual(headerBottom);
 					await page.keyboard.press('Shift+Tab');
 				}
-				expect(checked, 'elementos com foco fora do cabeçalho').toBeGreaterThan(1);
+				expect(checked, 'focused elements outside the header').toBeGreaterThan(1);
 			});
 
-			test('o rodapé tem o nome e leva ao LinkedIn', async ({ page }) => {
+			test('the footer has the name and links to LinkedIn', async ({ page }) => {
 				await page.goto(path);
 				const footer = page.getByRole('contentinfo');
 				await expect(footer.getByText(NAME, { exact: true })).toBeVisible();
@@ -107,7 +109,7 @@ inEachBuild((build) => {
 				);
 			});
 
-			test('o botão do cabeçalho tem um alvo de toque de 44×44 px', async ({ page }) => {
+			test('the header button has a 44×44 px touch target', async ({ page }) => {
 				for (const width of [...PHONE_WIDTHS, 1280]) {
 					await page.setViewportSize({ width, height: 700 });
 					await page.goto(path);
@@ -121,10 +123,10 @@ inEachBuild((build) => {
 			});
 
 			for (const width of PHONE_WIDTHS) {
-				test.describe(`no telemóvel, a ${width} px`, () => {
+				test.describe(`on a phone, at ${width} px`, () => {
 					test.use({ viewport: { width, height: 700 } });
 
-					test('o botão de marcação fica visível no cabeçalho', async ({ page }) => {
+					test('the booking button stays visible in the header', async ({ page }) => {
 						await page.goto(path);
 						const bookButton = page
 							.getByRole('banner')
@@ -135,7 +137,7 @@ inEachBuild((build) => {
 						await expect(bookButton).toBeInViewport({ ratio: 1 });
 					});
 
-					test('as línguas passam para o menu, que fecha ao clicar fora e com Escape', async ({
+					test('the languages move into the menu, which closes on an outside click and with Escape', async ({
 						page,
 					}) => {
 						await page.goto(path);
@@ -158,11 +160,11 @@ inEachBuild((build) => {
 					});
 
 					if (otherLanguages.length > 0) {
-						test('o menu fecha depois de escolher uma língua', async ({ page }) => {
+						test('the menu closes after choosing a language', async ({ page }) => {
 							const other = otherLanguages[0];
 							await page.goto(path);
 							await menuButton(page).click();
-							// O teste cancela a navegação depois de a página tratar o clique, para ver o menu.
+							// The test cancels the navigation after the page handles the click, to see the menu.
 							await page.evaluate(() =>
 								window.addEventListener('click', (event) => event.preventDefault()),
 							);
@@ -174,10 +176,10 @@ inEachBuild((build) => {
 						});
 					}
 
-					test.describe('sem JavaScript', () => {
+					test.describe('without JavaScript', () => {
 						test.use({ javaScriptEnabled: false });
 
-						test('o menu abre e mostra as línguas publicadas', async ({ page }) => {
+						test('the menu opens and shows the published languages', async ({ page }) => {
 							await page.goto(path);
 							const header = page.getByRole('banner');
 							const current = header
