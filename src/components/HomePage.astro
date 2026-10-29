@@ -11,6 +11,7 @@ import FinalCta from './FinalCta';
 import Guarantee from './Guarantee';
 import Hero from './Hero';
 import PauseButton from './PauseButton.astro';
+import Services from './Services.astro';
 import Steps from './Steps.astro';
 import TodayAndAfter from './TodayAndAfter';
 import TopDots from './TopDots.astro';
@@ -45,7 +46,7 @@ const t = dictionaries[language];
 
 		<TodayAndAfter {...t.homePage.todayAndAfter} />
 
-		{/* Services (#64) */}
+		<Services {...t.homePage.services} />
 
 		<Steps {...t.homePage.steps} />
 

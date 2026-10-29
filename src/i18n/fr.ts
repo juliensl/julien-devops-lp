@@ -79,6 +79,67 @@ export const fr: Dictionary = {
 				"L'infrastructure suit la charge, et tu vois les problèmes avant tes clients.",
 			],
 		},
+		services: {
+			label: 'Services',
+			title: 'Quatre couches de ton infrastructure.',
+			note: "Tu choisis les blocs que tu veux, dans n'importe quelle combinaison. 30 jours au maximum, à compter du début de la mise en œuvre. Le bloc 3 demande une application conteneurisée, par le bloc 2 ou par ton équipe.",
+			block: 'Bloc',
+			tools: 'Outils',
+			blocks: [
+				{
+					name: 'Audit du code et pipeline CI',
+					summary: 'Les bugs sont attrapés à la pull request.',
+					text: "Chaque modification passe par les tests, le lint et l'analyse avant d'arriver en production, avec la sécurité au premier plan : dépendances aux failles connues, secrets oubliés dans le code et analyse du code lui-même. Ce qui est rouge ne passe pas.",
+					tools: ['SonarQube', 'Trivy'],
+				},
+				{
+					name: 'Conteneurisation',
+					summary: "L'application tourne de la même façon partout.",
+					text: "L'application devient indépendante de son environnement. Sur le portable d'un dev ou en production, le même comportement.",
+					tools: ['Docker'],
+				},
+				{
+					name: 'Infrastructure scalable',
+					summary: "L'infrastructure suit la charge.",
+					text: "Sur deux niveaux : du serverless de conteneurs pour les volumes moyens, Kubernetes quand la charge le justifie. Avec l'Infrastructure as Code, l'infrastructure est décrite dans du code et peut être recréée.",
+					tools: ['Kubernetes', 'Terraform'],
+				},
+				{
+					name: 'Observabilité',
+					summary: 'Tu vois les problèmes avant tes clients.',
+					text: "Un tableau de bord de santé en temps réel et une alerte immédiate en cas d'incident.",
+					tools: ['Grafana', 'Prometheus'],
+					toolsAlternative: 'ou les outils de ton cloud',
+				},
+			],
+			diagrams: {
+				pipeline: {
+					description:
+						'Une modification avec une faille de sécurité est bloquée avant la production.',
+					commit: 'commit',
+					tests: 'tests',
+					security: 'sécurité',
+					production: 'production',
+					blocked: 'bloqué',
+				},
+				containers: {
+					description:
+						'Le même conteneur tourne de la même façon sur le portable et en production.',
+					laptop: 'portable',
+					production: 'production',
+				},
+				scaling: {
+					description: 'Les instances augmentent avec la charge, puis diminuent.',
+					load: 'charge',
+					instances: 'instances',
+				},
+				monitoring: {
+					description: 'Une anomalie dans le signal déclenche une alerte immédiate.',
+					dashboard: 'tableau de bord',
+					alert: 'alerte',
+				},
+			},
+		},
 		steps: {
 			title: 'Cinq étapes, toujours dans le même ordre.',
 			steps: [

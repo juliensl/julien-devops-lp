@@ -49,9 +49,7 @@ const { title, steps } = Astro.props;
 
 <script>
 	import { afterLoad } from '../scripts/after-load';
-
-	/** Desktop, as in the Services (#54): wider than 960 px and no reduced motion. */
-	const DESKTOP = '(min-width: 961px) and (prefers-reduced-motion: no-preference)';
+	import { DESKTOP } from '../scripts/desktop';
 
 	afterLoad(() => {
 		const desktop = matchMedia(DESKTOP);

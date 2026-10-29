@@ -7,6 +7,44 @@ const promise =
 
 type Step = { name: string; sentence: string };
 
+type Block = {
+	name: string;
+	summary: string;
+	text: string;
+	tools: string[];
+	/** Said after the tools, when the client's cloud can provide its own. */
+	toolsAlternative?: string;
+};
+
+/** The 4 Blocks, in the pitch's order. A language with fewer than 4 makes `astro check` fail. */
+const blocks: [Block, Block, Block, Block] = [
+	{
+		name: 'Pipeline de CI e auditoria de código',
+		summary: 'Os bugs ficam no pull request.',
+		text: 'Cada alteração passa por testes, lint e análise antes de chegar à produção, com a segurança em destaque: dependências com falhas conhecidas, segredos esquecidos no código e análise do próprio código. O que está a vermelho não passa.',
+		tools: ['SonarQube', 'Trivy'],
+	},
+	{
+		name: 'Contentorização',
+		summary: 'A aplicação corre igual em todo o lado.',
+		text: 'A aplicação deixa de depender do ambiente onde corre. No portátil de um dev ou em produção, o mesmo comportamento.',
+		tools: ['Docker'],
+	},
+	{
+		name: 'Infraestrutura escalável',
+		summary: 'A infraestrutura acompanha a carga.',
+		text: 'Em dois níveis: serverless de contentores para volumes médios, Kubernetes quando a carga o justifica. Com Infrastructure as Code, a infraestrutura fica descrita em código e pode ser recriada.',
+		tools: ['Kubernetes', 'Terraform'],
+	},
+	{
+		name: 'Observabilidade',
+		summary: 'Vês os problemas antes dos clientes.',
+		text: 'Um painel de saúde em tempo real e um alerta imediato quando há um incidente.',
+		tools: ['Grafana', 'Prometheus'],
+		toolsAlternative: 'ou as ferramentas da tua cloud',
+	},
+];
+
 export const pt = {
 	designation: 'Consultor DevOps freelance para SaaS',
 	promise,
@@ -81,6 +119,43 @@ export const pt = {
 				'Acrescentas funcionalidades sem partir outras.',
 				'A infraestrutura acompanha a carga, e vês os problemas antes dos clientes.',
 			],
+		},
+		/** The Services: the 4 Blocks, and the note on hiring them in any combination. */
+		services: {
+			label: 'Serviços',
+			title: 'Quatro camadas da tua infraestrutura.',
+			note: 'Contratas os blocos que quiseres, em qualquer combinação. No máximo 30 dias, a contar do início da Implementação. O bloco 3 precisa de uma aplicação contentorizada, pelo bloco 2 ou pela tua equipa.',
+			/** Before each Block's number: "Bloco 1". */
+			block: 'Bloco',
+			/** The name of each Block's list of tools, for screen readers. */
+			tools: 'Ferramentas',
+			blocks,
+			/** The words drawn in the Blocks' mini-diagrams, and what each one shows, for screen readers. */
+			diagrams: {
+				pipeline: {
+					description: 'Uma alteração com falha de segurança fica bloqueada antes da produção.',
+					commit: 'commit',
+					tests: 'testes',
+					security: 'segurança',
+					production: 'produção',
+					blocked: 'bloqueado',
+				},
+				containers: {
+					description: 'O mesmo contentor corre igual no portátil e em produção.',
+					laptop: 'portátil',
+					production: 'produção',
+				},
+				scaling: {
+					description: 'As instâncias aumentam com a carga e voltam a diminuir.',
+					load: 'carga',
+					instances: 'instâncias',
+				},
+				monitoring: {
+					description: 'Uma anomalia no sinal gera um alerta imediato.',
+					dashboard: 'painel de saúde',
+					alert: 'alerta',
+				},
+			},
 		},
 		/** The 5 Steps, in glossary order, each with one sentence. A language with fewer than 5
 		 * makes `astro check` fail. */

@@ -75,6 +75,65 @@ export const en: Dictionary = {
 				'The infrastructure keeps up with the load, and you see problems before your customers do.',
 			],
 		},
+		services: {
+			label: 'Services',
+			title: 'Four layers of your infrastructure.',
+			note: 'You hire the blocks you want, in any combination. At most 30 days from the start of the Implementation. Block 3 needs a containerised application, from block 2 or from your team.',
+			block: 'Block',
+			tools: 'Tools',
+			blocks: [
+				{
+					name: 'CI pipeline and code audit',
+					summary: 'Bugs stay in the pull request.',
+					text: 'Every change goes through tests, lint and analysis before it reaches production, with security up front: dependencies with known vulnerabilities, secrets left in the code, and analysis of the code itself. Whatever is red does not get through.',
+					tools: ['SonarQube', 'Trivy'],
+				},
+				{
+					name: 'Containerisation',
+					summary: 'The application runs the same everywhere.',
+					text: "The application no longer depends on the environment it runs in. On a developer's laptop or in production, it behaves the same.",
+					tools: ['Docker'],
+				},
+				{
+					name: 'Scalable infrastructure',
+					summary: 'The infrastructure keeps up with the load.',
+					text: 'At two levels: serverless containers for medium volumes, Kubernetes when the load justifies it. With Infrastructure as Code, the infrastructure is described in code and can be recreated.',
+					tools: ['Kubernetes', 'Terraform'],
+				},
+				{
+					name: 'Observability',
+					summary: 'You see problems before your customers do.',
+					text: 'A real-time health dashboard and an immediate alert when there is an incident.',
+					tools: ['Grafana', 'Prometheus'],
+					toolsAlternative: "or your cloud's own tools",
+				},
+			],
+			diagrams: {
+				pipeline: {
+					description: 'A change with a security flaw is blocked before production.',
+					commit: 'commit',
+					tests: 'tests',
+					security: 'security',
+					production: 'production',
+					blocked: 'blocked',
+				},
+				containers: {
+					description: 'The same container runs the same way on the laptop and in production.',
+					laptop: 'laptop',
+					production: 'production',
+				},
+				scaling: {
+					description: 'The instances increase with the load, then decrease again.',
+					load: 'load',
+					instances: 'instances',
+				},
+				monitoring: {
+					description: 'An anomaly in the signal triggers an immediate alert.',
+					dashboard: 'health dashboard',
+					alert: 'alert',
+				},
+			},
+		},
 		steps: {
 			title: 'Five steps, always in the same order.',
 			steps: [
