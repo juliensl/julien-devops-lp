@@ -84,7 +84,12 @@ inEachBuild((build) => {
 					.evaluate((e) => e.getBoundingClientRect().bottom);
 				let checked = 0;
 				for (; checked < 30; checked++) {
-					const focused = await page.evaluate(() => {
+					const focused = await page.evaluate(async () => {
+						// The browser scrolls to the focused element in the next frame. WebKit without a
+						// screen only draws a frame when asked for one: measure two frames later.
+						await new Promise((resolve) =>
+							requestAnimationFrame(() => requestAnimationFrame(resolve)),
+						);
 						const e = document.activeElement!;
 						return {
 							inHeader: !!e.closest('header'),
