@@ -1,5 +1,6 @@
 # The blocking checks, the same in a PR (ci.yml) and before each
 # Publishing (publish.yml). Leaves both builds done.
+# The quick mode, for PRs into develop, only drops WebKit and the Lighthouse run.
 # Runs after checkout and setup-node, which stay in the workflows: Dependabot
 # only updates the actions it finds there.
 name: Verify
@@ -10,6 +11,10 @@ inputs:
     description: 'Also measures Lighthouse performance, with 3 runs per page (warning only). Publishing turns it off.'
     required: false
     default: 'true'
+  quick:
+    description: 'Quick checks for PRs into develop: Playwright on Chromium only, no Lighthouse run.'
+    required: false
+    default: 'false'
 
 runs:
   using: composite
@@ -34,15 +39,21 @@ runs:
       shell: bash
 
     - name: Playwright browsers
-      run: npx playwright install --with-deps chromium webkit
+      env:
+        BROWSERS: ${{ inputs.quick == 'true' && 'chromium' || 'chromium webkit' }}
+      run: npx playwright install --with-deps $BROWSERS
       shell: bash
 
+    # The quick checks leave out the webkit project; the lighthouse project only tests the checker.
     - name: Playwright suite
-      run: npm test
+      env:
+        PROJECTS: ${{ inputs.quick == 'true' && '--project=chromium --project=lighthouse' || '' }}
+      run: npm test -- $PROJECTS
       shell: bash
 
     # SEO, sizes, fonts and requests block. Performance only warns, in the job summary.
     - name: Lighthouse in mobile mode
+      if: inputs.quick != 'true'
       env:
         PERFORMANCE: ${{ inputs.performance }}
       run: npm run lighthouse

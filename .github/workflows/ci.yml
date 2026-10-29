@@ -1,5 +1,7 @@
 # The checks that block a PR: any failure turns it red.
 # The steps live in .github/actions/verify, shared with Publishing.
+# PRs into main (releases and hotfixes) run them all; PRs into any other
+# branch, develop included, run the quick checks.
 # Documentation-only PRs do not run this workflow.
 name: Checks
 
@@ -34,6 +36,8 @@ jobs:
           cache: npm
 
       - uses: ./.github/actions/verify
+        with:
+          quick: ${{ github.base_ref != 'main' }}
 
       - name: Playwright report
         if: failure()

@@ -16,9 +16,16 @@ With Node 24 (`nvm use` reads `.nvmrc`):
 | `npm run build:launch` | Test build with the Commercial launch, in `dist-launch/`                 |
 | `npm test`             | Playwright suite over both builds, which must already exist              |
 | `npm run lighthouse`   | Lighthouse in mobile mode over both builds (see below)                   |
-| `npm run verify`       | Everything the workflow runs on a PR, in the same order                  |
+| `npm run verify`       | Everything the workflow runs on a PR into `main`, in the same order      |
 | `npm run confirm`      | Confirms that the published site is the one in `dist/`, from this commit |
 | `npm run share-image`  | Generates the share image from `dist/` (see below)                       |
+
+## Branches
+
+- `main` only receives releases: each merge into it publishes the site.
+- `develop` is where work lands. Start each branch from it and open the PR into it. Those PRs run the quick checks: Playwright on Chromium only, no Lighthouse run.
+- Release: a PR from `develop` into `main`, which runs every check. Merge it with a merge commit, never a squash, so both branches keep the same history.
+- Hotfix: a branch from `main`, a PR into `main`, then `main` merged into `develop`.
 
 ## Where things live
 
@@ -36,7 +43,7 @@ With Node 24 (`nvm use` reads `.nvmrc`):
 - `src/scripts/`: the browser JavaScript, hand-written and without a library. `after-load.ts` starts it after the page loads. Automatic animations stop with the pause button (`src/components/PauseButton.astro`), which describes the signal each animation listens to.
 - `tests/`: the Playwright suite, which goes through every generated page.
 - `tests/lighthouse/`: Lighthouse in mobile mode, also over every generated page. SEO, sizes, fonts and requests to other domains block. Performance, LCP and TBT only warn, in the job summary, with the median of 3 runs on `dist/`. `dist-launch/` only checks what blocks. The HTML reports go to `lighthouse-report/`.
-- `.github/workflows/`: `ci.yml` runs on each PR; `publish.yml` runs after each merge into `main`, repeats the same checks (`.github/actions/verify/`) and does the Publishing.
+- `.github/workflows/`: `ci.yml` runs on each PR (every check into `main`, the quick ones into any other branch); `publish.yml` runs after each merge into `main`, repeats the same checks (`.github/actions/verify/`) and does the Publishing.
 - `publish/`: the SFTP upload (`publish.sh`, with the target folder) and the server key (`known_hosts`). The secrets are `PUBLICACAO_CHAVE_SSH`, `PUBLICACAO_SERVIDOR` and `PUBLICACAO_UTILIZADOR` (Portuguese names, kept until Julien decides otherwise); the workflow passes them to the script as `PUBLISH_SSH_KEY`, `PUBLISH_SERVER` and `PUBLISH_USER`.
 - `tests/publish/`: the confirmation that runs after each Publishing, against the published site.
 - `public/.htaccess`: HTTPS, cache, compression and 404 on the Infomaniak Apache. It only has an effect on the hosting.
