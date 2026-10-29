@@ -1,0 +1,440 @@
+---
+// The cloud provider chart: the CTO picks a scenario and sees which of its criteria each provider meets,
+// with a bar stacked by criterion and a rating («A considerar», «Possível», «Pouco indicado»). A click on
+// a bar shows the facts behind it, each with its date and source, and Julien's opinion marked as such.
+// Everything is built here, one panel per scenario: CSS shows the checked scenario's panel, so the
+// scenarios work without JS. The script only shows the chosen provider's facts and tells screen
+// readers the new result.
+import {
+	CRITERIA,
+	FACTS,
+	FIRST_SCENARIO,
+	PROVIDERS,
+	SCENARIOS,
+	criteriaOf,
+	rating,
+	score,
+	type Rating,
+	type Value,
+} from '../config/cloud-providers';
+import { HTML_CODES, type Language } from '../config/site';
+import type { Dictionary } from '../i18n/pt';
+import { withNonBreakingSpaces } from '../lib/spaces';
+
+type Props = Dictionary['homePage']['cloudChart'] & { language: Language };
+
+const { language, ...t } = Astro.props;
+
+const isOpinion = Object.fromEntries(CRITERIA.map(({ id, opinion }) => [id, !!opinion]));
+const valueText = (value: Value) =>
+	value === 1 ? t.values.yes : value === 0.5 ? t.values.partly : t.values.no;
+const notes: Record<string, Record<string, string | undefined>> = t.notes;
+const host = (url: string) => new URL(url).hostname.replace(/^www\./, '');
+const date = new Intl.DateTimeFormat(HTML_CODES[language], { dateStyle: 'long', timeZone: 'UTC' });
+
+// One color per segment, from the heaviest criterion at the bottom.
+const segmentColor = (k: number) => `var(--segment-${k + 1})`;
+
+const RATINGS: Rating[] = ['consider', 'possible', 'unsuitable'];
+
+/** What screen readers hear when the scenario changes: the scenario, then who has each rating. */
+function summary(scenario: (typeof SCENARIOS)[number]['id']) {
+	const groups = RATINGS.flatMap((r) => {
+		const names = PROVIDERS.filter(({ id }) => rating(scenario, id) === r).map(({ name }) => name);
+		return names.length ? [`${t.ratings[r]}: ${names.join(', ')}.`] : [];
+	});
+	return [`${t.scenarios[scenario].name}.`, ...groups].join(' ');
+}
+---
+
+<section
+	aria-labelledby="cloud-chart-title"
+	data-cloud-chart
+	class="page-width grid gap-10 py-[clamp(5rem,11vw,9rem)]"
+>
+	<div class="grid gap-x-16 gap-y-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-end">
+		<div class="grid gap-4">
+			<p class="label">{t.label}</p>
+			<h2 id="cloud-chart-title" class="text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">
+				{withNonBreakingSpaces(t.title)}
+			</h2>
+			<p class="max-w-[36rem] text-foreground-secondary">{withNonBreakingSpaces(t.intro)}</p>
+		</div>
+		<fieldset class="flex flex-wrap gap-2 lg:justify-end">
+			<legend class="sr-only">{t.scenariosLabel}</legend>
+			{SCENARIOS.map(({ id }) => (
+				<label class="chip">
+					<input type="radio" name="cloud-scenario" value={id} checked={id === FIRST_SCENARIO} />
+					<span>{t.scenarios[id].name}</span>
+				</label>
+			))}
+		</fieldset>
+	</div>
+
+	<p role="status" class="sr-only" data-announcer></p>
+
+	{SCENARIOS.map(({ id: scenario }) => {
+		const weighted = criteriaOf(scenario);
+		return (
+			<div data-scenario={scenario} data-summary={summary(scenario)} class="panel">
+				<div class="flex flex-wrap justify-between gap-x-8 gap-y-3 [grid-area:top]">
+					<p class="max-w-[32rem]">
+						<strong class="font-semibold">{t.scenarios[scenario].name}:</strong>{' '}
+						{withNonBreakingSpaces(t.scenarios[scenario].description)}
+					</p>
+					<ul class="flex flex-wrap gap-x-4 gap-y-1.5 text-[0.8125rem] text-foreground-secondary">
+						{weighted.map(({ criterion, weight }, k) => (
+							<li>
+								<i class="swatch" style={`background: ${segmentColor(k)}`} />
+								{t.criteria[criterion]}
+								<small>
+									{' '}
+									· {t.weight} {weight}
+									{isOpinion[criterion] && ` · ${t.opinion}`}
+								</small>
+							</li>
+						))}
+					</ul>
+				</div>
+
+				<ul class="bars [grid-area:bars]">
+					{PROVIDERS.map(({ id, name }) => {
+						const r = rating(scenario, id);
+						return (
+							<li>
+								<button
+									type="button"
+									class="bar"
+									aria-pressed="false"
+									aria-label={`${name}, ${t.ratings[r]}`}
+									data-provider={id}
+									data-rating={r}
+									style={`--score: ${score(scenario, id)}`}
+								>
+									<span class="bar-rating">{t.ratings[r]}</span>
+									<span class="bar-area">
+										<span class="bar-stack">
+											{weighted.map(({ criterion, weight }, k) => {
+												const part = FACTS[id][criterion].value * weight;
+												return (
+													part > 0 && (
+														<span style={`flex-grow: ${part}; background: ${segmentColor(k)}`} />
+													)
+												);
+											})}
+										</span>
+									</span>
+									<span class="bar-name">{name}</span>
+								</button>
+							</li>
+						);
+					})}
+				</ul>
+
+				<div class="detail [grid-area:detail]">
+					<p data-hint hidden class="text-foreground-secondary">
+						{t.hint}
+					</p>
+					{PROVIDERS.map(({ id, name }) => (
+						<div data-detail={id} hidden class="grid gap-3">
+							<p>
+								<strong class="font-heading text-xl font-normal">{name}</strong>
+								<br />
+								{t.scenarios[scenario].name}:{' '}
+								<span class="font-semibold text-green">{t.ratings[rating(scenario, id)]}</span>
+							</p>
+							<ul class="grid gap-3">
+								{weighted.map(({ criterion, weight }, k) => {
+									const fact = FACTS[id][criterion];
+									const note = notes[id]?.[criterion];
+									return (
+										<li class="fact">
+											<i class="swatch" style={`background: ${segmentColor(k)}`} />
+											<span>
+												{t.criteria[criterion]}
+												<small class="text-foreground-secondary">
+													{' '}
+													· {t.weight} {weight}
+													{isOpinion[criterion] && ` · ${t.opinion}`}
+												</small>
+											</span>
+											<strong class="font-semibold" data-value={fact.value}>
+												{valueText(fact.value)}
+											</strong>
+											<span class="fact-text">
+												{fact.product && <span class="block text-foreground">{fact.product}</span>}
+												{note && <span class="block">{withNonBreakingSpaces(note)}</span>}
+												{criterion === 'costs' && (
+													<span class="block">
+														{t.outboundTraffic}: {withNonBreakingSpaces(t.outbound[id])}
+													</span>
+												)}
+												<span class="block">
+													{fact.sources.length > 1 ? t.sources : t.source}:{' '}
+													{fact.sources.map(({ url, read }, s) => (
+														<>
+															{s > 0 && '; '}
+															<a href={url}>{host(url)}</a>, {t.read} {date.format(new Date(read))}
+														</>
+													))}
+												</span>
+											</span>
+										</li>
+									);
+								})}
+							</ul>
+						</div>
+					))}
+				</div>
+			</div>
+		);
+	})}
+
+	<p class="text-sm text-foreground-secondary">{withNonBreakingSpaces(t.footnote)}</p>
+</section>
+
+<script>
+	import { afterLoad } from '../scripts/after-load';
+
+	afterLoad(() => {
+		for (const chart of document.querySelectorAll<HTMLElement>('[data-cloud-chart]')) {
+			const announcer = chart.querySelector<HTMLElement>('[data-announcer]')!;
+			const bars = [...chart.querySelectorAll<HTMLButtonElement>('[data-provider]')];
+			const details = [...chart.querySelectorAll<HTMLElement>('[data-detail]')];
+			const hints = [...chart.querySelectorAll<HTMLElement>('[data-hint]')];
+			let chosen: string | null = null;
+
+			// The same provider stays chosen in every scenario; a second click on its bar unchooses it.
+			const choose = (provider: string | null) => {
+				chosen = provider;
+				for (const bar of bars)
+					bar.setAttribute('aria-pressed', String(bar.dataset.provider === provider));
+				for (const detail of details) detail.hidden = detail.dataset.detail !== provider;
+				for (const hint of hints) hint.hidden = provider !== null;
+			};
+
+			chart.addEventListener('click', (event) => {
+				const bar = (event.target as Element).closest<HTMLElement>('[data-provider]');
+				if (bar) choose(bar.dataset.provider === chosen ? null : bar.dataset.provider!);
+			});
+			chart.addEventListener('change', (event) => {
+				const { value } = event.target as HTMLInputElement;
+				announcer.textContent = chart.querySelector<HTMLElement>(
+					`[data-scenario="${value}"]`,
+				)!.dataset.summary!;
+			});
+			choose(null);
+		}
+	});
+</script>
+
+<style>
+	[data-cloud-chart] {
+		/* The segments, from the heaviest criterion: the green and purple of the identity, then the gold
+		   of the Guarantee and a muted purple, as in prototype v3. Gold and muted purple are not in #54's
+		   color table: to be confirmed at the First review (#74). */
+		--segment-1: var(--color-green);
+		--segment-2: var(--color-purple);
+		--segment-3: #e6cf94;
+		--segment-4: #8a7ab5;
+	}
+
+	/* The scenario chips: the radio button covers its chip, so the whole chip is the target. */
+	.chip {
+		position: relative;
+		cursor: pointer;
+	}
+	.chip input {
+		position: absolute;
+		inset: 0;
+		margin: 0;
+		opacity: 0;
+		cursor: pointer;
+	}
+	.chip span {
+		display: inline-flex;
+		align-items: center;
+		min-height: 2.5rem;
+		padding: 0 0.95rem;
+		border: 1px solid var(--color-line-strong);
+		border-radius: 999px;
+		color: var(--color-foreground-secondary);
+		font-size: 0.875rem;
+	}
+	.chip:hover span {
+		border-color: var(--color-green);
+		color: var(--color-foreground);
+	}
+	.chip input:checked + span {
+		border-color: var(--color-green);
+		background: var(--color-green);
+		color: var(--color-background);
+		font-weight: 600;
+	}
+	.chip input:focus-visible + span {
+		outline: 2px solid var(--color-green);
+		outline-offset: 3px;
+	}
+
+	/* Only the checked scenario's panel shows: one rule per scenario of src/config/cloud-providers.ts. */
+	.panel {
+		display: none;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 18rem);
+		grid-template-areas:
+			'top top'
+			'bars detail';
+		gap: 1.5rem 2.5rem;
+		padding-top: 1.5rem;
+		border-top: 1px solid var(--color-line-strong);
+	}
+	[data-cloud-chart]:has(input[value='beforeLaunch']:checked) [data-scenario='beforeLaunch'],
+	[data-cloud-chart]:has(input[value='growth']:checked) [data-scenario='growth'],
+	[data-cloud-chart]:has(input[value='dataSovereignty']:checked) [data-scenario='dataSovereignty'],
+	[data-cloud-chart]:has(input[value='variableLoad']:checked) [data-scenario='variableLoad'],
+	[data-cloud-chart]:has(input[value='costControl']:checked) [data-scenario='costControl'] {
+		display: grid;
+	}
+
+	.swatch {
+		display: inline-block;
+		width: 0.625rem;
+		height: 0.625rem;
+		margin-right: 0.4rem;
+		border-radius: 3px;
+	}
+
+	/* The bars: one column per provider, the rating above and the name below. The bar's height is the
+	   score, and each segment's share of it is what its criterion adds. */
+	.bars {
+		display: grid;
+		grid-template-columns: repeat(6, minmax(0, 1fr));
+		gap: 0.75rem;
+	}
+	.bar {
+		display: grid;
+		grid-template-rows: 2.6em 13.75rem auto;
+		gap: 0.5rem;
+		justify-items: center;
+		width: 100%;
+		text-align: center;
+		cursor: pointer;
+	}
+	.bar-rating {
+		align-self: end;
+		color: var(--color-foreground-secondary);
+		font-size: 0.75rem;
+		line-height: 1.2;
+	}
+	[data-rating='consider'] .bar-rating {
+		color: var(--color-green);
+		font-weight: 600;
+	}
+	.bar-area {
+		display: flex;
+		align-items: flex-end;
+		justify-content: center;
+		width: 100%;
+		border-bottom: 1px solid var(--color-line-strong);
+	}
+	.bar-stack {
+		display: flex;
+		flex-direction: column-reverse;
+		gap: 2px;
+		width: min(3.5rem, 100%);
+		height: calc(var(--score) * 100%);
+		overflow: hidden;
+		border-radius: 10px 10px 3px 3px;
+	}
+	.bar-stack > * {
+		flex-basis: 0;
+	}
+	.bar:hover .bar-stack {
+		filter: brightness(1.12);
+	}
+	.bar[aria-pressed='true'] .bar-stack {
+		outline: 2px solid var(--color-foreground);
+		outline-offset: 3px;
+		overflow: visible;
+	}
+	.bar-name {
+		font-size: 0.8125rem;
+		line-height: 1.25;
+	}
+
+	/* The detail, beside the bars: a green line on its left. */
+	.detail {
+		align-self: stretch;
+		display: grid;
+		align-content: start;
+		gap: 0.75rem;
+		padding-left: 1.5rem;
+		border-left: 2px solid var(--color-green);
+		font-size: 0.875rem;
+	}
+	.fact {
+		display: grid;
+		grid-template-columns: 0.875rem 1fr auto;
+		gap: 0.15rem 0.35rem;
+		align-items: baseline;
+	}
+	.fact-text {
+		grid-column: 2 / -1;
+		display: grid;
+		gap: 0.15rem;
+		color: var(--color-foreground-secondary);
+		font-size: 0.8125rem;
+		line-height: 1.4;
+	}
+	.fact-text a {
+		color: var(--color-green);
+		text-decoration: underline;
+	}
+	[data-value='1'] {
+		color: var(--color-green);
+	}
+
+	@media (max-width: 960px) {
+		.panel {
+			grid-template-columns: minmax(0, 1fr);
+			grid-template-areas: 'top' 'bars' 'detail';
+		}
+	}
+
+	/* On a phone, the bars lie down: the name on the left, the bar to its right, the rating below it. */
+	@media (max-width: 640px) {
+		.bars {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 0.6rem;
+		}
+		.bar {
+			grid-template-columns: 6.5rem minmax(0, 1fr);
+			grid-template-rows: auto auto;
+			grid-template-areas: 'name area' 'name rating';
+			justify-items: stretch;
+			gap: 0.15rem 0.75rem;
+			text-align: left;
+		}
+		.bar-name {
+			grid-area: name;
+			align-self: center;
+		}
+		.bar-rating {
+			grid-area: rating;
+		}
+		.bar-area {
+			grid-area: area;
+			height: 1.625rem;
+			border-bottom: 0;
+			border-radius: 8px;
+			background: var(--color-surface);
+			justify-content: flex-start;
+			align-items: stretch;
+		}
+		.bar-stack {
+			flex-direction: row;
+			width: calc(var(--score) * 100%);
+			height: auto;
+			border-radius: 8px;
+		}
+	}
+</style>
