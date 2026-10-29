@@ -35,6 +35,10 @@ The five default triage labels: `needs-triage`, `needs-info`, `ready-for-agent`,
 
 Single-context: one `CONTEXT.md` and `docs/adr/` at the repo root, created when needed. See `docs/agents/domain.md`.
 
+## Branches
+
+Start each work branch from `develop` and open its PR into `develop`. `main` only receives releases (a PR from `develop`, merged with a merge commit) and hotfixes; each merge into `main` publishes the site. See "Branches" in `README.md`.
+
 ## Language
 
 - Everything in the repo is in English: code, comments, test titles, messages, scripts, CI and docs.
