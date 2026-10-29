@@ -13,16 +13,16 @@ interface Block {
 }
 
 // The Blocks and their tools come from the spec (#54); in Portuguese, the texts are the ones the
-// user approved for the First validation (#74). French and English are translations the intern
+// intern approved for the First review (#74). French and English are translations the intern
 // reviews before the Commercial launch (#75).
 const EXPECTED: Record<
 	Language,
-	{ title: string; note: string; block: string; toolsLabel: string; blocks: Block[] }
+	{ title: string; note: string; blockLabel: string; toolsLabel: string; blocks: Block[] }
 > = {
 	pt: {
 		title: 'Quatro camadas da tua infraestrutura.',
 		note: 'Contratas os blocos que quiseres, em qualquer combinação. No máximo 30 dias, a contar do início da Implementação. O bloco 3 precisa de uma aplicação contentorizada, pelo bloco 2 ou pela tua equipa.',
-		block: 'Bloco',
+		blockLabel: 'Bloco',
 		toolsLabel: 'Ferramentas',
 		blocks: [
 			{
@@ -53,8 +53,8 @@ const EXPECTED: Record<
 	},
 	fr: {
 		title: 'Quatre couches de ton infrastructure.',
-		note: "Tu choisis les blocs que tu veux, dans n'importe quelle combinaison. 30 jours au maximum, à compter du début de la mise en œuvre. Le bloc 3 demande une application conteneurisée, par le bloc 2 ou par ton équipe.",
-		block: 'Bloc',
+		note: "Tu choisis les blocs que tu veux, dans n'importe quelle combinaison. 30 jours au maximum, à compter du début de la Mise en œuvre. Le bloc 3 demande une application conteneurisée, par le bloc 2 ou par ton équipe.",
+		blockLabel: 'Bloc',
 		toolsLabel: 'Outils',
 		blocks: [
 			{
@@ -86,7 +86,7 @@ const EXPECTED: Record<
 	en: {
 		title: 'Four layers of your infrastructure.',
 		note: 'You hire the blocks you want, in any combination. At most 30 days from the start of the Implementation. Block 3 needs a containerised application, from block 2 or from your team.',
-		block: 'Block',
+		blockLabel: 'Block',
 		toolsLabel: 'Tools',
 		blocks: [
 			{
@@ -131,6 +131,13 @@ const REDUCED_MOTION: Viewport = {
 	...DESKTOP,
 	label: 'on desktop, with reduced motion',
 	reducedMotion: true,
+};
+const TABLET: Viewport = { label: 'on a tablet', width: 820, height: 1180 };
+// All 4 cards fit side by side: there is nothing to pass sideways.
+const WIDE_SCREEN: Viewport = {
+	label: 'on a very wide screen, where the 4 cards fit',
+	width: 2560,
+	height: 1440,
 };
 // A laptop screen, lower than DESKTOP: the section still pins there.
 const LAPTOP: Viewport = { label: 'on a laptop', width: 1536, height: 730 };
@@ -215,9 +222,10 @@ function isOnScreen(card: Locator) {
  * Brings the card into full view the way a Visitor does: by scrolling down from the top of the
  * section. Pinned, the cards pass sideways and each one comes into view after some scroll.
  */
-async function scrollToCard(page: Page, card: Locator) {
-	await card.evaluate((e) => {
-		const top = e.closest('section')!.getBoundingClientRect().top;
+async function scrollToCard(page: Page, language: Language, k: number) {
+	const card = cards(page, language).nth(k);
+	await section(page, language).evaluate((s) => {
+		const top = s.getBoundingClientRect().top;
 		if (top > 0) scrollBy(0, top);
 	});
 	for (let step = 0; step < 100 && !(await isOnScreen(card)); step++) {
@@ -231,11 +239,11 @@ async function expectFourBlocksVisible(page: Page, language: Language) {
 	await expect(cards(page, language)).toHaveCount(4);
 	for (const [k, block] of expected.blocks.entries()) {
 		const card = cards(page, language).nth(k);
-		await scrollToCard(page, card);
+		await scrollToCard(page, language, k);
 		expect(await isOnScreen(card), `card ${k + 1} on the screen`).toBe(true);
 		await expect(card.getByRole('img')).toBeVisible();
 		await expect(card.getByRole('img')).toHaveAccessibleName(/\w/);
-		await expect(card.getByText(`${expected.block} ${k + 1}`, { exact: true })).toBeVisible();
+		await expect(card.getByText(`${expected.blockLabel} ${k + 1}`, { exact: true })).toBeVisible();
 		await expect(card.getByRole('heading', { level: 3, name: block.name })).toBeVisible();
 		await expect(card.getByText(block.summary, { exact: true })).toBeVisible();
 		await expect(card.getByText(block.text, { exact: true })).toBeVisible();
@@ -252,7 +260,10 @@ async function isMoving(element: Locator) {
 	return !before.equals(await element.screenshot());
 }
 
-/** The animations running in the section right now, as the browser reports them. */
+/**
+ * The animations running in the section right now, as the browser reports them. A screenshot
+ * cannot tell whether something out of sight is moving; the browser can (as in motion.spec.ts).
+ */
 function runningAnimations(page: Page, language: Language) {
 	return section(page, language).evaluate(
 		(s) =>
@@ -357,7 +368,7 @@ inEachBuild((build) => {
 				});
 			}
 
-			for (const viewport of [PHONE, REDUCED_MOTION, SHORT_SCREEN]) {
+			for (const viewport of [PHONE, TABLET, REDUCED_MOTION, SHORT_SCREEN, WIDE_SCREEN]) {
 				test(`${viewport.label}, the section is not pinned`, async ({ page }) => {
 					await openPage(page, prefix, viewport);
 					await scrollToSection(page, language);
@@ -379,25 +390,25 @@ inEachBuild((build) => {
 				}
 			});
 
-			test('on desktop, with reduced motion, the cards are in a grid of two columns', async ({
-				page,
-			}) => {
-				await openPage(page, prefix, REDUCED_MOTION);
-				const [first, second, third, fourth] = (await cardBoxes(page, language)) as [
-					Box,
-					Box,
-					Box,
-					Box,
-				];
-				expect(second.y, 'the 2nd card beside the 1st').toBeCloseTo(first.y, 0);
-				expect(second.x).toBeGreaterThan(first.x + first.width);
-				expect(third.x, 'the 3rd card below the 1st').toBeCloseTo(first.x, 0);
-				expect(third.y).toBeGreaterThanOrEqual(
-					Math.max(first.y + first.height, second.y + second.height),
-				);
-				expect(fourth.y, 'the 4th card beside the 3rd').toBeCloseTo(third.y, 0);
-				expect(fourth.x).toBeCloseTo(second.x, 0);
-			});
+			for (const viewport of [TABLET, REDUCED_MOTION, WIDE_SCREEN]) {
+				test(`${viewport.label}, the cards are in a grid of two columns`, async ({ page }) => {
+					await openPage(page, prefix, viewport);
+					const [first, second, third, fourth] = (await cardBoxes(page, language)) as [
+						Box,
+						Box,
+						Box,
+						Box,
+					];
+					expect(second.y, 'the 2nd card beside the 1st').toBeCloseTo(first.y, 0);
+					expect(second.x).toBeGreaterThan(first.x + first.width);
+					expect(third.x, 'the 3rd card below the 1st').toBeCloseTo(first.x, 0);
+					expect(third.y).toBeGreaterThanOrEqual(
+						Math.max(first.y + first.height, second.y + second.height),
+					);
+					expect(fourth.y, 'the 4th card beside the 3rd').toBeCloseTo(third.y, 0);
+					expect(fourth.x).toBeCloseTo(second.x, 0);
+				});
+			}
 
 			for (const viewport of [DESKTOP, PHONE, REDUCED_MOTION]) {
 				test(`${viewport.label}, the 4 Blocks and their tools are visible`, async ({ page }) => {
@@ -412,7 +423,7 @@ inEachBuild((build) => {
 				}) => {
 					const { pause, resume } = LANGUAGES[language];
 					await openPage(page, prefix, viewport);
-					await scrollToCard(page, cards(page, language).first());
+					await scrollToCard(page, language, 0);
 					expect(await isMoving(diagram(page, language, 0)), 'before the pause').toBe(true);
 
 					await page.getByRole('button', { name: pause, exact: true }).click();
@@ -434,7 +445,7 @@ inEachBuild((build) => {
 				await openPage(page, prefix, PHONE);
 				await page.getByRole('button', { name: LANGUAGES[language].pause, exact: true }).click();
 				for (let k = 0; k < 4; k++) {
-					await scrollToCard(page, cards(page, language).nth(k));
+					await scrollToCard(page, language, k);
 					expect(await isMoving(diagram(page, language, k)), `diagram ${k + 1}`).toBe(false);
 				}
 			});
@@ -450,7 +461,7 @@ inEachBuild((build) => {
 			test('with reduced motion, the mini-diagrams stay still', async ({ page }) => {
 				await openPage(page, prefix, REDUCED_MOTION);
 				for (let k = 0; k < 4; k++) {
-					await scrollToCard(page, cards(page, language).nth(k));
+					await scrollToCard(page, language, k);
 					expect(await isMoving(diagram(page, language, k)), `diagram ${k + 1}`).toBe(false);
 				}
 			});
@@ -469,7 +480,7 @@ inEachBuild((build) => {
 					await page.setViewportSize({ width: DESKTOP.width, height: DESKTOP.height });
 					await page.goto(prefix);
 					for (let k = 0; k < 4; k++) {
-						await scrollToCard(page, cards(page, language).nth(k));
+						await scrollToCard(page, language, k);
 						expect(await isMoving(diagram(page, language, k)), `diagram ${k + 1}`).toBe(false);
 					}
 				});

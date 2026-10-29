@@ -9,7 +9,7 @@ import BlockDiagram from './BlockDiagram.astro';
 
 type Props = Dictionary['homePage']['services'];
 
-const { label, title, note, block, tools, blocks, diagrams } = Astro.props;
+const { label, title, note, blockLabel, toolsLabel, blocks, diagrams } = Astro.props;
 ---
 
 <section aria-labelledby="services-title" data-section="services" data-services>
@@ -41,19 +41,22 @@ const { label, title, note, block, tools, blocks, diagrams } = Astro.props;
 			</div>
 
 			<ol data-track class="page-width grid gap-x-10 gap-y-14 md:grid-cols-2">
-				{blocks.map(({ name, summary, text, tools: blockTools, toolsAlternative }, k) => (
+				{blocks.map(({ name, summary, text, tools, toolsAlternative }, k) => (
 					<li data-card class="grid content-start gap-3">
 						<div class="mb-2">
 							<BlockDiagram block={k + 1} words={diagrams} />
 						</div>
 						<p class="label text-purple">
-							{block} {k + 1}
+							{blockLabel} {k + 1}
 						</p>
 						<h3 class="text-[1.65rem] leading-[1.15]">{name}</h3>
 						<p class="text-[0.9375rem] text-green">{withNonBreakingSpaces(summary)}</p>
 						<p class="text-foreground-secondary">{withNonBreakingSpaces(text)}</p>
-						<ul aria-label={tools} class="mt-1 flex flex-wrap items-center gap-2 text-[0.8125rem]">
-							{blockTools.map((tool) => (
+						<ul
+							aria-label={toolsLabel}
+							class="mt-1 flex flex-wrap items-center gap-2 text-[0.8125rem]"
+						>
+							{tools.map((tool) => (
 								<li class="rounded-full border border-green-strong px-2.5 py-0.5 text-green">
 									{tool}
 								</li>
@@ -102,12 +105,16 @@ const { label, title, note, block, tools, blocks, diagrams } = Astro.props;
 
 			// When pinned, the cards must fit in the stage, below the header and above the pause button;
 			// on a short screen or when zoomed in, they do not fit, and the section stays unpinned so
-			// nothing is hidden.
+			// nothing is hidden. On a very wide screen, the 4 cards fit side by side: with nothing to
+			// pass, it stays unpinned too.
 			const pin = () => {
 				section.toggleAttribute('data-pinned', desktop.matches);
 				track.style.transform = '';
 				const room = stage.clientHeight - parseFloat(getComputedStyle(stage).paddingBottom);
-				if (content.offsetHeight > room) section.removeAttribute('data-pinned');
+				const lastCard = track.lastElementChild!.getBoundingClientRect();
+				if (content.offsetHeight > room || lastCard.right <= stage.getBoundingClientRect().right) {
+					section.removeAttribute('data-pinned');
+				}
 				travel = Math.max(track.offsetWidth - stage.clientWidth, 0);
 				section.style.setProperty('--travel', `${travel * SLOWNESS}px`);
 				move();

@@ -82,9 +82,9 @@ export const fr: Dictionary = {
 		services: {
 			label: 'Services',
 			title: 'Quatre couches de ton infrastructure.',
-			note: "Tu choisis les blocs que tu veux, dans n'importe quelle combinaison. 30 jours au maximum, à compter du début de la mise en œuvre. Le bloc 3 demande une application conteneurisée, par le bloc 2 ou par ton équipe.",
-			block: 'Bloc',
-			tools: 'Outils',
+			note: "Tu choisis les blocs que tu veux, dans n'importe quelle combinaison. 30 jours au maximum, à compter du début de la Mise en œuvre. Le bloc 3 demande une application conteneurisée, par le bloc 2 ou par ton équipe.",
+			blockLabel: 'Bloc',
+			toolsLabel: 'Outils',
 			blocks: [
 				{
 					name: 'Audit du code et pipeline CI',

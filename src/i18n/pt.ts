@@ -126,9 +126,9 @@ export const pt = {
 			title: 'Quatro camadas da tua infraestrutura.',
 			note: 'Contratas os blocos que quiseres, em qualquer combinação. No máximo 30 dias, a contar do início da Implementação. O bloco 3 precisa de uma aplicação contentorizada, pelo bloco 2 ou pela tua equipa.',
 			/** Before each Block's number: "Bloco 1". */
-			block: 'Bloco',
+			blockLabel: 'Bloco',
 			/** The name of each Block's list of tools, for screen readers. */
-			tools: 'Ferramentas',
+			toolsLabel: 'Ferramentas',
 			blocks,
 			/** The words drawn in the Blocks' mini-diagrams, and what each one shows, for screen readers. */
 			diagrams: {

@@ -79,8 +79,8 @@ export const en: Dictionary = {
 			label: 'Services',
 			title: 'Four layers of your infrastructure.',
 			note: 'You hire the blocks you want, in any combination. At most 30 days from the start of the Implementation. Block 3 needs a containerised application, from block 2 or from your team.',
-			block: 'Block',
-			tools: 'Tools',
+			blockLabel: 'Block',
+			toolsLabel: 'Tools',
 			blocks: [
 				{
 					name: 'CI pipeline and code audit',
