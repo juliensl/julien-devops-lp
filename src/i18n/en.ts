@@ -218,6 +218,7 @@ export const en: Dictionary = {
 			ratings: { consider: 'Worth considering', possible: 'Possible', unsuitable: 'Less suited' },
 			values: { yes: 'Yes', partly: 'Partly', no: 'No' },
 			hint: 'Click a bar to see the facts.',
+			colon: ':',
 			read: 'read on',
 			source: 'Source',
 			sources: 'Sources',

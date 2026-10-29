@@ -10,32 +10,17 @@ const PROVIDERS = ['AWS', 'Google Cloud', 'Infomaniak', 'Microsoft Azure', 'OVHc
 type Rating = 'consider' | 'possible' | 'unsuitable';
 
 // #54's table «Resultado com os factos de hoje», provider by provider, in alphabetical order.
-const RESULTS: { scenario: number; ratings: Rating[] }[] = [
+const RESULTS: { ratings: Rating[] }[] = [
 	// Antes do lançamento
-	{
-		scenario: 0,
-		ratings: ['consider', 'consider', 'consider', 'consider', 'unsuitable', 'possible'],
-	},
+	{ ratings: ['consider', 'consider', 'consider', 'consider', 'unsuitable', 'possible'] },
 	// SaaS em crescimento
-	{
-		scenario: 1,
-		ratings: ['consider', 'consider', 'possible', 'consider', 'possible', 'consider'],
-	},
+	{ ratings: ['consider', 'consider', 'possible', 'consider', 'possible', 'consider'] },
 	// Soberania dos dados
-	{
-		scenario: 2,
-		ratings: ['possible', 'possible', 'unsuitable', 'possible', 'consider', 'consider'],
-	},
+	{ ratings: ['possible', 'possible', 'unsuitable', 'possible', 'consider', 'consider'] },
 	// Carga muito variável
-	{
-		scenario: 3,
-		ratings: ['consider', 'consider', 'consider', 'consider', 'possible', 'consider'],
-	},
+	{ ratings: ['consider', 'consider', 'consider', 'consider', 'possible', 'consider'] },
 	// Custos sob controlo
-	{
-		scenario: 4,
-		ratings: ['consider', 'consider', 'possible', 'consider', 'unsuitable', 'possible'],
-	},
+	{ ratings: ['consider', 'consider', 'possible', 'consider', 'unsuitable', 'possible'] },
 ];
 
 // The names come from the spec (#54) and the French «Souveraineté des données» from #46. The other
@@ -47,6 +32,14 @@ const EXPECTED: Record<
 		scenarios: string[];
 		ratings: Record<Rating, string>;
 		hint: string;
+		/** French puts a space before the colon. */
+		colon: string;
+		/** Microsoft Azure's facts in «SaaS em crescimento», heaviest criterion first: the criterion,
+		 * the value and what else the line says (the product, a note). */
+		azure: [string, string, string][];
+		opinion: string;
+		/** The date the Azure sources of research #45 were read, as the page writes it. */
+		read: string;
 	}
 > = {
 	pt: {
@@ -60,6 +53,19 @@ const EXPECTED: Record<
 		],
 		ratings: { consider: 'A considerar', possible: 'Possível', unsuitable: 'Pouco indicado' },
 		hint: 'Clica numa barra para ver os factos.',
+		colon: ':',
+		azure: [
+			['Kubernetes gerido', 'Sim', 'Azure Kubernetes Service (AKS)'],
+			['Contentores com escala automática', 'Sim', 'Azure Container Apps'],
+			['Regiões na UE', 'Sim', '13 regiões na UE, 2 delas de acesso restrito.'],
+			[
+				'Visibilidade e controlo dos custos',
+				'Em parte',
+				'Tráfego de saída: pago depois de 100 GB/mês.',
+			],
+		],
+		opinion: 'opinião do Julien',
+		read: '16/10/2026',
 	},
 	fr: {
 		title: 'Quel cloud pour quelle entreprise ?',
@@ -72,6 +78,19 @@ const EXPECTED: Record<
 		],
 		ratings: { consider: 'À considérer', possible: 'Possible', unsuitable: 'Peu indiqué' },
 		hint: 'Clique sur une barre pour voir les faits.',
+		colon: ' :',
+		azure: [
+			['Kubernetes managé', 'Oui', 'Azure Kubernetes Service (AKS)'],
+			["Conteneurs avec mise à l'échelle automatique", 'Oui', 'Azure Container Apps'],
+			["Régions dans l'UE", 'Oui', "13 régions dans l'UE, dont 2 à accès restreint."],
+			[
+				'Visibilité et maîtrise des coûts',
+				'En partie',
+				'Trafic sortant : payant au-delà de 100 Go/mois.',
+			],
+		],
+		opinion: 'avis de Julien',
+		read: '16 oct. 2026',
 	},
 	en: {
 		title: 'Which cloud for which company?',
@@ -84,6 +103,15 @@ const EXPECTED: Record<
 		],
 		ratings: { consider: 'Worth considering', possible: 'Possible', unsuitable: 'Less suited' },
 		hint: 'Click a bar to see the facts.',
+		colon: ':',
+		azure: [
+			['Managed Kubernetes', 'Yes', 'Azure Kubernetes Service (AKS)'],
+			['Autoscaling containers', 'Yes', 'Azure Container Apps'],
+			['EU regions', 'Yes', '13 regions in the EU, 2 of them with restricted access.'],
+			['Cost visibility and control', 'Partly', 'Outbound traffic: paid beyond 100 GB/month.'],
+		],
+		opinion: "Julien's opinion",
+		read: 'Oct 16, 2026',
 	},
 };
 
@@ -98,6 +126,30 @@ const hint = (page: Page, language: Language) =>
 	section(page, language)
 		.getByText(EXPECTED[language].hint, { exact: true })
 		.filter({ visible: true });
+
+/** The facts of the chosen provider, in the scenario on screen. */
+const detail = (page: Page, language: Language, provider: string) =>
+	section(page, language)
+		.getByRole('list', { name: new RegExp(`^${provider}`) })
+		.filter({ visible: true });
+
+const scenario = (page: Page, language: Language, k: number) =>
+	section(page, language).getByRole('radio', {
+		name: EXPECTED[language].scenarios[k],
+		exact: true,
+	});
+
+/** What screen readers hear in a scenario: who has each rating, in alphabetical order. */
+function summary(language: Language, k: number) {
+	const { scenarios, ratings, colon } = EXPECTED[language];
+	const groups = (['consider', 'possible', 'unsuitable'] as Rating[]).flatMap((rating) => {
+		const names = PROVIDERS.filter((_, p) => RESULTS[k]!.ratings[p] === rating);
+		return names.length ? [`${ratings[rating]}${colon} ${names.join(', ')}.`] : [];
+	});
+	return [`${scenarios[k]}.`, ...groups].join(' ');
+}
+
+const SOVEREIGNTY = 2;
 
 inEachBuild((build) => {
 	for (const language of build.phase.publishedLanguages) {
@@ -117,14 +169,12 @@ inEachBuild((build) => {
 
 			test("in each scenario, each provider's rating is the one in #54", async ({ page }) => {
 				await page.goto(prefix);
-				for (const { scenario, ratings } of RESULTS) {
-					await section(page, language)
-						.getByRole('radio', { name: expected.scenarios[scenario], exact: true })
-						.check();
-					for (const [k, provider] of PROVIDERS.entries()) {
-						const rating = expected.ratings[ratings[k]!];
-						const bar = bars(page, language).nth(k);
-						await expect(bar, `${expected.scenarios[scenario]}, ${provider}`).toHaveAccessibleName(
+				for (const [k, { ratings }] of RESULTS.entries()) {
+					await scenario(page, language, k).check();
+					for (const [p, provider] of PROVIDERS.entries()) {
+						const rating = expected.ratings[ratings[p]!];
+						const bar = bars(page, language).nth(p);
+						await expect(bar, `${expected.scenarios[k]}, ${provider}`).toHaveAccessibleName(
 							`${provider}, ${rating}`,
 						);
 						await expect(bar).toContainText(rating);
@@ -138,6 +188,115 @@ inEachBuild((build) => {
 				for (const bar of await bars(page, language).all()) {
 					await expect(bar).toHaveAttribute('aria-pressed', 'false');
 				}
+			});
+
+			test("a click on a bar shows the scenario's criteria, each with its value, product or note, source and date", async ({
+				page,
+			}) => {
+				await page.goto(prefix);
+				const bar = bars(page, language).nth(PROVIDERS.indexOf('Microsoft Azure'));
+				await bar.click();
+				await expect(bar).toHaveAttribute('aria-pressed', 'true');
+				await expect(hint(page, language)).toBeHidden();
+
+				const facts = detail(page, language, 'Microsoft Azure').getByRole('listitem');
+				await expect(facts).toHaveCount(expected.azure.length);
+				for (const [k, [criterion, value, text]] of expected.azure.entries()) {
+					const fact = facts.nth(k);
+					await expect(fact).toContainText(criterion);
+					await expect(fact).toContainText(value);
+					await expect(fact).toContainText(text);
+					const source = fact.getByRole('link').first();
+					await expect(source).toHaveAttribute('href', /^https:\/\/[a-z.]*microsoft\.com\//);
+					await expect(source).toHaveAccessibleName(/microsoft\.com$/);
+				}
+				await expect(facts.first()).toContainText(expected.read);
+			});
+
+			test("the cost criterion is marked as Julien's opinion, the facts are not", async ({
+				page,
+			}) => {
+				await page.goto(prefix);
+				await bars(page, language).nth(PROVIDERS.indexOf('Microsoft Azure')).click();
+				const facts = detail(page, language, 'Microsoft Azure').getByRole('listitem');
+				for (const k of [0, 1, 2]) await expect(facts.nth(k)).not.toContainText(expected.opinion);
+				await expect(facts.nth(3)).toContainText(expected.opinion);
+			});
+
+			test('the chosen provider stays chosen in another scenario, and a second click unchooses it', async ({
+				page,
+			}) => {
+				await page.goto(prefix);
+				const azure = PROVIDERS.indexOf('Microsoft Azure');
+				await bars(page, language).nth(azure).click();
+				await scenario(page, language, SOVEREIGNTY).check();
+				await expect(bars(page, language).nth(azure)).toHaveAttribute('aria-pressed', 'true');
+				// «Soberania dos dados» weighs 3 criteria.
+				await expect(detail(page, language, 'Microsoft Azure').getByRole('listitem')).toHaveCount(
+					3,
+				);
+
+				await bars(page, language).nth(azure).click();
+				await expect(bars(page, language).nth(azure)).toHaveAttribute('aria-pressed', 'false');
+				await expect(hint(page, language)).toBeVisible();
+			});
+
+			test('with the keyboard: the arrows change the scenario, Enter and Space press a bar', async ({
+				page,
+			}) => {
+				await page.goto(prefix);
+				await scenario(page, language, 1).focus();
+				await page.keyboard.press('ArrowRight');
+				await expect(scenario(page, language, SOVEREIGNTY)).toBeChecked();
+				await expect(bars(page, language).first()).toHaveAccessibleName(
+					`AWS, ${expected.ratings.possible}`,
+				);
+
+				const bar = bars(page, language).first();
+				await bar.focus();
+				await page.keyboard.press('Enter');
+				await expect(bar).toHaveAttribute('aria-pressed', 'true');
+				await page.keyboard.press('Space');
+				await expect(bar).toHaveAttribute('aria-pressed', 'false');
+			});
+
+			test('screen readers hear the new result when the scenario changes', async ({ page }) => {
+				await page.goto(prefix);
+				for (const k of [SOVEREIGNTY, 0]) {
+					await scenario(page, language, k).check();
+					await expect(section(page, language).getByRole('status')).toHaveText(
+						summary(language, k),
+					);
+				}
+			});
+
+			test('on a 320 px phone, with a provider chosen, the page does not scroll sideways', async ({
+				page,
+			}) => {
+				await page.setViewportSize({ width: 320, height: 640 });
+				await page.goto(prefix);
+				await bars(page, language).nth(PROVIDERS.indexOf('Google Cloud')).click();
+				await expect(detail(page, language, 'Google Cloud')).toBeVisible();
+				const overflow = await page.evaluate(
+					() => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+				);
+				expect(overflow).toBe(0);
+			});
+
+			test.describe('without JavaScript', () => {
+				test.use({ javaScriptEnabled: false });
+
+				test('the scenarios still change the ratings', async ({ page }) => {
+					await page.goto(prefix);
+					await scenario(page, language, SOVEREIGNTY).check();
+					for (const [p, provider] of PROVIDERS.entries()) {
+						const rating = expected.ratings[RESULTS[SOVEREIGNTY]!.ratings[p]!];
+						await expect(bars(page, language).nth(p)).toHaveAccessibleName(
+							`${provider}, ${rating}`,
+						);
+					}
+					await expect(hint(page, language)).toHaveCount(0);
+				});
 			});
 		});
 	}

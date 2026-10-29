@@ -254,6 +254,8 @@ export const pt = {
 			/** A provider's value on a criterion: 1, ½ or 0. */
 			values: { yes: 'Sim', partly: 'Em parte', no: 'Não' },
 			hint: 'Clica numa barra para ver os factos.',
+			/** After a label, before what it introduces: French puts a space before it. */
+			colon: ':',
 			/** Before the date each source was read. */
 			read: 'lida a',
 			source: 'Fonte',
