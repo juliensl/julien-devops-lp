@@ -165,13 +165,28 @@ async function openPage(page: Page, path: string, viewport: Viewport) {
 	await page.evaluate(() => new Promise((resolve) => setTimeout(resolve)));
 }
 
+/**
+ * Scrolls the page by `distance` px. With JS, it returns two frames later: the page moves the cards
+ * and the counter in the frame after the scroll, and WebKit without a screen only draws a frame when
+ * one is asked for. Without JS, there is nothing to wait for, and a frame callback would never run.
+ */
+async function scrollPage(page: Page, distance: number, javaScript = true) {
+	if (!javaScript) return page.evaluate((d) => scrollBy(0, d), distance);
+	await page.evaluate(
+		(d) =>
+			new Promise((resolve) => {
+				scrollBy(0, d);
+				requestAnimationFrame(() => requestAnimationFrame(resolve));
+			}),
+		distance,
+	);
+}
+
 /** Brings the top of the section to the bottom of the sticky header, where a pinned section starts. */
 async function scrollToSection(page: Page, language: Language) {
 	const header = (await page.getByRole('banner').boundingBox())!;
-	await section(page, language).evaluate(
-		(s, headerBottom) => scrollBy(0, s.getBoundingClientRect().top - headerBottom),
-		header.y + header.height,
-	);
+	const top = await section(page, language).evaluate((s) => s.getBoundingClientRect().top);
+	await scrollPage(page, top - (header.y + header.height));
 }
 
 /**
@@ -184,7 +199,7 @@ async function scrollDown(page: Page, language: Language, distance: number) {
 		scroll: await page.evaluate(() => scrollY),
 		title: (await heading.boundingBox())!.y,
 	};
-	await page.evaluate((d) => scrollBy(0, d), distance);
+	await scrollPage(page, distance);
 	return {
 		scroll: (await page.evaluate(() => scrollY)) - before.scroll,
 		title: before.title - (await heading.boundingBox())!.y,
@@ -222,24 +237,22 @@ function isOnScreen(card: Locator) {
  * Brings the card into full view the way a Visitor does: by scrolling down from the top of the
  * section. Pinned, the cards pass sideways and each one comes into view after some scroll.
  */
-async function scrollToCard(page: Page, language: Language, k: number) {
+async function scrollToCard(page: Page, language: Language, k: number, javaScript = true) {
 	const card = cards(page, language).nth(k);
-	await section(page, language).evaluate((s) => {
-		const top = s.getBoundingClientRect().top;
-		if (top > 0) scrollBy(0, top);
-	});
+	const top = await section(page, language).evaluate((s) => s.getBoundingClientRect().top);
+	if (top > 0) await scrollPage(page, top, javaScript);
 	for (let step = 0; step < 100 && !(await isOnScreen(card)); step++) {
-		await page.evaluate(() => scrollBy(0, 100));
+		await scrollPage(page, 100, javaScript);
 	}
 }
 
 /** Each Block is in view, in order, with its number, name, summary, text and tools. */
-async function expectFourBlocksVisible(page: Page, language: Language) {
+async function expectFourBlocksVisible(page: Page, language: Language, javaScript = true) {
 	const expected = EXPECTED[language];
 	await expect(cards(page, language)).toHaveCount(4);
 	for (const [k, block] of expected.blocks.entries()) {
 		const card = cards(page, language).nth(k);
-		await scrollToCard(page, language, k);
+		await scrollToCard(page, language, k, javaScript);
 		expect(await isOnScreen(card), `card ${k + 1} on the screen`).toBe(true);
 		await expect(card.getByRole('img')).toBeVisible();
 		await expect(card.getByRole('img')).toHaveAccessibleName(/\w/);
@@ -469,18 +482,18 @@ inEachBuild((build) => {
 			test.describe('without JavaScript', () => {
 				test.use({ javaScriptEnabled: false });
 
-				test('the 4 Blocks and their tools are visible', async ({ page }) => {
+				test('the 4 Blocks and their tools are visible', async ({ page, javaScriptEnabled }) => {
 					await page.setViewportSize({ width: DESKTOP.width, height: DESKTOP.height });
 					await page.goto(prefix);
-					await expectFourBlocksVisible(page, language);
+					await expectFourBlocksVisible(page, language, javaScriptEnabled);
 				});
 
 				// Without JS, the pause button would not work: so the mini-diagrams may not move.
-				test('the mini-diagrams stay still', async ({ page }) => {
+				test('the mini-diagrams stay still', async ({ page, javaScriptEnabled }) => {
 					await page.setViewportSize({ width: DESKTOP.width, height: DESKTOP.height });
 					await page.goto(prefix);
 					for (let k = 0; k < 4; k++) {
-						await scrollToCard(page, language, k);
+						await scrollToCard(page, language, k, javaScriptEnabled);
 						expect(await isMoving(diagram(page, language, k)), `diagram ${k + 1}`).toBe(false);
 					}
 				});
