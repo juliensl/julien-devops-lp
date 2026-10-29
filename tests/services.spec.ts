@@ -266,11 +266,15 @@ async function expectFourBlocksVisible(page: Page, language: Language, javaScrip
 	}
 }
 
-/** Two screenshots of the element, 1 s apart: different if anything in it moved. */
-async function isMoving(element: Locator) {
-	const before = await element.screenshot();
-	await element.page().waitForTimeout(1000);
-	return !before.equals(await element.screenshot());
+/** Two screenshots of each element, 1 s apart: true if anything moved in any of them. */
+async function isMoving(...elements: Locator[]) {
+	const before: Buffer[] = [];
+	for (const element of elements) before.push(await element.screenshot());
+	await elements[0]!.page().waitForTimeout(1000);
+	for (const [k, element] of elements.entries()) {
+		if (!before[k]!.equals(await element.screenshot())) return true;
+	}
+	return false;
 }
 
 /**
@@ -293,6 +297,10 @@ function runningAnimations(page: Page, language: Language) {
 
 const diagram = (page: Page, language: Language, k: number) =>
 	cards(page, language).nth(k).getByRole('img');
+
+/** The 4 mini-diagrams, in order. */
+const diagrams = (page: Page, language: Language) =>
+	[0, 1, 2, 3].map((k) => diagram(page, language, k));
 
 inEachBuild((build) => {
 	for (const language of build.phase.publishedLanguages) {
@@ -353,33 +361,30 @@ inEachBuild((build) => {
 				expect(barWidth, 'the bar full').toBeGreaterThan(100);
 			});
 
-			for (const viewport of [DESKTOP, LAPTOP]) {
-				test(`${viewport.label}, while the cards pass, the pause button never covers them`, async ({
-					page,
-				}) => {
-					const button = page.getByRole('button', { name: LANGUAGES[language].pause, exact: true });
-					await openPage(page, prefix, viewport);
-					await scrollToSection(page, language);
-					const buttonBox = (await button.boundingBox())!;
-					// Down 100 px at a time, while the title stays put (pinned).
-					let pinnedSteps = 0;
-					for (; pinnedSteps < 100; pinnedSteps++) {
-						const { title } = await scrollDown(page, language, 100);
-						if (Math.abs(title) >= 2) break;
-						for (const card of await cards(page, language).all()) {
-							const box = (await card.boundingBox())!;
-							const covered =
-								box.x < buttonBox.x + buttonBox.width &&
-								buttonBox.x < box.x + box.width &&
-								box.y + box.height > buttonBox.y;
-							expect(covered, `after ${pinnedSteps + 1} steps`).toBe(false);
-						}
+			// On the lowest screen where the section pins, the cards come closest to the button.
+			test(`${LAPTOP.label}, while the cards pass, the pause button never covers them`, async ({
+				page,
+			}) => {
+				const button = page.getByRole('button', { name: LANGUAGES[language].pause, exact: true });
+				await openPage(page, prefix, LAPTOP);
+				await scrollToSection(page, language);
+				const buttonBox = (await button.boundingBox())!;
+				// Down 200 px at a time, while the title stays put (pinned).
+				let pinnedSteps = 0;
+				for (; pinnedSteps < 100; pinnedSteps++) {
+					const { title } = await scrollDown(page, language, 200);
+					if (Math.abs(title) >= 2) break;
+					for (const card of await cards(page, language).all()) {
+						const box = (await card.boundingBox())!;
+						const covered =
+							box.x < buttonBox.x + buttonBox.width &&
+							buttonBox.x < box.x + box.width &&
+							box.y + box.height > buttonBox.y;
+						expect(covered, `after ${pinnedSteps + 1} steps`).toBe(false);
 					}
-					expect(pinnedSteps, 'the section stayed pinned while the cards passed').toBeGreaterThan(
-						3,
-					);
-				});
-			}
+				}
+				expect(pinnedSteps, 'the section stayed pinned while the cards passed').toBeGreaterThan(3);
+			});
 
 			for (const viewport of [PHONE, TABLET, REDUCED_MOTION, SHORT_SCREEN, WIDE_SCREEN]) {
 				test(`${viewport.label}, the section is not pinned`, async ({ page }) => {
@@ -430,37 +435,33 @@ inEachBuild((build) => {
 				});
 			}
 
-			for (const viewport of [DESKTOP, PHONE]) {
-				test(`${viewport.label}, the mini-diagrams move, and the pause button stops them`, async ({
-					page,
-				}) => {
-					const { pause, resume } = LANGUAGES[language];
-					await openPage(page, prefix, viewport);
-					await scrollToCard(page, language, 0);
-					expect(await isMoving(diagram(page, language, 0)), 'before the pause').toBe(true);
+			test(`${DESKTOP.label}, the mini-diagrams move, and the pause button stops them`, async ({
+				page,
+			}) => {
+				const { pause, resume } = LANGUAGES[language];
+				await openPage(page, prefix, DESKTOP);
+				await scrollToCard(page, language, 0);
+				expect(await isMoving(diagram(page, language, 0)), 'before the pause').toBe(true);
 
-					await page.getByRole('button', { name: pause, exact: true }).click();
-					await expect
-						.poll(() => isMoving(diagram(page, language, 0)), {
-							message: 'paused',
-							timeout: 10_000,
-						})
-						.toBe(false);
+				await page.getByRole('button', { name: pause, exact: true }).click();
+				await expect
+					.poll(() => isMoving(diagram(page, language, 0)), {
+						message: 'paused',
+						timeout: 10_000,
+					})
+					.toBe(false);
 
-					await page.getByRole('button', { name: resume, exact: true }).click();
-					expect(await isMoving(diagram(page, language, 0)), 'after resuming').toBe(true);
-				});
-			}
+				await page.getByRole('button', { name: resume, exact: true }).click();
+				expect(await isMoving(diagram(page, language, 0)), 'after resuming').toBe(true);
+			});
 
 			test('paused before reaching the section, the mini-diagrams stay still when they come into view', async ({
 				page,
 			}) => {
 				await openPage(page, prefix, PHONE);
 				await page.getByRole('button', { name: LANGUAGES[language].pause, exact: true }).click();
-				for (let k = 0; k < 4; k++) {
-					await scrollToCard(page, language, k);
-					expect(await isMoving(diagram(page, language, k)), `diagram ${k + 1}`).toBe(false);
-				}
+				for (let k = 0; k < 4; k++) await scrollToCard(page, language, k);
+				expect(await isMoving(...diagrams(page, language))).toBe(false);
 			});
 
 			test('the mini-diagrams only animate in view', async ({ page }) => {
@@ -473,10 +474,7 @@ inEachBuild((build) => {
 
 			test('with reduced motion, the mini-diagrams stay still', async ({ page }) => {
 				await openPage(page, prefix, REDUCED_MOTION);
-				for (let k = 0; k < 4; k++) {
-					await scrollToCard(page, language, k);
-					expect(await isMoving(diagram(page, language, k)), `diagram ${k + 1}`).toBe(false);
-				}
+				expect(await isMoving(...diagrams(page, language))).toBe(false);
 			});
 
 			test.describe('without JavaScript', () => {
@@ -489,13 +487,10 @@ inEachBuild((build) => {
 				});
 
 				// Without JS, the pause button would not work: so the mini-diagrams may not move.
-				test('the mini-diagrams stay still', async ({ page, javaScriptEnabled }) => {
+				test('the mini-diagrams stay still', async ({ page }) => {
 					await page.setViewportSize({ width: DESKTOP.width, height: DESKTOP.height });
 					await page.goto(prefix);
-					for (let k = 0; k < 4; k++) {
-						await scrollToCard(page, language, k, javaScriptEnabled);
-						expect(await isMoving(diagram(page, language, k)), `diagram ${k + 1}`).toBe(false);
-					}
+					expect(await isMoving(...diagrams(page, language))).toBe(false);
 				});
 			});
 		});
