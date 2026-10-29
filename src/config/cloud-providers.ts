@@ -27,7 +27,7 @@ export const PROVIDERS: { id: ProviderId; name: string }[] = [
 	{ id: 'scaleway', name: 'Scaleway' },
 ];
 
-/** Facts have an official source; «Visibilidade e controlo dos custos» is Julien's opinion. */
+/** Facts have an official source; the cost criterion is Julien's opinion. */
 export const CRITERIA: { id: CriterionId; opinion?: true }[] = [
 	{ id: 'kubernetes' },
 	{ id: 'containers' },
@@ -122,6 +122,10 @@ export const FACTS: Record<ProviderId, Record<CriterionId, Fact>> = {
 					'https://docs.aws.amazon.com/cost-management/latest/userguide/ce-what-is.html',
 					RESEARCH_46,
 				),
+				source(
+					'https://docs.aws.amazon.com/cost-management/latest/userguide/ce-filtering.html',
+					RESEARCH_46,
+				),
 				source('https://aws.amazon.com/aws-cost-management/aws-budgets/'),
 				// Research #45 read the outbound traffic in the price list's JSON; this page says the same
 				// 100 GB/month for free, in a form people can read.
@@ -138,7 +142,7 @@ export const FACTS: Record<ProviderId, Record<CriterionId, Fact>> = {
 		containers: {
 			value: 1,
 			product: 'Cloud Run',
-			sources: [source('https://cloud.google.com/kubernetes-engine')],
+			sources: [source('https://cloud.google.com/run')],
 		},
 		paas: {
 			value: 1,
@@ -154,7 +158,7 @@ export const FACTS: Record<ProviderId, Record<CriterionId, Fact>> = {
 			product: 'S3NS',
 			sources: [
 				SECNUMCLOUD_CATALOGUE,
-				source('https://www.s3ns.io/en/news/s3ns-cloud-de-confiance-enters-general-availability'),
+				source('https://www.s3ns.io/en/news/premi3ns-secnumcloud-qualification'),
 			],
 		},
 		euRegions: {
@@ -166,7 +170,7 @@ export const FACTS: Record<ProviderId, Record<CriterionId, Fact>> = {
 			product: 'Cloud Billing Reports, Budgets',
 			sources: [
 				source('https://docs.cloud.google.com/billing/docs/how-to/reports', RESEARCH_46),
-				source('https://cloud.google.com/billing/docs/how-to/budgets'),
+				source('https://cloud.google.com/billing/docs/how-to/budgets-spend-caps'),
 				source('https://cloud.google.com/vpc/network-pricing'),
 			],
 		},
@@ -198,7 +202,9 @@ export const FACTS: Record<ProviderId, Record<CriterionId, Fact>> = {
 		secNumCloud: { value: 0, sources: [SECNUMCLOUD_CATALOGUE] },
 		euRegions: {
 			value: 0,
-			sources: [source('https://www.infomaniak.com/en/hosting/public-cloud')],
+			sources: [
+				source('https://docs.infomaniak.cloud/getting_started/first_project/connect_project/'),
+			],
 		},
 		costs: {
 			value: 0.5,
@@ -218,7 +224,7 @@ export const FACTS: Record<ProviderId, Record<CriterionId, Fact>> = {
 		containers: {
 			value: 1,
 			product: 'Azure Container Apps',
-			sources: [source('https://learn.microsoft.com/en-us/azure/aks/what-is-aks')],
+			sources: [source('https://learn.microsoft.com/en-us/azure/container-apps/overview')],
 		},
 		paas: {
 			value: 1,
@@ -248,6 +254,10 @@ export const FACTS: Record<ProviderId, Record<CriterionId, Fact>> = {
 					RESEARCH_46,
 				),
 				source(
+					'https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/group-filter',
+					RESEARCH_46,
+				),
+				source(
 					'https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/tutorial-acm-create-budgets',
 				),
 				source('https://azure.microsoft.com/en-us/pricing/details/bandwidth/'),
@@ -262,7 +272,7 @@ export const FACTS: Record<ProviderId, Record<CriterionId, Fact>> = {
 		},
 		containers: {
 			value: 0,
-			sources: [source('https://www.ovhcloud.com/en/public-cloud/kubernetes/')],
+			sources: [source('https://www.ovhcloud.com/en/public-cloud/regions-availability/')],
 		},
 		paas: {
 			value: 0,
@@ -275,7 +285,7 @@ export const FACTS: Record<ProviderId, Record<CriterionId, Fact>> = {
 		secNumCloud: { value: 1, product: 'SNC Cloud Platform', sources: [SECNUMCLOUD_CATALOGUE] },
 		euRegions: {
 			value: 1,
-			sources: [source('https://www.ovhcloud.com/en/about-us/global-infrastructure/regions/')],
+			sources: [source('https://www.ovhcloud.com/en/public-cloud/regions-availability/')],
 		},
 		costs: {
 			value: 0.5,
@@ -284,7 +294,7 @@ export const FACTS: Record<ProviderId, Record<CriterionId, Fact>> = {
 					'https://docs.ovhcloud.com/fr/guides/public-cloud/cross-functional/analyze-billing',
 					RESEARCH_46,
 				),
-				source('https://www.ovhcloud.com/en/public-cloud/savings-plan/'),
+				source('https://www.ovhcloud.com/en-ie/public-cloud/project-management/'),
 				source('https://www.ovhcloud.com/en-ie/public-cloud/prices/'),
 			],
 		},
@@ -298,7 +308,7 @@ export const FACTS: Record<ProviderId, Record<CriterionId, Fact>> = {
 		containers: {
 			value: 1,
 			product: 'Serverless Containers',
-			sources: [source('https://www.scaleway.com/en/kubernetes-kapsule/')],
+			sources: [source('https://www.scaleway.com/en/serverless-containers/')],
 		},
 		paas: {
 			value: 0,
@@ -312,7 +322,7 @@ export const FACTS: Record<ProviderId, Record<CriterionId, Fact>> = {
 			value: 1,
 			sources: [source('https://www.scaleway.com/en/legal-notice/')],
 		},
-		secNumCloud: { value: 0, sources: [SECNUMCLOUD_IN_QUALIFICATION] },
+		secNumCloud: { value: 0, sources: [SECNUMCLOUD_CATALOGUE, SECNUMCLOUD_IN_QUALIFICATION] },
 		euRegions: {
 			value: 1,
 			sources: [source('https://www.scaleway.com/en/product-availability-by-region/')],
@@ -334,13 +344,13 @@ export const FACTS: Record<ProviderId, Record<CriterionId, Fact>> = {
 
 export type Rating = 'consider' | 'possible' | 'unsuitable';
 
+/** From the best rating to the worst. */
+export const RATINGS: Rating[] = ['consider', 'possible', 'unsuitable'];
+
 // #54's thresholds and the boundary margin, in hundredths. Values are 0, ½ or 1 and weights are whole
 // numbers, so a score × 100 × the sum of weights is a whole number: the comparisons have no rounding
 // error, and 0.7 is exactly 0.7.
-const THRESHOLDS: { from: number; rating: Rating }[] = [
-	{ from: 70, rating: 'consider' },
-	{ from: 40, rating: 'possible' },
-];
+const THRESHOLDS = [70, 40];
 const BOUNDARY_MARGIN = 5;
 
 export interface Weighted {
@@ -374,10 +384,11 @@ export function score(scenario: ScenarioId, provider: ProviderId) {
 	return earned / total;
 }
 
-/** ≥ 0.7 «A considerar» · ≥ 0.4 «Possível» · below «Pouco indicado». */
+/** ≥ 0.7 worth considering · ≥ 0.4 possible · below, less suited: the k-th threshold passed gives RATINGS[k]. */
 export function rating(scenario: ScenarioId, provider: ProviderId): Rating {
 	const { earned, total } = points(scenario, provider);
-	return THRESHOLDS.find(({ from }) => earned * 100 >= from * total)?.rating ?? 'unsuitable';
+	const passed = THRESHOLDS.findIndex((threshold) => earned * 100 >= threshold * total);
+	return RATINGS[passed === -1 ? THRESHOLDS.length : passed]!;
 }
 
 export interface BoundaryCase {
@@ -398,20 +409,13 @@ export function boundaryCases(): BoundaryCase[] {
 		PROVIDERS.flatMap(({ id: provider }) => {
 			const { earned, total } = points(scenario, provider);
 			const k = THRESHOLDS.findIndex(
-				({ from }) => Math.abs(earned * 100 - from * total) < BOUNDARY_MARGIN * total,
+				(threshold) => Math.abs(earned * 100 - threshold * total) < BOUNDARY_MARGIN * total,
 			);
 			if (k === -1) return [];
-			const above = earned * 100 >= THRESHOLDS[k]!.from * total;
-			const below = THRESHOLDS[k + 1]?.rating ?? 'unsuitable';
-			return [
-				{
-					scenario,
-					provider,
-					score: earned / total,
-					rating: rating(scenario, provider),
-					otherSide: above ? below : THRESHOLDS[k]!.rating,
-				},
-			];
+			// Threshold k separates RATINGS[k] (at or above it) from RATINGS[k + 1] (below it).
+			const current = rating(scenario, provider);
+			const otherSide = current === RATINGS[k] ? RATINGS[k + 1]! : RATINGS[k]!;
+			return [{ scenario, provider, score: score(scenario, provider), rating: current, otherSide }];
 		}),
 	);
 }

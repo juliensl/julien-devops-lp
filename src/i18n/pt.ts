@@ -319,7 +319,7 @@ export const pt = {
 					costs:
 						'Custos por projeto e por produto. Etiquetas e previsão não encontradas. Os alertas só avisam.',
 				},
-			},
+			} satisfies Record<ProviderId, Partial<Record<CriterionId, string>>>,
 			/** Outbound traffic to the internet, from Europe. */
 			outbound: {
 				aws: 'pago depois de 100 GB/mês.',

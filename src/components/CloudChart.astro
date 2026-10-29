@@ -1,6 +1,6 @@
 ---
 // The cloud provider chart: the CTO picks a scenario and sees which of its criteria each provider meets,
-// with a bar stacked by criterion and a rating («A considerar», «Possível», «Pouco indicado»). A click on
+// with a bar stacked by criterion and a rating (worth considering, possible, less suited). A click on
 // a bar shows the facts behind it, each with its date and source, and Julien's opinion marked as such.
 // Everything is built here, one panel per scenario: CSS shows the checked scenario's panel, so the
 // scenarios work without JS. The script only shows the chosen provider's facts and tells screen
@@ -10,11 +10,13 @@ import {
 	FACTS,
 	FIRST_SCENARIO,
 	PROVIDERS,
+	RATINGS,
 	SCENARIOS,
 	criteriaOf,
 	rating,
 	score,
-	type Rating,
+	type CriterionId,
+	type ProviderId,
 	type ScenarioId,
 	type Value,
 } from '../config/cloud-providers';
@@ -29,20 +31,24 @@ const { language, ...t } = Astro.props;
 const isOpinion = Object.fromEntries(CRITERIA.map(({ id, opinion }) => [id, !!opinion]));
 const valueText = (value: Value) =>
 	value === 1 ? t.values.yes : value === 0.5 ? t.values.partly : t.values.no;
-const notes: Record<string, Record<string, string | undefined>> = t.notes;
-/** «Label: text», with the language's colon and its non-breaking space. */
+const notes: Record<ProviderId, Partial<Record<CriterionId, string>>> = t.notes;
+/** After a criterion's name: its weight in the scenario, and whether it is Julien's opinion. */
+const weightNote = (criterion: CriterionId, weight: number) =>
+	` · ${t.weight} ${weight}${isOpinion[criterion] ? ` · ${t.opinion}` : ''}`;
+/** "Label:", with the language's colon and its non-breaking space. */
+const withColon = (label: string) => withNonBreakingSpaces(label + t.colon);
+/** "Label: text", the same way. */
 const labelled = (label: string, text: string) =>
 	withNonBreakingSpaces(`${label}${t.colon} ${text}`);
-const host = (url: string) => new URL(url).hostname.replace(/^www\./, '');
-const date = new Intl.DateTimeFormat(HTML_CODES[language], {
+/** A source's link text: the site it is on. */
+const hostnameOf = (url: string) => new URL(url).hostname.replace(/^www\./, '');
+const dateFormat = new Intl.DateTimeFormat(HTML_CODES[language], {
 	dateStyle: 'medium',
 	timeZone: 'UTC',
 });
 
 // One color per segment, from the heaviest criterion at the bottom.
 const segmentColor = (k: number) => `var(--segment-${k + 1})`;
-
-const RATINGS: Rating[] = ['consider', 'possible', 'unsuitable'];
 
 /** What screen readers hear when the scenario changes: the scenario, then who has each rating. */
 function summary(scenario: ScenarioId) {
@@ -86,9 +92,7 @@ function summary(scenario: ScenarioId) {
 			<div data-scenario={scenario} data-summary={summary(scenario)} class="panel">
 				<div class="flex flex-wrap justify-between gap-x-8 gap-y-3 [grid-area:top]">
 					<p class="max-w-[32rem]">
-						<strong class="font-semibold">
-							{withNonBreakingSpaces(t.scenarios[scenario].name + t.colon)}
-						</strong>{' '}
+						<strong class="font-semibold">{withColon(t.scenarios[scenario].name)}</strong>{' '}
 						{withNonBreakingSpaces(t.scenarios[scenario].description)}
 					</p>
 					<ul class="flex flex-wrap gap-x-4 gap-y-1.5 text-[0.8125rem] text-foreground-secondary">
@@ -96,17 +100,13 @@ function summary(scenario: ScenarioId) {
 							<li>
 								<i class="swatch" style={`background: ${segmentColor(k)}`} />
 								{t.criteria[criterion]}
-								<small>
-									{' '}
-									· {t.weight} {weight}
-									{isOpinion[criterion] && ` · ${t.opinion}`}
-								</small>
+								<small>{weightNote(criterion, weight)}</small>
 							</li>
 						))}
 					</ul>
 				</div>
 
-				<ul class="bars [grid-area:bars]">
+				<ul class="bars [grid-area:bars]" style={`--providers: ${PROVIDERS.length}`}>
 					{PROVIDERS.map(({ id, name }) => {
 						const r = rating(scenario, id);
 						return (
@@ -151,7 +151,7 @@ function summary(scenario: ScenarioId) {
 							<p id={`cloud-${scenario}-${id}`}>
 								<strong class="font-heading text-xl font-normal">{name}</strong>
 								<br />
-								{withNonBreakingSpaces(t.scenarios[scenario].name + t.colon)}{' '}
+								{withColon(t.scenarios[scenario].name)}{' '}
 								<span class="font-semibold text-green">{t.ratings[rating(scenario, id)]}</span>
 							</p>
 							<ul aria-labelledby={`cloud-${scenario}-${id}`} class="grid gap-3">
@@ -164,9 +164,7 @@ function summary(scenario: ScenarioId) {
 											<span>
 												{t.criteria[criterion]}
 												<small class="text-foreground-secondary">
-													{' '}
-													· {t.weight} {weight}
-													{isOpinion[criterion] && ` · ${t.opinion}`}
+													{weightNote(criterion, weight)}
 												</small>
 											</span>
 											<strong class="font-semibold" data-value={fact.value}>
@@ -179,13 +177,14 @@ function summary(scenario: ScenarioId) {
 													<span class="block">{labelled(t.outboundTraffic, t.outbound[id])}</span>
 												)}
 												<span class="block">
-													{withNonBreakingSpaces(
-														(fact.sources.length > 1 ? t.sources : t.source) + t.colon,
-													)}{' '}
+													{withColon(fact.sources.length > 1 ? t.sources : t.source)}{' '}
 													{fact.sources.map(({ url, read }, s) => (
 														<>
 															{s > 0 && '; '}
-															<a href={url}>{host(url)}</a>, {t.read} {date.format(new Date(read))}
+															<a href={url}>{hostnameOf(url)}</a>,{' '}
+															{withNonBreakingSpaces(
+																`${t.read} ${dateFormat.format(new Date(read))}`,
+															)}
 														</>
 													))}
 												</span>
@@ -318,7 +317,7 @@ function summary(scenario: ScenarioId) {
 	   score, and each segment's share of it is what its criterion adds. */
 	.bars {
 		display: grid;
-		grid-template-columns: repeat(6, minmax(0, 1fr));
+		grid-template-columns: repeat(var(--providers), minmax(0, 1fr));
 		gap: 0.75rem;
 	}
 	.bar {

@@ -11,19 +11,19 @@ type Rating = 'consider' | 'possible' | 'unsuitable';
 
 // #54's table «Resultado com os factos de hoje», provider by provider, in alphabetical order.
 const RESULTS: { ratings: Rating[] }[] = [
-	// Antes do lançamento
+	// Before launch
 	{ ratings: ['consider', 'consider', 'consider', 'consider', 'unsuitable', 'possible'] },
-	// SaaS em crescimento
+	// Growing SaaS
 	{ ratings: ['consider', 'consider', 'possible', 'consider', 'possible', 'consider'] },
-	// Soberania dos dados
+	// Data sovereignty
 	{ ratings: ['possible', 'possible', 'unsuitable', 'possible', 'consider', 'consider'] },
-	// Carga muito variável
+	// Highly variable load
 	{ ratings: ['consider', 'consider', 'consider', 'consider', 'possible', 'consider'] },
-	// Custos sob controlo
+	// Costs under control
 	{ ratings: ['consider', 'consider', 'possible', 'consider', 'unsuitable', 'possible'] },
 ];
 
-// The names come from the spec (#54) and the French «Souveraineté des données» from #46. The other
+// The names come from the spec (#54), and the French name of the data sovereignty scenario from #46. The other
 // French and English texts are translations the intern reviews before the Commercial launch (#75).
 const EXPECTED: Record<
 	Language,
@@ -34,7 +34,7 @@ const EXPECTED: Record<
 		hint: string;
 		/** French puts a space before the colon. */
 		colon: string;
-		/** Microsoft Azure's facts in «SaaS em crescimento», heaviest criterion first: the criterion,
+		/** Microsoft Azure's facts in the growing SaaS scenario, heaviest criterion first: the criterion,
 		 * the value and what else the line says (the product, a note). */
 		azure: [string, string, string][];
 		opinion: string;
@@ -121,7 +121,7 @@ const section = (page: Page, language: Language) =>
 /** The bars of the scenario on screen: those of the other scenarios are hidden. */
 const bars = (page: Page, language: Language) => section(page, language).getByRole('button');
 
-/** «Clica numa barra para ver os factos», in the scenario on screen. */
+/** The hint to click a bar, in the scenario on screen. */
 const hint = (page: Page, language: Language) =>
 	section(page, language)
 		.getByText(EXPECTED[language].hint, { exact: true })
@@ -231,7 +231,7 @@ inEachBuild((build) => {
 				await bars(page, language).nth(azure).click();
 				await scenario(page, language, SOVEREIGNTY).check();
 				await expect(bars(page, language).nth(azure)).toHaveAttribute('aria-pressed', 'true');
-				// «Soberania dos dados» weighs 3 criteria.
+				// Data sovereignty weighs 3 criteria.
 				await expect(detail(page, language, 'Microsoft Azure').getByRole('listitem')).toHaveCount(
 					3,
 				);
