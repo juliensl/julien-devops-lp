@@ -23,7 +23,9 @@ import { dictionaries } from '../i18n';
 import Base from '../layouts/Base.astro';
 import { withNonBreakingSpaces } from '../lib/spaces';
 import BookingButton from './BookingButton';
+import FlowingLeaf from './FlowingLeaf.astro';
 import Leaf from './Leaf.astro';
+import PauseButton from './PauseButton.astro';
 import ValueBadge, { type BadgeKind } from './ValueBadge.astro';
 
 interface Props {
@@ -57,23 +59,29 @@ const sliders: { name: keyof typeof FIELDS; hint?: [BadgeKind, string] }[] = [
 
 <Base language={language} title={`${page.title} · ${values.name}`} description={page.description}>
 	<main>
-		<div class="page-width grid gap-x-16 gap-y-8 pt-14 sm:pt-20 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:items-end">
+		{/* As on the home page, the pause button is the first focus after the header. */}
+		<PauseButton {...t.animation} />
+
+		{/* The flowing leaf of points stands where the ∞ is in prototype v3's Hero, away from the title, and
+		    below the text on a phone (#69, decided with the intern). The badge legend runs below them, in a
+		    row on a computer. */}
+		<div class="page-width grid gap-x-16 gap-y-8 pt-14 sm:pt-20 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:items-center">
 			<div class="grid gap-5">
 				<p class="label flex items-center gap-2">
 					<Leaf size={16} /> {page.title}
 				</p>
-				{/* The flowing leaf of points, beside the title and above it on a phone (#69) */}
 				<h1 class="max-w-[20ch] text-[clamp(2rem,5vw,4.2rem)] leading-[1.05]">{page.heading}</h1>
 				<p class="max-w-2xl text-lg text-foreground-secondary">
 					{withNonBreakingSpaces(page.intro)}
 				</p>
 			</div>
+			<FlowingLeaf class="w-48 justify-self-center lg:w-80" />
 			<ul
 				aria-label={page.legend.label}
-				class="grid gap-3 border-l-2 border-green pl-6 text-sm text-foreground-secondary"
+				class="grid gap-3 border-l-2 border-green pl-6 text-sm text-foreground-secondary lg:col-span-2 lg:grid-cols-3 lg:gap-8 lg:border-l-0 lg:pl-0"
 			>
 				{(['published', 'assumption', 'calculated'] as const).map((kind) => (
-					<li class="grid items-center gap-x-3 gap-y-1 sm:grid-cols-[7rem_1fr]">
+					<li class="grid items-center gap-x-3 gap-y-1 sm:grid-cols-[7rem_1fr] lg:grid-cols-[auto_1fr] lg:border-l-2 lg:border-green lg:pl-6">
 						<span>
 							<ValueBadge language={language} kind={kind} />
 						</span>

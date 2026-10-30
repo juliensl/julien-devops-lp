@@ -469,6 +469,53 @@ inEachBuild((build) => {
 			});
 		});
 
+		// The flowing leaf stands where the ∞ is in the Hero of prototype v3, away from the title, and the
+		// badge legend runs below them (#69, decided with the intern).
+		test.describe(`${path} flowing leaf`, () => {
+			const boxes = async (page: Page) => ({
+				title: (await page.getByRole('heading', { level: 1 }).boundingBox())!,
+				leaf: (await page.getByRole('main').locator('canvas').boundingBox())!,
+				legend: await Promise.all(
+					(await page.getByRole('list', { name: t.legend }).getByRole('listitem').all()).map(
+						async (item) => (await item.boundingBox())!,
+					),
+				),
+			});
+
+			test('on a computer, it stands to the right of the title, and the legend runs below, in a row', async ({
+				page,
+			}) => {
+				await page.setViewportSize({ width: 1280, height: 800 });
+				await page.goto(path);
+				const { title, leaf, legend } = await boxes(page);
+				expect(leaf.width, '20rem').toBe(320);
+				expect(leaf.x - (title.x + title.width), 'away from the title').toBeGreaterThanOrEqual(64);
+				expect(leaf.y, 'level with the title').toBeLessThan(title.y + title.height);
+				expect(leaf.y + leaf.height, 'level with the title').toBeGreaterThan(title.y);
+				for (const item of legend) {
+					expect(item.y, 'below the leaf').toBeGreaterThanOrEqual(leaf.y + leaf.height);
+					expect(item.y, 'in a row').toBe(legend[0].y);
+				}
+			});
+
+			test('on a phone, it comes after the text, before the legend, and covers no text', async ({
+				page,
+			}) => {
+				await page.setViewportSize({ width: 375, height: 800 });
+				await page.goto(path);
+				const { title, leaf, legend } = await boxes(page);
+				expect(leaf.width, '12rem').toBe(192);
+				expect(leaf.y, 'below the title').toBeGreaterThanOrEqual(title.y + title.height);
+				expect(legend[0].y, 'above the legend').toBeGreaterThanOrEqual(leaf.y + leaf.height);
+				for (const text of await page.getByRole('main').locator('p').all()) {
+					const box = await text.boundingBox();
+					if (!box) continue;
+					const covers = box.y < leaf.y + leaf.height && leaf.y < box.y + box.height;
+					expect(covers, await text.innerText()).toBe(false);
+				}
+			});
+		});
+
 		test.describe(`${path} estimator without JS`, () => {
 			test.use({ javaScriptEnabled: false });
 
