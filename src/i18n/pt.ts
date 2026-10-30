@@ -335,6 +335,21 @@ export const pt = {
 			wayOfWorking:
 				'Trabalho à distância, em português, francês e inglês. Uso tecnologias standard, sem lock-in, e documento tudo para a tua equipa ficar autónoma.',
 		},
+		/** The Testimonials. Their texts, authors and approvals are in src/config/testimonials.ts. */
+		testimonials: {
+			title: 'O que dizem os clientes',
+			/** What screen readers call the carousel and each Testimonial in it. */
+			carousel: 'carrossel',
+			slide: 'testemunho',
+			/** Between the two numbers of «1 de 3». */
+			of: 'de',
+			previous: 'Testemunho anterior',
+			next: 'Testemunho seguinte',
+			/** The strip of Testimonials, which slides sideways. */
+			strip: 'Testemunhos: desliza para ver os outros',
+			translated: 'Traduzido do francês',
+			malt: 'Ver no Malt',
+		},
 		finalCta: {
 			title: 'Nunca perdes a infraestrutura.',
 			text: 'Mesmo que a tua equipa não avance logo com os testes, ficas com uma pipeline limpa, documentada e com os standards do mercado, pronta para quando decidires.',

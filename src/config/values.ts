@@ -10,6 +10,8 @@ const schema = z.object({
 	/** In the other languages, the final CTA warns that the booking page is in this one. */
 	bookingPageLanguage: z.enum(LANGUAGES),
 	linkedin: z.url({ protocol: /^https$/ }),
+	/** Julien's Malt profile, where the Testimonials were posted: each one links to it. */
+	malt: z.url({ protocol: /^https$/ }),
 });
 
 const result = schema.safeParse({
@@ -17,6 +19,7 @@ const result = schema.safeParse({
 	bookingPage: 'https://calendly.com/contact-julienlaffont/appel-cadrage',
 	bookingPageLanguage: 'fr',
 	linkedin: 'https://www.linkedin.com/in/julien-laffont-4a3623134/',
+	malt: 'https://www.malt.fr/profile/julienlaffont',
 } satisfies z.input<typeof schema>);
 
 if (!result.success) {

@@ -1,0 +1,245 @@
+---
+// The Testimonials (#67): one at a time, in a carousel that moves on by itself once each one has
+// had the time to be read. Without JS, the strip slides sideways with a finger or a trackpad; the
+// script adds the arrows, the "1 of 3" indicator, the bar with the time left and the passing.
+// Only the Testimonials the language can show are here: with none, there is no section (#54).
+// Each one links to Julien's Malt profile, where it was posted. #51 and #67 had no link: the
+// change is explained in the PR that closes #67.
+import type { Language } from '../config/site';
+import { testimonialsIn } from '../config/testimonials';
+import { values } from '../config/values';
+import type { Dictionary } from '../i18n/pt';
+import { withNonBreakingSpaces } from '../lib/spaces';
+
+type Props = Dictionary['homePage']['testimonials'] & { language: Language };
+
+const { language, title, carousel, slide, of, previous, next, strip, translated, malt } =
+	Astro.props;
+const testimonials = testimonialsIn(language);
+const total = testimonials.length;
+// A single Testimonial is shown as it is, with nothing to pass to.
+const isCarousel = total > 1;
+
+/** The time to read a text, at about 200 words per minute, and at least 8 s (#54). */
+const readingSeconds = (text: string[]) =>
+	Math.max(8, (text.join(' ').trim().split(/\s+/).length / 200) * 60);
+
+const arrowClass =
+	'grid size-11 cursor-pointer place-items-center rounded-full border border-line-strong text-lg leading-none text-foreground hover:border-green';
+---
+
+{total > 0 && (
+	<section
+		aria-labelledby="testimonials-title"
+		aria-roledescription={isCarousel ? carousel : undefined}
+		data-carousel={isCarousel ? '' : undefined}
+		class="page-width grid gap-8 py-[clamp(5rem,10vw,8rem)]"
+	>
+		<h2 id="testimonials-title" class="label font-body">
+			{title}
+		</h2>
+
+		{/* Hidden until the script runs: without JS, the strip slides on its own. */}
+		{isCarousel && (
+			<div hidden data-controls class="flex items-center gap-3">
+				<button type="button" aria-label={previous} data-previous class={arrowClass}>
+					←
+				</button>
+				<p
+					aria-live="polite"
+					data-position
+					class="min-w-[4.5ch] text-center text-sm text-foreground-secondary tabular-nums"
+				>
+					1 {of} {total}
+				</p>
+				<button type="button" aria-label={next} data-next class={arrowClass}>
+					→
+				</button>
+				{/* The reading time: it fills up as it passes, so the rest of the line is the time
+				    left. For the eye only. With reduced motion, nothing passes by itself: it hides. */}
+				<span
+					aria-hidden="true"
+					class="relative ml-2 h-0.5 w-24 bg-line-strong motion-reduce:hidden"
+				>
+					<span data-time class="absolute inset-0 origin-left scale-x-0 bg-green" />
+				</span>
+			</div>
+		)}
+
+		{/* As tall as the longest Testimonial, so the page does not jump. It takes no focus: taller
+		    than a small screen, it would end up under the header. The keyboard reaches each
+		    Testimonial through its Malt link, which slides it into view. */}
+		<div
+			data-strip
+			role={isCarousel ? 'group' : undefined}
+			aria-label={isCarousel ? strip : undefined}
+			class="grid snap-x snap-mandatory auto-cols-[100%] grid-flow-col items-start gap-4 overflow-x-auto overscroll-x-contain"
+		>
+			{testimonials.map(({ firstName, role, company, text, translated: isTranslation }, k) => (
+				<figure
+					aria-roledescription={isCarousel ? slide : undefined}
+					aria-label={isCarousel ? `${k + 1} ${of} ${total}` : undefined}
+					data-seconds={readingSeconds(text)}
+					class="grid max-w-4xl snap-start content-start gap-6 border-t-2 border-green pt-6"
+				>
+					<blockquote class="grid gap-3 font-heading text-[clamp(1.25rem,2.2vw,1.6rem)] leading-[1.45]">
+						{text.map((paragraph) => (
+							<p>{withNonBreakingSpaces(paragraph)}</p>
+						))}
+					</blockquote>
+					<figcaption class="grid justify-items-start gap-1 text-sm text-foreground-secondary">
+						<p>
+							<span class="font-medium text-foreground">{firstName}</span> · {role} · {company}
+						</p>
+						{isTranslation && <p>{translated}</p>}
+						<a
+							href={values.malt}
+							class="inline-flex min-h-6 items-center underline underline-offset-3 hover:text-foreground"
+						>
+							{malt}
+						</a>
+					</figcaption>
+				</figure>
+			))}
+		</div>
+	</section>
+)}
+
+<script>
+	import { afterLoad } from '../scripts/after-load';
+
+	afterLoad(() => {
+		for (const section of document.querySelectorAll<HTMLElement>('[data-carousel]')) {
+			const strip = section.querySelector<HTMLElement>('[data-strip]')!;
+			const slides = [...strip.children] as HTMLElement[];
+			const position = section.querySelector<HTMLElement>('[data-position]')!;
+			const timeBar = section.querySelector<HTMLElement>('[data-time]')!;
+			const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+			// The time to read each one, in ms.
+			const durations = slides.map((slide) => Number(slide.dataset.seconds) * 1000);
+			let current = 0;
+			/** The time the current one has been read for, in ms. */
+			let elapsed = 0;
+
+			const offset = (k: number) => slides[k].offsetLeft - slides[0].offsetLeft;
+
+			// Makes the k-th one current, with its reading time from zero. The indicator says the same
+			// as its label, "2 of 3".
+			const setCurrent = (k: number) => {
+				current = k;
+				elapsed = 0;
+				timeBar.style.scale = '';
+				position.textContent = slides[k].getAttribute('aria-label');
+			};
+
+			// The arrows go round: after the last one comes the first.
+			const go = (k: number) => {
+				setCurrent((k + slides.length) % slides.length);
+				strip.scrollTo({
+					left: offset(current),
+					behavior: reducedMotion.matches ? 'auto' : 'smooth',
+				});
+			};
+			section.querySelector('[data-previous]')!.addEventListener('click', () => go(current - 1));
+			section.querySelector('[data-next]')!.addEventListener('click', () => go(current + 1));
+
+			// A finger or a trackpad can slide the strip too: once it stops, the indicator follows.
+			let settling = 0;
+			strip.addEventListener(
+				'scroll',
+				() => {
+					clearTimeout(settling);
+					settling = window.setTimeout(() => {
+						const nearest = slides.reduce(
+							(best, _, k) =>
+								Math.abs(offset(k) - strip.scrollLeft) < Math.abs(offset(best) - strip.scrollLeft)
+									? k
+									: best,
+							0,
+						);
+						if (nearest !== current) setCurrent(nearest);
+					}, 100);
+				},
+				{ passive: true },
+			);
+
+			// Each frame adds the time since the previous one, and the bar fills up; once the current one
+			// has had its time, the next one comes.
+			let frame = 0;
+			let previousFrame: number | undefined;
+			const tick = (now: number) => {
+				elapsed += now - (previousFrame ?? now);
+				previousFrame = now;
+				if (elapsed >= durations[current]) go(current + 1);
+				timeBar.style.scale = `${elapsed / durations[current]} 1`;
+				frame = requestAnimationFrame(tick);
+			};
+			// It passes by itself only when nobody is reading it closely or has stopped it: not with the
+			// mouse or the focus on it, off the screen, in a hidden tab, with the page's pause button
+			// (WCAG 2.2.2) or with reduced motion.
+			let pointerOver = false;
+			let focusIn = false;
+			let onScreen = false;
+			const update = () => {
+				const passing =
+					!pointerOver &&
+					!focusIn &&
+					onScreen &&
+					!document.hidden &&
+					document.documentElement.dataset.animation !== 'paused' &&
+					!reducedMotion.matches;
+				// While it passes by itself, the indicator is not read out at each change.
+				position.setAttribute('aria-live', passing ? 'off' : 'polite');
+				if (passing && !frame) {
+					previousFrame = undefined;
+					frame = requestAnimationFrame(tick);
+				} else if (!passing && frame) {
+					cancelAnimationFrame(frame);
+					frame = 0;
+				}
+			};
+
+			section.addEventListener('pointerenter', () => {
+				pointerOver = true;
+				update();
+			});
+			section.addEventListener('pointerleave', () => {
+				pointerOver = false;
+				update();
+			});
+			section.addEventListener('focusin', () => {
+				focusIn = true;
+				update();
+			});
+			section.addEventListener('focusout', (event) => {
+				focusIn = section.contains(event.relatedTarget as Node | null);
+				update();
+			});
+			// On the screen means across its middle half, however tall the strip is.
+			new IntersectionObserver(
+				([entry]) => {
+					onScreen = entry.isIntersecting;
+					update();
+				},
+				{ rootMargin: '-25% 0px' },
+			).observe(strip);
+			document.addEventListener('visibilitychange', update);
+			document.addEventListener('animation', update);
+			reducedMotion.addEventListener('change', update);
+
+			update();
+			section.querySelector<HTMLElement>('[data-controls]')!.hidden = false;
+			section.toggleAttribute('data-ready', true);
+		}
+	});
+</script>
+
+<style>
+	/* With the arrows, the strip's scrollbar is not needed; without JS, it shows that the strip slides. */
+	[data-ready] [data-strip] {
+		scrollbar-width: none;
+	}
+	[data-ready] [data-strip]::-webkit-scrollbar {
+		display: none;
+	}
+</style>
