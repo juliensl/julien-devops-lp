@@ -129,6 +129,8 @@ const EXPECTED: Record<
 		questions: string;
 		/** The name of the index of audiences. */
 		index: string;
+		/** The last link of the header submenu. */
+		all: string;
 		notFound: string;
 	}
 > = {
@@ -143,6 +145,7 @@ const EXPECTED: Record<
 		filter: { all: 'Todas', general: 'Gerais', cto: 'CTO', ceo: 'CEO', team: 'Equipa técnica' },
 		questions: 'perguntas',
 		index: 'Perfis',
+		all: 'Ver todas as perguntas',
 		notFound: 'Não encontras a tua pergunta?',
 	},
 	fr: {
@@ -162,6 +165,7 @@ const EXPECTED: Record<
 		},
 		questions: 'questions',
 		index: 'Profils',
+		all: 'Voir toutes les questions',
 		notFound: 'Tu ne trouves pas ta question ?',
 	},
 	en: {
@@ -175,6 +179,7 @@ const EXPECTED: Record<
 		filter: { all: 'All', general: 'General', cto: 'CTO', ceo: 'CEO', team: 'Tech team' },
 		questions: 'questions',
 		index: 'Roles',
+		all: 'See all questions',
 		notFound: "Can't find your question?",
 	},
 };
@@ -195,7 +200,8 @@ const answerTo = (question: string) =>
 inEachBuild((build) => {
 	for (const language of build.phase.publishedLanguages) {
 		const path = questionsPath(language);
-		const { menu, audiences, filter, questions, index, notFound } = EXPECTED[language];
+		const { menu, audiences, filter, questions, index, all, notFound } = EXPECTED[language];
+		const home = LANGUAGES[language].prefix;
 
 		test.describe(path, () => {
 			test('has its own title and description', async ({ page }) => {
@@ -306,6 +312,90 @@ inEachBuild((build) => {
 						).toBeInViewport();
 					}
 					await expect(shownQuestions(page)).toHaveCount(23);
+				});
+			});
+		});
+
+		test.describe(`${home}: the header's "${menu}" submenu`, () => {
+			/** The submenu's button: the `<summary>` of its `<details>`. */
+			const menuButton = (page: Page) =>
+				page.getByRole('banner').locator('summary').filter({ hasText: menu, visible: true });
+			const submenuLink = (page: Page, name: string) =>
+				page.getByRole('banner').getByRole('link', { name }).filter({ visible: true });
+
+			test('opens with the four audiences and all the questions', async ({ page }) => {
+				await page.goto(home);
+				for (const anchor of ANCHORS)
+					await expect(submenuLink(page, audiences[anchor])).toBeHidden();
+				await menuButton(page).click();
+				for (const anchor of ANCHORS) {
+					await expect(submenuLink(page, audiences[anchor])).toHaveAttribute(
+						'href',
+						`${path}#${anchor}`,
+					);
+				}
+				await expect(submenuLink(page, all)).toHaveAttribute('href', path);
+				await expect(submenuLink(page, all)).not.toHaveAttribute('aria-current');
+			});
+
+			test('each link leads to its audience, from any page', async ({ page }) => {
+				await page.goto(home);
+				await menuButton(page).click();
+				await submenuLink(page, audiences.ceo).click();
+				await expect(page).toHaveURL(`${path}#ceo`);
+				await expect(page.getByRole('radio', { name: filter.ceo, exact: true })).toBeChecked();
+				await expect(shownQuestions(page)).toHaveCount(COUNTS.ceo);
+				await expect(
+					page.getByRole('heading', { name: audiences.ceo, exact: true }),
+				).toBeInViewport();
+
+				// On the questions page, the submenu changes the audience, and then closes.
+				await menuButton(page).click();
+				await submenuLink(page, audiences.team).click();
+				await expect(page.getByRole('radio', { name: filter.team, exact: true })).toBeChecked();
+				await expect(shownQuestions(page)).toHaveCount(COUNTS.team);
+				await expect(
+					page.getByRole('heading', { name: audiences.team, exact: true }),
+				).toBeInViewport();
+				await expect(submenuLink(page, audiences.cto)).toBeHidden();
+
+				await menuButton(page).click();
+				await expect(submenuLink(page, all)).toHaveAttribute('aria-current', 'page');
+				await submenuLink(page, all).click();
+				await expect(page).toHaveURL(path);
+				await expect(page.getByRole('radio', { name: filter.all, exact: true })).toBeChecked();
+				await expect(shownQuestions(page)).toHaveCount(23);
+			});
+
+			test.describe('on a phone', () => {
+				test.use({ viewport: { width: 375, height: 700 } });
+
+				test('the audiences are in the menu', async ({ page }) => {
+					await page.goto(home);
+					await expect(menuButton(page)).toHaveCount(0);
+					await page.getByRole('banner').locator('summary').filter({ visible: true }).click();
+					for (const anchor of ANCHORS) {
+						await expect(submenuLink(page, audiences[anchor])).toHaveAttribute(
+							'href',
+							`${path}#${anchor}`,
+						);
+					}
+					await submenuLink(page, all).click();
+					await expect(page).toHaveURL(path);
+				});
+			});
+
+			test.describe('without JavaScript', () => {
+				test.use({ javaScriptEnabled: false });
+
+				test('the submenu opens and its links lead to each audience', async ({ page }) => {
+					await page.goto(home);
+					await menuButton(page).click();
+					await submenuLink(page, audiences.cto).click();
+					await expect(page).toHaveURL(`${path}#cto`);
+					await expect(
+						page.getByRole('heading', { name: audiences.cto, exact: true }),
+					).toBeInViewport();
 				});
 			});
 		});

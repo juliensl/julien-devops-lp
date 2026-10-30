@@ -1,11 +1,15 @@
 ---
-// The sticky header of every page: the logo, the language switcher and the button.
-// On mobile, the languages move into a `<details>` menu, which opens without JS; the button always stays visible.
+// The sticky header of every page: the logo, «Os teus desafios» with its submenu of audiences, the
+// language switcher and the button.
+// On mobile, the audiences and the languages move into a `<details>` menu, which opens without JS; the
+// button always stays visible.
 // On a page with no equivalents in other languages (the 404), the header keeps only the logo and the button,
 // and the logo leads to the home page of the first published language.
 // The parts that arrive with the pages they lead to have their place marked with the ticket.
+import { AUDIENCES } from '../config/audiences';
 import { PHASE, PREFIXES, type Language } from '../config/site';
 import { dictionaries } from '../i18n';
+import { questionsPath } from '../lib/paths';
 import BookingButton from './BookingButton';
 import LanguageSwitcher from './LanguageSwitcher.astro';
 import Logo from './Logo.astro';
@@ -18,6 +22,9 @@ interface Props {
 
 const { language, noEquivalents = false } = Astro.props;
 const t = dictionaries[language];
+const { audiences } = t.questions;
+/** On the questions page, «Ver todas as perguntas» is the current page. */
+const allQuestionsCurrent = Astro.url.pathname === questionsPath(language) ? 'page' : undefined;
 ---
 
 <header class="sticky top-0 z-20 border-b border-line bg-background/85 backdrop-blur-md">
@@ -31,7 +38,53 @@ const t = dictionaries[language];
 		</a>
 
 		<div class="ml-auto flex items-center gap-4">
-			{/* "Os teus desafios" and the submenu (#70) */}
+			{!noEquivalents && (
+				<nav aria-label={t.questions.menu} class="max-md:hidden">
+					<details data-menu class="group relative">
+						<summary class="inline-flex min-h-11 cursor-pointer list-none items-center gap-1.5 rounded-lg px-3 text-[0.9375rem] text-foreground-secondary transition-colors group-open:bg-surface group-open:text-foreground hover:bg-surface hover:text-foreground [&::-webkit-details-marker]:hidden">
+							{t.questions.menu}
+							<svg
+								width="12"
+								height="12"
+								viewBox="0 0 12 12"
+								aria-hidden="true"
+								class="transition-transform group-open:rotate-180"
+							>
+								<path
+									d="M2.5 4.5 6 8l3.5-3.5"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1.6"
+								></path>
+							</svg>
+						</summary>
+						<ul class="absolute top-[calc(100%+0.5rem)] right-0 grid w-[22rem] gap-0.5 rounded-xl border border-line bg-surface p-2 shadow-[0_18px_40px_rgb(0_0_0/0.45)]">
+							{AUDIENCES.map((id) => (
+								<li>
+									<a
+										href={questionsPath(language, id)}
+										class="grid gap-0.5 rounded-lg px-3 py-2.5 hover:bg-surface-2"
+									>
+										<span class="font-semibold text-foreground">{audiences[id].name}</span>
+										<span class="text-[0.8125rem] leading-snug text-foreground-secondary">
+											{audiences[id].description}
+										</span>
+									</a>
+								</li>
+							))}
+							<li>
+								<a
+									href={questionsPath(language)}
+									aria-current={allQuestionsCurrent}
+									class="flex min-h-11 items-center rounded-lg px-3 font-semibold text-green hover:bg-surface-2"
+								>
+									{t.questions.all}
+								</a>
+							</li>
+						</ul>
+					</details>
+				</nav>
+			)}
 
 			{/* 🍃 Ecology (#68) */}
 
@@ -56,7 +109,35 @@ const t = dictionaries[language];
 					<span class="sr-only">{t.header.menu}</span>
 				</summary>
 				<div class="absolute top-[calc(100%+0.625rem)] right-0 grid w-[min(20rem,calc(100vw-2.5rem))] gap-2 rounded-xl border border-line bg-surface p-4 shadow-[0_18px_40px_rgb(0_0_0/0.5)]">
-					{/* "Os teus desafios" (#70) */}
+					<nav aria-labelledby="menu-questions">
+						<p
+							id="menu-questions"
+							class="px-2 text-[0.6875rem] tracking-[0.12em] text-foreground-secondary uppercase"
+						>
+							{t.questions.menu}
+						</p>
+						<ul class="mt-1 grid">
+							{AUDIENCES.map((id) => (
+								<li>
+									<a
+										href={questionsPath(language, id)}
+										class="flex min-h-11 items-center rounded-lg px-2 hover:bg-surface-2"
+									>
+										{audiences[id].name}
+									</a>
+								</li>
+							))}
+							<li>
+								<a
+									href={questionsPath(language)}
+									aria-current={allQuestionsCurrent}
+									class="flex min-h-11 items-center rounded-lg px-2 font-semibold text-green hover:bg-surface-2"
+								>
+									{t.questions.all}
+								</a>
+							</li>
+						</ul>
+					</nav>
 
 					{/* Ecology (#68): below 360 px, it only lives here */}
 
