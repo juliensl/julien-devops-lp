@@ -71,6 +71,12 @@ export const pt = {
 	ecology: {
 		/** The links to the page, with the leaf, in the header and the footer. */
 		link: 'Ecologia',
+		/** The home page's Ecology section. */
+		home: {
+			title: 'A infraestrutura também tem pegada.',
+			text: 'Onde a aplicação corre, quanto corre e com que eficiência mudam o impacto ambiental. A página de ecologia deixa-te estimar uma carga conforme o país onde corre, separando dados publicados, hipóteses e cálculos.',
+			link: 'Abrir a página de ecologia',
+		},
 		page: {
 			title: 'Ecologia e infraestrutura',
 			description:

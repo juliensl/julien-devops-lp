@@ -536,3 +536,42 @@ inEachBuild((build) => {
 		});
 	}
 });
+
+// The home page's Ecology section: a short text and the link (#54); the texts are prototype v3's.
+const HOME: Record<Language, { title: string; text: string; link: string }> = {
+	pt: {
+		title: 'A infraestrutura também tem pegada.',
+		text: 'Onde a aplicação corre, quanto corre e com que eficiência mudam o impacto ambiental. A página de ecologia deixa-te estimar uma carga conforme o país onde corre, separando dados publicados, hipóteses e cálculos.',
+		link: 'Abrir a página de ecologia',
+	},
+	fr: {
+		title: "L'infrastructure aussi a une empreinte.",
+		text: "L'endroit où tourne l'application, combien de temps elle tourne et avec quelle efficacité changent son impact environnemental. La page écologie te permet d'estimer une charge selon le pays où elle tourne, en séparant données publiées, hypothèses et calculs.",
+		link: 'Ouvrir la page écologie',
+	},
+	en: {
+		title: 'Infrastructure has a footprint too.',
+		text: 'Where the application runs, how long it runs and how efficiently all change its environmental impact. The ecology page lets you estimate a workload by the country it runs in, keeping published data, assumptions and calculations apart.',
+		link: 'Open the ecology page',
+	},
+};
+
+inEachBuild((build) => {
+	for (const language of build.phase.publishedLanguages) {
+		const { prefix } = LANGUAGES[language];
+		const { title, text, link } = HOME[language];
+
+		test(`${prefix}: the Ecology section has a short text and leads to the ecology page`, async ({
+			page,
+		}) => {
+			await page.goto(prefix);
+			const section = page.getByRole('region', { name: title });
+			await expect(section.getByText(LINK[language], { exact: true })).toBeVisible();
+			await expect(section.getByText(text)).toBeVisible();
+			await expect(section.getByRole('link', { name: link })).toHaveAttribute(
+				'href',
+				`${prefix}${PATH}`,
+			);
+		});
+	}
+});

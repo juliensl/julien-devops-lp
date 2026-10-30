@@ -20,6 +20,11 @@ export const fr: Dictionary = {
 	},
 	ecology: {
 		link: 'Écologie',
+		home: {
+			title: "L'infrastructure aussi a une empreinte.",
+			text: "L'endroit où tourne l'application, combien de temps elle tourne et avec quelle efficacité changent son impact environnemental. La page écologie te permet d'estimer une charge selon le pays où elle tourne, en séparant données publiées, hypothèses et calculs.",
+			link: 'Ouvrir la page écologie',
+		},
 		page: {
 			title: 'Écologie et infrastructure',
 			description:

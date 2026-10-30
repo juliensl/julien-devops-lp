@@ -19,6 +19,11 @@ export const en: Dictionary = {
 	},
 	ecology: {
 		link: 'Ecology',
+		home: {
+			title: 'Infrastructure has a footprint too.',
+			text: 'Where the application runs, how long it runs and how efficiently all change its environmental impact. The ecology page lets you estimate a workload by the country it runs in, keeping published data, assumptions and calculations apart.',
+			link: 'Open the ecology page',
+		},
 		page: {
 			title: 'Ecology and infrastructure',
 			description:
