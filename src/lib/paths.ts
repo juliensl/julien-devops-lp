@@ -1,4 +1,10 @@
+import type { AudienceId } from '../config/audiences';
 import { PREFIXES, type Language } from '../config/site';
+
+/** The questions page («Os teus desafios») in a language, at an audience's anchor if given. */
+export function questionsPath(language: Language, audience?: AudienceId): string {
+	return `${PREFIXES[language]}questions/${audience ? `#${audience}` : ''}`;
+}
 
 /**
  * The same page in another language. Slugs are the same in all three languages, so only the start

@@ -301,4 +301,173 @@ export const en: Dictionary = {
 				'The booking page is in French, but the conversation can be in English or Portuguese.',
 		},
 	},
+	questions: {
+		menu: 'Your challenges',
+		all: 'See all questions',
+		count: { one: 'question', other: 'questions' },
+		audiences: {
+			general: {
+				name: 'General questions',
+				short: 'General',
+				description: 'For anyone evaluating the service.',
+				questions: [
+					{
+						question: 'What exactly do you do?',
+						answer:
+							'I deliver the DevOps infrastructure a SaaS needs to grow, in four blocks: CI pipeline and code audit, containerisation, scalable infrastructure and observability. You hire the ones you want, in any combination.',
+					},
+					{
+						question: 'How long does it take?',
+						answer:
+							'At most 30 days, for any combination of blocks, from the start of the Implementation. The exact timeframe comes in the Intervention proposal.',
+					},
+					{
+						question: 'How much does it cost?',
+						answer:
+							'A fixed price, which I give in the Intervention proposal, after the free Diagnosis.',
+					},
+					{
+						question: 'How does it start?',
+						answer:
+							'With a 45 min Conversation on Google Meet. Then come the free Diagnosis, the Intervention proposal, the Implementation and the Delivery and handover.',
+					},
+					{
+						question: 'Can I hire only some of the blocks?',
+						answer:
+							'Yes, in any combination. Block 3 needs a containerised application, from block 2 or from your team.',
+					},
+				],
+			},
+			cto: {
+				name: 'For CTOs',
+				short: 'CTO',
+				description:
+					'Infrastructure, CI/CD, testing, scaling, reliability, observability and working with the team.',
+				questions: [
+					{
+						question: 'Who writes the tests?',
+						answer:
+							"Your team. I don't write tests: I deliver the system that runs them, measures them and blocks whatever is failing.",
+					},
+					{
+						question: 'Do we have to stop development?',
+						answer:
+							'No. Block 1 involves no migration and no risk to production. In blocks 2 and 3 the work runs in parallel (branches, test environments, separate infrastructure). Some changes need coordination with the devs, and at the end of the migration a short period with no code changes may be needed, agreed with you.',
+					},
+					{
+						question: 'Which stacks and clouds do you work with?',
+						answer:
+							'CI: GitHub Actions, GitLab CI, Azure DevOps and Google Cloud Build. Cloud: AWS, Google Cloud, Microsoft Azure, OVHcloud, Scaleway and Infomaniak. The choice depends on your needs and budget, and can include lower-impact hosting.',
+					},
+					{
+						question: 'What access do you need?',
+						answer:
+							'For the Diagnosis, read access to the repository. Access to the cloud (metrics and logs) only if the problem is about infrastructure, performance, costs or availability. Never passwords, private keys or administrator permissions. For the Implementation, I need write access to the repository and an account on your cloud with the permissions needed to create the infrastructure of the blocks you hired. You remove that access at the Delivery and handover.',
+					},
+					{
+						question: 'How does the Availability Guarantee work?',
+						answer:
+							"In 30 days, I deliver the infrastructure. For the next 3 months, it is available at least 99% of the time every month. If it isn't, I keep working without billing until it is. It applies with blocks 3 and 4, and requires a test written for every bug fixed, no dev pushing past a failing test, read access to the repository and a technical contact who replies within 48 h.",
+					},
+					{
+						question: 'Which observability tools do you use?',
+						answer: "Standard tools, such as Grafana and Prometheus, or your cloud's own.",
+					},
+					{
+						question: 'How do we work together?',
+						answer:
+							'Remotely, over Google Meet. I talk with the CTO and the devs, mostly with the CTO.',
+					},
+				],
+			},
+			ceo: {
+				name: 'For CEOs',
+				short: 'CEO',
+				description: 'Risks, costs, continuity, predictability and business impact.',
+				questions: [
+					{
+						question: 'How much will it cost, and when will I know?',
+						answer:
+							'A fixed price, which I give in the Intervention proposal. The proposal comes after the free Diagnosis, which takes 2 to 3 business days from when I have access, or 3 to 5 if it includes the cloud.',
+					},
+					{
+						question: 'What about infrastructure costs?',
+						answer:
+							'On top of the fixed price, the infrastructure and tools have their own monthly cost, which you pay directly to the providers, on your own accounts. The service assumes a budget of €100 to €500 a month for these costs.',
+					},
+					{
+						question: 'Will we depend on you?',
+						answer:
+							'No. I only use standard technologies and document everything. You can change provider whenever you want, and you never lose the infrastructure.',
+					},
+					{
+						question: 'What are the risks for production?',
+						answer:
+							"Block 1 doesn't touch production. In blocks 2 and 3, the aim is to avoid downtime; if the migration involves databases or critical services, there may be a short downtime, scheduled in advance. There is always a plan to roll back to the previous version.",
+					},
+					{
+						question: 'What return can I expect?',
+						answer:
+							'Less time fixing problems. More time building the product. I help SaaS teams automate testing and delivery, catch regressions earlier and make their infrastructure more reliable, so they can grow with more confidence.',
+					},
+					{
+						question: 'Which languages and countries do you work in?',
+						answer: 'With clients from any country, remotely, in Portuguese, French or English.',
+					},
+				],
+			},
+			team: {
+				name: 'For the tech team',
+				short: 'Tech team',
+				description:
+					'Devs and tech leads who will work with the pipeline and the new infrastructure.',
+				questions: [
+					{
+						question: "What changes in the team's day-to-day?",
+						answer:
+							"The aim is to cut the time lost on manual tasks and recurring problems, make regressions easier to catch and make deliveries more reliable. The team gets clearer processes, more visibility into the infrastructure and more time to focus on building the product. Results depend on each project's context and starting point.",
+					},
+					{
+						question: 'Who maintains the pipeline afterwards?',
+						answer:
+							'Your team. The technical documentation and the handover at the end leave you self-sufficient.',
+					},
+					{
+						question: 'Who do you talk to day to day?',
+						answer:
+							'The CTO and the devs, mostly the CTO, over Google Meet. There are no regular status meetings.',
+					},
+					{
+						question: 'Can we keep coding during the migration?',
+						answer:
+							'Yes. The work runs in parallel, on branches, test environments and separate infrastructure. At the end, a short period with no code changes may be needed, agreed with you.',
+					},
+					{
+						question: 'Which tools will we use?',
+						answer:
+							"Block 1: SonarQube and Trivy. Block 2: Docker. Block 3: Kubernetes and Terraform. Block 4: Grafana and Prometheus, or your cloud's own tools.",
+					},
+				],
+			},
+		},
+		page: {
+			description:
+				'Questions and answers for SaaS CTOs, CEOs and tech teams: timelines, costs, access, risks and tools.',
+			title: 'Answers for every role.',
+			intro:
+				"Pick your role or search for a word. If your question isn't here, ask me in the Conversation.",
+			filter: 'Filter by role',
+			everyone: 'All',
+			search: 'Search the questions',
+			searchPlaceholder: 'Search: tests, costs, access…',
+			noResults: 'No questions with those words.',
+			index: 'Roles',
+			notFound: "Can't find your question?",
+		},
+		homeSection: {
+			label: 'Questions',
+			title: 'The essentials, before the Conversation.',
+			byAudience: 'Questions for your role',
+		},
+	},
 };
