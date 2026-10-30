@@ -9,6 +9,7 @@ import {
 	FIELDS,
 	FIRST_LOAD,
 	INTENSITIES,
+	INTENSITY_YEAR,
 	SOURCES,
 	WATTS,
 	figures,
@@ -231,8 +232,8 @@ const sliders: { name: keyof typeof FIELDS; hint?: [BadgeKind, string] }[] = [
 								<span>
 									<span data-figure="intensity">{first.intensity}</span>&nbsp;g&nbsp;CO2e/kWh
 									<small>
-										<span data-figure="country">{countryName(FIRST_LOAD.country)}</span>, Ember
-										2025, {estimator.lifeCycle}
+										<span data-figure="country">{countryName(FIRST_LOAD.country)}</span>, Ember{' '}
+										{INTENSITY_YEAR}, {estimator.lifeCycle}
 									</small>
 								</span>
 								<ValueBadge language={language} kind="published" />
@@ -492,9 +493,13 @@ const sliders: { name: keyof typeof FIELDS; hint?: [BadgeKind, string] }[] = [
 		border-radius: inherit;
 		background: var(--color-green);
 	}
+	/* On a phone, the intensity goes below the country's name. */
 	@media (max-width: 640px) {
 		.country {
 			grid-template-columns: 7.5rem minmax(0, 1fr) 4rem;
+		}
+		.country small {
+			display: block;
 		}
 	}
 </style>

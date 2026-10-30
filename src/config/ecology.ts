@@ -46,6 +46,9 @@ export const INTENSITIES: Record<CountryCode, number> = {
 
 export const COUNTRIES = Object.keys(INTENSITIES) as CountryCode[];
 
+/** The year of the intensities. A new year changes it, the values above and the sources' names. */
+export const INTENSITY_YEAR = 2025;
+
 /** Watts per vCPU at 0 % and at 100 % utilisation. Using them for any server is an assumption. */
 export const WATTS = { idle: 0.74, full: 3.5 };
 
@@ -112,7 +115,12 @@ export function figures(locale: string, load: Load): Record<string, string> {
 		new Intl.NumberFormat(locale, options).format(n);
 	// A result: 1 decimal, or 2 significant digits under 1, so a small load never shows 0.
 	const amount = (n: number) =>
-		format(n, n >= 1 ? { maximumFractionDigits: 1 } : { maximumSignificantDigits: 2 });
+		format(
+			n,
+			n >= 1
+				? { minimumFractionDigits: 1, maximumFractionDigits: 1 }
+				: { maximumSignificantDigits: 2 },
+		);
 	const { watts, kwh, kg } = estimate(load);
 	return {
 		vcpu: format(load.vcpu),
