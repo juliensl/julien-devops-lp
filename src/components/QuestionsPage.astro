@@ -81,7 +81,12 @@ const total = AUDIENCES.reduce((n, id) => n + audiences[id].questions.length, 0)
 		</div>
 
 		<div class="page-width grid gap-x-16 gap-y-10 pt-12 lg:grid-cols-[14rem_minmax(0,1fr)] lg:items-start">
-			<nav aria-label={page.index} class="lg:sticky lg:top-[calc(var(--header-height)+2rem)]">
+			{/* Below 1024 px, the index is a row of links right under the filter, which does the same: with
+			    JS, only the filter remains. Without JS, the index is the way to each audience. */}
+			<nav
+				aria-label={page.index}
+				class="max-lg:hidden max-lg:noscript:block lg:sticky lg:top-[calc(var(--header-height)+2rem)]"
+			>
 				<ul class="flex flex-wrap gap-2 lg:grid lg:gap-1 lg:border-l lg:border-line">
 					{AUDIENCES.map((id) => (
 						<li>

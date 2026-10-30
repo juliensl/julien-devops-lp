@@ -299,6 +299,28 @@ inEachBuild((build) => {
 				}
 			});
 
+			// Below 1024 px the index is a row of links right under the filter, which does the same:
+			// with JS, only the filter remains. Without JS, the index is the way to each audience.
+			for (const width of [375, 820]) {
+				test(`at ${width} px, the index gives way to the filter, unless JS is off`, async ({
+					browser,
+				}) => {
+					for (const javaScriptEnabled of [true, false]) {
+						const context = await browser.newContext({
+							viewport: { width, height: 800 },
+							javaScriptEnabled,
+						});
+						const page = await context.newPage();
+						await page.goto(path);
+						const indexNav = page.getByRole('navigation', { name: index });
+						await (javaScriptEnabled
+							? expect(indexNav).toBeHidden()
+							: expect(indexNav).toBeVisible());
+						await context.close();
+					}
+				});
+			}
+
 			test.describe('without JavaScript', () => {
 				test.use({ javaScriptEnabled: false });
 
