@@ -1,0 +1,31 @@
+---
+// The Legal information and the Privacy policy (#71, #54 «Páginas legais»): the page's Markdown, in its
+// language, from src/content/legal/. The footer of every page leads to both.
+import { render } from 'astro:content';
+import type { Language } from '../config/site';
+import { values } from '../config/values';
+import Base from '../layouts/Base.astro';
+import { legalPage, type LegalPageId } from '../lib/legal';
+
+interface Props {
+	language: Language;
+	page: LegalPageId;
+}
+
+const { language, page } = Astro.props;
+const entry = await legalPage(language, page);
+const { Content } = await render(entry);
+---
+
+<Base
+	language={language}
+	title={`${entry.data.title} · ${values.name}`}
+	description={entry.data.description}
+>
+	<main class="page-width pt-14 sm:pt-20">
+		<article class="max-w-3xl">
+			<h1 class="text-[clamp(2.25rem,4.4vw,3.5rem)] leading-[1.1]">{entry.data.title}</h1>
+			<Content />
+		</article>
+	</main>
+</Base>

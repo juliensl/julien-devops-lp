@@ -6,6 +6,8 @@ export const SITE = 'https://devops.julienlaffont.com';
 export const BOOKING_PAGE = 'https://calendly.com/contact-julienlaffont/appel-cadrage';
 export const LINKEDIN = 'https://www.linkedin.com/in/julien-laffont-4a3623134/';
 export const NAME = 'Julien Laffont';
+/** The email on the domain, chosen by Julien (#56). */
+export const EMAIL = 'hello@julienlaffont.com';
 
 // In the language switcher, each language shows its label and gives screen readers the full name.
 export const LANGUAGES = {
