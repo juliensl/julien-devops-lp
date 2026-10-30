@@ -1,9 +1,11 @@
 ---
-// The home page's Ecology section (#68): a short text and the link to the ecology page.
+// The home page's Ecology section (#68): a short text and the link to the ecology page, with the flowing
+// leaf of points beside them, or below them on a phone (#69).
 import type { Language } from '../config/site';
 import { dictionaries } from '../i18n';
 import { ecologyPath } from '../lib/paths';
 import { withNonBreakingSpaces } from '../lib/spaces';
+import FlowingLeaf from './FlowingLeaf.astro';
 import Leaf from './Leaf.astro';
 
 interface Props {
@@ -37,5 +39,5 @@ const { link, home } = dictionaries[language].ecology;
 		</a>
 	</div>
 
-	{/* The flowing leaf of points (#69) */}
+	<FlowingLeaf class="w-80 justify-self-center" />
 </section>
