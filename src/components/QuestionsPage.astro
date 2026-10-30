@@ -209,7 +209,8 @@ const total = AUDIENCES.reduce((n, id) => n + audiences[id].questions.length, 0)
 </script>
 
 <style>
-	/* The filter's choices: the radio is hidden, its label is the button, green when chosen. */
+	/* The filter's choices: the label is the button, green when chosen. The radio is transparent and
+	   covers its label, so a click anywhere on the button lands on it. */
 	.choice {
 		position: relative;
 		display: inline-flex;
@@ -248,7 +249,7 @@ const total = AUDIENCES.reduce((n, id) => n + audiences[id].questions.length, 0)
 			inset: 0;
 			margin: 0;
 			opacity: 0;
-			pointer-events: none;
+			cursor: pointer;
 		}
 	}
 

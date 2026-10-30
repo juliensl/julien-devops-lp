@@ -1,6 +1,6 @@
 // «Os teus desafios» (#70): the page with the 23 questions by audience, with its filter, search and
 // index, the header submenu that leads to each audience, and the 5 general questions on the home page.
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import { inEachBuild } from './builds';
 import { BOOKING_PAGE, LANGUAGES, NAME, type Language } from './expected';
 
@@ -120,7 +120,17 @@ const APPROVED: Record<Anchor, [question: string, answer: string][]> = {
 // Commercial launch (#75).
 const EXPECTED: Record<
 	Language,
-	{ menu: string; audiences: Record<Anchor, string>; notFound: string }
+	{
+		menu: string;
+		audiences: Record<Anchor, string>;
+		/** The filter's choices: every audience, then each one. */
+		filter: Record<'all' | Anchor, string>;
+		/** After the number in the count, for more than one question. */
+		questions: string;
+		/** The name of the index of audiences. */
+		index: string;
+		notFound: string;
+	}
 > = {
 	pt: {
 		menu: 'Os teus desafios',
@@ -130,6 +140,9 @@ const EXPECTED: Record<
 			ceo: 'Para CEO',
 			team: 'Para a equipa técnica',
 		},
+		filter: { all: 'Todas', general: 'Gerais', cto: 'CTO', ceo: 'CEO', team: 'Equipa técnica' },
+		questions: 'perguntas',
+		index: 'Perfis',
 		notFound: 'Não encontras a tua pergunta?',
 	},
 	fr: {
@@ -140,6 +153,15 @@ const EXPECTED: Record<
 			ceo: 'Pour les CEO',
 			team: "Pour l'équipe technique",
 		},
+		filter: {
+			all: 'Toutes',
+			general: 'Générales',
+			cto: 'CTO',
+			ceo: 'CEO',
+			team: 'Équipe technique',
+		},
+		questions: 'questions',
+		index: 'Profils',
 		notFound: 'Tu ne trouves pas ta question ?',
 	},
 	en: {
@@ -150,6 +172,9 @@ const EXPECTED: Record<
 			ceo: 'For CEOs',
 			team: 'For the tech team',
 		},
+		filter: { all: 'All', general: 'General', cto: 'CTO', ceo: 'CEO', team: 'Tech team' },
+		questions: 'questions',
+		index: 'Roles',
 		notFound: "Can't find your question?",
 	},
 };
@@ -157,10 +182,20 @@ const EXPECTED: Record<
 /** The page's path: the slug is the same in the three languages. */
 const questionsPath = (language: Language) => `${LANGUAGES[language].prefix}questions/`;
 
+/** The questions the Visitor sees on the page. */
+const shownQuestions = (page: Page) =>
+	page.getByRole('main').locator('details > summary').filter({ visible: true });
+
+/** The approved answer to a question, in Portuguese. */
+const answerTo = (question: string) =>
+	Object.values(APPROVED)
+		.flat()
+		.find(([q]) => q === question)![1];
+
 inEachBuild((build) => {
 	for (const language of build.phase.publishedLanguages) {
 		const path = questionsPath(language);
-		const { menu, audiences, notFound } = EXPECTED[language];
+		const { menu, audiences, filter, questions, index, notFound } = EXPECTED[language];
 
 		test.describe(path, () => {
 			test('has its own title and description', async ({ page }) => {
@@ -197,6 +232,82 @@ inEachBuild((build) => {
 				await expect(last).toHaveAccessibleName(LANGUAGES[language].button);
 				await expect(last).toHaveAttribute('href', BOOKING_PAGE);
 			});
+
+			test('the filter shows only the chosen audience, says how many, and keeps it in the URL', async ({
+				page,
+			}) => {
+				await page.goto(path);
+				// A live region: screen readers hear the new count.
+				const count = page.getByRole('main').getByRole('status');
+				await expect(count).toHaveText(`23 ${questions}`);
+				for (const anchor of ANCHORS) {
+					await page.getByRole('radio', { name: filter[anchor], exact: true }).check();
+					await expect(shownQuestions(page)).toHaveCount(COUNTS[anchor]);
+					await expect(count).toHaveText(`${COUNTS[anchor]} ${questions}`);
+					for (const other of ANCHORS) {
+						const audience = page.getByRole('region', { name: audiences[other], exact: true });
+						await (other === anchor
+							? expect(audience).toBeVisible()
+							: expect(audience).toBeHidden());
+					}
+					expect(new URL(page.url()).hash).toBe(`#${anchor}`);
+				}
+				await page.getByRole('radio', { name: filter.all, exact: true }).check();
+				await expect(shownQuestions(page)).toHaveCount(23);
+				await expect(count).toHaveText(`23 ${questions}`);
+				expect(new URL(page.url()).hash).toBe('');
+			});
+
+			test("a link to an audience's anchor chooses that audience", async ({ page }) => {
+				for (const anchor of ANCHORS) {
+					await page.goto(`${path}#${anchor}`);
+					await page.reload();
+					await expect(
+						page.getByRole('radio', { name: filter[anchor], exact: true }),
+					).toBeChecked();
+					await expect(shownQuestions(page)).toHaveCount(COUNTS[anchor]);
+					await expect(
+						page.getByRole('heading', { name: audiences[anchor], exact: true }),
+					).toBeInViewport();
+				}
+			});
+
+			test('the index leads to each audience and chooses it', async ({ page }) => {
+				await page.goto(path);
+				const indexLinks = page.getByRole('navigation', { name: index }).getByRole('link');
+				for (const anchor of ANCHORS.toReversed()) {
+					await indexLinks.filter({ hasText: audiences[anchor] }).click();
+					await expect(
+						page.getByRole('radio', { name: filter[anchor], exact: true }),
+					).toBeChecked();
+					await expect(shownQuestions(page)).toHaveCount(COUNTS[anchor]);
+					await expect(
+						page.getByRole('heading', { name: audiences[anchor], exact: true }),
+					).toBeInViewport();
+				}
+			});
+
+			test.describe('without JavaScript', () => {
+				test.use({ javaScriptEnabled: false });
+
+				test('every question is visible, the filter and search are hidden, and the index leads to each audience', async ({
+					page,
+				}) => {
+					await page.goto(path);
+					await expect(shownQuestions(page)).toHaveCount(23);
+					await expect(page.getByRole('radio', { name: filter.all, exact: true })).toBeHidden();
+					await expect(page.getByRole('searchbox')).toBeHidden();
+					await expect(page.getByRole('main').getByRole('status')).toBeHidden();
+					const indexLinks = page.getByRole('navigation', { name: index }).getByRole('link');
+					for (const anchor of ANCHORS.toReversed()) {
+						await indexLinks.filter({ hasText: audiences[anchor] }).click();
+						await expect(
+							page.getByRole('heading', { name: audiences[anchor], exact: true }),
+						).toBeInViewport();
+					}
+					await expect(shownQuestions(page)).toHaveCount(23);
+				});
+			});
 		});
 	}
 
@@ -219,6 +330,60 @@ inEachBuild((build) => {
 					await expect(question.getByText(answer, { exact: true })).toBeVisible();
 				}
 			}
+		});
+
+		test('/pt/questions/: the search ignores case and accents, opens what it finds and says how many', async ({
+			page,
+		}) => {
+			await page.goto(questionsPath('pt'));
+			const search = page.getByRole('searchbox', { name: 'Pesquisar nas perguntas' });
+			const count = page.getByRole('main').getByRole('status');
+			// What each search finds, counted by hand in the approved texts: the word is often only in the
+			// answer, so the answers open.
+			const searches: [words: string, found: string[], count: string][] = [
+				[
+					'acessos',
+					['De que acessos precisas?', 'Quanto vai custar, e quando fico a saber?'],
+					'2 perguntas',
+				],
+				[
+					'MIGRACAO',
+					[
+						'É preciso parar o desenvolvimento?',
+						'Que riscos há para a produção?',
+						'Continuamos a programar durante a migração?',
+					],
+					'3 perguntas',
+				],
+				['custos cloud', ['De que acessos precisas?'], '1 pergunta'],
+			];
+			for (const [words, found, text] of searches) {
+				await search.fill(words);
+				await expect(shownQuestions(page)).toHaveText(found);
+				await expect(count).toHaveText(text);
+				for (const question of found) {
+					await expect(page.getByText(answerTo(question), { exact: true })).toBeVisible();
+				}
+			}
+
+			await search.fill('kubernetes cobol');
+			await expect(shownQuestions(page)).toHaveCount(0);
+			await expect(count).toHaveText('0 perguntas');
+			await expect(page.getByText('Nenhuma pergunta com essas palavras.')).toBeVisible();
+
+			// The search works within the chosen audience.
+			await page.getByRole('radio', { name: 'CEO', exact: true }).check();
+			await search.fill('acessos');
+			await expect(shownQuestions(page)).toHaveText(['Quanto vai custar, e quando fico a saber?']);
+			await expect(count).toHaveText('1 pergunta');
+
+			// Cleared, it shows the audience again and closes the answers it opened.
+			await search.fill('');
+			await expect(shownQuestions(page)).toHaveCount(6);
+			await expect(count).toHaveText('6 perguntas');
+			await expect(
+				page.getByText(answerTo('Quanto vai custar, e quando fico a saber?'), { exact: true }),
+			).toBeHidden();
 		});
 	}
 });
