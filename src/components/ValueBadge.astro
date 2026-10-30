@@ -1,0 +1,48 @@
+---
+// The badge on a value of the ecology page: the only three are «Publicado», «Hipótese» and
+// «Calculado» (#54).
+import type { Language } from '../config/site';
+import { dictionaries } from '../i18n';
+
+export type BadgeKind = 'published' | 'assumption' | 'calculated';
+
+interface Props {
+	language: Language;
+	kind: BadgeKind;
+}
+
+const { language, kind } = Astro.props;
+---
+
+<span class:list={['badge', kind]}>{dictionaries[language].ecology.badges[kind]}</span>
+
+<style>
+	.badge {
+		display: inline-flex;
+		align-items: center;
+		padding: 0.15rem 0.5rem;
+		border: 1px solid transparent;
+		border-radius: 999px;
+		font-size: 0.6875rem;
+		font-weight: 600;
+		line-height: 1.2;
+		letter-spacing: 0.04em;
+		white-space: nowrap;
+		vertical-align: middle;
+	}
+	/* Published: green, the color of data. */
+	.published {
+		border-color: var(--color-green-strong);
+		background: color-mix(in srgb, var(--color-green) 14%, transparent);
+		color: var(--color-green);
+	}
+	/* Calculated: purple, filled. Assumption: purple, dashed, like something you can change. */
+	.calculated {
+		background: color-mix(in srgb, var(--color-purple) 18%, transparent);
+		color: var(--color-purple);
+	}
+	.assumption {
+		border: 1px dashed var(--color-purple);
+		color: var(--color-purple);
+	}
+</style>

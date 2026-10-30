@@ -25,12 +25,43 @@ export const en: Dictionary = {
 			heading: 'Infrastructure choices have environmental consequences too.',
 			intro:
 				'Where the application runs, how long it runs and how efficiently all change the energy it uses and the emissions of the electricity behind it. Here you estimate a workload by the country it runs in, with the method and the sources in plain sight.',
+			legend: {
+				label: 'How to read the data on this page',
+				published: 'a value from a public database or study, with its year and source',
+				assumption: 'an assumption of the calculation, which you can change',
+				calculated: 'the result of the two above',
+			},
 		},
+		badges: { published: 'Published', assumption: 'Assumption', calculated: 'Calculated' },
 		estimator: {
 			label: 'Estimate a workload',
 			title: 'The same application, in different places.',
 			intro:
 				"Choose the country, the load and the data centre's efficiency. The calculation follows the open Cloud Carbon Footprint method: processor energy × data centre efficiency × carbon intensity of the electricity.",
+			fields: {
+				country: 'Country where the infrastructure runs',
+				vcpu: 'Virtual processors (vCPU)',
+				utilisation: 'Average utilisation',
+				hoursPerDay: 'Hours per day',
+				pue: 'Data centre efficiency (PUE)',
+			},
+			hints: {
+				utilisation: '50% is the CCF value when the utilisation is unknown',
+				pue: '1.52 is the 2026 industry average (Uptime Institute); your provider can give the figure for the data centre you use',
+			},
+			result: 'Result',
+			calculation: 'The calculation',
+			comparison: 'The same workload in each country',
+			units: {
+				vcpu: 'vCPU',
+				wattsPerVcpu: 'W per vCPU',
+				perDay: 'per day',
+				daysPerMonth: 'days per month',
+				kwhPerMonth: 'kWh per month',
+				kgPerMonth: 'kg CO2e per month',
+			},
+			wattsSource: 'Cloud Carbon Footprint, unknown processor',
+			lifeCycle: 'life cycle',
 		},
 		method: {
 			label: 'How it is calculated',

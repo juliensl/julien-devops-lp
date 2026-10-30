@@ -1,7 +1,7 @@
 // The ecology page (#68): the CTO estimates the energy and emissions of a workload by country, sees the
 // whole calculation with a badge on each value, compares every country and reads the method, the
 // sources and the limits. The header, the footer and the home page lead to it.
-import { expect, test } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import { inEachBuild } from './builds';
 import { BOOKING_PAGE, LANGUAGES, NAME, type Language } from './expected';
 
@@ -237,6 +237,246 @@ inEachBuild((build) => {
 				await expect(last).toHaveText(button);
 				await expect(last).toHaveAttribute('href', BOOKING_PAGE);
 				await expect(last).not.toHaveAttribute('target');
+			});
+		});
+	}
+});
+
+type Badge = 'published' | 'assumption' | 'calculated';
+
+// The fields, their ranges and first values, the formula and the intensities are #54's; the labels are
+// prototype v3's. French and English are translations the intern reviews before the Commercial launch (#75).
+const ESTIMATOR: Record<
+	Language,
+	{
+		title: string;
+		/** The decimal separator of the page's numbers. */
+		decimal: string;
+		fields: { country: string; vcpu: string; utilisation: string; hours: string; pue: string };
+		/** What screen readers hear on the sliders at the first load. */
+		sliderTexts: { utilisation: string; hours: string; pue: string };
+		countries: { first: string; france: string; poland: string };
+		result: string;
+		kwh: string;
+		kg: string;
+		calculation: string;
+		comparison: string;
+		legend: string;
+		badges: Record<Badge, string>;
+	}
+> = {
+	pt: {
+		title: 'A mesma aplicação, em sítios diferentes.',
+		decimal: ',',
+		fields: {
+			country: 'País onde corre a infraestrutura',
+			vcpu: 'Processadores virtuais (vCPU)',
+			utilisation: 'Utilização média',
+			hours: 'Horas por dia',
+			pue: 'Eficiência do centro de dados (PUE)',
+		},
+		sliderTexts: { utilisation: '50 %', hours: '24 h', pue: '1,52' },
+		countries: { first: 'Noruega', france: 'França', poland: 'Polónia' },
+		result: 'Resultado',
+		kwh: 'kWh por mês',
+		kg: 'kg CO2e por mês',
+		calculation: 'O cálculo',
+		comparison: 'A mesma carga em cada país',
+		legend: 'Como ler os dados desta página',
+		badges: { published: 'Publicado', assumption: 'Hipótese', calculated: 'Calculado' },
+	},
+	fr: {
+		title: 'La même application, à des endroits différents.',
+		decimal: ',',
+		fields: {
+			country: "Pays où tourne l'infrastructure",
+			vcpu: 'Processeurs virtuels (vCPU)',
+			utilisation: 'Utilisation moyenne',
+			hours: 'Heures par jour',
+			pue: 'Efficacité du centre de données (PUE)',
+		},
+		sliderTexts: { utilisation: '50 %', hours: '24 h', pue: '1,52' },
+		countries: { first: 'Norvège', france: 'France', poland: 'Pologne' },
+		result: 'Résultat',
+		kwh: 'kWh par mois',
+		kg: 'kg CO2e par mois',
+		calculation: 'Le calcul',
+		comparison: 'La même charge dans chaque pays',
+		legend: 'Comment lire les données de cette page',
+		badges: { published: 'Publié', assumption: 'Hypothèse', calculated: 'Calculé' },
+	},
+	en: {
+		title: 'The same application, in different places.',
+		decimal: '.',
+		fields: {
+			country: 'Country where the infrastructure runs',
+			vcpu: 'Virtual processors (vCPU)',
+			utilisation: 'Average utilisation',
+			hours: 'Hours per day',
+			pue: 'Data centre efficiency (PUE)',
+		},
+		sliderTexts: { utilisation: '50%', hours: '24 h', pue: '1.52' },
+		countries: { first: 'Norway', france: 'France', poland: 'Poland' },
+		result: 'Result',
+		kwh: 'kWh per month',
+		kg: 'kg CO2e per month',
+		calculation: 'The calculation',
+		comparison: 'The same workload in each country',
+		legend: 'How to read the data on this page',
+		badges: { published: 'Published', assumption: 'Assumption', calculated: 'Calculated' },
+	},
+};
+
+// Worked out by hand with #54's formula, for France, 8 vCPU, 50 %, 24 h and PUE 1.52:
+// 0.74 + 50 % × (3.5 − 0.74) = 2.12 W; 8 × 2.12 × 24 × 30.4375 × 1.52 / 1000 = 18.83 kWh;
+// × 41.2 g/kWh = 0.776 kg (#54: «cerca de 18,8 kWh e 0,78 kg CO2e por mês»). In Poland (590.8 g/kWh),
+// 11.13 kg; in Norway (28.1 g/kWh), 0.529 kg. With 9 vCPU, 21.19 kWh and 0.873 kg; with PUE 1.30,
+// 16.11 kWh and 0.664 kg.
+/** Each value of the calculation, in order, with its badge. */
+const CALCULATION: [value: string, badge: Badge][] = [
+	['8 vCPU', 'assumption'],
+	['2.12 W', 'assumption'],
+	['24 h', 'assumption'],
+	['30.4', 'calculated'],
+	['PUE 1.52', 'published'],
+	['18.8 kWh', 'calculated'],
+	['41.2 g CO2e/kWh', 'published'],
+	['0.78 kg CO2e', 'calculated'],
+];
+const PUE_ROW = 4;
+
+inEachBuild((build) => {
+	for (const language of build.phase.publishedLanguages) {
+		const t = ESTIMATOR[language];
+		const path = `${LANGUAGES[language].prefix}${PATH}`;
+		/** A number as the page writes it: "18.8" → "18,8" in Portuguese and French. */
+		const n = (value: string) => value.replace('.', t.decimal);
+		const estimator = (page: Page) => page.getByRole('region', { name: t.title });
+		const slider = (page: Page, name: string) =>
+			estimator(page).getByRole('slider', { name, exact: true });
+		const result = (page: Page) => estimator(page).getByRole('group', { name: t.result });
+		const calculation = (page: Page) =>
+			estimator(page).getByRole('list', { name: t.calculation }).getByRole('listitem');
+		const comparison = (page: Page) =>
+			estimator(page).getByRole('list', { name: t.comparison }).getByRole('listitem');
+		/** The badges a calculation row shows. */
+		const badgesOf = async (row: Locator) => {
+			const text = await row.innerText();
+			return (Object.keys(t.badges) as Badge[]).filter((b) => text.includes(t.badges[b]));
+		};
+
+		test.describe(`${path} estimator`, () => {
+			test('opens on France, 8 vCPU, 50 %, 24 h and PUE 1.52: about 18.8 kWh and 0.78 kg CO2e a month', async ({
+				page,
+			}) => {
+				await page.goto(path);
+				const country = estimator(page).getByRole('combobox', { name: t.fields.country });
+				await expect(country.locator('option:checked')).toHaveText(t.countries.france);
+				await expect(slider(page, t.fields.vcpu)).toHaveValue('8');
+				await expect(slider(page, t.fields.utilisation)).toHaveValue('50');
+				await expect(slider(page, t.fields.hours)).toHaveValue('24');
+				await expect(slider(page, t.fields.pue)).toHaveValue('1.52');
+				for (const field of ['utilisation', 'hours', 'pue'] as const) {
+					const text = await slider(page, t.fields[field]).getAttribute('aria-valuetext');
+					expect(text?.replace(/ /g, ' ')).toBe(t.sliderTexts[field]);
+				}
+
+				await expect(result(page)).toContainText(`${n('18.8')} ${t.kwh}`);
+				await expect(result(page)).toContainText(`${n('0.78')} ${t.kg}`);
+			});
+
+			test('changing the country updates the result, the calculation and what screen readers hear', async ({
+				page,
+			}) => {
+				await page.goto(path);
+				await estimator(page)
+					.getByRole('combobox', { name: t.fields.country })
+					.selectOption({ label: t.countries.poland });
+
+				await expect(result(page)).toContainText(`${n('11.1')} ${t.kg}`);
+				await expect(result(page)).toContainText(`${n('18.8')} ${t.kwh}`);
+				await expect(calculation(page).nth(6)).toContainText(`${n('590.8')} g CO2e/kWh`);
+				await expect(calculation(page).nth(6)).toContainText(t.countries.poland);
+				await expect(calculation(page).nth(7)).toContainText(`${n('11.1')} kg CO2e`);
+				const status = estimator(page).getByRole('status');
+				await expect(status).toContainText(`${n('11.1')} ${t.kg}`);
+				await expect(status).toContainText(t.countries.poland);
+			});
+
+			test('a slider updates the result, the calculation and what screen readers hear', async ({
+				page,
+			}) => {
+				await page.goto(path);
+				await slider(page, t.fields.vcpu).focus();
+				await page.keyboard.press('ArrowRight');
+
+				await expect(slider(page, t.fields.vcpu)).toHaveValue('9');
+				await expect(result(page)).toContainText(`${n('21.2')} ${t.kwh}`);
+				await expect(result(page)).toContainText(`${n('0.87')} ${t.kg}`);
+				await expect(calculation(page).first()).toContainText('9 vCPU');
+				await expect(estimator(page).getByRole('status')).toContainText(`${n('21.2')} ${t.kwh}`);
+			});
+
+			test('shows the whole calculation, with one badge on each value', async ({ page }) => {
+				await page.goto(path);
+				await expect(calculation(page)).toHaveCount(CALCULATION.length);
+				for (const [k, [value, badge]] of CALCULATION.entries()) {
+					await expect(calculation(page).nth(k)).toContainText(n(value));
+					expect(await badgesOf(calculation(page).nth(k)), value).toEqual([badge]);
+				}
+
+				// A PUE other than the published one is the Visitor's assumption.
+				await slider(page, t.fields.pue).fill('1.3');
+				await expect(calculation(page).nth(PUE_ROW)).toContainText(`PUE ${n('1.30')}`);
+				expect(await badgesOf(calculation(page).nth(PUE_ROW))).toEqual(['assumption']);
+				await expect(result(page)).toContainText(`${n('16.1')} ${t.kwh}`);
+				await expect(result(page)).toContainText(`${n('0.66')} ${t.kg}`);
+			});
+
+			test('explains the three badges, and only those', async ({ page }) => {
+				await page.goto(path);
+				const legend = page.getByRole('list', { name: t.legend }).getByRole('listitem');
+				await expect(legend).toHaveCount(3);
+				for (const [k, badge] of (['published', 'assumption', 'calculated'] as const).entries()) {
+					await expect(legend.nth(k)).toContainText(t.badges[badge]);
+				}
+			});
+
+			test('compares the same load in the 16 countries, lowest intensity first', async ({
+				page,
+			}) => {
+				await page.goto(path);
+				await expect(comparison(page)).toHaveCount(16);
+				await expect(comparison(page).first()).toContainText(t.countries.first);
+				await expect(comparison(page).first()).toContainText(`${n('0.53')} kg`);
+				await expect(comparison(page).last()).toContainText(t.countries.poland);
+				await expect(comparison(page).last()).toContainText(`${n('11.1')} kg`);
+				const chosen = estimator(page).locator('[aria-current="true"]');
+				await expect(chosen).toHaveCount(1);
+				await expect(chosen).toContainText(`${t.countries.france}`);
+				await expect(chosen).toContainText(`${n('0.78')} kg`);
+
+				await estimator(page)
+					.getByRole('combobox', { name: t.fields.country })
+					.selectOption({ label: t.countries.poland });
+				await expect(chosen).toContainText(t.countries.poland);
+				await expect(chosen).toHaveCount(1);
+			});
+		});
+
+		test.describe(`${path} estimator without JS`, () => {
+			test.use({ javaScriptEnabled: false });
+
+			test('shows the first load, its calculation and the comparison, without the fields', async ({
+				page,
+			}) => {
+				await page.goto(path);
+				await expect(estimator(page).getByRole('combobox', { includeHidden: true })).toBeHidden();
+				await expect(estimator(page).getByRole('slider')).toHaveCount(0);
+				await expect(result(page)).toContainText(`${n('18.8')} ${t.kwh}`);
+				await expect(result(page)).toContainText(`${n('0.78')} ${t.kg}`);
+				await expect(calculation(page)).toHaveCount(CALCULATION.length);
+				await expect(comparison(page)).toHaveCount(16);
 			});
 		});
 	}

@@ -76,12 +76,50 @@ export const pt = {
 			heading: 'As escolhas de infraestrutura também têm consequências ambientais.',
 			intro:
 				'Onde a aplicação corre, quanto tempo corre e com que eficiência mudam a energia que consome e as emissões da eletricidade que usa. Aqui estimas uma carga, conforme o país onde corre, com o método e as fontes à vista.',
+			/** The badge on each value: what each of the three means. */
+			legend: {
+				label: 'Como ler os dados desta página',
+				published: 'valor de uma base de dados ou de um estudo públicos, com ano e fonte',
+				assumption: 'pressuposto do cálculo, que podes mudar',
+				calculated: 'resultado dos dois anteriores',
+			},
 		},
+		/** The only three badges (#54). */
+		badges: { published: 'Publicado', assumption: 'Hipótese', calculated: 'Calculado' },
 		estimator: {
 			label: 'Estimar uma carga',
 			title: 'A mesma aplicação, em sítios diferentes.',
 			intro:
 				'Escolhe o país, a carga e a eficiência do centro de dados. O cálculo segue o método aberto do Cloud Carbon Footprint: energia dos processadores × eficiência do centro de dados × intensidade carbónica da eletricidade.',
+			fields: {
+				country: 'País onde corre a infraestrutura',
+				vcpu: 'Processadores virtuais (vCPU)',
+				utilisation: 'Utilização média',
+				hoursPerDay: 'Horas por dia',
+				pue: 'Eficiência do centro de dados (PUE)',
+			},
+			/** Below the two fields whose first value comes from a source. */
+			hints: {
+				utilisation: '50 % é o valor do CCF quando não se conhece a utilização',
+				pue: '1,52 é a média do setor em 2026 (Uptime Institute); o fornecedor pode indicar o do centro que usas',
+			},
+			/** The name of the two results, for screen readers. */
+			result: 'Resultado',
+			calculation: 'O cálculo',
+			comparison: 'A mesma carga em cada país',
+			/** After each number of the calculation. */
+			units: {
+				vcpu: 'vCPU',
+				wattsPerVcpu: 'W por vCPU',
+				perDay: 'por dia',
+				daysPerMonth: 'dias por mês',
+				kwhPerMonth: 'kWh por mês',
+				kgPerMonth: 'kg CO2e por mês',
+			},
+			/** Where the watts per vCPU come from. */
+			wattsSource: 'Cloud Carbon Footprint, processador desconhecido',
+			/** The kind of intensity, after the country and «Ember 2025». */
+			lifeCycle: 'ciclo de vida',
 		},
 		method: {
 			label: 'Como se calcula',

@@ -92,21 +92,38 @@ export const SOURCES = {
 export type SourceId = keyof typeof SOURCES;
 
 /** The calculation of #54: the watts of one vCPU, the energy per month and its emissions. */
-export function estimate({ country, vcpu, utilisation, hoursPerDay, pue }: Load) {
+function estimate({ country, vcpu, utilisation, hoursPerDay, pue }: Load) {
 	const watts = WATTS.idle + (utilisation / 100) * (WATTS.full - WATTS.idle);
 	const kwh = (vcpu * watts * hoursPerDay * DAYS_PER_MONTH * pue) / 1000;
 	return { watts, kwh, kg: kgIn(country, kwh) };
 }
 
 /** The emissions of `kwh` in a country. */
-export function kgIn(country: CountryCode, kwh: number) {
+function kgIn(country: CountryCode, kwh: number) {
 	return (kwh * INTENSITIES[country]) / 1000;
 }
 
-/** A result, rounded to 1 decimal, or to 2 significant digits under 1, so a small load never shows 0. */
-export function formatAmount(locale: string, n: number) {
-	return new Intl.NumberFormat(
-		locale,
-		n >= 1 ? { maximumFractionDigits: 1 } : { maximumSignificantDigits: 2 },
-	).format(n);
+/**
+ * Every number the page writes for a load, in the page's language: the fields (as screen readers hear
+ * them, with their unit), the calculation, the two results and the result in each country (`kg-FR`).
+ */
+export function figures(locale: string, load: Load): Record<string, string> {
+	const format = (n: number, options?: Intl.NumberFormatOptions) =>
+		new Intl.NumberFormat(locale, options).format(n);
+	// A result: 1 decimal, or 2 significant digits under 1, so a small load never shows 0.
+	const amount = (n: number) =>
+		format(n, n >= 1 ? { maximumFractionDigits: 1 } : { maximumSignificantDigits: 2 });
+	const { watts, kwh, kg } = estimate(load);
+	return {
+		vcpu: format(load.vcpu),
+		// As the dictionaries write it: "50%" in English, "50 %" in French and Portuguese.
+		utilisation: `${format(load.utilisation)}${locale === 'en' ? '' : '\u00a0'}%`,
+		hoursPerDay: `${format(load.hoursPerDay)}\u00a0h`,
+		pue: format(load.pue, { minimumFractionDigits: 2 }),
+		watts: format(watts, { maximumFractionDigits: 2 }),
+		intensity: format(INTENSITIES[load.country], { minimumFractionDigits: 1 }),
+		kwh: amount(kwh),
+		kg: amount(kg),
+		...Object.fromEntries(COUNTRIES.map((c) => [`kg-${c}`, amount(kgIn(c, kwh))])),
+	};
 }

@@ -26,12 +26,43 @@ export const fr: Dictionary = {
 			heading: "Les choix d'infrastructure ont aussi des conséquences environnementales.",
 			intro:
 				"L'endroit où tourne l'application, combien de temps elle tourne et avec quelle efficacité changent l'énergie qu'elle consomme et les émissions de l'électricité qu'elle utilise. Ici, tu estimes une charge selon le pays où elle tourne, avec la méthode et les sources sous les yeux.",
+			legend: {
+				label: 'Comment lire les données de cette page',
+				published: "valeur d'une base de données ou d'une étude publiques, avec année et source",
+				assumption: 'hypothèse du calcul, que tu peux changer',
+				calculated: 'résultat des deux précédents',
+			},
 		},
+		badges: { published: 'Publié', assumption: 'Hypothèse', calculated: 'Calculé' },
 		estimator: {
 			label: 'Estimer une charge',
 			title: 'La même application, à des endroits différents.',
 			intro:
 				"Choisis le pays, la charge et l'efficacité du centre de données. Le calcul suit la méthode ouverte de Cloud Carbon Footprint : énergie des processeurs × efficacité du centre de données × intensité carbone de l'électricité.",
+			fields: {
+				country: "Pays où tourne l'infrastructure",
+				vcpu: 'Processeurs virtuels (vCPU)',
+				utilisation: 'Utilisation moyenne',
+				hoursPerDay: 'Heures par jour',
+				pue: 'Efficacité du centre de données (PUE)',
+			},
+			hints: {
+				utilisation: "50 % est la valeur de CCF quand on ne connaît pas l'utilisation",
+				pue: '1,52 est la moyenne du secteur en 2026 (Uptime Institute) ; le fournisseur peut indiquer celui du centre que tu utilises',
+			},
+			result: 'Résultat',
+			calculation: 'Le calcul',
+			comparison: 'La même charge dans chaque pays',
+			units: {
+				vcpu: 'vCPU',
+				wattsPerVcpu: 'W par vCPU',
+				perDay: 'par jour',
+				daysPerMonth: 'jours par mois',
+				kwhPerMonth: 'kWh par mois',
+				kgPerMonth: 'kg CO2e par mois',
+			},
+			wattsSource: 'Cloud Carbon Footprint, processeur inconnu',
+			lifeCycle: 'cycle de vie',
 		},
 		method: {
 			label: 'Comment on calcule',
