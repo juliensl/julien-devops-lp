@@ -293,6 +293,17 @@ export const en: Dictionary = {
 			wayOfWorking:
 				'I work remotely, in Portuguese, French and English. I use standard technologies, with no lock-in, and document everything so your team can run on its own.',
 		},
+		testimonials: {
+			title: 'What clients say',
+			carousel: 'carousel',
+			slide: 'testimonial',
+			of: 'of',
+			previous: 'Previous testimonial',
+			next: 'Next testimonial',
+			strip: 'Testimonials: scroll to see the others',
+			translated: 'Translated from French',
+			malt: 'View on Malt',
+		},
 		questions: {
 			label: 'Questions',
 			title: 'The essentials, before the Conversation.',

@@ -306,6 +306,18 @@ export const fr: Dictionary = {
 			wayOfWorking:
 				"Je travaille à distance, en portugais, en français et en anglais. J'utilise des technologies standard, sans lock-in, et je documente tout pour que ton équipe soit autonome.",
 		},
+		testimonials: {
+			title: 'Ce que disent les clients',
+			carousel: 'carrousel',
+			slide: 'témoignage',
+			of: 'sur',
+			previous: 'Témoignage précédent',
+			next: 'Témoignage suivant',
+			strip: 'Témoignages : fais défiler pour voir les autres',
+			// Never shown: in French, the page shows the authors' own text.
+			translated: 'Traduit du français',
+			malt: 'Voir sur Malt',
+		},
 		questions: {
 			label: 'Questions',
 			title: "L'essentiel, avant l'Échange.",
