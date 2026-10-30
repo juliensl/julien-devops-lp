@@ -68,6 +68,7 @@ export const en: Dictionary = {
 			},
 			wattsSource: 'Cloud Carbon Footprint, unknown processor',
 			lifeCycle: 'life cycle',
+			locationBased: 'location-based',
 		},
 		method: {
 			label: 'How it is calculated',
@@ -111,7 +112,7 @@ export const en: Dictionary = {
 		},
 		sources: {
 			title: 'Sources and limits',
-			sources: {
+			names: {
 				ember: 'Ember, yearly electricity generation by country (carbon intensity, 2025)',
 				cloudCarbonFootprint: 'Cloud Carbon Footprint, methodology',
 				uptimeInstitute: 'Uptime Institute, industry average PUE (2026 survey)',

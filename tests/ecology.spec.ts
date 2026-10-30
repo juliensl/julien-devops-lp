@@ -19,7 +19,7 @@ const PROVIDERS = [
 	'Infomaniak',
 ];
 
-// The section titles, the 4 cards of «O que a infraestrutura pode mudar» and the sources come from the
+// The section titles, the 4 cards of what infrastructure can change and the sources come from the
 // spec (#54); the other Portuguese texts, from prototype v3, validated by the intern (#54). French and
 // English are translations the intern reviews before the Commercial launch (#75).
 const EXPECTED: Record<
@@ -168,7 +168,8 @@ const EXPECTED: Record<
 			'The PUE of 1.52 is the average per data centre; weighted by capacity, it is 1.36. Large data centres, like the cloud ones, tend to have lower values.',
 		],
 		lowerImpact: /lower-impact hosting/i,
-		forbidden: /green hosting|eco-friendly server|responsible hosting/i,
+		// CONTEXT.md's Avoid list for Lower-impact hosting.
+		forbidden: /green server|green hosting|responsible hosting/i,
 	},
 };
 
@@ -329,7 +330,7 @@ const ESTIMATOR: Record<
 
 // Worked out by hand with #54's formula, for France, 8 vCPU, 50 %, 24 h and PUE 1.52:
 // 0.74 + 50 % × (3.5 − 0.74) = 2.12 W; 8 × 2.12 × 24 × 30.4375 × 1.52 / 1000 = 18.83 kWh;
-// × 41.2 g/kWh = 0.776 kg (#54: «cerca de 18,8 kWh e 0,78 kg CO2e por mês»). In Poland (590.8 g/kWh),
+// × 41.2 g/kWh = 0.776 kg (#54: about 18.8 kWh and 0.78 kg CO2e a month). In Poland (590.8 g/kWh),
 // 11.13 kg; in Norway (28.1 g/kWh), 0.529 kg. With 9 vCPU, 21.19 kWh and 0.873 kg; with PUE 1.30,
 // 16.11 kWh and 0.664 kg.
 /** Each value of the calculation, in order, with its badge. */
@@ -378,7 +379,7 @@ inEachBuild((build) => {
 				await expect(slider(page, t.fields.pue)).toHaveValue('1.52');
 				for (const field of ['utilisation', 'hours', 'pue'] as const) {
 					const text = await slider(page, t.fields[field]).getAttribute('aria-valuetext');
-					expect(text?.replace(/ /g, ' ')).toBe(t.sliderTexts[field]);
+					expect(text?.replace(/\u00a0/g, ' ')).toBe(t.sliderTexts[field]);
 				}
 
 				await expect(result(page)).toContainText(`${n('18.8')} ${t.kwh}`);
@@ -455,6 +456,10 @@ inEachBuild((build) => {
 				await expect(chosen).toHaveCount(1);
 				await expect(chosen).toContainText(`${t.countries.france}`);
 				await expect(chosen).toContainText(`${n('0.78')} kg`);
+				// A badge on each value: the intensities are published, the results calculated.
+				const region = page.getByRole('region', { name: t.comparison });
+				await expect(region).toContainText(`g CO2e/kWh, Ember 2025 ${t.badges.published}`);
+				await expect(region).toContainText(`${t.kg} ${t.badges.calculated}`);
 
 				await estimator(page)
 					.getByRole('combobox', { name: t.fields.country })
@@ -482,7 +487,7 @@ inEachBuild((build) => {
 	}
 });
 
-/** The ecology link's name in the header and the footer: «🍃 Ecologia» in #54. */
+/** The ecology link's name in the header and the footer, after the leaf (#54). */
 const LINK: Record<Language, string> = { pt: 'Ecologia', fr: 'Écologie', en: 'Ecology' };
 
 inEachBuild((build) => {

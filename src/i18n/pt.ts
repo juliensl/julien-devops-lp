@@ -126,8 +126,10 @@ export const pt = {
 			},
 			/** Where the watts per vCPU come from. */
 			wattsSource: 'Cloud Carbon Footprint, processador desconhecido',
-			/** The kind of intensity, after the country and «Ember 2025». */
+			/** The kind of intensity, after the country and Ember's year. */
 			lifeCycle: 'ciclo de vida',
+			/** After the emissions result: the method's name, in English in every language (#54). */
+			locationBased: 'location-based',
 		},
 		method: {
 			label: 'Como se calcula',
@@ -147,7 +149,7 @@ export const pt = {
 				},
 			] satisfies [Card, Card, Card],
 		},
-		/** «O que a infraestrutura pode mudar»: the title and the 4 cards validated in #54. */
+		/** What infrastructure can change: the title and the 4 cards validated in #54. */
 		levers: {
 			label: 'O que a infraestrutura pode mudar',
 			title: 'Mais eficiência, mais visibilidade.',
@@ -172,7 +174,7 @@ export const pt = {
 		},
 		sources: {
 			title: 'Fontes e limites',
-			sources: {
+			names: {
 				ember: 'Ember, produção de eletricidade anual por país (intensidade carbónica, 2025)',
 				cloudCarbonFootprint: 'Cloud Carbon Footprint, metodologia',
 				uptimeInstitute: 'Uptime Institute, PUE médio do setor (inquérito de 2026)',

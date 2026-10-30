@@ -57,6 +57,8 @@ export const DAYS_PER_MONTH = 30.4375;
 
 /** The published PUE the page starts with. Any other value is the Visitor's assumption. */
 export const PUBLISHED_PUE = 1.52;
+/** The year of the Uptime Institute survey that published it. */
+export const PUE_YEAR = 2026;
 
 export interface Load {
 	country: CountryCode;
@@ -117,7 +119,8 @@ export function figures(locale: string, load: Load): Record<string, string> {
 	const amount = (n: number) =>
 		format(
 			n,
-			n >= 1
+			// From 0.995, 2 significant digits would round to "1": 1 decimal shows "1,0".
+			n >= 0.995
 				? { minimumFractionDigits: 1, maximumFractionDigits: 1 }
 				: { maximumSignificantDigits: 2 },
 		);
@@ -125,7 +128,7 @@ export function figures(locale: string, load: Load): Record<string, string> {
 	return {
 		vcpu: format(load.vcpu),
 		// As the dictionaries write it: "50%" in English, "50 %" in French and Portuguese.
-		utilisation: `${format(load.utilisation)}${locale === 'en' ? '' : '\u00a0'}%`,
+		utilisation: `${format(load.utilisation)}${locale.startsWith('en') ? '' : '\u00a0'}%`,
 		hoursPerDay: `${format(load.hoursPerDay)}\u00a0h`,
 		pue: format(load.pue, { minimumFractionDigits: 2 }),
 		watts: format(watts, { maximumFractionDigits: 2 }),

@@ -2,7 +2,7 @@
 // The ecology page (#68, #54 «Página de ecologia»): the estimator, how it calculates, what infrastructure
 // can change, and the sources and limits. It ends with the button.
 // No provider environmental data, and no provider as an example of lower impact: the only expression
-// is «alojamento com menor impacto ambiental».
+// is Lower-impact hosting (CONTEXT.md).
 import {
 	COUNTRIES,
 	DAYS_PER_MONTH,
@@ -10,6 +10,7 @@ import {
 	FIRST_LOAD,
 	INTENSITIES,
 	INTENSITY_YEAR,
+	PUE_YEAR,
 	SOURCES,
 	WATTS,
 	figures,
@@ -38,7 +39,7 @@ const locale = HTML_CODES[language];
 const format = (n: number, options?: Intl.NumberFormatOptions) =>
 	new Intl.NumberFormat(locale, options).format(n);
 /** The numbers of the first load. The script rewrites them in place when a field changes. */
-const first = figures(locale, FIRST_LOAD);
+const firstFigures = figures(locale, FIRST_LOAD);
 const regionNames = new Intl.DisplayNames(locale, { type: 'region' });
 const countryName = (country: CountryCode) => regionNames.of(country)!;
 const alphabetical = COUNTRIES.toSorted((a, b) =>
@@ -118,7 +119,7 @@ const sliders: { name: keyof typeof FIELDS; hint?: [BadgeKind, string] }[] = [
 									data-figure={name}
 									class="font-semibold text-green tabular-nums"
 								>
-									{first[name]}
+									{firstFigures[name]}
 								</span>
 							</div>
 							<input
@@ -127,7 +128,7 @@ const sliders: { name: keyof typeof FIELDS; hint?: [BadgeKind, string] }[] = [
 								name={name}
 								{...FIELDS[name]}
 								value={FIRST_LOAD[name]}
-								aria-valuetext={first[name]}
+								aria-valuetext={firstFigures[name]}
 							/>
 							{hint && (
 								<p class="flex flex-wrap items-center gap-2 text-[0.8125rem] text-foreground-secondary">
@@ -144,25 +145,25 @@ const sliders: { name: keyof typeof FIELDS; hint?: [BadgeKind, string] }[] = [
 						<p class="grid justify-items-start gap-1.5">
 							<ValueBadge language={language} kind="calculated" />{' '}
 							<span class="result" data-figure="kwh">
-								{first.kwh}
+								{firstFigures.kwh}
 							</span>{' '}
 							<span class="text-sm text-foreground-secondary">{units.kwhPerMonth}</span>
 						</p>
 						<p class="grid justify-items-start gap-1.5">
 							<ValueBadge language={language} kind="calculated" />{' '}
 							<span class="result" data-figure="kg">
-								{first.kg}
+								{firstFigures.kg}
 							</span>{' '}
 							<span class="text-sm text-foreground-secondary">
-								{units.kgPerMonth}, location-based
+								{units.kgPerMonth}, {estimator.locationBased}
 							</span>
 						</p>
 					</div>
 
 					{/* What screen readers hear once a field has changed, not at each step of a slider. */}
 					<p role="status" class="sr-only">
-						<span data-figure="kwh">{first.kwh}</span> {units.kwhPerMonth},{' '}
-						<span data-figure="kg">{first.kg}</span> {units.kgPerMonth} (
+						<span data-figure="kwh">{firstFigures.kwh}</span> {units.kwhPerMonth},{' '}
+						<span data-figure="kg">{firstFigures.kg}</span> {units.kgPerMonth} (
 						<span data-figure="country">{countryName(FIRST_LOAD.country)}</span>).
 					</p>
 
@@ -174,17 +175,17 @@ const sliders: { name: keyof typeof FIELDS; hint?: [BadgeKind, string] }[] = [
 							<li>
 								<span class="operator"></span>
 								<span>
-									<span data-figure="vcpu">{first.vcpu}</span> {units.vcpu}
+									<span data-figure="vcpu">{firstFigures.vcpu}</span>&nbsp;{units.vcpu}
 								</span>
 								<ValueBadge language={language} kind="assumption" />
 							</li>
 							<li>
 								<span class="operator">×</span>
 								<span>
-									<span data-figure="watts">{first.watts}</span>&nbsp;{units.wattsPerVcpu}
+									<span data-figure="watts">{firstFigures.watts}</span>&nbsp;{units.wattsPerVcpu}
 									<small>
 										{format(WATTS.idle)}&nbsp;W +{' '}
-										<span data-figure="utilisation">{first.utilisation}</span> × (
+										<span data-figure="utilisation">{firstFigures.utilisation}</span> × (
 										{format(WATTS.full)}&nbsp;W − {format(WATTS.idle)}&nbsp;W),{' '}
 										{estimator.wattsSource}
 									</small>
@@ -194,7 +195,7 @@ const sliders: { name: keyof typeof FIELDS; hint?: [BadgeKind, string] }[] = [
 							<li>
 								<span class="operator">×</span>
 								<span>
-									<span data-figure="hoursPerDay">{first.hoursPerDay}</span> {units.perDay}
+									<span data-figure="hoursPerDay">{firstFigures.hoursPerDay}</span> {units.perDay}
 								</span>
 								<ValueBadge language={language} kind="assumption" />
 							</li>
@@ -210,8 +211,8 @@ const sliders: { name: keyof typeof FIELDS; hint?: [BadgeKind, string] }[] = [
 							<li>
 								<span class="operator">×</span>
 								<span>
-									PUE&nbsp;<span data-figure="pue">{first.pue}</span>
-									<small data-pue="published">Uptime Institute, 2026</small>
+									PUE&nbsp;<span data-figure="pue">{firstFigures.pue}</span>
+									<small data-pue="published">Uptime Institute, {PUE_YEAR}</small>
 								</span>
 								<span data-pue="published">
 									<ValueBadge language={language} kind="published" />
@@ -223,14 +224,14 @@ const sliders: { name: keyof typeof FIELDS; hint?: [BadgeKind, string] }[] = [
 							<li>
 								<span class="operator">=</span>
 								<span>
-									<span data-figure="kwh">{first.kwh}</span>&nbsp;{units.kwhPerMonth}
+									<span data-figure="kwh">{firstFigures.kwh}</span>&nbsp;{units.kwhPerMonth}
 								</span>
 								<ValueBadge language={language} kind="calculated" />
 							</li>
 							<li>
 								<span class="operator">×</span>
 								<span>
-									<span data-figure="intensity">{first.intensity}</span>&nbsp;g&nbsp;CO2e/kWh
+									<span data-figure="intensity">{firstFigures.intensity}</span>&nbsp;g&nbsp;CO2e/kWh
 									<small>
 										<span data-figure="country">{countryName(FIRST_LOAD.country)}</span>, Ember{' '}
 										{INTENSITY_YEAR}, {estimator.lifeCycle}
@@ -241,7 +242,7 @@ const sliders: { name: keyof typeof FIELDS; hint?: [BadgeKind, string] }[] = [
 							<li>
 								<span class="operator">=</span>
 								<span>
-									<span data-figure="kg">{first.kg}</span>&nbsp;{units.kgPerMonth}
+									<span data-figure="kg">{firstFigures.kg}</span>&nbsp;{units.kgPerMonth}
 								</span>
 								<ValueBadge language={language} kind="calculated" />
 							</li>
@@ -250,14 +251,24 @@ const sliders: { name: keyof typeof FIELDS; hint?: [BadgeKind, string] }[] = [
 				</div>
 			</div>
 
-			<div class="grid gap-4 border-t border-line-strong pt-8">
-				<div class="flex flex-wrap items-center gap-3">
-					<h3 id="comparison-title" class="text-xl">
-						{estimator.comparison}
-					</h3>
-					<ValueBadge language={language} kind="calculated" />
-				</div>
-				{/* Lowest intensity first. The bars are the intensity, so they don't change with the load. */}
+			<section
+				aria-labelledby="comparison-title"
+				class="grid gap-4 border-t border-line-strong pt-8"
+			>
+				<h3 id="comparison-title" class="text-xl">
+					{estimator.comparison}
+				</h3>
+				{/* A badge on each value: the intensities are published, the results calculated. */}
+				<p class="flex flex-wrap items-center gap-x-6 gap-y-2 text-[0.8125rem] text-foreground-secondary">
+					<span class="inline-flex items-center gap-2">
+						g&nbsp;CO2e/kWh, Ember {INTENSITY_YEAR}{' '}
+						<ValueBadge language={language} kind="published" />
+					</span>
+					<span class="inline-flex items-center gap-2">
+						{units.kgPerMonth} <ValueBadge language={language} kind="calculated" />
+					</span>
+				</p>
+				{/* Lowest intensity firstFigures. The bars are the intensity, so they don't change with the load. */}
 				<ul aria-labelledby="comparison-title" class="grid gap-1.5">
 					{COUNTRIES.map((country) => (
 						<li
@@ -275,12 +286,12 @@ const sliders: { name: keyof typeof FIELDS; hint?: [BadgeKind, string] }[] = [
 								<span style={`width: ${(INTENSITIES[country] / highestIntensity) * 100}%`}></span>
 							</span>
 							<span class="text-right tabular-nums">
-								<span data-figure={`kg-${country}`}>{first[`kg-${country}`]}</span>&nbsp;kg
+								<span data-figure={`kg-${country}`}>{firstFigures[`kg-${country}`]}</span>&nbsp;kg
 							</span>
 						</li>
 					))}
 				</ul>
-			</div>
+			</section>
 		</section>
 
 		<section aria-labelledby="method-title" class="page-width grid gap-4 pt-20">
@@ -322,10 +333,10 @@ const sliders: { name: keyof typeof FIELDS; hint?: [BadgeKind, string] }[] = [
 					<li>
 						{url ? (
 							<a href={url} class="text-green underline underline-offset-3">
-								{sources.sources[id]}
+								{sources.names[id]}
 							</a>
 						) : (
-							sources.sources[id]
+							sources.names[id]
 						)}
 					</li>
 				))}
@@ -373,21 +384,30 @@ const sliders: { name: keyof typeof FIELDS; hint?: [BadgeKind, string] }[] = [
 				};
 			};
 
-			/** Writes the numbers of the current load in `[data-figure]`, inside or outside the status. */
-			const write = (inStatus: boolean) => {
-				const current = load();
-				const text: Record<string, string> = {
-					...figures(locale, current),
-					country: country.selectedOptions[0].text,
-				};
-				for (const element of estimator.querySelectorAll<HTMLElement>('[data-figure]')) {
+			/** The numbers of the current load, as the page writes them, and the country's name. */
+			const texts = (current: Load): Record<string, string> => ({
+				...figures(locale, current),
+				country: country.selectedOptions[0].text,
+			});
+
+			/** Writes each number in its `[data-figure]`, only where it changed: an unchanged status
+			 * says nothing. */
+			const fill = (elements: HTMLElement[], text: Record<string, string>) => {
+				for (const element of elements) {
 					const value = text[element.dataset.figure!];
-					// Only what changed: an unchanged status says nothing.
-					if (status.contains(element) === inStatus && element.textContent !== value) {
-						element.textContent = value;
-					}
+					if (element.textContent !== value) element.textContent = value;
 				}
-				if (inStatus) return;
+			};
+			const figuresOutsideStatus = [
+				...estimator.querySelectorAll<HTMLElement>('[data-figure]'),
+			].filter((element) => !status.contains(element));
+			const figuresInStatus = [...status.querySelectorAll<HTMLElement>('[data-figure]')];
+
+			/** Shows the current load: its numbers, the PUE's badge and the chosen country. */
+			const show = () => {
+				const current = load();
+				const text = texts(current);
+				fill(figuresOutsideStatus, text);
 				for (const slider of form.querySelectorAll<HTMLInputElement>('input[type="range"]')) {
 					slider.setAttribute('aria-valuetext', text[slider.name]);
 				}
@@ -401,12 +421,15 @@ const sliders: { name: keyof typeof FIELDS; hint?: [BadgeKind, string] }[] = [
 				}
 			};
 
-			form.addEventListener('input', () => write(false));
-			form.addEventListener('change', () => write(true));
+			/** Tells screen readers the result. */
+			const announce = () => fill(figuresInStatus, texts(load()));
+
+			form.addEventListener('input', show);
+			form.addEventListener('change', announce);
 			form.addEventListener('submit', (event) => event.preventDefault());
 			// The browser may have kept the fields of an earlier visit.
-			write(false);
-			write(true);
+			show();
+			announce();
 		}
 	});
 </script>
