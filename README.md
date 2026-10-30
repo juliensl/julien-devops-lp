@@ -32,6 +32,7 @@ With Node 24 (`nvm use` reads `.nvmrc`):
 
 - `src/config/site.ts`: the domain and what each phase publishes (the published languages and `noindex`).
 - `src/config/values.ts`: the shared values (booking page, LinkedIn…). The build fails if one is missing.
+- `src/config/audiences.ts`: the four Audiences of «Os teus desafios». Their ids are the anchors of the questions page (`/pt/questions/#cto`), which the header submenu and the home page link to.
 - `src/i18n/`: the texts, one file per language. Portuguese is the Reference language; French and English are typed from it.
 - `src/localized-pages/<language>/`: one thin page file per page and per language. Only the pages of published languages are generated. Pages without a language stay in `src/pages/`. A new page only shows up in `npm run dev` after a restart.
 - `src/pages/404.astro`: the 404 page, in English only and always with `noindex`. `astro preview` and `.htaccess` show it for any address that does not exist.

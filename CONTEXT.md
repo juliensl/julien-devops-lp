@@ -16,6 +16,11 @@ Anyone who opens the page, whether a CTO or not.
 _Portuguese_: Visitante
 _Avoid_: user
 
+**Audience**:
+Each group of Visitors that the questions on «Os teus desafios» are written for: general, CTO, CEO and tech team. The page copy calls it «perfil».
+_Portuguese_: Público (Gerais, CTO, CEO, Equipa técnica)
+_Avoid_: persona, segment
+
 ## Page goal
 
 **Conversation**:
