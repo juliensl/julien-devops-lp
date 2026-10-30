@@ -1,0 +1,416 @@
+---
+// The mini-diagram of a Block (prototype v3): it shows the Block's result, not only its technology.
+// It animates only once the page has loaded, only while in view, and stops with the pause button.
+// Until it first starts, with reduced motion and without JS, it stays still on a frame that shows
+// the result.
+import type { Dictionary } from '../i18n/pt';
+
+interface Props {
+	/** The Block, from 1 to 4. */
+	block: number;
+	/** The words drawn in the 4 diagrams, and what each one shows, for screen readers. */
+	words: Dictionary['homePage']['services']['diagrams'];
+}
+
+const { block, words } = Astro.props;
+const { pipeline, containers, scaling, monitoring } = words;
+const description = [pipeline, containers, scaling, monitoring][block - 1]!.description;
+---
+
+{/* The margin on each side of the viewBox leaves room for the longer words in French and English. */}
+<div class="rounded-2xl border border-line bg-surface p-3 sm:px-5 sm:py-4">
+	<svg class="diagram" viewBox="-8 0 256 110" role="img" aria-label={description} data-diagram>
+		{block === 1 && (
+			<g>
+				<line x1="24" y1="44" x2="216" y2="44" class="track" />
+				<circle cx="24" cy="44" r="7" class="node" />
+				<circle cx="88" cy="44" r="7" class="node" />
+				<rect x="145" y="29" width="14" height="30" rx="4" class="gate" />
+				<circle cx="216" cy="44" r="7" class="node end" />
+				<circle cx="24" cy="44" r="5" class="change passes" />
+				<circle cx="24" cy="44" r="5" class="change blocked" />
+				<rect x="122" y="2" width="60" height="18" rx="9" class="badge appears" />
+				<text x="152" y="15" class="badge-text appears">
+					{pipeline.blocked}
+				</text>
+				<text x="24" y="84">
+					{pipeline.commit}
+				</text>
+				<text x="88" y="84">
+					{pipeline.tests}
+				</text>
+				<text x="152" y="84">
+					{pipeline.security}
+				</text>
+				<text x="216" y="84">
+					{pipeline.production}
+				</text>
+			</g>
+		)}
+		{block === 2 && (
+			<g>
+				<rect x="10" y="14" width="88" height="66" rx="10" class="frame" />
+				<rect x="142" y="14" width="88" height="66" rx="10" class="frame" />
+				<rect x="34" y="34" width="40" height="28" rx="6" class="app" />
+				<line x1="42" y1="44" x2="66" y2="44" class="stripe" />
+				<line x1="42" y1="52" x2="58" y2="52" class="stripe" />
+				<g class="travels">
+					<rect x="34" y="34" width="40" height="28" rx="6" class="app" />
+					<line x1="42" y1="44" x2="66" y2="44" class="stripe" />
+					<line x1="42" y1="52" x2="58" y2="52" class="stripe" />
+				</g>
+				<path d="M104 47h30m-6-5 6 5-6 5" class="arrow" />
+				<text x="54" y="98">
+					{containers.laptop}
+				</text>
+				<text x="186" y="98">
+					{containers.production}
+				</text>
+			</g>
+		)}
+		{block === 3 && (
+			<g>
+				<polyline points="10,74 50,70 80,40 110,22 140,30 170,62 200,72 230,74" class="load" />
+				{[0, 1, 2, 3, 4, 5].map((k) => (
+					<rect
+						x={20 + k * 36}
+						y="84"
+						width="22"
+						height="16"
+						rx="4"
+						class:list={['instance', `i${k}`]}
+					/>
+				))}
+				<text x="34" y="20">
+					{scaling.load}
+				</text>
+				<text x="120" y="109">
+					{scaling.instances}
+				</text>
+			</g>
+		)}
+		{block === 4 && (
+			<g>
+				<rect x="8" y="10" width="224" height="76" rx="10" class="frame" />
+				<polyline
+					class="signal"
+					points="16,58 56,58 66,58 74,40 84,70 94,58 140,58 150,58 158,22 168,78 178,58 224,58"
+				/>
+				<circle cx="158" cy="22" r="5" class="alert blinks" />
+				<rect x="170" y="16" width="54" height="18" rx="9" class="badge blinks" />
+				<text x="197" y="29" class="badge-text blinks">
+					{monitoring.alert}
+				</text>
+				<text x="50" y="102">
+					{monitoring.dashboard}
+				</text>
+			</g>
+		)}
+	</svg>
+</div>
+
+<script>
+	import { afterLoad } from '../scripts/after-load';
+
+	// A diagram runs while at least 30 % of it is in view. It starts the first time it is in view with
+	// the animations running: a diagram first seen while paused shows the still frame, not the first one.
+	afterLoad(() => {
+		const html = document.documentElement;
+		const diagrams = document.querySelectorAll<SVGElement>('[data-diagram]');
+		const start = (diagram: Element) => {
+			if (diagram.hasAttribute('data-in-view') && html.dataset.animation !== 'paused') {
+				diagram.toggleAttribute('data-started', true);
+			}
+		};
+		const observer = new IntersectionObserver(
+			(entries) => {
+				for (const { target, isIntersecting } of entries) {
+					target.toggleAttribute('data-in-view', isIntersecting);
+					start(target);
+				}
+			},
+			{ threshold: 0.3 },
+		);
+		for (const diagram of diagrams) observer.observe(diagram);
+		document.addEventListener('animation', () => diagrams.forEach(start));
+	});
+</script>
+
+<style>
+	/* The "blocked" and "alert" red of prototype v3. It is not in #54's colors: to confirm in the
+	   First review (#74). */
+	.diagram {
+		--red: #f08f86;
+		--red-text: #f4a49c;
+		display: block;
+		width: 100%;
+		height: auto;
+		max-height: 11rem;
+		border-radius: 0.6rem;
+		background: var(--color-background);
+	}
+	text {
+		font:
+			500 10px/1 var(--font-body),
+			sans-serif;
+		fill: var(--color-foreground-secondary);
+		text-anchor: middle;
+	}
+
+	/* Block 1: a change goes through; the next one, with a security flaw, stops at the gate. Still,
+	   the blocked one waits at the gate, in red. */
+	.track {
+		stroke: var(--color-line-strong);
+		stroke-width: 2;
+	}
+	.node {
+		fill: var(--color-surface-2);
+		stroke: var(--color-foreground-secondary);
+		stroke-width: 1.5;
+	}
+	.node.end {
+		stroke: var(--color-green);
+	}
+	.gate {
+		fill: color-mix(in srgb, var(--red) 25%, transparent);
+		stroke: var(--red);
+		stroke-width: 1.5;
+	}
+	.change {
+		fill: var(--color-green);
+	}
+	.passes {
+		opacity: 0;
+	}
+	.blocked {
+		fill: var(--red);
+		transform: translateX(110px);
+	}
+	.badge {
+		fill: color-mix(in srgb, var(--red) 18%, transparent);
+		stroke: var(--red);
+	}
+	.badge-text {
+		fill: var(--red-text);
+	}
+
+	/* Block 2: the same container goes from the laptop to production. Still, it has arrived. */
+	.frame {
+		fill: none;
+		stroke: var(--color-line-strong);
+		stroke-width: 1.2;
+		stroke-dasharray: 3 3;
+	}
+	/* Not `.container`: Tailwind has a utility of that name. */
+	.app {
+		fill: var(--color-surface-2);
+		stroke: var(--color-purple);
+		stroke-width: 1.5;
+	}
+	.stripe {
+		stroke: var(--color-foreground-secondary);
+		stroke-width: 2;
+		stroke-linecap: round;
+	}
+	.arrow {
+		fill: none;
+		stroke: var(--color-green);
+		stroke-width: 1.6;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+	.travels {
+		transform: translateX(132px);
+	}
+
+	/* Block 3: the instances follow the load. Still, at the peak, they are all on. */
+	.load {
+		fill: none;
+		stroke: var(--color-purple);
+		stroke-width: 2;
+		stroke-dasharray: 4 4;
+	}
+	.instance {
+		fill: var(--color-green);
+	}
+
+	/* Block 4: an anomaly in the signal raises an alert. Still, the alert is on. */
+	.signal {
+		fill: none;
+		stroke: var(--color-green);
+		stroke-width: 2.5;
+		stroke-linejoin: round;
+		stroke-linecap: round;
+	}
+	.alert {
+		fill: var(--red);
+	}
+
+	/* In motion: only once the script has started them, and never with reduced motion. */
+	@media (prefers-reduced-motion: no-preference) {
+		[data-started] .gate {
+			animation: gate 4s ease-in-out 2s infinite backwards var(--play);
+		}
+		[data-started] .passes {
+			animation: passes 4s linear infinite var(--play);
+		}
+		[data-started] .blocked {
+			animation: blocked 4s linear 2s infinite backwards var(--play);
+		}
+		[data-started] .appears {
+			animation: appears 4s ease 2s infinite backwards var(--play);
+		}
+		[data-started] .travels {
+			animation: travels 4s ease-in-out infinite var(--play);
+		}
+		[data-started] .load {
+			animation: load 5s linear infinite var(--play);
+		}
+		[data-started] :is(.i2, .i3, .i4, .i5) {
+			animation: scales 5s ease-in-out infinite backwards var(--play);
+		}
+		[data-started] .i3 {
+			animation-delay: 0.2s;
+		}
+		[data-started] .i4 {
+			animation-delay: 0.4s;
+		}
+		[data-started] .i5 {
+			animation-delay: 0.6s;
+		}
+		[data-started] .signal {
+			stroke-dasharray: 340;
+			animation: draws 3.6s linear infinite var(--play);
+		}
+		[data-started] .blinks {
+			animation: blinks 3.6s ease infinite var(--play);
+		}
+	}
+
+	/* Started, a diagram runs only while in view and the animations are not paused (#62). Each
+	   animation takes its play state from --play, which its elements inherit from the diagram. */
+	.diagram {
+		--play: paused;
+	}
+	:global(:root:not([data-animation='paused'])) .diagram[data-in-view] {
+		--play: running;
+	}
+
+	@keyframes passes {
+		0% {
+			transform: translateX(0);
+			opacity: 0;
+		}
+		8%,
+		88% {
+			opacity: 1;
+		}
+		100% {
+			transform: translateX(192px);
+			opacity: 0;
+		}
+	}
+	@keyframes blocked {
+		0% {
+			transform: translateX(0);
+			opacity: 0;
+			fill: var(--color-green);
+		}
+		8% {
+			opacity: 1;
+		}
+		50% {
+			transform: translateX(110px);
+			fill: var(--color-green);
+		}
+		58%,
+		88% {
+			transform: translateX(110px);
+			fill: var(--red);
+			opacity: 1;
+		}
+		100% {
+			transform: translateX(110px);
+			opacity: 0;
+		}
+	}
+	@keyframes gate {
+		0%,
+		48%,
+		100% {
+			stroke: var(--color-foreground-secondary);
+			fill: var(--color-surface-2);
+		}
+		56%,
+		90% {
+			stroke: var(--red);
+			fill: color-mix(in srgb, var(--red) 25%, transparent);
+		}
+	}
+	@keyframes appears {
+		0%,
+		50%,
+		100% {
+			opacity: 0;
+		}
+		58%,
+		88% {
+			opacity: 1;
+		}
+	}
+	@keyframes travels {
+		0%,
+		15% {
+			transform: translateX(0);
+			opacity: 0;
+		}
+		25% {
+			opacity: 1;
+		}
+		60%,
+		90% {
+			transform: translateX(132px);
+			opacity: 1;
+		}
+		100% {
+			transform: translateX(132px);
+			opacity: 0;
+		}
+	}
+	@keyframes load {
+		to {
+			stroke-dashoffset: -32;
+		}
+	}
+	@keyframes scales {
+		0%,
+		15%,
+		85%,
+		100% {
+			opacity: 0.15;
+		}
+		35%,
+		65% {
+			opacity: 1;
+		}
+	}
+	@keyframes draws {
+		from {
+			stroke-dashoffset: 340;
+		}
+		to {
+			stroke-dashoffset: 0;
+		}
+	}
+	@keyframes blinks {
+		0%,
+		55%,
+		100% {
+			opacity: 0.2;
+		}
+		62%,
+		92% {
+			opacity: 1;
+		}
+	}
+</style>
