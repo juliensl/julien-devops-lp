@@ -69,6 +69,8 @@ export const pt = {
 	/** The ecology page, and the links that lead to it. The texts of #54 are as validated there; the
 	 * others come from prototype v3. */
 	ecology: {
+		/** The links to the page, with the leaf, in the header and the footer. */
+		link: 'Ecologia',
 		page: {
 			title: 'Ecologia e infraestrutura',
 			description:

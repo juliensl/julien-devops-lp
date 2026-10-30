@@ -68,6 +68,6 @@ const urlInLanguage = (l: Language) =>
 	<body class="antialiased">
 		<Header language={language} noEquivalents={noEquivalents} />
 		<slot />
-		<Footer />
+		<Footer language={language} noEquivalents={noEquivalents} />
 	</body>
 </html>

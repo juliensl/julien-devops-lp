@@ -2,7 +2,7 @@
 // whole calculation with a badge on each value, compares every country and reads the method, the
 // sources and the limits. The header, the footer and the home page lead to it.
 import { expect, test, type Locator, type Page } from '@playwright/test';
-import { inEachBuild } from './builds';
+import { inEachBuild, pagesOf } from './builds';
 import { BOOKING_PAGE, LANGUAGES, NAME, type Language } from './expected';
 
 const PATH = 'ecology/';
@@ -477,6 +477,61 @@ inEachBuild((build) => {
 				await expect(result(page)).toContainText(`${n('0.78')} ${t.kg}`);
 				await expect(calculation(page)).toHaveCount(CALCULATION.length);
 				await expect(comparison(page)).toHaveCount(16);
+			});
+		});
+	}
+});
+
+/** The ecology link's name in the header and the footer: «🍃 Ecologia» in #54. */
+const LINK: Record<Language, string> = { pt: 'Ecologia', fr: 'Écologie', en: 'Ecology' };
+
+inEachBuild((build) => {
+	for (const { path, language } of pagesOf(build)) {
+		// The 404 has no language of its own: like its logo, its link leads to the first published language.
+		const target = `${LANGUAGES[language ?? build.phase.publishedLanguages[0]].prefix}${PATH}`;
+		const name = LINK[language ?? 'en'];
+		const headerLink = (page: Page) =>
+			page.getByRole('banner').getByRole('link', { name, exact: true });
+
+		test.describe(`${path} ecology links`, () => {
+			if (language) {
+				test('on a computer, the header leads to the ecology page in the same language', async ({
+					page,
+				}) => {
+					await page.setViewportSize({ width: 1280, height: 800 });
+					await page.goto(path);
+					await expect(headerLink(page)).toBeVisible();
+					await expect(headerLink(page)).toHaveText(name);
+					await expect(headerLink(page)).toHaveAttribute('href', target);
+					if (path === target) {
+						await expect(headerLink(page)).toHaveAttribute('aria-current', 'page');
+					} else {
+						await expect(headerLink(page)).not.toHaveAttribute('aria-current');
+					}
+				});
+
+				test('on a phone, the header keeps the leaf; below 360 px, it is only in the menu', async ({
+					page,
+				}) => {
+					await page.setViewportSize({ width: 375, height: 700 });
+					await page.goto(path);
+					await expect(headerLink(page)).toHaveCount(1);
+					await expect(headerLink(page)).toBeVisible();
+					await expect(headerLink(page)).toHaveAttribute('href', target);
+
+					await page.setViewportSize({ width: 359, height: 700 });
+					await expect(headerLink(page)).toHaveCount(0);
+					await page.getByRole('banner').locator('summary').filter({ visible: true }).click();
+					await expect(headerLink(page)).toBeVisible();
+					await expect(headerLink(page)).toHaveAttribute('href', target);
+				});
+			}
+
+			test('the footer leads to the ecology page', async ({ page }) => {
+				await page.goto(path);
+				const link = page.getByRole('contentinfo').getByRole('link', { name, exact: true });
+				await expect(link).toBeVisible();
+				await expect(link).toHaveAttribute('href', target);
 			});
 		});
 	}

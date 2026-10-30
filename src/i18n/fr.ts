@@ -19,6 +19,7 @@ export const fr: Dictionary = {
 		resume: "Reprendre l'animation",
 	},
 	ecology: {
+		link: 'Écologie',
 		page: {
 			title: 'Écologie et infrastructure',
 			description:

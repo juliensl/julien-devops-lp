@@ -18,6 +18,7 @@ export const en: Dictionary = {
 		resume: 'Resume animation',
 	},
 	ecology: {
+		link: 'Ecology',
 		page: {
 			title: 'Ecology and infrastructure',
 			description:
