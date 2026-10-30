@@ -6,10 +6,9 @@
 // On a page with no equivalents in other languages (the 404), the header keeps only the logo and the button,
 // and the logo leads to the home page of the first published language.
 // The parts that arrive with the pages they lead to have their place marked with the ticket.
-import { AUDIENCES } from '../config/audiences';
 import { PHASE, PREFIXES, type Language } from '../config/site';
 import { dictionaries } from '../i18n';
-import { questionsPath } from '../lib/paths';
+import AudienceLinks from './AudienceLinks.astro';
 import BookingButton from './BookingButton';
 import LanguageSwitcher from './LanguageSwitcher.astro';
 import Logo from './Logo.astro';
@@ -22,9 +21,6 @@ interface Props {
 
 const { language, noEquivalents = false } = Astro.props;
 const t = dictionaries[language];
-const { audiences } = t.questions;
-/** On the questions page, «Ver todas as perguntas» is the current page. */
-const allQuestionsCurrent = Astro.url.pathname === questionsPath(language) ? 'page' : undefined;
 ---
 
 <header class="sticky top-0 z-20 border-b border-line bg-background/85 backdrop-blur-md">
@@ -58,30 +54,11 @@ const allQuestionsCurrent = Astro.url.pathname === questionsPath(language) ? 'pa
 								></path>
 							</svg>
 						</summary>
-						<ul class="absolute top-[calc(100%+0.5rem)] right-0 grid w-[22rem] gap-0.5 rounded-xl border border-line bg-surface p-2 shadow-[0_18px_40px_rgb(0_0_0/0.45)]">
-							{AUDIENCES.map((id) => (
-								<li>
-									<a
-										href={questionsPath(language, id)}
-										class="grid gap-0.5 rounded-lg px-3 py-2.5 hover:bg-surface-2"
-									>
-										<span class="font-semibold text-foreground">{audiences[id].name}</span>
-										<span class="text-[0.8125rem] leading-snug text-foreground-secondary">
-											{audiences[id].description}
-										</span>
-									</a>
-								</li>
-							))}
-							<li>
-								<a
-									href={questionsPath(language)}
-									aria-current={allQuestionsCurrent}
-									class="flex min-h-11 items-center rounded-lg px-3 font-semibold text-green hover:bg-surface-2"
-								>
-									{t.questions.all}
-								</a>
-							</li>
-						</ul>
+						<AudienceLinks
+							language={language}
+							descriptions
+							class="absolute top-[calc(100%+0.5rem)] right-0 grid w-[22rem] gap-0.5 rounded-xl border border-line bg-surface p-2 shadow-[0_18px_40px_rgb(0_0_0/0.45)]"
+						/>
 					</details>
 				</nav>
 			)}
@@ -116,27 +93,7 @@ const allQuestionsCurrent = Astro.url.pathname === questionsPath(language) ? 'pa
 						>
 							{t.questions.menu}
 						</p>
-						<ul class="mt-1 grid">
-							{AUDIENCES.map((id) => (
-								<li>
-									<a
-										href={questionsPath(language, id)}
-										class="flex min-h-11 items-center rounded-lg px-2 hover:bg-surface-2"
-									>
-										{audiences[id].name}
-									</a>
-								</li>
-							))}
-							<li>
-								<a
-									href={questionsPath(language)}
-									aria-current={allQuestionsCurrent}
-									class="flex min-h-11 items-center rounded-lg px-2 font-semibold text-green hover:bg-surface-2"
-								>
-									{t.questions.all}
-								</a>
-							</li>
-						</ul>
+						<AudienceLinks language={language} class="mt-1 grid" />
 					</nav>
 
 					{/* Ecology (#68): below 360 px, it only lives here */}

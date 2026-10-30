@@ -306,6 +306,11 @@ export const fr: Dictionary = {
 			wayOfWorking:
 				"Je travaille à distance, en portugais, en français et en anglais. J'utilise des technologies standard, sans lock-in, et je documente tout pour que ton équipe soit autonome.",
 		},
+		questions: {
+			label: 'Questions',
+			title: "L'essentiel, avant l'Échange.",
+			byAudience: 'Questions pour ton profil',
+		},
 		finalCta: {
 			title: "Tu ne perds jamais l'infrastructure.",
 			text: "Même si ton équipe ne se lance pas tout de suite dans les tests, tu gardes une pipeline propre, documentée et aux standards du marché, prête pour le jour où tu décides d'y aller.",
@@ -478,11 +483,6 @@ export const fr: Dictionary = {
 			noResults: 'Aucune question avec ces mots.',
 			index: 'Profils',
 			notFound: 'Tu ne trouves pas ta question ?',
-		},
-		homeSection: {
-			label: 'Questions',
-			title: "L'essentiel, avant l'Échange.",
-			byAudience: 'Questions pour ton profil',
 		},
 	},
 };

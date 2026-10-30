@@ -347,6 +347,12 @@ export const pt = {
 			wayOfWorking:
 				'Trabalho à distância, em português, francês e inglês. Uso tecnologias standard, sem lock-in, e documento tudo para a tua equipa ficar autónoma.',
 		},
+		/** The Questions section: its general questions and the Audiences come from `questions`. */
+		questions: {
+			label: 'Perguntas',
+			title: 'O essencial, antes da Conversa.',
+			byAudience: 'Perguntas para o teu perfil',
+		},
 		finalCta: {
 			title: 'Nunca perdes a infraestrutura.',
 			text: 'Mesmo que a tua equipa não avance logo com os testes, ficas com uma pipeline limpa, documentada e com os standards do mercado, pronta para quando decidires.',
@@ -525,11 +531,6 @@ export const pt = {
 			/** The name of the index of audiences, for screen readers. */
 			index: 'Perfis',
 			notFound: 'Não encontras a tua pergunta?',
-		},
-		homeSection: {
-			label: 'Perguntas',
-			title: 'O essencial, antes da Conversa.',
-			byAudience: 'Perguntas para o teu perfil',
 		},
 	},
 };

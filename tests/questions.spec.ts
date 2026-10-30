@@ -4,15 +4,15 @@ import { expect, test, type Page } from '@playwright/test';
 import { inEachBuild } from './builds';
 import { BOOKING_PAGE, LANGUAGES, NAME, type Language } from './expected';
 
-/** Each audience's anchor, the same in the three languages. */
-type Anchor = 'general' | 'cto' | 'ceo' | 'team';
+/** Each Audience's id, which is its anchor on the questions page, the same in the three languages. */
+type AudienceId = 'general' | 'cto' | 'ceo' | 'team';
 
 // The four audiences and how many questions each has (#54).
-const COUNTS: Record<Anchor, number> = { general: 5, cto: 7, ceo: 6, team: 5 };
-const ANCHORS = Object.keys(COUNTS) as Anchor[];
+const COUNTS: Record<AudienceId, number> = { general: 5, cto: 7, ceo: 6, team: 5 };
+const ANCHORS = Object.keys(COUNTS) as AudienceId[];
 
 // The 23 questions and answers Julien approved, word for word, from #54's first comment.
-const APPROVED: Record<Anchor, [question: string, answer: string][]> = {
+const APPROVED: Record<AudienceId, [question: string, answer: string][]> = {
 	general: [
 		[
 			'O que fazes, exatamente?',
@@ -122,9 +122,9 @@ const EXPECTED: Record<
 	Language,
 	{
 		menu: string;
-		audiences: Record<Anchor, string>;
+		audiences: Record<AudienceId, string>;
 		/** The filter's choices: every audience, then each one. */
-		filter: Record<'all' | Anchor, string>;
+		filter: Record<'all' | AudienceId, string>;
 		/** After the number in the count, for more than one question. */
 		questions: string;
 		/** The name of the index of audiences. */
@@ -211,7 +211,7 @@ inEachBuild((build) => {
 
 		test.describe(path, () => {
 			test('has its own title and description', async ({ page }) => {
-				await page.goto(LANGUAGES[language].prefix);
+				await page.goto(home);
 				const homeDescription = await page
 					.locator('meta[name="description"]')
 					.getAttribute('content');
@@ -427,7 +427,9 @@ inEachBuild((build) => {
 			}) => {
 				await page.goto(home);
 				const links = page.getByRole('region', { name: homeTitle }).getByRole('link');
-				const hrefs = await links.evaluateAll((all) => all.map((a) => a.getAttribute('href')));
+				const hrefs = await links.evaluateAll((elements) =>
+					elements.map((a) => a.getAttribute('href')),
+				);
 				expect(hrefs).toEqual([`${path}#cto`, `${path}#ceo`, `${path}#team`, path]);
 				await expect(links.last()).toHaveAccessibleName(all);
 				await links.nth(1).click();
@@ -474,6 +476,8 @@ inEachBuild((build) => {
 					await expect(question.getByText(answer, { exact: true })).toBeVisible();
 				}
 			}
+			// Prototype v3 marked each answer «Validado» or «A validar»: the page only has approved ones.
+			await expect(main.getByText(/validad[oa]|a validar/i)).toHaveCount(0);
 		});
 
 		test('/pt/questions/: the search ignores case and accents, opens what it finds and says how many', async ({

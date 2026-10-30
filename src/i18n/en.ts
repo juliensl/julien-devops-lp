@@ -293,6 +293,11 @@ export const en: Dictionary = {
 			wayOfWorking:
 				'I work remotely, in Portuguese, French and English. I use standard technologies, with no lock-in, and document everything so your team can run on its own.',
 		},
+		questions: {
+			label: 'Questions',
+			title: 'The essentials, before the Conversation.',
+			byAudience: 'Questions for your role',
+		},
 		finalCta: {
 			title: 'You never lose the infrastructure.',
 			text: "Even if your team doesn't get to the tests right away, you keep a clean, documented pipeline built to market standards, ready for when you decide to go ahead.",
@@ -463,11 +468,6 @@ export const en: Dictionary = {
 			noResults: 'No questions with those words.',
 			index: 'Roles',
 			notFound: "Can't find your question?",
-		},
-		homeSection: {
-			label: 'Questions',
-			title: 'The essentials, before the Conversation.',
-			byAudience: 'Questions for your role',
 		},
 	},
 };

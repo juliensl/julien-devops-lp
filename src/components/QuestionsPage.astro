@@ -24,7 +24,8 @@ const t = dictionaries[language];
 const { audiences, count, page } = t.questions;
 const plural = new Intl.PluralRules(HTML_CODES[language]);
 /** «7 perguntas», with the language's plural and a non-breaking space. */
-const countText = (n: number) => `${n} ${plural.select(n) === 'one' ? count.one : count.other}`;
+const countText = (n: number) =>
+	withNonBreakingSpaces(`${n} ${plural.select(n) === 'one' ? count.one : count.other}`);
 const total = AUDIENCES.reduce((n, id) => n + audiences[id].questions.length, 0);
 ---
 
@@ -131,7 +132,11 @@ const total = AUDIENCES.reduce((n, id) => n + audiences[id].questions.length, 0)
 </Base>
 
 <script>
+	import { withNonBreakingSpaces } from '../lib/spaces';
 	import { afterLoad } from '../scripts/after-load';
+
+	/** The filter's value for every audience; the others are the audiences' ids. */
+	const ALL = 'all';
 
 	afterLoad(() => {
 		const root = document.querySelector<HTMLElement>('[data-questions]');
@@ -171,7 +176,7 @@ const total = AUDIENCES.reduce((n, id) => n + audiences[id].questions.length, 0)
 						openedBySearch.add(details);
 					}
 				}
-				section.hidden = (chosen !== 'all' && section.id !== chosen) || found === 0;
+				section.hidden = (chosen !== ALL && section.id !== chosen) || found === 0;
 				if (!section.hidden) shown += found;
 			}
 			if (!words.length) {
@@ -179,23 +184,23 @@ const total = AUDIENCES.reduce((n, id) => n + audiences[id].questions.length, 0)
 				openedBySearch.clear();
 			}
 			const word = plural.select(shown) === 'one' ? count.dataset.one : count.dataset.other;
-			count.textContent = `${shown} ${word}`;
+			count.textContent = withNonBreakingSpaces(`${shown} ${word}`);
 			noResults.hidden = shown > 0;
 		}
 
 		/** Chooses the audience in the hash, or every audience, and shows the chosen one from its top. */
 		function fromHash() {
 			const id = decodeURIComponent(location.hash.slice(1));
-			const radio = radios.find((r) => r.value === id) ?? radios[0];
+			const radio = radios.find((r) => r.value === id) ?? radios.find((r) => r.value === ALL)!;
 			radio.checked = true;
 			update();
-			if (radio !== radios[0]) document.getElementById(id)!.scrollIntoView();
+			if (radio.value !== ALL) document.getElementById(radio.value)!.scrollIntoView();
 		}
 
 		root.addEventListener('change', (event) => {
-			const radio = event.target as HTMLInputElement;
-			if (radio.name !== 'audience') return;
-			history.replaceState(null, '', radio === radios[0] ? location.pathname : `#${radio.value}`);
+			const { name, value } = event.target as HTMLInputElement;
+			if (name !== 'audience') return;
+			history.replaceState(null, '', value === ALL ? location.pathname : `#${value}`);
 			update();
 		});
 		search.addEventListener('input', update);

@@ -62,7 +62,7 @@ const t = dictionaries[language];
 
 		{/* Ecology (#68) */}
 
-		<HomeQuestions language={language} {...t.questions} />
+		<HomeQuestions language={language} questions={t.questions} {...t.homePage.questions} />
 
 		<FinalCta language={language} buttonText={t.bookButton} {...t.homePage.finalCta} />
 	</main>
