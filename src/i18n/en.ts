@@ -17,6 +17,116 @@ export const en: Dictionary = {
 		pause: 'Pause animation',
 		resume: 'Resume animation',
 	},
+	ecology: {
+		link: 'Ecology',
+		home: {
+			title: 'Infrastructure has a footprint too.',
+			text: 'Where the application runs, how long it runs and how efficiently all change its environmental impact. The ecology page lets you estimate a workload by the country it runs in, keeping published data, assumptions and calculations apart.',
+			link: 'Open the ecology page',
+		},
+		page: {
+			title: 'Ecology and infrastructure',
+			description:
+				'Estimate the energy and emissions of a workload by the country it runs in, with the full calculation, the method, the sources and the limits.',
+			heading: 'Infrastructure choices have environmental consequences too.',
+			intro:
+				'Where the application runs, how long it runs and how efficiently all change the energy it uses and the emissions of the electricity behind it. Here you estimate a workload by the country it runs in, with the method and the sources in plain sight.',
+			legend: {
+				label: 'How to read the data on this page',
+				published: 'a value from a public database or study, with its year and source',
+				assumption: 'an assumption of the calculation, which you can change',
+				calculated: 'the result of the two above',
+			},
+		},
+		badges: { published: 'Published', assumption: 'Assumption', calculated: 'Calculated' },
+		estimator: {
+			label: 'Estimate a workload',
+			title: 'The same application, in different places.',
+			intro:
+				"Choose the country, the load and the data centre's efficiency. The calculation follows the open Cloud Carbon Footprint method: processor energy × data centre efficiency × carbon intensity of the electricity.",
+			fields: {
+				country: 'Country where the infrastructure runs',
+				vcpu: 'Virtual processors (vCPU)',
+				utilisation: 'Average utilisation',
+				hoursPerDay: 'Hours per day',
+				pue: 'Data centre efficiency (PUE)',
+			},
+			hints: {
+				utilisation: '50% is the CCF value when the utilisation is unknown',
+				pue: '1.52 is the 2026 industry average (Uptime Institute); your provider can give the figure for the data centre you use',
+			},
+			result: 'Result',
+			calculation: 'The calculation',
+			comparison: 'The same workload in each country',
+			units: {
+				vcpu: 'vCPU',
+				wattsPerVcpu: 'W per vCPU',
+				perDay: 'per day',
+				daysPerMonth: 'days per month',
+				kwhPerMonth: 'kWh per month',
+				kgPerMonth: 'kg CO2e per month',
+			},
+			wattsSource: 'Cloud Carbon Footprint, unknown processor',
+			lifeCycle: 'life cycle',
+			locationBased: 'location-based',
+		},
+		method: {
+			label: 'How it is calculated',
+			title: 'One method, explained.',
+			cards: [
+				{
+					title: 'Location-based',
+					text: 'Uses the yearly average of the electricity generated in the country. It does not count renewable energy contracts: that would be the market-based method, which is not shown here because it needs contract data we do not have.',
+				},
+				{
+					title: 'Life cycle',
+					text: "Ember's intensity includes upstream emissions (building the power plants, extracting and transporting the fuel). That is why it is higher than counting only the direct emissions from burning. The two kinds are never mixed on this page.",
+				},
+				{
+					title: 'Processors only',
+					text: "The estimator counts the energy of the vCPUs and the data centre's efficiency. Memory, storage, network and server manufacturing are left out, so the real figure is higher.",
+				},
+			],
+		},
+		levers: {
+			label: 'What infrastructure can change',
+			title: 'More efficiency, more visibility.',
+			cards: [
+				{
+					title: 'Matching resources to the load',
+					text: "With scalable infrastructure (block 3), resources follow the application's load.",
+				},
+				{
+					title: 'Seeing what is used',
+					text: 'Observability (block 4) gives visibility into resource use and costs.',
+				},
+				{
+					title: 'Choosing with information',
+					text: 'The carbon intensity of electricity changes from country to country, and the estimator shows by how much.',
+				},
+				{
+					title: 'Lower-impact hosting',
+					text: 'When the needs and the budget allow it, it is one of the options I propose.',
+				},
+			],
+		},
+		sources: {
+			title: 'Sources and limits',
+			names: {
+				ember: 'Ember, yearly electricity generation by country (carbon intensity, 2025)',
+				cloudCarbonFootprint: 'Cloud Carbon Footprint, methodology',
+				uptimeInstitute: 'Uptime Institute, industry average PUE (2026 survey)',
+				research: "Own research on cloud providers' environmental data (16/10/2026)",
+			},
+			limits: [
+				'An illustrative estimate, not a measurement of your infrastructure.',
+				"The watts per vCPU are Cloud Carbon Footprint's for an unknown processor; the real server may use more or less.",
+				"The intensity is the country's yearly average; the time of day changes the real figure.",
+				'The PUE of 1.52 is the average per data centre; weighted by capacity, it is 1.36. Large data centres, like the cloud ones, tend to have lower values.',
+			],
+		},
+		back: 'Back to the home page',
+	},
 	homePage: {
 		description: `${promise} For CTOs of growing SaaS companies.`,
 		hero: {
