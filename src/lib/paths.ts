@@ -18,3 +18,8 @@ export function pathInLanguage(path: string, from: Language, to: Language): stri
 	}
 	return PREFIXES[to] + path.slice(PREFIXES[from].length);
 }
+
+/** The ecology page in a language. */
+export function ecologyPath(language: Language): string {
+	return `${PREFIXES[language]}ecology/`;
+}

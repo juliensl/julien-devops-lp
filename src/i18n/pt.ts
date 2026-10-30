@@ -3,11 +3,14 @@
 // The texts carry no HTML: links, bold text and non-breaking spaces are added in the components.
 import type { AudienceId } from '../config/audiences';
 import type { CriterionId, ProviderId, Rating, ScenarioId } from '../config/cloud-providers';
+import type { SourceId } from '../config/ecology';
 
 const promise =
 	'Em 30 dias, entrego-te a infraestrutura DevOps de que precisas para escalar o teu SaaS.';
 
 type Step = { name: string; sentence: string };
+
+type Card = { title: string; text: string };
 
 type Block = {
 	name: string;
@@ -74,6 +77,129 @@ export const pt = {
 	animation: {
 		pause: 'Pausar animação',
 		resume: 'Retomar animação',
+	},
+	/** The ecology page, and the links that lead to it. The texts of #54 are as validated there; the
+	 * others come from prototype v3. */
+	ecology: {
+		/** The links to the page, with the leaf, in the header and the footer. */
+		link: 'Ecologia',
+		/** The home page's Ecology section. */
+		home: {
+			title: 'A infraestrutura também tem pegada.',
+			text: 'Onde a aplicação corre, quanto corre e com que eficiência mudam o impacto ambiental. A página de ecologia deixa-te estimar uma carga conforme o país onde corre, separando dados publicados, hipóteses e cálculos.',
+			link: 'Abrir a página de ecologia',
+		},
+		page: {
+			title: 'Ecologia e infraestrutura',
+			description:
+				'Estima a energia e as emissões de uma carga conforme o país onde corre, com o cálculo completo, o método, as fontes e os limites.',
+			heading: 'As escolhas de infraestrutura também têm consequências ambientais.',
+			intro:
+				'Onde a aplicação corre, quanto tempo corre e com que eficiência mudam a energia que consome e as emissões da eletricidade que usa. Aqui estimas uma carga, conforme o país onde corre, com o método e as fontes à vista.',
+			/** The badge on each value: what each of the three means. */
+			legend: {
+				label: 'Como ler os dados desta página',
+				published: 'valor de uma base de dados ou de um estudo públicos, com ano e fonte',
+				assumption: 'pressuposto do cálculo, que podes mudar',
+				calculated: 'resultado dos dois anteriores',
+			},
+		},
+		/** The only three badges (#54). */
+		badges: { published: 'Publicado', assumption: 'Hipótese', calculated: 'Calculado' },
+		estimator: {
+			label: 'Estimar uma carga',
+			title: 'A mesma aplicação, em sítios diferentes.',
+			intro:
+				'Escolhe o país, a carga e a eficiência do centro de dados. O cálculo segue o método aberto do Cloud Carbon Footprint: energia dos processadores × eficiência do centro de dados × intensidade carbónica da eletricidade.',
+			fields: {
+				country: 'País onde corre a infraestrutura',
+				vcpu: 'Processadores virtuais (vCPU)',
+				utilisation: 'Utilização média',
+				hoursPerDay: 'Horas por dia',
+				pue: 'Eficiência do centro de dados (PUE)',
+			},
+			/** Below the two fields whose first value comes from a source. */
+			hints: {
+				utilisation: '50 % é o valor do CCF quando não se conhece a utilização',
+				pue: '1,52 é a média do setor em 2026 (Uptime Institute); o fornecedor pode indicar o do centro que usas',
+			},
+			/** The name of the two results, for screen readers. */
+			result: 'Resultado',
+			calculation: 'O cálculo',
+			comparison: 'A mesma carga em cada país',
+			/** After each number of the calculation. */
+			units: {
+				vcpu: 'vCPU',
+				wattsPerVcpu: 'W por vCPU',
+				perDay: 'por dia',
+				daysPerMonth: 'dias por mês',
+				kwhPerMonth: 'kWh por mês',
+				kgPerMonth: 'kg CO2e por mês',
+			},
+			/** Where the watts per vCPU come from. */
+			wattsSource: 'Cloud Carbon Footprint, processador desconhecido',
+			/** The kind of intensity, after the country and Ember's year. */
+			lifeCycle: 'ciclo de vida',
+			/** After the emissions result: the method's name, in English in every language (#54). */
+			locationBased: 'location-based',
+		},
+		method: {
+			label: 'Como se calcula',
+			title: 'Um só método, explicado.',
+			cards: [
+				{
+					title: 'Location-based',
+					text: 'Usa a média anual da eletricidade produzida no país. Não conta contratos de energia renovável: isso seria o método market-based, que aqui não aparece porque precisa de dados contratuais que não temos.',
+				},
+				{
+					title: 'Ciclo de vida',
+					text: 'A intensidade da Ember inclui as emissões a montante (construção das centrais, extração e transporte do combustível). Por isso é mais alta do que contar só as emissões diretas da queima. Os dois tipos nunca se misturam nesta página.',
+				},
+				{
+					title: 'Só os processadores',
+					text: 'O estimador conta a energia dos vCPU e a eficiência do centro de dados. Memória, armazenamento, rede e fabrico dos servidores ficam de fora, por isso o valor real é maior.',
+				},
+			] satisfies [Card, Card, Card],
+		},
+		/** What infrastructure can change: the title and the 4 cards validated in #54. */
+		levers: {
+			label: 'O que a infraestrutura pode mudar',
+			title: 'Mais eficiência, mais visibilidade.',
+			cards: [
+				{
+					title: 'Ajustar os recursos à carga',
+					text: 'Com a infraestrutura escalável (bloco 3), os recursos acompanham a carga da aplicação.',
+				},
+				{
+					title: 'Ver o que se consome',
+					text: 'A observabilidade (bloco 4) dá visibilidade sobre a utilização dos recursos e os custos.',
+				},
+				{
+					title: 'Escolher com informação',
+					text: 'A intensidade carbónica da eletricidade muda de país para país, e o estimador mostra quanto.',
+				},
+				{
+					title: 'Alojamento com menor impacto ambiental',
+					text: 'Quando as necessidades e o orçamento o permitem, é uma das opções que proponho.',
+				},
+			] satisfies [Card, Card, Card, Card],
+		},
+		sources: {
+			title: 'Fontes e limites',
+			names: {
+				ember: 'Ember, produção de eletricidade anual por país (intensidade carbónica, 2025)',
+				cloudCarbonFootprint: 'Cloud Carbon Footprint, metodologia',
+				uptimeInstitute: 'Uptime Institute, PUE médio do setor (inquérito de 2026)',
+				research: 'Pesquisa própria sobre os dados ambientais dos fornecedores cloud (16/10/2026)',
+			} satisfies Record<SourceId, string>,
+			limits: [
+				'Estimativa ilustrativa, não uma medição da tua infraestrutura.',
+				'Os watts por vCPU são os do Cloud Carbon Footprint para um processador desconhecido; o servidor real pode consumir mais ou menos.',
+				'A intensidade é uma média anual do país; a hora do dia muda o valor real.',
+				'O PUE de 1,52 é a média por centro de dados; ponderada pela capacidade, é 1,36. Os centros grandes, como os da cloud, costumam ter valores mais baixos.',
+			],
+		},
+		back: 'Voltar à página principal',
 	},
 	homePage: {
 		description: `${promise} Para CTO de SaaS em crescimento.`,

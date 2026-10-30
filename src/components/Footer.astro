@@ -1,7 +1,21 @@
 ---
-// The footer of every page: the name and LinkedIn.
+// The footer of every page: the name, LinkedIn and Ecology.
+// On a page with no equivalents in other languages (the 404), Ecology leads, like the logo, to the first
+// published language.
 // The parts that arrive with the pages they lead to have their place marked with the ticket.
+import { PHASE, type Language } from '../config/site';
 import { values } from '../config/values';
+import { dictionaries } from '../i18n';
+import { ecologyPath } from '../lib/paths';
+import Leaf from './Leaf.astro';
+
+interface Props {
+	language: Language;
+	noEquivalents?: boolean;
+}
+
+const { language, noEquivalents = false } = Astro.props;
+const ecology = ecologyPath(noEquivalents ? PHASE.publishedLanguages[0] : language);
 ---
 
 <footer class="mt-20 border-t border-line text-sm text-foreground-secondary">
@@ -17,7 +31,14 @@ import { values } from '../config/values';
 			LinkedIn
 		</a>
 
-		{/* Ecology (#68) */}
+		<a
+			href={ecology}
+			aria-current={Astro.url.pathname === ecology ? 'page' : undefined}
+			class="inline-flex min-h-6 items-center gap-1.5 underline underline-offset-3 hover:text-foreground"
+		>
+			<Leaf size={16} />
+			{dictionaries[language].ecology.link}
+		</a>
 
 		{/* Legal information and Privacy policy (#71) */}
 	</div>

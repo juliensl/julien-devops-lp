@@ -1,16 +1,19 @@
 ---
-// The sticky header of every page: the logo, «Os teus desafios» with its submenu of audiences, the
-// language switcher and the button.
+// The sticky header of every page: the logo, «Os teus desafios» with its submenu of audiences,
+// 🍃 Ecology, the language switcher and the button.
 // On mobile, the audiences and the languages move into a `<details>` menu, which opens without JS; the
-// button always stays visible.
+// button and the leaf always stay visible, the leaf without its word. Below 360 px, Ecology only lives
+// in the menu.
 // On a page with no equivalents in other languages (the 404), the header keeps only the logo and the button,
 // and the logo leads to the home page of the first published language.
 // The parts that arrive with the pages they lead to have their place marked with the ticket.
 import { PHASE, PREFIXES, type Language } from '../config/site';
 import { dictionaries } from '../i18n';
+import { ecologyPath } from '../lib/paths';
 import AudienceLinks from './AudienceLinks.astro';
 import BookingButton from './BookingButton';
 import LanguageSwitcher from './LanguageSwitcher.astro';
+import Leaf from './Leaf.astro';
 import Logo from './Logo.astro';
 
 interface Props {
@@ -21,6 +24,8 @@ interface Props {
 
 const { language, noEquivalents = false } = Astro.props;
 const t = dictionaries[language];
+const ecology = ecologyPath(language);
+const onEcology = Astro.url.pathname === ecology ? 'page' : undefined;
 ---
 
 <header class="sticky top-0 z-20 border-b border-line bg-background/85 backdrop-blur-md">
@@ -63,7 +68,16 @@ const t = dictionaries[language];
 				</nav>
 			)}
 
-			{/* 🍃 Ecology (#68) */}
+			{!noEquivalents && (
+				<a
+					href={ecology}
+					aria-current={onEcology}
+					class="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-green-strong px-3 text-[0.9rem] font-medium text-green transition-colors hover:bg-green/15 aria-[current]:bg-green/15 max-md:size-11 max-md:justify-center max-md:px-0 max-[360px]:hidden"
+				>
+					<Leaf size={18} />
+					<span class="max-md:sr-only">{t.ecology.link}</span>
+				</a>
+			)}
 
 			{!noEquivalents && (
 				<LanguageSwitcher language={language} label={t.header.languages} class="max-md:hidden" />
@@ -96,7 +110,14 @@ const t = dictionaries[language];
 						<AudienceLinks language={language} class="mt-1 grid" />
 					</nav>
 
-					{/* Ecology (#68): below 360 px, it only lives here */}
+					<a
+						href={ecology}
+						aria-current={onEcology}
+						class="flex min-h-11 items-center gap-2 rounded-[10px] bg-green/15 px-3 font-semibold text-green"
+					>
+						<Leaf size={18} />
+						{t.ecology.link}
+					</a>
 
 					<LanguageSwitcher language={language} label={t.header.languages} large />
 				</div>
