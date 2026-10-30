@@ -10,7 +10,7 @@ const schema = z.object({
 	/** In the other languages, the final CTA warns that the booking page is in this one. */
 	bookingPageLanguage: z.enum(LANGUAGES),
 	linkedin: z.url({ protocol: /^https$/ }),
-	/** Julien's Malt profile, where the Testimonials come from: each one links to it (#67). */
+	/** Julien's Malt profile, where the Testimonials were posted: each one links to it. */
 	malt: z.url({ protocol: /^https$/ }),
 });
 

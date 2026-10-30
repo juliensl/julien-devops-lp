@@ -1,11 +1,11 @@
-// The Testimonials (#67): Julien's three Malt reviews, one at a time in a carousel that moves on by
-// itself. A Testimonial only shows in a language its author authorised and, in English and
+// The Testimonials (#67): the three Julien received on Malt, one at a time in a carousel that moves
+// on by itself. A Testimonial only shows in a language its author authorised and, in English and
 // Portuguese, whose translation the author approved; with none, the section does not exist.
 import { expect, test, type Page } from '@playwright/test';
-import { BUILDS, inEachBuild } from './builds';
+import { inEachBuild } from './builds';
 import { LANGUAGES, type Language } from './expected';
 
-/** Each Testimonial links to Julien's Malt profile, where the reviews are. */
+/** Each Testimonial links to Julien's Malt profile, where it was posted. */
 const MALT_PROFILE = 'https://www.malt.fr/profile/julienlaffont';
 
 interface Testimonial {
@@ -85,8 +85,8 @@ const EXPECTED: Record<
 	},
 };
 
-/** The authors' first names, which are never translated. */
-const AUTHORS = ['Thibaud', 'Adam', 'Guillaume'];
+/** The authors' first names, which are never translated: the French captions have all three. */
+const AUTHORS = EXPECTED.fr.testimonials.map(({ caption }) => caption.split(' · ')[0]);
 
 /** The notice of a translation, in any language. */
 const NOTICES = new RegExp(
@@ -139,212 +139,214 @@ inEachBuild((build) => {
 });
 
 // The carousel's behaviour, in French, in the build with the three languages (#54, «Decisões de teste»).
-test.describe('the carousel, in French', () => {
-	test.use({
-		baseURL: `http://localhost:${BUILDS.find((b) => b.name === 'commercial launch')!.port}`,
-	});
+inEachBuild((build) => {
+	if (!build.phase.publishedLanguages.includes('fr')) return;
 
-	const carousel = (page: Page) => section(page, 'fr');
-	const arrow = (page: Page, name: 'Témoignage précédent' | 'Témoignage suivant') =>
-		carousel(page).getByRole('button', { name, exact: true });
-	const position = (page: Page, current: number) =>
-		carousel(page).getByText(`${current} sur 3`, { exact: true });
+	test.describe('the carousel, in French', () => {
+		const carousel = (page: Page) => section(page, 'fr');
+		const arrow = (page: Page, name: 'Témoignage précédent' | 'Témoignage suivant') =>
+			carousel(page).getByRole('button', { name, exact: true });
+		const position = (page: Page, current: number) =>
+			carousel(page).getByText(`${current} sur 3`, { exact: true });
 
-	/**
-	 * Waits until the carousel passes by itself, or has stopped: screen readers hear the indicator
-	 * only while it does not pass. The page notices the scroll a frame later, and WebKit without a
-	 * screen draws few frames.
-	 */
-	const passing = (page: Page, yes = true) =>
-		expect(carousel(page).getByText(/^\d sur 3$/)).toHaveAttribute(
-			'aria-live',
-			yes ? 'off' : 'polite',
-		);
+		// Whether the carousel passes by itself shows in what screen readers hear: the indicator is read
+		// out only while it does not pass. The tests wait for it, because the page notices a scroll a
+		// frame later, and WebKit without a screen draws few frames.
+		const indicator = (page: Page) => carousel(page).getByText(/^\d sur 3$/);
+		const expectPassing = (page: Page) =>
+			expect(indicator(page)).toHaveAttribute('aria-live', 'off');
+		const expectStopped = (page: Page) =>
+			expect(indicator(page)).toHaveAttribute('aria-live', 'polite');
 
-	/** Which Testimonial the strip shows: the one lined up with its left edge, or -1 while it slides. */
-	const shown = (page: Page) =>
-		carousel(page)
-			.getByRole('group')
-			.evaluate((strip) => {
-				const left = strip.getBoundingClientRect().left;
-				return [...strip.querySelectorAll('figure')].findIndex(
-					(f) => Math.abs(f.getBoundingClientRect().left - left) < 2,
-				);
-			});
+		/** Which Testimonial the strip shows: the one lined up with its left edge, or -1 while it slides. */
+		const shown = (page: Page) =>
+			carousel(page)
+				.getByRole('group')
+				.evaluate((strip) => {
+					const left = strip.getBoundingClientRect().left;
+					return [...strip.querySelectorAll('figure')].findIndex(
+						(f) => Math.abs(f.getBoundingClientRect().left - left) < 2,
+					);
+				});
 
-	async function openCarousel(page: Page) {
-		await page.goto('/');
-		await carousel(page).scrollIntoViewIfNeeded();
-		await expect(position(page, 1)).toBeVisible();
-	}
-
-	// The time each Testimonial stays: its words at about 200 per minute, at least 8 s (#54).
-	// Counted by hand in #51's texts: 52, 98 and 69 words.
-	const READING_SECONDS = [15.6, 29.4, 20.7];
-
-	/**
-	 * Freezes the page's clock, so the test moves time on itself: the Testimonials then pass in a
-	 * moment instead of half a minute each.
-	 */
-	async function freezeTime(page: Page) {
-		await page.clock.pauseAt(await page.evaluate(() => Date.now() + 100));
-	}
-
-	/** Moves the page's time on by half-seconds until `current` shows, and says how long it took. */
-	async function secondsUntil(page: Page, current: number, limit = 60) {
-		let seconds = 0;
-		while (seconds < limit && !(await position(page, current).isVisible())) {
-			await page.clock.fastForward(500);
-			seconds += 0.5;
-		}
-		return seconds;
-	}
-
-	/** Moves the page's time on by `seconds`, a second at a time. */
-	async function passTime(page: Page, seconds: number) {
-		for (let k = 0; k < seconds; k++) await page.clock.fastForward(1000);
-	}
-
-	test('each Testimonial stays the time to read it, then the next one comes, and after the last the first', async ({
-		page,
-	}) => {
-		await page.clock.install();
-		await openCarousel(page);
-		await passing(page);
-		await freezeTime(page);
-		for (const [k, seconds] of READING_SECONDS.entries()) {
-			const next = (k + 1) % 3;
-			// Within a second: the time is moved on by half-seconds.
-			const waited = await secondsUntil(page, next + 1);
-			expect(
-				Math.abs(waited - seconds),
-				`Testimonial ${k + 1} stayed ${waited} s`,
-			).toBeLessThanOrEqual(1);
-			await expect.poll(() => shown(page)).toBe(next);
-		}
-	});
-
-	test('the arrows go to the next and previous Testimonials, round the ends', async ({ page }) => {
-		await openCarousel(page);
-		expect(await shown(page)).toBe(0);
-
-		await arrow(page, 'Témoignage suivant').click();
-		await expect(position(page, 2)).toBeVisible();
-		await expect.poll(() => shown(page)).toBe(1);
-
-		await arrow(page, 'Témoignage précédent').click();
-		await arrow(page, 'Témoignage précédent').click();
-		await expect(position(page, 3)).toBeVisible();
-		await expect.poll(() => shown(page)).toBe(2);
-
-		await arrow(page, 'Témoignage suivant').click();
-		await expect(position(page, 1)).toBeVisible();
-		await expect.poll(() => shown(page)).toBe(0);
-	});
-
-	test('it stops while the mouse is over it, and goes on when the mouse leaves', async ({
-		page,
-	}) => {
-		await page.clock.install();
-		await openCarousel(page);
-		await freezeTime(page);
-		await carousel(page).getByRole('blockquote').first().hover();
-		await passing(page, false);
-		await passTime(page, 60);
-		await expect(position(page, 1)).toBeVisible();
-
-		await page.mouse.move(0, 0);
-		await passing(page);
-		expect(await secondsUntil(page, 2)).toBeLessThanOrEqual(READING_SECONDS[0] + 1);
-	});
-
-	test('it stops while the focus is in it', async ({ page }) => {
-		await page.clock.install();
-		await openCarousel(page);
-		await freezeTime(page);
-		await arrow(page, 'Témoignage suivant').focus();
-		await passing(page, false);
-		await passTime(page, 60);
-		await expect(position(page, 1)).toBeVisible();
-	});
-
-	test('it stops off the screen', async ({ page }) => {
-		await page.clock.install();
-		await openCarousel(page);
-		await freezeTime(page);
-		await page.evaluate(() => scrollTo(0, 0));
-		await passing(page, false);
-		await passTime(page, 60);
-		await carousel(page).scrollIntoViewIfNeeded();
-		await expect(position(page, 1)).toBeVisible();
-		await passing(page);
-		expect(await secondsUntil(page, 2)).toBeLessThanOrEqual(READING_SECONDS[0] + 1);
-	});
-
-	test('the page pause button stops it, and it goes on once resumed', async ({ page }) => {
-		const { pause, resume } = LANGUAGES.fr;
-		await page.clock.install();
-		await openCarousel(page);
-		await freezeTime(page);
-		await page.getByRole('button', { name: pause, exact: true }).click();
-		await passing(page, false);
-		await passTime(page, 60);
-		await expect(position(page, 1)).toBeVisible();
-
-		await page.getByRole('button', { name: resume, exact: true }).click();
-		await passing(page);
-		expect(await secondsUntil(page, 2)).toBeLessThanOrEqual(READING_SECONDS[0] + 1);
-	});
-
-	test('with reduced motion, it does not pass by itself, and the arrows and the indicator stay', async ({
-		page,
-	}) => {
-		await page.emulateMedia({ reducedMotion: 'reduce' });
-		await page.clock.install();
-		await openCarousel(page);
-		await freezeTime(page);
-		await passTime(page, 60);
-		await expect(position(page, 1)).toBeVisible();
-		await passing(page, false);
-
-		await arrow(page, 'Témoignage suivant').click();
-		await expect(position(page, 2)).toBeVisible();
-		await expect.poll(() => shown(page)).toBe(1);
-	});
-
-	// While it passes by itself, a screen reader would otherwise read «2 sur 3» every few seconds.
-	test('screen readers hear the indicator only while it does not pass by itself', async ({
-		page,
-	}) => {
-		await openCarousel(page);
-		await passing(page);
-		await arrow(page, 'Témoignage suivant').focus();
-		await passing(page, false);
-	});
-
-	test('with the keyboard, each Malt link brings its Testimonial into view, and the indicator follows', async ({
-		page,
-	}) => {
-		await openCarousel(page);
-		await arrow(page, 'Témoignage suivant').focus();
-		await page.keyboard.press('Tab');
-		await page.keyboard.press('Tab');
-		await expect(carousel(page).getByRole('link', { name: 'Voir sur Malt' }).nth(1)).toBeFocused();
-		await expect.poll(() => shown(page)).toBe(1);
-		await expect(position(page, 2)).toBeVisible();
-	});
-
-	test.describe('without JavaScript', () => {
-		test.use({ javaScriptEnabled: false });
-
-		test('the strip slides sideways, with no arrows', async ({ page }) => {
+		async function openCarousel(page: Page) {
 			await page.goto('/');
-			await expect(arrow(page, 'Témoignage suivant')).toBeHidden();
-			const strip = carousel(page).getByRole('group');
-			await strip.scrollIntoViewIfNeeded();
-			await strip.hover();
-			await page.mouse.wheel((await strip.boundingBox())!.width, 0);
+			await carousel(page).scrollIntoViewIfNeeded();
+			await expect(position(page, 1)).toBeVisible();
+		}
+
+		// The time each Testimonial stays: its words at about 200 per minute, at least 8 s (#54).
+		// Counted by hand in #51's texts: 52, 98 and 69 words.
+		const READING_SECONDS = [15.6, 29.4, 20.7];
+
+		/**
+		 * Freezes the page's clock, so the test moves time on itself: the Testimonials then pass in a
+		 * moment instead of half a minute each.
+		 */
+		async function freezeTime(page: Page) {
+			await page.clock.pauseAt(await page.evaluate(() => Date.now() + 100));
+		}
+
+		/** Moves the page's time on by half-seconds until `current` shows, and says how long it took. */
+		async function secondsUntil(page: Page, current: number, limit = 60) {
+			let seconds = 0;
+			while (seconds < limit && !(await position(page, current).isVisible())) {
+				await page.clock.fastForward(500);
+				seconds += 0.5;
+			}
+			return seconds;
+		}
+
+		/** Moves the page's time on by `seconds`, a second at a time. */
+		async function passTime(page: Page, seconds: number) {
+			for (let k = 0; k < seconds; k++) await page.clock.fastForward(1000);
+		}
+
+		test('each Testimonial stays the time to read it, then the next one comes, and after the last the first', async ({
+			page,
+		}) => {
+			await page.clock.install();
+			await openCarousel(page);
+			await expectPassing(page);
+			await freezeTime(page);
+			for (const [k, seconds] of READING_SECONDS.entries()) {
+				const next = (k + 1) % 3;
+				// Within a second: the time is moved on by half-seconds.
+				const waited = await secondsUntil(page, next + 1);
+				expect(
+					Math.abs(waited - seconds),
+					`Testimonial ${k + 1} stayed ${waited} s`,
+				).toBeLessThanOrEqual(1);
+				await expect.poll(() => shown(page)).toBe(next);
+			}
+		});
+
+		test('the arrows go to the next and previous Testimonials, round the ends', async ({
+			page,
+		}) => {
+			await openCarousel(page);
+			expect(await shown(page)).toBe(0);
+
+			await arrow(page, 'Témoignage suivant').click();
+			await expect(position(page, 2)).toBeVisible();
 			await expect.poll(() => shown(page)).toBe(1);
+
+			await arrow(page, 'Témoignage précédent').click();
+			await arrow(page, 'Témoignage précédent').click();
+			await expect(position(page, 3)).toBeVisible();
+			await expect.poll(() => shown(page)).toBe(2);
+
+			await arrow(page, 'Témoignage suivant').click();
+			await expect(position(page, 1)).toBeVisible();
+			await expect.poll(() => shown(page)).toBe(0);
+		});
+
+		test('it stops while the mouse is over it, and goes on when the mouse leaves', async ({
+			page,
+		}) => {
+			await page.clock.install();
+			await openCarousel(page);
+			await freezeTime(page);
+			await carousel(page).getByRole('blockquote').first().hover();
+			await expectStopped(page);
+			await passTime(page, 60);
+			await expect(position(page, 1)).toBeVisible();
+
+			await page.mouse.move(0, 0);
+			await expectPassing(page);
+			expect(await secondsUntil(page, 2)).toBeLessThanOrEqual(READING_SECONDS[0] + 1);
+		});
+
+		test('it stops while the focus is in it', async ({ page }) => {
+			await page.clock.install();
+			await openCarousel(page);
+			await freezeTime(page);
+			await arrow(page, 'Témoignage suivant').focus();
+			await expectStopped(page);
+			await passTime(page, 60);
+			await expect(position(page, 1)).toBeVisible();
+		});
+
+		test('it stops off the screen', async ({ page }) => {
+			await page.clock.install();
+			await openCarousel(page);
+			await freezeTime(page);
+			await page.evaluate(() => scrollTo(0, 0));
+			await expectStopped(page);
+			await passTime(page, 60);
+			await carousel(page).scrollIntoViewIfNeeded();
+			await expect(position(page, 1)).toBeVisible();
+			await expectPassing(page);
+			expect(await secondsUntil(page, 2)).toBeLessThanOrEqual(READING_SECONDS[0] + 1);
+		});
+
+		test('the page pause button stops it, and it goes on once resumed', async ({ page }) => {
+			const { pause, resume } = LANGUAGES.fr;
+			await page.clock.install();
+			await openCarousel(page);
+			await freezeTime(page);
+			await page.getByRole('button', { name: pause, exact: true }).click();
+			await expectStopped(page);
+			await passTime(page, 60);
+			await expect(position(page, 1)).toBeVisible();
+
+			await page.getByRole('button', { name: resume, exact: true }).click();
+			await expectPassing(page);
+			expect(await secondsUntil(page, 2)).toBeLessThanOrEqual(READING_SECONDS[0] + 1);
+		});
+
+		test('with reduced motion, it does not pass by itself, and the arrows and the indicator stay', async ({
+			page,
+		}) => {
+			await page.emulateMedia({ reducedMotion: 'reduce' });
+			await page.clock.install();
+			await openCarousel(page);
+			await freezeTime(page);
+			await passTime(page, 60);
+			await expect(position(page, 1)).toBeVisible();
+			await expectStopped(page);
+
+			await arrow(page, 'Témoignage suivant').click();
+			await expect(position(page, 2)).toBeVisible();
+			await expect.poll(() => shown(page)).toBe(1);
+		});
+
+		// While it passes by itself, a screen reader would otherwise read «2 sur 3» every few seconds.
+		test('screen readers hear the indicator only while it does not pass by itself', async ({
+			page,
+		}) => {
+			await openCarousel(page);
+			await expectPassing(page);
+			await arrow(page, 'Témoignage suivant').focus();
+			await expectStopped(page);
+		});
+
+		test('with the keyboard, each Malt link brings its Testimonial into view, and the indicator follows', async ({
+			page,
+		}) => {
+			await openCarousel(page);
+			await arrow(page, 'Témoignage suivant').focus();
+			await page.keyboard.press('Tab');
+			await page.keyboard.press('Tab');
+			await expect(
+				carousel(page).getByRole('link', { name: 'Voir sur Malt' }).nth(1),
+			).toBeFocused();
+			await expect.poll(() => shown(page)).toBe(1);
+			await expect(position(page, 2)).toBeVisible();
+		});
+
+		test.describe('without JavaScript', () => {
+			test.use({ javaScriptEnabled: false });
+
+			test('the strip slides sideways, with no arrows', async ({ page }) => {
+				await page.goto('/');
+				await expect(arrow(page, 'Témoignage suivant')).toBeHidden();
+				const strip = carousel(page).getByRole('group');
+				await strip.scrollIntoViewIfNeeded();
+				await strip.hover();
+				await page.mouse.wheel((await strip.boundingBox())!.width, 0);
+				await expect.poll(() => shown(page)).toBe(1);
+			});
 		});
 	});
 });

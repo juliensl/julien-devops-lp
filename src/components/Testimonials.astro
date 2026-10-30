@@ -1,9 +1,10 @@
 ---
 // The Testimonials (#67): one at a time, in a carousel that moves on by itself once each one has
 // had the time to be read. Without JS, the strip slides sideways with a finger or a trackpad; the
-// script adds the arrows, the «1 de 3» indicator, the bar with the time left and the passing.
+// script adds the arrows, the "1 of 3" indicator, the bar with the time left and the passing.
 // Only the Testimonials the language can show are here: with none, there is no section (#54).
-// Each one links to Julien's Malt profile, where the reviews are (a change to #51 asked for in #67).
+// Each one links to Julien's Malt profile, where it was posted. #51 and #67 had no link: the
+// change is explained in the PR that closes #67.
 import type { Language } from '../config/site';
 import { testimonialsIn } from '../config/testimonials';
 import { values } from '../config/values';
@@ -23,7 +24,7 @@ const isCarousel = total > 1;
 const readingSeconds = (text: string[]) =>
 	Math.max(8, (text.join(' ').trim().split(/\s+/).length / 200) * 60);
 
-const arrow =
+const arrowClass =
 	'grid size-11 cursor-pointer place-items-center rounded-full border border-line-strong text-lg leading-none text-foreground hover:border-green';
 ---
 
@@ -41,7 +42,7 @@ const arrow =
 		{/* Hidden until the script runs: without JS, the strip slides on its own. */}
 		{isCarousel && (
 			<div hidden data-controls class="flex items-center gap-3">
-				<button type="button" aria-label={previous} data-previous class={arrow}>
+				<button type="button" aria-label={previous} data-previous class={arrowClass}>
 					←
 				</button>
 				<p
@@ -51,11 +52,11 @@ const arrow =
 				>
 					1 {of} {total}
 				</p>
-				<button type="button" aria-label={next} data-next class={arrow}>
+				<button type="button" aria-label={next} data-next class={arrowClass}>
 					→
 				</button>
-				{/* The time left to read the current one, for the eye only. With reduced motion,
-				    nothing passes by itself: it hides. */}
+				{/* The reading time: it fills up as it passes, so the rest of the line is the time
+				    left. For the eye only. With reduced motion, nothing passes by itself: it hides. */}
 				<span
 					aria-hidden="true"
 					class="relative ml-2 h-0.5 w-24 bg-line-strong motion-reduce:hidden"
@@ -122,8 +123,9 @@ const arrow =
 
 			const offset = (k: number) => slides[k].offsetLeft - slides[0].offsetLeft;
 
-			// The indicator says the same as the Testimonial's label, «2 de 3».
-			const show = (k: number) => {
+			// Makes the k-th one current, with its reading time from zero. The indicator says the same
+			// as its label, "2 of 3".
+			const setCurrent = (k: number) => {
 				current = k;
 				elapsed = 0;
 				timeBar.style.scale = '';
@@ -132,7 +134,7 @@ const arrow =
 
 			// The arrows go round: after the last one comes the first.
 			const go = (k: number) => {
-				show((k + slides.length) % slides.length);
+				setCurrent((k + slides.length) % slides.length);
 				strip.scrollTo({
 					left: offset(current),
 					behavior: reducedMotion.matches ? 'auto' : 'smooth',
@@ -155,7 +157,7 @@ const arrow =
 									: best,
 							0,
 						);
-						if (nearest !== current) show(nearest);
+						if (nearest !== current) setCurrent(nearest);
 					}, 100);
 				},
 				{ passive: true },
@@ -213,13 +215,13 @@ const arrow =
 				focusIn = section.contains(event.relatedTarget as Node | null);
 				update();
 			});
-			// Off the screen means less than half of the strip in view.
+			// On the screen means across its middle half, however tall the strip is.
 			new IntersectionObserver(
 				([entry]) => {
-					onScreen = entry.intersectionRatio >= 0.5;
+					onScreen = entry.isIntersecting;
 					update();
 				},
-				{ threshold: [0, 0.5] },
+				{ rootMargin: '-25% 0px' },
 			).observe(strip);
 			document.addEventListener('visibilitychange', update);
 			document.addEventListener('animation', update);

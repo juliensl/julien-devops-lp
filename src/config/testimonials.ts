@@ -1,4 +1,4 @@
-// The Testimonials: Julien's three Malt reviews (#51), with what each author allowed.
+// The Testimonials: the three Julien received on Malt (#51), with what each author allowed.
 // A Testimonial shows in a language only with its author's written authorisation for it and, in
 // English and Portuguese, the author's approval of that translation. Julien keeps the authorisation
 // emails; a translation is marked approved only once the intern brings the author's approval.
