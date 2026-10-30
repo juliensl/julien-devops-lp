@@ -172,12 +172,58 @@ const arrow =
 				timeBar.style.scale = `${elapsed / durations[current]} 1`;
 				frame = requestAnimationFrame(tick);
 			};
+			// It passes by itself only when nobody is reading it closely or has stopped it: not with the
+			// mouse or the focus on it, off the screen, in a hidden tab, with the page's pause button
+			// (WCAG 2.2.2) or with reduced motion.
+			let pointerOver = false;
+			let focusIn = false;
+			let onScreen = false;
 			const update = () => {
-				if (!frame) {
+				const passing =
+					!pointerOver &&
+					!focusIn &&
+					onScreen &&
+					!document.hidden &&
+					document.documentElement.dataset.animation !== 'paused' &&
+					!reducedMotion.matches;
+				// While it passes by itself, the indicator is not read out at each change.
+				position.setAttribute('aria-live', passing ? 'off' : 'polite');
+				if (passing && !frame) {
 					previousFrame = undefined;
 					frame = requestAnimationFrame(tick);
+				} else if (!passing && frame) {
+					cancelAnimationFrame(frame);
+					frame = 0;
 				}
 			};
+
+			section.addEventListener('pointerenter', () => {
+				pointerOver = true;
+				update();
+			});
+			section.addEventListener('pointerleave', () => {
+				pointerOver = false;
+				update();
+			});
+			section.addEventListener('focusin', () => {
+				focusIn = true;
+				update();
+			});
+			section.addEventListener('focusout', (event) => {
+				focusIn = section.contains(event.relatedTarget as Node | null);
+				update();
+			});
+			// Off the screen means less than half of the strip in view.
+			new IntersectionObserver(
+				([entry]) => {
+					onScreen = entry.intersectionRatio >= 0.5;
+					update();
+				},
+				{ threshold: [0, 0.5] },
+			).observe(strip);
+			document.addEventListener('visibilitychange', update);
+			document.addEventListener('animation', update);
+			reducedMotion.addEventListener('change', update);
 
 			update();
 			section.querySelector<HTMLElement>('[data-controls]')!.hidden = false;

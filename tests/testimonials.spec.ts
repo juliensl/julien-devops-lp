@@ -150,6 +150,17 @@ test.describe('the carousel, in French', () => {
 	const position = (page: Page, current: number) =>
 		carousel(page).getByText(`${current} sur 3`, { exact: true });
 
+	/**
+	 * Waits until the carousel passes by itself, or has stopped: screen readers hear the indicator
+	 * only while it does not pass. The page notices the scroll a frame later, and WebKit without a
+	 * screen draws few frames.
+	 */
+	const passing = (page: Page, yes = true) =>
+		expect(carousel(page).getByText(/^\d sur 3$/)).toHaveAttribute(
+			'aria-live',
+			yes ? 'off' : 'polite',
+		);
+
 	/** Which Testimonial the strip shows: the one lined up with its left edge, or -1 while it slides. */
 	const shown = (page: Page) =>
 		carousel(page)
@@ -189,11 +200,17 @@ test.describe('the carousel, in French', () => {
 		return seconds;
 	}
 
+	/** Moves the page's time on by `seconds`, a second at a time. */
+	async function passTime(page: Page, seconds: number) {
+		for (let k = 0; k < seconds; k++) await page.clock.fastForward(1000);
+	}
+
 	test('each Testimonial stays the time to read it, then the next one comes, and after the last the first', async ({
 		page,
 	}) => {
 		await page.clock.install();
 		await openCarousel(page);
+		await passing(page);
 		await freezeTime(page);
 		for (const [k, seconds] of READING_SECONDS.entries()) {
 			const next = (k + 1) % 3;
@@ -223,5 +240,99 @@ test.describe('the carousel, in French', () => {
 		await arrow(page, 'Témoignage suivant').click();
 		await expect(position(page, 1)).toBeVisible();
 		await expect.poll(() => shown(page)).toBe(0);
+	});
+
+	test('it stops while the mouse is over it, and goes on when the mouse leaves', async ({
+		page,
+	}) => {
+		await page.clock.install();
+		await openCarousel(page);
+		await freezeTime(page);
+		await carousel(page).getByRole('blockquote').first().hover();
+		await passing(page, false);
+		await passTime(page, 60);
+		await expect(position(page, 1)).toBeVisible();
+
+		await page.mouse.move(0, 0);
+		await passing(page);
+		expect(await secondsUntil(page, 2)).toBeLessThanOrEqual(READING_SECONDS[0] + 1);
+	});
+
+	test('it stops while the focus is in it', async ({ page }) => {
+		await page.clock.install();
+		await openCarousel(page);
+		await freezeTime(page);
+		await arrow(page, 'Témoignage suivant').focus();
+		await passing(page, false);
+		await passTime(page, 60);
+		await expect(position(page, 1)).toBeVisible();
+	});
+
+	test('it stops off the screen', async ({ page }) => {
+		await page.clock.install();
+		await openCarousel(page);
+		await freezeTime(page);
+		await page.evaluate(() => scrollTo(0, 0));
+		await passing(page, false);
+		await passTime(page, 60);
+		await carousel(page).scrollIntoViewIfNeeded();
+		await expect(position(page, 1)).toBeVisible();
+		await passing(page);
+		expect(await secondsUntil(page, 2)).toBeLessThanOrEqual(READING_SECONDS[0] + 1);
+	});
+
+	test('the page pause button stops it, and it goes on once resumed', async ({ page }) => {
+		const { pause, resume } = LANGUAGES.fr;
+		await page.clock.install();
+		await openCarousel(page);
+		await freezeTime(page);
+		await page.getByRole('button', { name: pause, exact: true }).click();
+		await passing(page, false);
+		await passTime(page, 60);
+		await expect(position(page, 1)).toBeVisible();
+
+		await page.getByRole('button', { name: resume, exact: true }).click();
+		await passing(page);
+		expect(await secondsUntil(page, 2)).toBeLessThanOrEqual(READING_SECONDS[0] + 1);
+	});
+
+	test('with reduced motion, it does not pass by itself, and the arrows and the indicator stay', async ({
+		page,
+	}) => {
+		await page.emulateMedia({ reducedMotion: 'reduce' });
+		await page.clock.install();
+		await openCarousel(page);
+		await freezeTime(page);
+		await passTime(page, 60);
+		await expect(position(page, 1)).toBeVisible();
+		await passing(page, false);
+
+		await arrow(page, 'Témoignage suivant').click();
+		await expect(position(page, 2)).toBeVisible();
+		await expect.poll(() => shown(page)).toBe(1);
+	});
+
+	// While it passes by itself, a screen reader would otherwise read «2 sur 3» every few seconds.
+	test('screen readers hear the indicator only while it does not pass by itself', async ({
+		page,
+	}) => {
+		await openCarousel(page);
+		await passing(page);
+		await arrow(page, 'Témoignage suivant').focus();
+		await passing(page, false);
+	});
+
+	test.describe('without JavaScript', () => {
+		test.use({ javaScriptEnabled: false });
+
+		test('the strip slides sideways, with no arrows', async ({ page }) => {
+			await page.goto('/');
+			await expect(arrow(page, 'Témoignage suivant')).toBeHidden();
+			const strip = carousel(page).getByRole('group');
+			await strip.scrollIntoViewIfNeeded();
+			await strip.hover();
+			await page.mouse.wheel((await strip.boundingBox())!.width, 0);
+			await expect.poll(() => shown(page)).toBe(1);
+		});
 	});
 });
