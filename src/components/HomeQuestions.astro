@@ -1,0 +1,61 @@
+---
+// The home page's Questions section (#70): the 5 general questions in `<details>`, which open without
+// JS, and shortcuts to the questions of each other audience, which live on «Os teus desafios».
+import { AUDIENCES } from '../config/audiences';
+import type { Language } from '../config/site';
+import type { Dictionary } from '../i18n/pt';
+import { questionsPath } from '../lib/paths';
+import Question from './Question.astro';
+
+type Props = Dictionary['questions'] & { language: Language };
+
+const { language, all, audiences, count, homeSection } = Astro.props;
+const others = AUDIENCES.filter((id) => id !== 'general');
+---
+
+<section
+	aria-labelledby="questions-title"
+	class="page-width grid gap-x-16 gap-y-12 py-[clamp(5rem,10vw,8rem)] lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:items-start"
+>
+	<div class="grid gap-4">
+		<p class="label">{homeSection.label}</p>
+		<h2 id="questions-title" class="text-[clamp(2rem,4vw,2.8rem)] leading-[1.08]">
+			{homeSection.title}
+		</h2>
+		<div class="mt-2">
+			{audiences.general.questions.map(({ question, answer }) => (
+				<Question question={question} answer={answer} />
+			))}
+		</div>
+	</div>
+
+	<div class="grid gap-3 lg:sticky lg:top-[calc(var(--header-height)+2rem)]">
+		<p id="questions-by-audience" class="text-sm text-foreground-secondary">
+			{homeSection.byAudience}
+		</p>
+		<ul aria-labelledby="questions-by-audience" class="grid">
+			{others.map((id) => (
+				<li>
+					<a
+						href={questionsPath(language, id)}
+						class="grid gap-1 border-t border-line-strong py-4 transition-colors hover:border-green"
+					>
+						<span class="font-heading text-[1.35rem] leading-tight">{audiences[id].short}</span>
+						<span class="text-sm text-foreground-secondary">{audiences[id].description}</span>
+						<span class="text-sm">{audiences[id].questions[0].question}</span>
+						{/* Every audience has several questions: always the plural. */}
+						<span class="text-sm font-semibold text-green">
+							{audiences[id].questions.length}&nbsp;{count.other}
+						</span>
+					</a>
+				</li>
+			))}
+		</ul>
+		<a
+			href={questionsPath(language)}
+			class="inline-flex min-h-11 items-center justify-self-start font-semibold text-green underline underline-offset-4 hover:text-foreground"
+		>
+			{all}
+		</a>
+	</div>
+</section>

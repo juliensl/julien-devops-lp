@@ -13,6 +13,7 @@ import { dictionaries } from '../i18n';
 import Base from '../layouts/Base.astro';
 import { withNonBreakingSpaces } from '../lib/spaces';
 import BookingButton from './BookingButton';
+import Question from './Question.astro';
 
 interface Props {
 	language: Language;
@@ -23,7 +24,7 @@ const t = dictionaries[language];
 const { audiences, count, page } = t.questions;
 const plural = new Intl.PluralRules(HTML_CODES[language]);
 /** «7 perguntas», with the language's plural and a non-breaking space. */
-const countText = (n: number) => `${n} ${plural.select(n) === 'one' ? count.one : count.other}`;
+const countText = (n: number) => `${n} ${plural.select(n) === 'one' ? count.one : count.other}`;
 const total = AUDIENCES.reduce((n, id) => n + audiences[id].questions.length, 0);
 ---
 
@@ -107,12 +108,7 @@ const total = AUDIENCES.reduce((n, id) => n + audiences[id].questions.length, 0)
 						</div>
 						<div>
 							{audiences[id].questions.map(({ question, answer }) => (
-								<details class="question">
-									<summary>{withNonBreakingSpaces(question)}</summary>
-									<p class="max-w-3xl pb-5 text-foreground-secondary">
-										{withNonBreakingSpaces(answer)}
-									</p>
-								</details>
+								<Question question={question} answer={answer} />
 							))}
 						</div>
 					</section>
@@ -279,46 +275,6 @@ const total = AUDIENCES.reduce((n, id) => n + audiences[id].questions.length, 0)
 			border-width: 0 0 0 2px;
 			border-color: transparent;
 			border-radius: 0;
-		}
-	}
-
-	.question {
-		border-top: 1px solid var(--color-line);
-
-		&:last-child {
-			border-bottom: 1px solid var(--color-line);
-		}
-
-		summary {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			gap: 1rem;
-			min-height: 3.5rem;
-			padding-block: 0.6rem;
-			font-family: var(--font-heading);
-			font-size: 1.2rem;
-			line-height: 1.3;
-			cursor: pointer;
-			list-style: none;
-
-			&::-webkit-details-marker {
-				display: none;
-			}
-
-			/* A + that turns into a × when the answer is open. */
-			&::after {
-				content: '+';
-				flex: none;
-				font-family: var(--font-body);
-				font-size: 1.25rem;
-				color: var(--color-green);
-				transition: transform 0.2s;
-			}
-		}
-
-		&[open] summary::after {
-			transform: rotate(45deg);
 		}
 	}
 </style>

@@ -132,6 +132,8 @@ const EXPECTED: Record<
 		/** The last link of the header submenu. */
 		all: string;
 		notFound: string;
+		/** The title of the home page's Questions section. */
+		homeTitle: string;
 	}
 > = {
 	pt: {
@@ -147,6 +149,7 @@ const EXPECTED: Record<
 		index: 'Perfis',
 		all: 'Ver todas as perguntas',
 		notFound: 'Não encontras a tua pergunta?',
+		homeTitle: 'O essencial, antes da Conversa.',
 	},
 	fr: {
 		menu: 'Tes défis',
@@ -167,6 +170,7 @@ const EXPECTED: Record<
 		index: 'Profils',
 		all: 'Voir toutes les questions',
 		notFound: 'Tu ne trouves pas ta question ?',
+		homeTitle: "L'essentiel, avant l'Échange.",
 	},
 	en: {
 		menu: 'Your challenges',
@@ -181,6 +185,7 @@ const EXPECTED: Record<
 		index: 'Roles',
 		all: 'See all questions',
 		notFound: "Can't find your question?",
+		homeTitle: 'The essentials, before the Conversation.',
 	},
 };
 
@@ -200,7 +205,8 @@ const answerTo = (question: string) =>
 inEachBuild((build) => {
 	for (const language of build.phase.publishedLanguages) {
 		const path = questionsPath(language);
-		const { menu, audiences, filter, questions, index, all, notFound } = EXPECTED[language];
+		const { menu, audiences, filter, questions, index, all, notFound, homeTitle } =
+			EXPECTED[language];
 		const home = LANGUAGES[language].prefix;
 
 		test.describe(path, () => {
@@ -399,9 +405,57 @@ inEachBuild((build) => {
 				});
 			});
 		});
+
+		test.describe(`${home}: the Questions section`, () => {
+			test.use({ javaScriptEnabled: false });
+
+			test('has the 5 general questions in <details>, which open without JS', async ({ page }) => {
+				await page.goto(home);
+				const section = page.getByRole('region', { name: homeTitle });
+				const summaries = section.locator('details > summary');
+				await expect(summaries).toHaveCount(COUNTS.general);
+				for (const summary of await summaries.all()) {
+					const answer = summary.locator('xpath=following-sibling::*').first();
+					await expect(answer).toBeHidden();
+					await summary.click();
+					await expect(answer).toBeVisible();
+				}
+			});
+
+			test("has shortcuts to the other audiences' questions and to all of them", async ({
+				page,
+			}) => {
+				await page.goto(home);
+				const links = page.getByRole('region', { name: homeTitle }).getByRole('link');
+				const hrefs = await links.evaluateAll((all) => all.map((a) => a.getAttribute('href')));
+				expect(hrefs).toEqual([`${path}#cto`, `${path}#ceo`, `${path}#team`, path]);
+				await expect(links.last()).toHaveAccessibleName(all);
+				await links.nth(1).click();
+				await expect(page).toHaveURL(`${path}#ceo`);
+				await expect(
+					page.getByRole('heading', { name: audiences.ceo, exact: true }),
+				).toBeInViewport();
+			});
+		});
 	}
 
 	if (build.phase.publishedLanguages.includes('pt')) {
+		test('/pt/: the Questions section has the approved general questions, word for word', async ({
+			page,
+		}) => {
+			await page.goto('/pt/');
+			const questions = page
+				.getByRole('region', { name: EXPECTED.pt.homeTitle })
+				.locator('details');
+			await expect(questions.locator('summary')).toHaveText(
+				APPROVED.general.map(([question]) => question),
+			);
+			for (const [i, [, answer]] of APPROVED.general.entries()) {
+				await questions.nth(i).locator('summary').click();
+				await expect(questions.nth(i).getByText(answer, { exact: true })).toBeVisible();
+			}
+		});
+
 		test('/pt/questions/: the approved questions and answers, word for word, with no badge', async ({
 			page,
 		}) => {
