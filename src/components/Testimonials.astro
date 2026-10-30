@@ -54,8 +54,8 @@ const arrow =
 				<button type="button" aria-label={next} data-next class={arrow}>
 					→
 				</button>
-				{/* The time left to read the current one. Read by the eye only; with reduced motion,
-					    nothing passes by itself, so it has nothing to show. */}
+				{/* The time left to read the current one, for the eye only. With reduced motion,
+				    nothing passes by itself: it hides. */}
 				<span
 					aria-hidden="true"
 					class="relative ml-2 h-0.5 w-24 bg-line-strong motion-reduce:hidden"
@@ -65,8 +65,8 @@ const arrow =
 			</div>
 		)}
 
-		{/* The strip is as tall as the longest Testimonial, so the page does not jump. It can take
-			    focus, so the keyboard scrolls it too. */}
+		{/* As tall as the longest Testimonial, so the page does not jump. It takes focus, so the
+		    keyboard scrolls it too. */}
 		<div
 			data-strip
 			tabindex={isCarousel ? 0 : undefined}
@@ -103,3 +103,95 @@ const arrow =
 		</div>
 	</section>
 )}
+
+<script>
+	import { afterLoad } from '../scripts/after-load';
+
+	afterLoad(() => {
+		for (const section of document.querySelectorAll<HTMLElement>('[data-carousel]')) {
+			const strip = section.querySelector<HTMLElement>('[data-strip]')!;
+			const slides = [...strip.children] as HTMLElement[];
+			const position = section.querySelector<HTMLElement>('[data-position]')!;
+			const timeBar = section.querySelector<HTMLElement>('[data-time]')!;
+			const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+			// The time to read each one, in ms.
+			const durations = slides.map((slide) => Number(slide.dataset.seconds) * 1000);
+			let current = 0;
+			/** The time the current one has been read for, in ms. */
+			let elapsed = 0;
+
+			const offset = (k: number) => slides[k].offsetLeft - slides[0].offsetLeft;
+
+			// The indicator says the same as the Testimonial's label, «2 de 3».
+			const show = (k: number) => {
+				current = k;
+				elapsed = 0;
+				timeBar.style.scale = '';
+				position.textContent = slides[k].getAttribute('aria-label');
+			};
+
+			// The arrows go round: after the last one comes the first.
+			const go = (k: number) => {
+				show((k + slides.length) % slides.length);
+				strip.scrollTo({
+					left: offset(current),
+					behavior: reducedMotion.matches ? 'auto' : 'smooth',
+				});
+			};
+			section.querySelector('[data-previous]')!.addEventListener('click', () => go(current - 1));
+			section.querySelector('[data-next]')!.addEventListener('click', () => go(current + 1));
+
+			// A finger or a trackpad can slide the strip too: once it stops, the indicator follows.
+			let settling = 0;
+			strip.addEventListener(
+				'scroll',
+				() => {
+					clearTimeout(settling);
+					settling = window.setTimeout(() => {
+						const nearest = slides.reduce(
+							(best, _, k) =>
+								Math.abs(offset(k) - strip.scrollLeft) < Math.abs(offset(best) - strip.scrollLeft)
+									? k
+									: best,
+							0,
+						);
+						if (nearest !== current) show(nearest);
+					}, 100);
+				},
+				{ passive: true },
+			);
+
+			// Each frame adds the time since the previous one, and the bar fills up; once the current one
+			// has had its time, the next one comes.
+			let frame = 0;
+			let previousFrame: number | undefined;
+			const tick = (now: number) => {
+				elapsed += now - (previousFrame ?? now);
+				previousFrame = now;
+				if (elapsed >= durations[current]) go(current + 1);
+				timeBar.style.scale = `${elapsed / durations[current]} 1`;
+				frame = requestAnimationFrame(tick);
+			};
+			const update = () => {
+				if (!frame) {
+					previousFrame = undefined;
+					frame = requestAnimationFrame(tick);
+				}
+			};
+
+			update();
+			section.querySelector<HTMLElement>('[data-controls]')!.hidden = false;
+			section.toggleAttribute('data-ready', true);
+		}
+	});
+</script>
+
+<style>
+	/* With the arrows, the strip's scrollbar is not needed; without JS, it shows that the strip slides. */
+	[data-ready] [data-strip] {
+		scrollbar-width: none;
+	}
+	[data-ready] [data-strip]::-webkit-scrollbar {
+		display: none;
+	}
+</style>

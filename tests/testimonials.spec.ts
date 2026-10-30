@@ -2,7 +2,7 @@
 // itself. A Testimonial only shows in a language its author authorised and, in English and
 // Portuguese, whose translation the author approved; with none, the section does not exist.
 import { expect, test, type Page } from '@playwright/test';
-import { inEachBuild } from './builds';
+import { BUILDS, inEachBuild } from './builds';
 import { LANGUAGES, type Language } from './expected';
 
 /** Each Testimonial links to Julien's Malt profile, where the reviews are. */
@@ -136,4 +136,92 @@ inEachBuild((build) => {
 			await expect(section(page, language).getByRole('img')).toHaveCount(0);
 		});
 	}
+});
+
+// The carousel's behaviour, in French, in the build with the three languages (#54, «Decisões de teste»).
+test.describe('the carousel, in French', () => {
+	test.use({
+		baseURL: `http://localhost:${BUILDS.find((b) => b.name === 'commercial launch')!.port}`,
+	});
+
+	const carousel = (page: Page) => section(page, 'fr');
+	const arrow = (page: Page, name: 'Témoignage précédent' | 'Témoignage suivant') =>
+		carousel(page).getByRole('button', { name, exact: true });
+	const position = (page: Page, current: number) =>
+		carousel(page).getByText(`${current} sur 3`, { exact: true });
+
+	/** Which Testimonial the strip shows: the one lined up with its left edge, or -1 while it slides. */
+	const shown = (page: Page) =>
+		carousel(page)
+			.getByRole('group')
+			.evaluate((strip) => {
+				const left = strip.getBoundingClientRect().left;
+				return [...strip.querySelectorAll('figure')].findIndex(
+					(f) => Math.abs(f.getBoundingClientRect().left - left) < 2,
+				);
+			});
+
+	async function openCarousel(page: Page) {
+		await page.goto('/');
+		await carousel(page).scrollIntoViewIfNeeded();
+		await expect(position(page, 1)).toBeVisible();
+	}
+
+	// The time each Testimonial stays: its words at about 200 per minute, at least 8 s (#54).
+	// Counted by hand in #51's texts: 52, 98 and 69 words.
+	const READING_SECONDS = [15.6, 29.4, 20.7];
+
+	/**
+	 * Freezes the page's clock, so the test moves time on itself: the Testimonials then pass in a
+	 * moment instead of half a minute each.
+	 */
+	async function freezeTime(page: Page) {
+		await page.clock.pauseAt(await page.evaluate(() => Date.now() + 100));
+	}
+
+	/** Moves the page's time on by half-seconds until `current` shows, and says how long it took. */
+	async function secondsUntil(page: Page, current: number, limit = 60) {
+		let seconds = 0;
+		while (seconds < limit && !(await position(page, current).isVisible())) {
+			await page.clock.fastForward(500);
+			seconds += 0.5;
+		}
+		return seconds;
+	}
+
+	test('each Testimonial stays the time to read it, then the next one comes, and after the last the first', async ({
+		page,
+	}) => {
+		await page.clock.install();
+		await openCarousel(page);
+		await freezeTime(page);
+		for (const [k, seconds] of READING_SECONDS.entries()) {
+			const next = (k + 1) % 3;
+			// Within a second: the time is moved on by half-seconds.
+			const waited = await secondsUntil(page, next + 1);
+			expect(
+				Math.abs(waited - seconds),
+				`Testimonial ${k + 1} stayed ${waited} s`,
+			).toBeLessThanOrEqual(1);
+			await expect.poll(() => shown(page)).toBe(next);
+		}
+	});
+
+	test('the arrows go to the next and previous Testimonials, round the ends', async ({ page }) => {
+		await openCarousel(page);
+		expect(await shown(page)).toBe(0);
+
+		await arrow(page, 'Témoignage suivant').click();
+		await expect(position(page, 2)).toBeVisible();
+		await expect.poll(() => shown(page)).toBe(1);
+
+		await arrow(page, 'Témoignage précédent').click();
+		await arrow(page, 'Témoignage précédent').click();
+		await expect(position(page, 3)).toBeVisible();
+		await expect.poll(() => shown(page)).toBe(2);
+
+		await arrow(page, 'Témoignage suivant').click();
+		await expect(position(page, 1)).toBeVisible();
+		await expect.poll(() => shown(page)).toBe(0);
+	});
 });
