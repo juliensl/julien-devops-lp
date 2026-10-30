@@ -201,6 +201,22 @@ inEachBuild((build) => {
 		});
 	}
 
+	test('no page has a cookie notice, a cookie page or the Livro de Reclamações (#54)', async ({
+		page,
+	}) => {
+		const pages = pagesOf(build);
+		for (const { path } of pages) expect(path).not.toMatch(/cookie|reclama/i);
+		for (const { path } of pages) {
+			await page.goto(path);
+			await expect(page.getByRole('dialog'), path).toHaveCount(0);
+			await expect(page.getByText('Livro de Reclamações'), path).toHaveCount(0);
+			const hrefs = await page
+				.getByRole('link')
+				.evaluateAll((links) => links.map((l) => l.getAttribute('href') ?? ''));
+			for (const href of hrefs) expect(href, path).not.toMatch(/cookie|livroreclamacoes/i);
+		}
+	});
+
 	for (const language of build.phase.publishedLanguages) {
 		for (const legalPage of PAGES) {
 			const path = `${LANGUAGES[language].prefix}${legalPage}/`;
