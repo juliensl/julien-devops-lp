@@ -6,7 +6,7 @@
 // with the pause button; with reduced motion, it stays still. Without JS, the canvas would stay empty:
 // CSS hides it.
 interface Props {
-	/** The width; the leaf is square. */
+	/** The largest width (`max-w-*`): the leaf is square, and narrower when there is less room. */
 	class?: string;
 }
 
@@ -16,7 +16,7 @@ const { class: className } = Astro.props;
 <div
 	aria-hidden="true"
 	data-flowing-leaf
-	class:list={['aspect-square max-w-full noscript:hidden', className]}
+	class:list={['aspect-square w-full noscript:hidden', className]}
 >
 	<canvas class="block size-full"></canvas>
 </div>
