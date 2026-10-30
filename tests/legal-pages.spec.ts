@@ -1,6 +1,6 @@
 // The legal pages (#71, #54 «Páginas legais»): the Legal information and the Privacy policy, in each
 // published language, which the footer of every page leads to, next to the email on the domain.
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import { inEachBuild, pagesOf } from './builds';
 import { EMAIL, LANGUAGES, NAME, type Language } from './expected';
 
@@ -71,6 +71,101 @@ const LEGAL_TEXTS: Record<
 		b2b: 'Services intended exclusively for businesses.',
 	},
 };
+
+/**
+ * The Privacy policy in each language. The processings, their recipients and retention periods come
+ * from #54 «Tratamentos e prazos», the legal bases from the intern's proposal. PT is the reference; FR and
+ * EN go to #75.
+ */
+const PRIVACY: Record<
+	Language,
+	{
+		controller: string;
+		/** Each processing has a purpose, a legal basis, recipients and a retention period (#54). */
+		labels: string[];
+		processings: { heading: string; mentions: string[] }[];
+		rights: { heading: string; objection: string };
+		complaint: { heading: string; residence: string };
+		afterDeath: string;
+	}
+> = {
+	pt: {
+		controller: 'Responsável pelo tratamento',
+		labels: ['Finalidade', 'Base legal', 'Destinatários', 'Prazo'],
+		processings: [
+			{ heading: 'Logs do servidor e estatísticas', mentions: ['IP', 'Infomaniak', '7 dias'] },
+			{ heading: 'Emails recebidos', mentions: ['Google', '3 anos'] },
+			{
+				heading: 'Marcações da Conversa',
+				mentions: ['Calendly', 'Google', 'Data Privacy Framework', '3 anos'],
+			},
+			{ heading: 'Clientes', mentions: ['10 anos'] },
+			{
+				heading: 'Autores dos Testemunhos',
+				mentions: ['primeiro nome', 'cargo', 'empresa', 'consentimento'],
+			},
+		],
+		rights: { heading: 'Os teus direitos', objection: 'opor-te' },
+		complaint: { heading: 'Reclamação', residence: 'país onde vives' },
+		afterDeath: 'Os teus dados depois da tua morte',
+	},
+	fr: {
+		controller: 'Responsable du traitement',
+		labels: ['Finalité', 'Base légale', 'Destinataires', 'Durée de conservation'],
+		processings: [
+			{ heading: 'Journaux du serveur et statistiques', mentions: ['IP', 'Infomaniak', '7 jours'] },
+			{ heading: 'E-mails reçus', mentions: ['Google', '3 ans'] },
+			{
+				heading: 'Réservations de l’Échange',
+				mentions: ['Calendly', 'Google', 'Data Privacy Framework', '3 ans'],
+			},
+			{ heading: 'Clients', mentions: ['10 ans'] },
+			{
+				heading: 'Auteurs des Témoignages',
+				mentions: ['prénom', 'poste', 'entreprise', 'consentement'],
+			},
+		],
+		rights: { heading: 'Tes droits', objection: 't’opposer' },
+		complaint: { heading: 'Réclamation', residence: 'pays où tu vis' },
+		afterDeath: 'Tes données après ta mort',
+	},
+	en: {
+		controller: 'Data controller',
+		labels: ['Purpose', 'Legal basis', 'Recipients', 'Retention'],
+		processings: [
+			{ heading: 'Server logs and statistics', mentions: ['IP', 'Infomaniak', '7 days'] },
+			{ heading: 'Emails received', mentions: ['Google', '3 years'] },
+			{
+				heading: 'Conversation bookings',
+				mentions: ['Calendly', 'Google', 'Data Privacy Framework', '3 years'],
+			},
+			{ heading: 'Clients', mentions: ['10 years'] },
+			{
+				heading: 'Testimonial authors',
+				mentions: ['first name', 'job title', 'company', 'consent'],
+			},
+		],
+		rights: { heading: 'Your rights', objection: 'object' },
+		complaint: { heading: 'Complaints', residence: 'country where you live' },
+		afterDeath: 'Your data after your death',
+	},
+};
+
+/** The text under a heading, up to the next heading of the same or a higher level, on one line. */
+async function sectionText(page: Page, heading: string): Promise<string> {
+	const element = page.getByRole('heading', { name: heading, exact: true });
+	await expect(element).toBeVisible();
+	const text = await element.evaluate((h) => {
+		const level = Number(h.tagName[1]);
+		const isEnd = (e: Element) => /^H[1-6]$/.test(e.tagName) && Number(e.tagName[1]) <= level;
+		let text = '';
+		for (let e = h.nextElementSibling; e && !isEnd(e); e = e.nextElementSibling) {
+			text += ` ${(e as HTMLElement).innerText}`;
+		}
+		return text;
+	});
+	return text.replace(/\s+/g, ' ');
+}
 
 inEachBuild((build) => {
 	for (const { path, language } of pagesOf(build)) {
@@ -162,6 +257,50 @@ inEachBuild((build) => {
 			}) => {
 				const text = await page.getByRole('main').innerText();
 				for (const pattern of NEVER_SHOWN) expect(text).not.toMatch(pattern);
+			});
+		});
+
+		const privacy = PRIVACY[language];
+		test.describe(`${LANGUAGES[language].prefix}privacy/`, () => {
+			test.beforeEach(async ({ page }) => {
+				await page.goto(`${LANGUAGES[language].prefix}privacy/`);
+			});
+
+			test('names the controller and the contact email', async ({ page }) => {
+				const text = await sectionText(page, privacy.controller);
+				expect(text).toContain(PROVIDER.name);
+				expect(text).toContain(EMAIL);
+				const email = page.getByRole('main').getByRole('link', { name: EMAIL, exact: true });
+				await expect(email.first()).toHaveAttribute('href', `mailto:${EMAIL}`);
+			});
+
+			for (const { heading, mentions } of privacy.processings) {
+				test(`explains «${heading}»: purpose, legal basis, recipients and retention`, async ({
+					page,
+				}) => {
+					const text = await sectionText(page, heading);
+					for (const expected of [...privacy.labels, ...mentions]) expect(text).toContain(expected);
+				});
+			}
+
+			test('says how to object by email, and the other rights', async ({ page }) => {
+				const text = await sectionText(page, privacy.rights.heading);
+				expect(text).toContain(privacy.rights.objection);
+				expect(text).toContain(EMAIL);
+			});
+
+			test('leads to a complaint to the CNIL, or to the authority where you live', async ({
+				page,
+			}) => {
+				const text = await sectionText(page, privacy.complaint.heading);
+				expect(text).toContain('CNIL');
+				expect(text).toContain(privacy.complaint.residence);
+				const link = page.getByRole('main').getByRole('link', { name: /cnil/i });
+				await expect(link).toHaveAttribute('href', 'https://www.cnil.fr/fr/plaintes');
+			});
+
+			test('mentions the directives for after death', async ({ page }) => {
+				expect(await sectionText(page, privacy.afterDeath)).toContain(EMAIL);
 			});
 		});
 	}
