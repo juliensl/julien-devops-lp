@@ -1,6 +1,6 @@
 ---
 title: Privacy policy
-description: The personal data Julien Laffont processes, why, for how long and how to exercise your rights.
+description: The personal data this site and its publisher process, why, for how long and how to exercise your rights.
 ---
 
 This site uses no cookies, stores nothing in your browser and makes no requests to other sites before you click a link. This policy explains which personal data is processed, by whom, why, for how long and how to exercise your rights.
@@ -49,7 +49,7 @@ This site uses no cookies, stores nothing in your browser and makes no requests 
 - **Purpose:** to show what people who worked with Julien say.
 - **Legal basis:** your consent, given in writing.
 - **Recipients:** anyone who visits the site, which is public, and Infomaniak, which hosts it.
-- **Retention:** until you ask for its removal, by email to {email}. The Testimonial leaves the site at the next publishing.
+- **Retention:** until you ask for its removal, by email to {email}. The Testimonial leaves the site with the next Publishing.
 
 ## Your rights
 

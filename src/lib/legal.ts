@@ -25,7 +25,8 @@ const PLACEHOLDER = /\{([a-z]+(?:\.[a-z]+)*)\}/gi;
  * A legal page's HTML with the shared values in place of its placeholders, in the page's language:
  * an address ends with its country's name, the email is a `mailto:` link and the phones `tel:` links.
  * A `null` value (the VAT number until it is active) removes its list item or paragraph, and an unknown
- * placeholder fails the build. The text also gets its non-breaking spaces.
+ * placeholder fails the build. Placeholders go in the text, never in a link's URL, and the lists stay
+ * flat. The text, values included, also gets its non-breaking spaces: a phone never breaks.
  */
 export function withValues(html: string, language: Language): string {
 	const countries = new Intl.DisplayNames(HTML_CODES[language], { type: 'region' });
@@ -44,18 +45,26 @@ export function withValues(html: string, language: Language): string {
 	};
 	const toHtml = (path: string, value: unknown): string => {
 		if (typeof value === 'string' && path === 'email') {
-			return `<a href="mailto:${escape(value)}">${escape(value)}</a>`;
+			return `<a href="mailto:${escapeHtml(value)}">${escapeHtml(value)}</a>`;
 		}
 		if (typeof value === 'string' && path.endsWith('.phone')) {
-			return `<a href="tel:${escape(value.replaceAll(' ', ''))}">${escape(value)}</a>`;
+			return `<a href="tel:${escapeHtml(value.replaceAll(' ', ''))}">${escapeHtml(value)}</a>`;
 		}
-		if (typeof value === 'string') return escape(value);
+		if (typeof value === 'string') return escapeHtml(value);
 		if (value !== null && typeof value === 'object' && 'country' in value) {
 			const { street, city, country } = value as { street: string; city: string; country: string };
-			return escape(`${street}, ${city}, ${countries.of(country)}`);
+			return escapeHtml(`${street}, ${city}, ${countries.of(country)}`);
 		}
 		throw new Error(`The placeholder {${path}} in a legal page is not a text or an address.`);
 	};
+
+	// In a link's URL, the Markdown processor encodes the braces: it would stay there, unreplaced.
+	const inUrl = html.match(/%7B[a-z.]+%7D/i);
+	if (inUrl) {
+		throw new Error(
+			`A placeholder in a link's URL in a legal page (${inUrl[0]}): write it as text.`,
+		);
+	}
 
 	return html
 		.replace(/<(li|p)>([\s\S]*?)<\/\1>\n?/g, (block, _tag, inner: string) =>
@@ -65,7 +74,7 @@ export function withValues(html: string, language: Language): string {
 		.replace(/>([^<]+)</g, (_, text: string) => `>${withNonBreakingSpaces(text)}<`);
 }
 
-function escape(text: string): string {
+function escapeHtml(text: string): string {
 	return text
 		.replaceAll('&', '&amp;')
 		.replaceAll('<', '&lt;')

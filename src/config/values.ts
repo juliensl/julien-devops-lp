@@ -1,6 +1,7 @@
 // The shared values: the same in all three languages and stored only here.
 // If any is missing or invalid, the build fails.
-// The legal pages' Markdown shows them with placeholders, such as `{legal.siret}` (src/lib/remark-values.ts).
+// The legal pages' Markdown shows them with placeholders, such as `{legal.siret}` (`withValues()` in
+// src/lib/legal.ts).
 import { z } from 'astro/zod';
 import { LANGUAGES } from './site';
 
@@ -41,8 +42,8 @@ const schema = z.object({
 			.nullable(),
 	}),
 	/**
-	 * The host, in the Legal information. Infomaniak's public data: the name and address from its legal
-	 * notice, the phone from its home page (the legal notice has none), checked on 30/10/2026.
+	 * The host, in the Legal information. Infomaniak's public data: the name and address from its own
+	 * legal information page, the phone from its home page (that page has none), checked on 30/10/2026.
 	 */
 	hosting: z.object({ name: z.string().trim().min(1), address, phone }),
 });

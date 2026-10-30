@@ -1,6 +1,6 @@
 ---
 title: Política de privacidade
-description: Os dados pessoais que Julien Laffont trata, para quê, durante quanto tempo e como exerces os teus direitos.
+description: Os dados pessoais que este site e o seu editor tratam, para quê, durante quanto tempo e como exerces os teus direitos.
 ---
 
 Este site não usa cookies, não guarda nada no teu navegador e não faz pedidos a outros sites antes de clicares numa ligação. Esta política diz que dados pessoais são tratados, por quem, para quê, durante quanto tempo e como exerces os teus direitos.
@@ -49,7 +49,7 @@ Este site não usa cookies, não guarda nada no teu navegador e não faz pedidos
 - **Finalidade:** mostrar o que dizem as pessoas que trabalharam com o Julien.
 - **Base legal:** o teu consentimento, dado por escrito.
 - **Destinatários:** quem visita o site, que é público, e a Infomaniak, que o aloja.
-- **Prazo:** até pedires a remoção, por email para {email}. O Testemunho sai do site na publicação seguinte.
+- **Prazo:** até pedires a remoção, por email para {email}. O Testemunho sai do site na Publicação seguinte.
 
 ## Os teus direitos
 

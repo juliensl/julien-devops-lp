@@ -14,7 +14,8 @@ interface Props {
 
 const { language, page } = Astro.props;
 const entry = await legalPage(language, page);
-const html = withValues(entry.rendered?.html ?? '', language);
+if (!entry.rendered) throw new Error(`src/content/legal/${language}/${page}.md was not rendered.`);
+const html = withValues(entry.rendered.html, language);
 ---
 
 <Base

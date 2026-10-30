@@ -1,6 +1,6 @@
 ---
 title: Politique de confidentialité
-description: Les données personnelles que Julien Laffont traite, pourquoi, pendant combien de temps et comment exercer tes droits.
+description: Les données personnelles que ce site et son éditeur traitent, pourquoi, pendant combien de temps et comment exercer tes droits.
 ---
 
 Ce site n'utilise pas de cookies, n'enregistre rien dans ton navigateur et ne fait aucune requête vers d'autres sites avant que tu cliques sur un lien. Cette politique explique quelles données personnelles sont traitées, par qui, pourquoi, pendant combien de temps et comment exercer tes droits.
@@ -49,7 +49,7 @@ Ce site n'utilise pas de cookies, n'enregistre rien dans ton navigateur et ne fa
 - **Finalité :** montrer ce que disent les personnes qui ont travaillé avec Julien.
 - **Base légale :** ton consentement, donné par écrit.
 - **Destinataires :** les visiteurs du site, qui est public, et Infomaniak, qui l'héberge.
-- **Durée de conservation :** jusqu'à ce que tu demandes le retrait, par e-mail à {email}. Le Témoignage disparaît du site à la publication suivante.
+- **Durée de conservation :** jusqu'à ce que tu demandes le retrait, par e-mail à {email}. Le Témoignage disparaît du site à la Publication suivante.
 
 ## Tes droits
 

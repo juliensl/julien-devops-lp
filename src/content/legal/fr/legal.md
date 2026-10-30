@@ -1,6 +1,6 @@
 ---
 title: Mentions légales
-description: L'éditeur, le directeur de la publication et l'hébergeur du site de Julien Laffont.
+description: L'éditeur, le directeur de la publication et l'hébergeur de ce site.
 ---
 
 Services destinés exclusivement aux professionnels.

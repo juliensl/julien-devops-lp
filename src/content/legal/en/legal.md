@@ -1,6 +1,6 @@
 ---
 title: Legal notice
-description: The publisher, publication director and host of Julien Laffont's site.
+description: The publisher, publication director and host of this site.
 ---
 
 Services intended exclusively for businesses.

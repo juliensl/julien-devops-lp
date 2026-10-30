@@ -29,20 +29,8 @@ const HOST = {
 	tel: 'tel:+41228203541',
 };
 
-/**
- * What the Legal information never shows (#54): the NIF, the SIREN, «RCS», the activity codes; and the
- * VAT number, until Julien confirms it is active (#71, #75).
- */
-const NEVER_SHOWN = [
-	/\bNIF\b/,
-	/\bSIREN\b/,
-	/\bRCS\b/,
-	/62\.01Z/,
-	/68\.20A/,
-	/519294700/,
-	/FR90987671583/,
-	/\b(IVA|TVA|VAT)\b/,
-];
+/** What the Legal information never shows (#54): the NIF, the SIREN, «RCS», the activity codes. */
+const NEVER_SHOWN = [/\bNIF\b/, /\bSIREN\b/, /\bRCS\b/, /62\.01Z/, /68\.20A/, /519294700/];
 
 /** The texts of the Legal information in each language. PT is the reference; FR and EN go to #75. */
 const LEGAL_TEXTS: Record<
@@ -268,11 +256,18 @@ inEachBuild((build) => {
 				await expect(page.getByText(texts.b2b, { exact: true })).toBeVisible();
 			});
 
-			test('never shows the NIF, the SIREN, «RCS», the activity code or the VAT number', async ({
-				page,
-			}) => {
+			test('never shows the NIF, the SIREN, «RCS» or the activity code', async ({ page }) => {
 				const text = await page.getByRole('main').innerText();
 				for (const pattern of NEVER_SHOWN) expect(text).not.toMatch(pattern);
+			});
+
+			// The VAT number shows only once Julien confirms it is active (#71, #75): adding it to the shared
+			// values is enough, and until then its line does not appear.
+			test('has a VAT line only with a VAT number', async ({ page }) => {
+				const text = await page.getByRole('main').innerText();
+				for (const line of text.split('\n').filter((l) => /\b(IVA|TVA|VAT)\b/.test(l))) {
+					expect(line).toMatch(/\bFR\d{11}\b/);
+				}
 			});
 		});
 
