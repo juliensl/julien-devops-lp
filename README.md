@@ -6,19 +6,20 @@ Static site in Astro, with React (rendered at build time) and Tailwind. The spec
 
 With Node 24 (`nvm use` reads `.nvmrc`):
 
-| Command                | What it does                                                             |
-| :--------------------- | :----------------------------------------------------------------------- |
-| `npm ci`               | Installs the dependencies                                                |
-| `npm run dev`          | Development server on `localhost:4321`                                   |
-| `npm run check`        | Checks the types: a text missing in one language makes it fail           |
-| `npm run format`       | Formats the code with Prettier                                           |
-| `npm run build`        | Build of the published site, in `dist/`                                  |
-| `npm run build:launch` | Test build with the Commercial launch, in `dist-launch/`                 |
-| `npm test`             | Playwright suite over both builds, which must already exist              |
-| `npm run lighthouse`   | Lighthouse in mobile mode over both builds (see below)                   |
-| `npm run verify`       | Everything the workflow runs on a PR into `main`, in the same order      |
-| `npm run confirm`      | Confirms that the published site is the one in `dist/`, from this commit |
-| `npm run share-image`  | Generates the share image from `dist/` (see below)                       |
+| Command                  | What it does                                                                   |
+| :----------------------- | :----------------------------------------------------------------------------- |
+| `npm ci`                 | Installs the dependencies                                                      |
+| `npm run dev`            | Development server on `localhost:4321`                                         |
+| `npm run check`          | Checks the types: a text missing in one language makes it fail                 |
+| `npm run format`         | Formats the code with Prettier                                                 |
+| `npm run build`          | Build of the published site, in `dist/`                                        |
+| `npm run build:launch`   | Test build with the Commercial launch, in `dist-launch/`                       |
+| `npm test`               | Playwright suite over both builds, which must already exist                    |
+| `npm run lighthouse`     | Lighthouse in mobile mode over both builds (see below)                         |
+| `npm run verify`         | Everything the workflow runs on a PR into `main`, in the same order            |
+| `npm run confirm`        | Confirms that the published site is the one in `dist/`, from this commit       |
+| `npm run share-image`    | Generates the share image from `dist/` (see below)                             |
+| `npm run boundary-cases` | Lists the cloud chart's providers within 0.05 of a threshold, for Julien (#75) |
 
 ## Branches
 

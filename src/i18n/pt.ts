@@ -1,6 +1,7 @@
 // The texts in Portuguese, the Reference language.
 // French and English are typed from this file: a missing text makes `astro check` fail.
 // The texts carry no HTML: links, bold text and non-breaking spaces are added in the components.
+import type { CriterionId, ProviderId, Rating, ScenarioId } from '../config/cloud-providers';
 
 const promise =
 	'Em 30 dias, entrego-te a infraestrutura DevOps de que precisas para escalar o teu SaaS.';
@@ -199,6 +200,135 @@ export const pt = {
 			inService: 'com serviço',
 			outOfService: 'no máximo 1 % sem serviço',
 			note: 'Nos 3 meses seguintes à entrega.',
+		},
+		/** The cloud provider chart. The names of the scenarios and criteria are #54's; the facts
+		 * behind each note are in src/config/cloud-providers.ts, with their sources. */
+		cloudChart: {
+			label: 'Fornecedores cloud',
+			title: 'Que cloud para que empresa?',
+			intro:
+				'Escolhe um cenário. Cada barra mostra que critérios desse cenário o fornecedor cumpre. É uma orientação para a Conversa, não uma classificação: não há um fornecedor ideal para todas as empresas.',
+			/** The name of the group of scenarios, for screen readers. */
+			scenariosLabel: 'Cenário de empresa',
+			scenarios: {
+				beforeLaunch: {
+					name: 'Antes do lançamento',
+					description: 'Equipa pequena, sem tempo para operar servidores.',
+				},
+				growth: {
+					name: 'SaaS em crescimento',
+					description: 'O produto já tem clientes e a equipa está a crescer.',
+				},
+				dataSovereignty: {
+					name: 'Soberania dos dados',
+					description:
+						'Os dados têm de ficar na UE, com um fornecedor europeu, ou o setor exige SecNumCloud.',
+				},
+				variableLoad: {
+					name: 'Carga muito variável',
+					description: 'Picos fortes e períodos calmos.',
+				},
+				costControl: {
+					name: 'Custos sob controlo',
+					description: 'Ver e controlar os custos de infraestrutura à medida que o SaaS cresce.',
+				},
+			} satisfies Record<ScenarioId, { name: string; description: string }>,
+			criteria: {
+				kubernetes: 'Kubernetes gerido',
+				containers: 'Contentores com escala automática',
+				paas: 'PaaS',
+				europeanHeadquarters: 'Sede na Europa',
+				secNumCloud: 'Oferta SecNumCloud',
+				euRegions: 'Regiões na UE',
+				costs: 'Visibilidade e controlo dos custos',
+			} satisfies Record<CriterionId, string>,
+			/** Before a criterion's weight in the scenario: "peso 3". */
+			weight: 'peso',
+			/** Marks the criterion that is Julien's opinion, not a fact. */
+			opinion: 'opinião do Julien',
+			ratings: {
+				consider: 'A considerar',
+				possible: 'Possível',
+				unsuitable: 'Pouco indicado',
+			} satisfies Record<Rating, string>,
+			/** A provider's value on a criterion: 1, ½ or 0. */
+			values: { yes: 'Sim', partly: 'Em parte', no: 'Não' },
+			hint: 'Clica numa barra para ver os factos.',
+			/** After a label, before what it introduces: French puts a space before it. */
+			colon: ':',
+			/** Before the date each source was read. */
+			read: 'lida a',
+			source: 'Fonte',
+			sources: 'Fontes',
+			/** The note on outbound traffic, in the cost criterion. */
+			outboundTraffic: 'Tráfego de saída',
+			footnote:
+				'Os factos vêm das páginas oficiais dos fornecedores e da ANSSI. Os pesos de cada cenário e o critério «Visibilidade e controlo dos custos» são opinião do Julien.',
+			/** What each fact says, in words. No legal claims (#54). */
+			notes: {
+				aws: {
+					paas: 'O App Runner fechou a novos clientes a 30/04/2026.',
+					europeanHeadquarters:
+						'Sede em Seattle, EUA. Na Europa, anuncia a AWS European Sovereign Cloud, com uma região na Alemanha.',
+					secNumCloud: 'Não está no catálogo SecNumCloud da ANSSI.',
+					euRegions: '6 regiões na UE.',
+					costs:
+						'Custos por conta e por etiqueta, com previsão. Orçamentos com alertas e ações automáticas.',
+				},
+				googleCloud: {
+					paas: 'O Cloud Run publica a partir do código-fonte ou de um repositório Git.',
+					europeanHeadquarters: 'Sede em Mountain View, EUA.',
+					secNumCloud:
+						'Oferta da Thales com tecnologia Google Cloud, qualificada desde 17/12/2025 em nome da Thales.',
+					euRegions: '11 regiões na UE.',
+					costs:
+						'Custos por projeto e por etiqueta, com previsão. Orçamentos com alertas e tetos que param alguns serviços.',
+				},
+				infomaniak: {
+					containers: 'Sem contentores serverless: o Jelastic Cloud escala contentores Docker.',
+					paas: 'Publica a partir de Git.',
+					europeanHeadquarters: 'Sede em Genebra, Suíça, fora da UE.',
+					secNumCloud: 'Não está no catálogo SecNumCloud da ANSSI.',
+					euRegions: 'Nenhuma região na UE: as 2 regiões estão na Suíça.',
+					costs:
+						'Sem painel de custos documentado, só uma API. Sem alertas de orçamento; há quotas de recursos por projeto.',
+				},
+				azure: {
+					europeanHeadquarters:
+						'Sede em Redmond, EUA. Na Europa, anuncia parceiros: a Bleu, em França, e a Delos Cloud, na Alemanha.',
+					secNumCloud:
+						'Não está no catálogo SecNumCloud da ANSSI. A Bleu, parceira da Microsoft, está em qualificação.',
+					euRegions: '13 regiões na UE, 2 delas de acesso restrito.',
+					costs:
+						'Custos por subscrição, por recurso e por etiqueta, com previsão. Orçamentos só com alertas.',
+				},
+				ovhcloud: {
+					containers: 'Contentores serverless anunciados como «Coming soon».',
+					paas: 'O Web PaaS fechou a 31/01/2025.',
+					europeanHeadquarters: 'Sede em Roubaix, França.',
+					secNumCloud: '3 ofertas IaaS qualificadas.',
+					euRegions: '7 regiões na UE.',
+					costs:
+						'Consumo por projeto e por recurso, com previsão. Etiquetas não encontradas. Alerta sobre a previsão, sem limite.',
+				},
+				scaleway: {
+					paas: 'Não encontrado. O mais próximo são as Serverless Functions.',
+					europeanHeadquarters: 'Sede em Paris, França.',
+					secNumCloud: 'Em qualificação: ainda não está no catálogo SecNumCloud da ANSSI.',
+					euRegions: '4 regiões na UE.',
+					costs:
+						'Custos por projeto e por produto. Etiquetas e previsão não encontradas. Os alertas só avisam.',
+				},
+			} satisfies Record<ProviderId, Partial<Record<CriterionId, string>>>,
+			/** Outbound traffic to the internet, from Europe. */
+			outbound: {
+				aws: 'pago depois de 100 GB/mês.',
+				googleCloud: 'pago desde o primeiro GB (Premium Tier).',
+				infomaniak: 'incluído nas instâncias.',
+				azure: 'pago depois de 100 GB/mês.',
+				ovhcloud: 'incluído nas instâncias.',
+				scaleway: 'incluído nas instâncias.',
+			} satisfies Record<ProviderId, string>,
 		},
 		about: {
 			title: 'Quem é o Julien',
