@@ -18,6 +18,79 @@ export const fr: Dictionary = {
 		pause: "Mettre l'animation en pause",
 		resume: "Reprendre l'animation",
 	},
+	ecology: {
+		page: {
+			title: 'Écologie et infrastructure',
+			description:
+				"Estime l'énergie et les émissions d'une charge selon le pays où elle tourne, avec le calcul complet, la méthode, les sources et les limites.",
+			heading: "Les choix d'infrastructure ont aussi des conséquences environnementales.",
+			intro:
+				"L'endroit où tourne l'application, combien de temps elle tourne et avec quelle efficacité changent l'énergie qu'elle consomme et les émissions de l'électricité qu'elle utilise. Ici, tu estimes une charge selon le pays où elle tourne, avec la méthode et les sources sous les yeux.",
+		},
+		estimator: {
+			label: 'Estimer une charge',
+			title: 'La même application, à des endroits différents.',
+			intro:
+				"Choisis le pays, la charge et l'efficacité du centre de données. Le calcul suit la méthode ouverte de Cloud Carbon Footprint : énergie des processeurs × efficacité du centre de données × intensité carbone de l'électricité.",
+		},
+		method: {
+			label: 'Comment on calcule',
+			title: 'Une seule méthode, expliquée.',
+			cards: [
+				{
+					title: 'Location-based',
+					text: "Utilise la moyenne annuelle de l'électricité produite dans le pays. Ne compte pas les contrats d'énergie renouvelable : ce serait la méthode market-based, absente ici parce qu'elle demande des données contractuelles que nous n'avons pas.",
+				},
+				{
+					title: 'Cycle de vie',
+					text: "L'intensité d'Ember inclut les émissions en amont (construction des centrales, extraction et transport du combustible). Elle est donc plus élevée que si l'on comptait seulement les émissions directes de la combustion. Les deux types ne se mélangent jamais sur cette page.",
+				},
+				{
+					title: 'Seulement les processeurs',
+					text: "L'estimateur compte l'énergie des vCPU et l'efficacité du centre de données. La mémoire, le stockage, le réseau et la fabrication des serveurs restent en dehors, donc la valeur réelle est plus élevée.",
+				},
+			],
+		},
+		levers: {
+			label: "Ce que l'infrastructure peut changer",
+			title: "Plus d'efficacité, plus de visibilité.",
+			cards: [
+				{
+					title: 'Ajuster les ressources à la charge',
+					text: "Avec l'infrastructure scalable (bloc 3), les ressources suivent la charge de l'application.",
+				},
+				{
+					title: 'Voir ce qui est consommé',
+					text: "L'observabilité (bloc 4) donne de la visibilité sur l'utilisation des ressources et les coûts.",
+				},
+				{
+					title: 'Choisir en connaissance de cause',
+					text: "L'intensité carbone de l'électricité change d'un pays à l'autre, et l'estimateur montre de combien.",
+				},
+				{
+					title: 'Hébergement à moindre impact environnemental',
+					text: "Quand les besoins et le budget le permettent, c'est l'une des options que je propose.",
+				},
+			],
+		},
+		sources: {
+			title: 'Sources et limites',
+			sources: {
+				ember: "Ember, production d'électricité annuelle par pays (intensité carbone, 2025)",
+				cloudCarbonFootprint: 'Cloud Carbon Footprint, méthodologie',
+				uptimeInstitute: 'Uptime Institute, PUE moyen du secteur (enquête 2026)',
+				research:
+					'Recherche interne sur les données environnementales des fournisseurs cloud (16/10/2026)',
+			},
+			limits: [
+				'Estimation illustrative, pas une mesure de ton infrastructure.',
+				'Les watts par vCPU sont ceux de Cloud Carbon Footprint pour un processeur inconnu ; le serveur réel peut consommer plus ou moins.',
+				"L'intensité est une moyenne annuelle du pays ; l'heure de la journée change la valeur réelle.",
+				'Le PUE de 1,52 est la moyenne par centre de données ; pondérée par la capacité, elle est de 1,36. Les grands centres, comme ceux du cloud, ont souvent des valeurs plus basses.',
+			],
+		},
+		back: "Retour à la page d'accueil",
+	},
 	homePage: {
 		description: `${promise} Pour les CTO de SaaS en croissance.`,
 		hero: {

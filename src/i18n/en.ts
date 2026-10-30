@@ -17,6 +17,78 @@ export const en: Dictionary = {
 		pause: 'Pause animation',
 		resume: 'Resume animation',
 	},
+	ecology: {
+		page: {
+			title: 'Ecology and infrastructure',
+			description:
+				'Estimate the energy and emissions of a workload by the country it runs in, with the full calculation, the method, the sources and the limits.',
+			heading: 'Infrastructure choices have environmental consequences too.',
+			intro:
+				'Where the application runs, how long it runs and how efficiently all change the energy it uses and the emissions of the electricity behind it. Here you estimate a workload by the country it runs in, with the method and the sources in plain sight.',
+		},
+		estimator: {
+			label: 'Estimate a workload',
+			title: 'The same application, in different places.',
+			intro:
+				"Choose the country, the load and the data centre's efficiency. The calculation follows the open Cloud Carbon Footprint method: processor energy × data centre efficiency × carbon intensity of the electricity.",
+		},
+		method: {
+			label: 'How it is calculated',
+			title: 'One method, explained.',
+			cards: [
+				{
+					title: 'Location-based',
+					text: 'Uses the yearly average of the electricity generated in the country. It does not count renewable energy contracts: that would be the market-based method, which is not shown here because it needs contract data we do not have.',
+				},
+				{
+					title: 'Life cycle',
+					text: "Ember's intensity includes upstream emissions (building the power plants, extracting and transporting the fuel). That is why it is higher than counting only the direct emissions from burning. The two kinds are never mixed on this page.",
+				},
+				{
+					title: 'Processors only',
+					text: "The estimator counts the energy of the vCPUs and the data centre's efficiency. Memory, storage, network and server manufacturing are left out, so the real figure is higher.",
+				},
+			],
+		},
+		levers: {
+			label: 'What infrastructure can change',
+			title: 'More efficiency, more visibility.',
+			cards: [
+				{
+					title: 'Matching resources to the load',
+					text: "With scalable infrastructure (block 3), resources follow the application's load.",
+				},
+				{
+					title: 'Seeing what is used',
+					text: 'Observability (block 4) gives visibility into resource use and costs.',
+				},
+				{
+					title: 'Choosing with information',
+					text: 'The carbon intensity of electricity changes from country to country, and the estimator shows by how much.',
+				},
+				{
+					title: 'Lower-impact hosting',
+					text: 'When the needs and the budget allow it, it is one of the options I propose.',
+				},
+			],
+		},
+		sources: {
+			title: 'Sources and limits',
+			sources: {
+				ember: 'Ember, yearly electricity generation by country (carbon intensity, 2025)',
+				cloudCarbonFootprint: 'Cloud Carbon Footprint, methodology',
+				uptimeInstitute: 'Uptime Institute, industry average PUE (2026 survey)',
+				research: "Own research on cloud providers' environmental data (16/10/2026)",
+			},
+			limits: [
+				'An illustrative estimate, not a measurement of your infrastructure.',
+				"The watts per vCPU are Cloud Carbon Footprint's for an unknown processor; the real server may use more or less.",
+				"The intensity is the country's yearly average; the time of day changes the real figure.",
+				'The PUE of 1.52 is the average per data centre; weighted by capacity, it is 1.36. Large data centres, like the cloud ones, tend to have lower values.',
+			],
+		},
+		back: 'Back to the home page',
+	},
 	homePage: {
 		description: `${promise} For CTOs of growing SaaS companies.`,
 		hero: {

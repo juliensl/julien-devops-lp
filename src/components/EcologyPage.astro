@@ -1,0 +1,129 @@
+---
+// The ecology page (#68, #54 «Página de ecologia»): the estimator, how it calculates, what infrastructure
+// can change, and the sources and limits. It ends with the button.
+// No provider environmental data, and no provider as an example of lower impact: the only expression
+// is «alojamento com menor impacto ambiental».
+import { SOURCES, type SourceId } from '../config/ecology';
+import { PREFIXES, type Language } from '../config/site';
+import { values } from '../config/values';
+import { dictionaries } from '../i18n';
+import Base from '../layouts/Base.astro';
+import { withNonBreakingSpaces } from '../lib/spaces';
+import BookingButton from './BookingButton';
+import Leaf from './Leaf.astro';
+
+interface Props {
+	language: Language;
+}
+
+const { language } = Astro.props;
+const t = dictionaries[language];
+const { page, estimator, method, levers, sources } = t.ecology;
+---
+
+<Base language={language} title={`${page.title} · ${values.name}`} description={page.description}>
+	<main>
+		<div class="page-width grid gap-5 pt-14 sm:pt-20">
+			<p class="label flex items-center gap-2">
+				<Leaf size={16} /> {page.title}
+			</p>
+			{/* The flowing leaf of points, beside the title and above it on a phone (#69) */}
+			<h1 class="max-w-[20ch] text-[clamp(2rem,5vw,4.2rem)] leading-[1.05]">{page.heading}</h1>
+			<p class="max-w-2xl text-lg text-foreground-secondary">{withNonBreakingSpaces(page.intro)}</p>
+		</div>
+
+		<section aria-labelledby="estimator-title" class="page-width grid gap-4 pt-20">
+			<p class="label">1 · {estimator.label}</p>
+			<h2 id="estimator-title" class="section-title">
+				{estimator.title}
+			</h2>
+			<p class="max-w-2xl text-foreground-secondary">{withNonBreakingSpaces(estimator.intro)}</p>
+		</section>
+
+		<section aria-labelledby="method-title" class="page-width grid gap-4 pt-20">
+			<p class="label">2 · {method.label}</p>
+			<h2 id="method-title" class="section-title">
+				{method.title}
+			</h2>
+			<ul class="mt-4 grid gap-6 md:grid-cols-3">
+				{method.cards.map(({ title, text }) => (
+					<li class="card border-t border-line-strong">
+						<h3>{title}</h3>
+						<p>{withNonBreakingSpaces(text)}</p>
+					</li>
+				))}
+			</ul>
+		</section>
+
+		<section aria-labelledby="levers-title" class="page-width grid gap-4 pt-20">
+			<p class="label">3 · {levers.label}</p>
+			<h2 id="levers-title" class="section-title">
+				{levers.title}
+			</h2>
+			<ul class="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+				{levers.cards.map(({ title, text }) => (
+					<li class="card border-t-2 border-green">
+						<h3>{title}</h3>
+						<p>{withNonBreakingSpaces(text)}</p>
+					</li>
+				))}
+			</ul>
+		</section>
+
+		<section aria-labelledby="sources-title" class="page-width grid gap-6 pt-20">
+			<h2 id="sources-title" class="text-[clamp(1.5rem,3vw,2rem)] leading-[1.15]">
+				{sources.title}
+			</h2>
+			<ol class="grid list-decimal gap-1.5 pl-5 text-sm text-foreground-secondary">
+				{(Object.entries(SOURCES) as [SourceId, string | null][]).map(([id, url]) => (
+					<li>
+						{url ? (
+							<a href={url} class="text-green underline underline-offset-3">
+								{sources.sources[id]}
+							</a>
+						) : (
+							sources.sources[id]
+						)}
+					</li>
+				))}
+			</ol>
+			<ul class="grid list-disc gap-1.5 pl-5 text-foreground-secondary">
+				{sources.limits.map((limit) => (
+					<li>{withNonBreakingSpaces(limit)}</li>
+				))}
+			</ul>
+			<div class="mt-4 flex flex-wrap items-center gap-x-8 gap-y-4">
+				<a
+					href={PREFIXES[language]}
+					class="inline-flex min-h-11 items-center underline underline-offset-3 hover:text-green"
+				>
+					{t.ecology.back}
+				</a>
+				<BookingButton text={t.bookButton} />
+			</div>
+		</section>
+	</main>
+</Base>
+
+<style>
+	.section-title {
+		font-size: clamp(1.9rem, 3.6vw, 2.6rem);
+		line-height: 1.1;
+	}
+
+	/* The cards: open, with a line on top, as in the rest of the page. */
+	.card {
+		display: grid;
+		align-content: start;
+		gap: 0.5rem;
+		padding-top: 1.25rem;
+	}
+	.card h3 {
+		font-size: 1.25rem;
+		line-height: 1.2;
+	}
+	.card p {
+		color: var(--color-foreground-secondary);
+		font-size: 0.9375rem;
+	}
+</style>
