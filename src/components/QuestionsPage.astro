@@ -1,0 +1,290 @@
+---
+// «Os teus desafios» (#70): the 23 approved questions, by audience, each in a `<details>`, with an index,
+// a filter by audience, a search and a count that screen readers hear. It ends with the button.
+// Without JS, every question is visible and the index leads to each audience; the filter, the search
+// and the count need JS, so CSS hides them when scripting is off (`noscript:`), and with JS they are
+// there from the first paint, with no layout shift.
+// The URL hash is the chosen audience: a link to `#cto` (the header submenu, the index, the home page)
+// chooses CTO, and choosing an audience writes it in the URL, so a reload or a shared link keeps it.
+import { AUDIENCES } from '../config/audiences';
+import { HTML_CODES, type Language } from '../config/site';
+import { values } from '../config/values';
+import { dictionaries } from '../i18n';
+import Base from '../layouts/Base.astro';
+import { withNonBreakingSpaces } from '../lib/spaces';
+import BookingButton from './BookingButton';
+import Question from './Question.astro';
+
+interface Props {
+	language: Language;
+}
+
+const { language } = Astro.props;
+const t = dictionaries[language];
+const { audiences, count, page } = t.questions;
+const plural = new Intl.PluralRules(HTML_CODES[language]);
+/** «7 perguntas», with the language's plural and a non-breaking space. */
+const countText = (n: number) =>
+	withNonBreakingSpaces(`${n} ${plural.select(n) === 'one' ? count.one : count.other}`);
+const total = AUDIENCES.reduce((n, id) => n + audiences[id].questions.length, 0);
+---
+
+<Base
+	language={language}
+	title={`${t.questions.menu} · ${values.name}`}
+	description={page.description}
+>
+	<main data-questions>
+		<div class="page-width grid gap-x-16 gap-y-8 pt-14 sm:pt-20 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-end">
+			<div class="grid gap-4">
+				<p class="label">{t.questions.menu}</p>
+				<h1 class="text-[clamp(2.4rem,5vw,4rem)] leading-[1.05]">{page.title}</h1>
+				<p class="max-w-xl text-lg text-foreground-secondary">
+					{withNonBreakingSpaces(page.intro)}
+				</p>
+			</div>
+
+			<div class="grid gap-3 noscript:hidden">
+				<fieldset>
+					<legend class="sr-only">{page.filter}</legend>
+					<div class="flex flex-wrap gap-2">
+						{[
+							['all', page.everyone] as const,
+							...AUDIENCES.map((id) => [id, audiences[id].short] as const),
+						].map(([value, text]) => (
+							<label class="choice">
+								<input type="radio" name="audience" value={value} checked={value === 'all'} />
+								{text}
+							</label>
+						))}
+					</div>
+				</fieldset>
+				<label>
+					<span class="sr-only">{page.search}</span>
+					<input
+						type="search"
+						data-search
+						placeholder={page.searchPlaceholder}
+						class="min-h-12 w-full rounded-xl border border-line-strong bg-surface px-4 text-foreground placeholder:text-foreground-secondary"
+					/>
+				</label>
+				<p
+					role="status"
+					data-count
+					data-one={count.one}
+					data-other={count.other}
+					class="text-sm text-foreground-secondary"
+				>
+					{countText(total)}
+				</p>
+			</div>
+		</div>
+
+		<div class="page-width grid gap-x-16 gap-y-10 pt-12 lg:grid-cols-[14rem_minmax(0,1fr)] lg:items-start">
+			{/* Below 1024 px, the index is a row of links right under the filter, which does the same: with
+			    JS, only the filter remains. Without JS, the index is the way to each audience. */}
+			<nav
+				aria-label={page.index}
+				class="max-lg:hidden max-lg:noscript:block lg:sticky lg:top-[calc(var(--header-height)+2rem)]"
+			>
+				<ul class="flex flex-wrap gap-2 lg:grid lg:gap-1 lg:border-l lg:border-line">
+					{AUDIENCES.map((id) => (
+						<li>
+							<a href={`#${id}`} class="index-link">
+								{audiences[id].name}
+								<span class="sr-only">, </span>
+								<span class="text-sm text-green tabular-nums">
+									{audiences[id].questions.length}
+									<span class="sr-only">{count.other}</span>
+								</span>
+							</a>
+						</li>
+					))}
+				</ul>
+			</nav>
+
+			<div class="grid gap-14">
+				{AUDIENCES.map((id) => (
+					<section id={id} aria-labelledby={`${id}-title`} data-audience={id} class="grid gap-4">
+						<div class="grid gap-1">
+							<h2 id={`${id}-title`} class="text-[clamp(1.7rem,3.2vw,2.3rem)] leading-[1.1]">
+								{audiences[id].name}
+							</h2>
+							<p class="text-foreground-secondary">{audiences[id].description}</p>
+						</div>
+						<div>
+							{audiences[id].questions.map(({ question, answer }) => (
+								<Question question={question} answer={answer} />
+							))}
+						</div>
+					</section>
+				))}
+				<p data-no-results hidden class="text-foreground-secondary">
+					{page.noResults}
+				</p>
+			</div>
+		</div>
+
+		<section aria-labelledby="not-found-title" class="page-width pt-20">
+			<div class="flex flex-wrap items-center justify-between gap-6 border-t-2 border-green pt-10">
+				<h2 id="not-found-title" class="text-[clamp(1.7rem,3.2vw,2.3rem)] leading-[1.1]">
+					{withNonBreakingSpaces(page.notFound)}
+				</h2>
+				<BookingButton text={t.bookButton} />
+			</div>
+		</section>
+	</main>
+</Base>
+
+<script>
+	import { withNonBreakingSpaces } from '../lib/spaces';
+	import { afterLoad } from '../scripts/after-load';
+
+	/** The filter's value for every audience; the others are the audiences' ids. */
+	const ALL = 'all';
+
+	afterLoad(() => {
+		const root = document.querySelector<HTMLElement>('[data-questions]');
+		if (!root) return;
+		const radios = [...root.querySelectorAll<HTMLInputElement>('input[name="audience"]')];
+		const search = root.querySelector<HTMLInputElement>('[data-search]')!;
+		const count = root.querySelector<HTMLElement>('[data-count]')!;
+		const noResults = root.querySelector<HTMLElement>('[data-no-results]')!;
+		const plural = new Intl.PluralRules(document.documentElement.lang);
+
+		/** Lowercase and without accents, so «migracao» finds «migração». */
+		const simplified = (text: string) => text.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
+
+		const audiences = [...root.querySelectorAll<HTMLElement>('[data-audience]')].map((section) => ({
+			section,
+			questions: [...section.querySelectorAll('details')].map((details) => ({
+				details,
+				text: simplified(details.textContent!),
+			})),
+		}));
+		/** The answers the search opened, which it closes again when it is cleared. */
+		const openedBySearch = new Set<HTMLDetailsElement>();
+
+		function update() {
+			const chosen = radios.find((radio) => radio.checked)!.value;
+			const words = simplified(search.value).split(/\s+/).filter(Boolean);
+			let shown = 0;
+			for (const { section, questions } of audiences) {
+				let found = 0;
+				for (const { details, text } of questions) {
+					const matches = words.every((word) => text.includes(word));
+					details.hidden = !matches;
+					if (!matches) continue;
+					found++;
+					if (words.length && !details.open) {
+						details.open = true;
+						openedBySearch.add(details);
+					}
+				}
+				section.hidden = (chosen !== ALL && section.id !== chosen) || found === 0;
+				if (!section.hidden) shown += found;
+			}
+			if (!words.length) {
+				for (const details of openedBySearch) details.open = false;
+				openedBySearch.clear();
+			}
+			const word = plural.select(shown) === 'one' ? count.dataset.one : count.dataset.other;
+			count.textContent = withNonBreakingSpaces(`${shown} ${word}`);
+			noResults.hidden = shown > 0;
+		}
+
+		/** Chooses the audience in the hash, or every audience, and shows the chosen one from its top. */
+		function fromHash() {
+			const id = decodeURIComponent(location.hash.slice(1));
+			const radio = radios.find((r) => r.value === id) ?? radios.find((r) => r.value === ALL)!;
+			radio.checked = true;
+			update();
+			if (radio.value !== ALL) document.getElementById(radio.value)!.scrollIntoView();
+		}
+
+		root.addEventListener('change', (event) => {
+			const { name, value } = event.target as HTMLInputElement;
+			if (name !== 'audience') return;
+			history.replaceState(null, '', value === ALL ? location.pathname : `#${value}`);
+			update();
+		});
+		search.addEventListener('input', update);
+		addEventListener('hashchange', fromHash);
+		fromHash();
+	});
+</script>
+
+<style>
+	/* The filter's choices: the label is the button, green when chosen. The radio is transparent and
+	   covers its label, so a click anywhere on the button lands on it. */
+	.choice {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		min-height: 2.75rem;
+		padding-inline: 1rem;
+		border: 1px solid var(--color-line-strong);
+		border-radius: 999px;
+		font-size: 0.9375rem;
+		color: var(--color-foreground-secondary);
+		cursor: pointer;
+		transition:
+			background-color 0.15s,
+			color 0.15s,
+			border-color 0.15s;
+
+		&:hover {
+			border-color: var(--color-green);
+			color: var(--color-foreground);
+		}
+
+		&:has(:checked) {
+			border-color: var(--color-green);
+			background: var(--color-green);
+			color: var(--color-background);
+			font-weight: 600;
+		}
+
+		&:has(:focus-visible) {
+			outline: 2px solid var(--color-green);
+			outline-offset: 3px;
+		}
+
+		input {
+			position: absolute;
+			inset: 0;
+			margin: 0;
+			opacity: 0;
+			cursor: pointer;
+		}
+	}
+
+	.index-link {
+		display: inline-flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.75rem;
+		min-height: 2.75rem;
+		padding-inline: 0.9rem;
+		border: 1px solid var(--color-line);
+		border-radius: 999px;
+		color: var(--color-foreground-secondary);
+		transition:
+			color 0.15s,
+			border-color 0.15s;
+
+		&:hover {
+			color: var(--color-foreground);
+			border-color: var(--color-green);
+		}
+
+		/* On a wide screen, a list down the left, with a line. */
+		@media (width >= 64rem) {
+			display: flex;
+			margin-left: -1px;
+			border-width: 0 0 0 2px;
+			border-color: transparent;
+			border-radius: 0;
+		}
+	}
+</style>

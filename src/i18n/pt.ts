@@ -1,6 +1,7 @@
 // The texts in Portuguese, the Reference language.
 // French and English are typed from this file: a missing text makes `astro check` fail.
 // The texts carry no HTML: links, bold text and non-breaking spaces are added in the components.
+import type { AudienceId } from '../config/audiences';
 import type { CriterionId, ProviderId, Rating, ScenarioId } from '../config/cloud-providers';
 import type { SourceId } from '../config/ecology';
 
@@ -48,6 +49,17 @@ const blocks: [Block, Block, Block, Block] = [
 		toolsAlternative: 'ou as ferramentas da tua cloud',
 	},
 ];
+
+type Question = { question: string; answer: string };
+
+type Audience = {
+	/** The audience's heading on the questions page, and its link in the header submenu. */
+	name: string;
+	/** In the filter. */
+	short: string;
+	description: string;
+	questions: Question[];
+};
 
 export const pt = {
 	designation: 'Consultor DevOps freelance para SaaS',
@@ -476,12 +488,190 @@ export const pt = {
 			translated: 'Traduzido do francês',
 			malt: 'Ver no Malt',
 		},
+		/** The Questions section: its general questions and the Audiences come from `questions`. */
+		questions: {
+			label: 'Perguntas',
+			title: 'O essencial, antes da Conversa.',
+			byAudience: 'Perguntas para o teu perfil',
+		},
 		finalCta: {
 			title: 'Nunca perdes a infraestrutura.',
 			text: 'Mesmo que a tua equipa não avance logo com os testes, ficas com uma pipeline limpa, documentada e com os standards do mercado, pronta para quando decidires.',
 			conversation: 'Conversa de 45 min por Google Meet, gratuita e sem compromisso.',
 			bookingNotice:
 				'A página de marcação está em francês, mas a Conversa pode ser em inglês ou em português.',
+		},
+	},
+	/** «Os teus desafios»: the questions by audience, on their page, in the header submenu and in the home
+	 * page's Questions section. The 23 answers are the ones Julien approved (#54), word for word; each
+	 * audience is typed with its number of questions, so a language with one missing fails `astro check`. */
+	questions: {
+		/** The name of the page and of the header menu that leads to it. */
+		menu: 'Os teus desafios',
+		all: 'Ver todas as perguntas',
+		/** After a number of questions: «7 perguntas». The language's plural rules pick the form. */
+		count: { one: 'pergunta', other: 'perguntas' },
+		audiences: {
+			general: {
+				name: 'Perguntas gerais',
+				short: 'Gerais',
+				description: 'Para quem está a avaliar o serviço.',
+				questions: [
+					{
+						question: 'O que fazes, exatamente?',
+						answer:
+							'Entrego a infraestrutura DevOps de que um SaaS precisa para crescer, em quatro blocos: pipeline de CI e auditoria de código, contentorização, infraestrutura escalável e observabilidade. Contratas os que quiseres, em qualquer combinação.',
+					},
+					{
+						question: 'Quanto tempo demora?',
+						answer:
+							'No máximo 30 dias, para qualquer combinação de blocos, a contar do início da Implementação. O prazo exato vem na Proposta de intervenção.',
+					},
+					{
+						question: 'Quanto custa?',
+						answer:
+							'Um preço fixo, que dou na Proposta de intervenção, depois do Diagnóstico gratuito.',
+					},
+					{
+						question: 'Como começa?',
+						answer:
+							'Com uma Conversa de 45 min por Google Meet. Depois vêm o Diagnóstico gratuito, a Proposta de intervenção, a Implementação e a Entrega e transferência.',
+					},
+					{
+						question: 'Posso contratar só alguns blocos?',
+						answer:
+							'Sim, em qualquer combinação. O bloco 3 precisa de uma aplicação contentorizada, pelo bloco 2 ou pela tua equipa.',
+					},
+				] satisfies [Question, Question, Question, Question, Question],
+			},
+			cto: {
+				name: 'Para CTO',
+				short: 'CTO',
+				description:
+					'Infraestrutura, CI/CD, testes, escala, fiabilidade, observabilidade e trabalho com a equipa.',
+				questions: [
+					{
+						question: 'Quem escreve os testes?',
+						answer:
+							'A tua equipa. Eu não escrevo testes: entrego o sistema que os corre, os mede e bloqueia o que está a vermelho.',
+					},
+					{
+						question: 'É preciso parar o desenvolvimento?',
+						answer:
+							'Não. No bloco 1 não há migração nem risco para a produção. Nos blocos 2 e 3 o trabalho corre em paralelo (ramos, ambientes de teste, infraestrutura separada). Algumas alterações pedem coordenação com os devs, e no fim da migração pode ser preciso um curto período sem alterações ao código, combinado contigo.',
+					},
+					{
+						question: 'Com que stack e clouds trabalhas?',
+						answer:
+							'CI: GitHub Actions, GitLab CI, Azure DevOps e Google Cloud Build. Cloud: AWS, Google Cloud, Microsoft Azure, OVHcloud, Scaleway e Infomaniak. A escolha depende das necessidades e do orçamento, e pode incluir um alojamento com menor impacto ambiental.',
+					},
+					{
+						question: 'De que acessos precisas?',
+						answer:
+							'No Diagnóstico, acesso de leitura ao repositório. À cloud (métricas e logs) só se o problema for de infraestrutura, desempenho, custos ou disponibilidade. Nunca passwords, chaves privadas nem permissões de administrador. Na Implementação, preciso de acesso de escrita ao repositório e de uma conta na tua cloud com as permissões necessárias para criar a infraestrutura dos blocos contratados. Retiras esses acessos na Entrega e transferência.',
+					},
+					{
+						question: 'Como funciona a Garantia de disponibilidade?',
+						answer:
+							'Em 30 dias, entrego a infraestrutura. Nos 3 meses seguintes, ela está disponível pelo menos 99 % do tempo em cada mês. Se não estiver, continuo a trabalhar sem faturar até chegar lá. Aplica-se com os blocos 3 e 4, e pede um teste escrito para cada bug corrigido, nenhum dev a passar à frente de um teste a vermelho, acesso de leitura ao repositório e uma pessoa técnica que responde em 48 h.',
+					},
+					{
+						question: 'Que ferramentas usas na observabilidade?',
+						answer: 'Ferramentas standard, como Grafana e Prometheus, ou as da tua cloud.',
+					},
+					{
+						question: 'Como trabalhamos juntos?',
+						answer:
+							'À distância, por Google Meet. Falo com o CTO e com os devs, sobretudo com o CTO.',
+					},
+				] satisfies [Question, Question, Question, Question, Question, Question, Question],
+			},
+			ceo: {
+				name: 'Para CEO',
+				short: 'CEO',
+				description: 'Riscos, custos, continuidade, previsibilidade e impacto no negócio.',
+				questions: [
+					{
+						question: 'Quanto vai custar, e quando fico a saber?',
+						answer:
+							'Um preço fixo, que dou na Proposta de intervenção. A Proposta vem depois do Diagnóstico gratuito, que demora 2 a 3 dias úteis a partir do momento em que tenho os acessos, ou 3 a 5 se incluir a cloud.',
+					},
+					{
+						question: 'E os custos da infraestrutura?',
+						answer:
+							'Além do preço fixo, a infraestrutura e as ferramentas têm um custo mensal próprio, que pagas diretamente aos fornecedores, nas tuas contas. O serviço pressupõe um orçamento de 100 a 500 € por mês para estes custos.',
+					},
+					{
+						question: 'Ficamos dependentes de ti?',
+						answer:
+							'Não. Uso só tecnologias standard e deixo tudo documentado. Mudas de prestador quando quiseres e nunca perdes a infraestrutura.',
+					},
+					{
+						question: 'Que riscos há para a produção?',
+						answer:
+							'O bloco 1 não toca na produção. Nos blocos 2 e 3, o objetivo é evitar paragens; se a migração mexer em bases de dados ou serviços críticos, pode haver uma paragem curta, marcada antes. Há sempre um plano para voltar à versão anterior.',
+					},
+					{
+						question: 'Que retorno posso esperar?',
+						answer:
+							'Menos tempo a corrigir problemas. Mais tempo a desenvolver o produto. Ajudo equipas SaaS a automatizar testes e entregas, detetar regressões mais cedo e melhorar a fiabilidade da infraestrutura, para que possam crescer com mais confiança.',
+					},
+					{
+						question: 'Em que línguas e países trabalhas?',
+						answer: 'Com clientes de qualquer país, à distância, em português, francês ou inglês.',
+					},
+				] satisfies [Question, Question, Question, Question, Question, Question],
+			},
+			team: {
+				name: 'Para a equipa técnica',
+				short: 'Equipa técnica',
+				description: 'Devs e tech leads que vão trabalhar com a pipeline e a nova infraestrutura.',
+				questions: [
+					{
+						question: 'O que muda no dia a dia da equipa?',
+						answer:
+							'O objetivo é reduzir o tempo perdido em tarefas manuais e problemas recorrentes, facilitar a deteção de regressões e tornar as entregas mais fiáveis. A equipa ganha processos mais claros, maior visibilidade sobre a infraestrutura e mais tempo para se concentrar no desenvolvimento do produto. Os resultados dependem do contexto e do estado inicial de cada projeto.',
+					},
+					{
+						question: 'Quem mantém a pipeline depois?',
+						answer:
+							'A tua equipa. A documentação técnica e a transferência no fim deixam-vos autónomos.',
+					},
+					{
+						question: 'Com quem falas no dia a dia?',
+						answer:
+							'Com o CTO e com os devs, sobretudo com o CTO, por Google Meet. Não há ponto de situação regular.',
+					},
+					{
+						question: 'Continuamos a programar durante a migração?',
+						answer:
+							'Sim. O trabalho corre em paralelo, em ramos, ambientes de teste e infraestrutura separada. No fim pode ser preciso um curto período sem alterações ao código, combinado convosco.',
+					},
+					{
+						question: 'Que ferramentas vamos usar?',
+						answer:
+							'Bloco 1: SonarQube e Trivy. Bloco 2: Docker. Bloco 3: Kubernetes e Terraform. Bloco 4: Grafana e Prometheus, ou as ferramentas da vossa cloud.',
+					},
+				] satisfies [Question, Question, Question, Question, Question],
+			},
+		} satisfies Record<AudienceId, Audience>,
+		page: {
+			description:
+				'Perguntas e respostas para CTO, CEO e equipas técnicas de SaaS: prazos, custos, acessos, riscos e ferramentas.',
+			title: 'Respostas para cada perfil.',
+			intro:
+				'Escolhe o teu perfil ou pesquisa uma palavra. Se a tua pergunta não estiver aqui, faz-ma na Conversa.',
+			/** The name of the filter by audience, for screen readers. */
+			filter: 'Filtrar por perfil',
+			/** The filter's first choice: every audience. */
+			everyone: 'Todas',
+			/** The name of the search field, for screen readers. */
+			search: 'Pesquisar nas perguntas',
+			searchPlaceholder: 'Pesquisar: testes, custos, acessos…',
+			noResults: 'Nenhuma pergunta com essas palavras.',
+			/** The name of the index of audiences, for screen readers. */
+			index: 'Perfis',
+			notFound: 'Não encontras a tua pergunta?',
 		},
 	},
 };

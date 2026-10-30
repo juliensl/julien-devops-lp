@@ -12,6 +12,7 @@ import FinalCta from './FinalCta';
 import Guarantee from './Guarantee';
 import Hero from './Hero';
 import HomeEcology from './HomeEcology.astro';
+import HomeQuestions from './HomeQuestions.astro';
 import PauseButton from './PauseButton.astro';
 import Services from './Services.astro';
 import Steps from './Steps.astro';
@@ -63,7 +64,7 @@ const t = dictionaries[language];
 
 		<HomeEcology language={language} />
 
-		{/* Questions (#70) */}
+		<HomeQuestions language={language} questions={t.questions} {...t.homePage.questions} />
 
 		<FinalCta language={language} buttonText={t.bookButton} {...t.homePage.finalCta} />
 	</main>
