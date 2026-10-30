@@ -1,0 +1,105 @@
+---
+// The Testimonials (#67): one at a time, in a carousel that moves on by itself once each one has
+// had the time to be read. Without JS, the strip slides sideways with a finger or a trackpad; the
+// script adds the arrows, the «1 de 3» indicator, the bar with the time left and the passing.
+// Only the Testimonials the language can show are here: with none, there is no section (#54).
+// Each one links to Julien's Malt profile, where the reviews are (a change to #51 asked for in #67).
+import type { Language } from '../config/site';
+import { testimonialsIn } from '../config/testimonials';
+import { values } from '../config/values';
+import type { Dictionary } from '../i18n/pt';
+import { withNonBreakingSpaces } from '../lib/spaces';
+
+type Props = Dictionary['homePage']['testimonials'] & { language: Language };
+
+const { language, title, carousel, slide, of, previous, next, strip, translated, malt } =
+	Astro.props;
+const testimonials = testimonialsIn(language);
+const total = testimonials.length;
+// A single Testimonial is shown as it is, with nothing to pass to.
+const isCarousel = total > 1;
+
+/** The time to read a text, at about 200 words per minute, and at least 8 s (#54). */
+const readingSeconds = (text: string[]) =>
+	Math.max(8, (text.join(' ').trim().split(/\s+/).length / 200) * 60);
+
+const arrow =
+	'grid size-11 cursor-pointer place-items-center rounded-full border border-line-strong text-lg leading-none text-foreground hover:border-green';
+---
+
+{total > 0 && (
+	<section
+		aria-labelledby="testimonials-title"
+		aria-roledescription={isCarousel ? carousel : undefined}
+		data-carousel={isCarousel ? '' : undefined}
+		class="page-width grid gap-8 py-[clamp(5rem,10vw,8rem)]"
+	>
+		<h2 id="testimonials-title" class="label font-body">
+			{title}
+		</h2>
+
+		{/* Hidden until the script runs: without JS, the strip slides on its own. */}
+		{isCarousel && (
+			<div hidden data-controls class="flex items-center gap-3">
+				<button type="button" aria-label={previous} data-previous class={arrow}>
+					←
+				</button>
+				<p
+					aria-live="polite"
+					data-position
+					class="min-w-[4.5ch] text-center text-sm text-foreground-secondary tabular-nums"
+				>
+					1 {of} {total}
+				</p>
+				<button type="button" aria-label={next} data-next class={arrow}>
+					→
+				</button>
+				{/* The time left to read the current one. Read by the eye only; with reduced motion,
+					    nothing passes by itself, so it has nothing to show. */}
+				<span
+					aria-hidden="true"
+					class="relative ml-2 h-0.5 w-24 bg-line-strong motion-reduce:hidden"
+				>
+					<span data-time class="absolute inset-0 origin-left scale-x-0 bg-green" />
+				</span>
+			</div>
+		)}
+
+		{/* The strip is as tall as the longest Testimonial, so the page does not jump. It can take
+			    focus, so the keyboard scrolls it too. */}
+		<div
+			data-strip
+			tabindex={isCarousel ? 0 : undefined}
+			role={isCarousel ? 'group' : undefined}
+			aria-label={isCarousel ? strip : undefined}
+			class="grid snap-x snap-mandatory auto-cols-[100%] grid-flow-col items-start gap-4 overflow-x-auto overscroll-x-contain"
+		>
+			{testimonials.map(({ firstName, role, company, text, translated: isTranslation }, k) => (
+				<figure
+					aria-roledescription={isCarousel ? slide : undefined}
+					aria-label={isCarousel ? `${k + 1} ${of} ${total}` : undefined}
+					data-seconds={readingSeconds(text)}
+					class="grid max-w-4xl snap-start content-start gap-6 border-t-2 border-green pt-6"
+				>
+					<blockquote class="grid gap-3 font-heading text-[clamp(1.25rem,2.2vw,1.6rem)] leading-[1.45]">
+						{text.map((paragraph) => (
+							<p>{withNonBreakingSpaces(paragraph)}</p>
+						))}
+					</blockquote>
+					<figcaption class="grid justify-items-start gap-1 text-sm text-foreground-secondary">
+						<p>
+							<span class="font-medium text-foreground">{firstName}</span> · {role} · {company}
+						</p>
+						{isTranslation && <p>{translated}</p>}
+						<a
+							href={values.malt}
+							class="inline-flex min-h-6 items-center underline underline-offset-3 hover:text-foreground"
+						>
+							{malt}
+						</a>
+					</figcaption>
+				</figure>
+			))}
+		</div>
+	</section>
+)}
