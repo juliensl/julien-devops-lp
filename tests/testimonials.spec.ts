@@ -322,6 +322,18 @@ test.describe('the carousel, in French', () => {
 		await passing(page, false);
 	});
 
+	test('with the keyboard, each Malt link brings its Testimonial into view, and the indicator follows', async ({
+		page,
+	}) => {
+		await openCarousel(page);
+		await arrow(page, 'Témoignage suivant').focus();
+		await page.keyboard.press('Tab');
+		await page.keyboard.press('Tab');
+		await expect(carousel(page).getByRole('link', { name: 'Voir sur Malt' }).nth(1)).toBeFocused();
+		await expect.poll(() => shown(page)).toBe(1);
+		await expect(position(page, 2)).toBeVisible();
+	});
+
 	test.describe('without JavaScript', () => {
 		test.use({ javaScriptEnabled: false });
 

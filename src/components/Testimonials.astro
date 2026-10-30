@@ -65,11 +65,11 @@ const arrow =
 			</div>
 		)}
 
-		{/* As tall as the longest Testimonial, so the page does not jump. It takes focus, so the
-		    keyboard scrolls it too. */}
+		{/* As tall as the longest Testimonial, so the page does not jump. It takes no focus: taller
+		    than a small screen, it would end up under the header. The keyboard reaches each
+		    Testimonial through its Malt link, which slides it into view. */}
 		<div
 			data-strip
-			tabindex={isCarousel ? 0 : undefined}
 			role={isCarousel ? 'group' : undefined}
 			aria-label={isCarousel ? strip : undefined}
 			class="grid snap-x snap-mandatory auto-cols-[100%] grid-flow-col items-start gap-4 overflow-x-auto overscroll-x-contain"
