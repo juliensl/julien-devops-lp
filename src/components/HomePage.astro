@@ -8,6 +8,7 @@ import { dictionaries } from '../i18n';
 import Base from '../layouts/Base.astro';
 import AboutJulien from './AboutJulien.astro';
 import CloudChart from './CloudChart.astro';
+import DottedInfinity from './DottedInfinity.astro';
 import FinalCta from './FinalCta';
 import Guarantee from './Guarantee';
 import Hero from './Hero';
@@ -38,6 +39,7 @@ const t = dictionaries[language];
 		<TopDots />
 		{/* The pause button is the first focus after the header: it stops everything before reading. */}
 		<PauseButton {...t.animation} />
+		<DottedInfinity />
 
 		<Hero
 			designation={t.designation}
