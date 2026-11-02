@@ -4,10 +4,7 @@ import { inEachBuild } from './builds';
 import { LANGUAGES } from './expected';
 import { isMoving, look, type Box } from './screen-canvas';
 
-/**
- * Where the ∞ draws, on screen, and `more` px around: its box, with room for the points that spill out
- * sideways and above it. Its points stay above 85 % of the box's height; the branch leaves it from below.
- */
+/** Where the ∞ draws, plus `more` px: its box and some room, down to 92 % (its points stay above 85 %). */
 async function infinityArea(page: Page, more = 0): Promise<Box> {
 	const { x, y, width, height } = (await page.locator('[data-infinity]').boundingBox())!;
 	const room = 48 + more;
@@ -21,10 +18,7 @@ async function drawnOutsideInfinity(page: Page) {
 	return { outside: count - drawnIn[0], nextToIt: drawnIn[1] - drawnIn[0] };
 }
 
-/**
- * Opens the page with its clock in the test's hands: `draw` then runs the page's frames a quarter of a
- * second apart, so the branch catches up with the scroll at once, whatever the browser's frame rate.
- */
+/** Opens the page with its clock in the test's hands, so `draw` runs its frames as fast as the browser can. */
 async function openWithClock(page: Page, path: string) {
 	await page.clock.install();
 	await page.goto(path);
@@ -200,8 +194,7 @@ inEachBuild((build) => {
 				}
 			});
 
-			// Paused, the canvas holds still at each place once the branch has followed the scroll. The steps
-			// are shorter than the growth line, so each part is seen once grown, with its tip and its leaves.
+			// Paused, so each place holds still; steps shorter than the growth line see every part once grown.
 			for (const width of [375, 1024, 1440]) {
 				test(`at ${width} px, as it grows down the whole page, it never shows behind text or controls, and no JS error`, async ({
 					page,

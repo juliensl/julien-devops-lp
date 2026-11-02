@@ -3,10 +3,7 @@ import type { Page } from '@playwright/test';
 
 export type Box = { x: number; y: number; width: number; height: number };
 
-/**
- * What the canvas covering the screen shows: where it drew, a pixel fingerprint, how many pixels it drew in all
- * and inside each of `regions` (screen boxes), and the text and controls drawn behind.
- */
+/** What the full-screen canvas shows: where and how much it drew, also inside `regions`, and the text behind. */
 export function look(page: Page, { checkText = false, regions = [] as Box[] } = {}) {
 	return page.evaluate(
 		({ checkText, regions }) => {

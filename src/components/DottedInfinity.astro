@@ -1,6 +1,5 @@
 ---
-// The dotted ∞, drawn in the Hero's `[data-infinity]` box, and its branch down the page, on one canvas fixed
-// behind the content.
+// The dotted ∞ in the Hero's `[data-infinity]` box and its branch down the page, on one canvas behind the content.
 ---
 
 <canvas
@@ -47,12 +46,8 @@
 		const purpleLine = styles.getPropertyValue('--color-element-purple').trim();
 		const greenLine = styles.getPropertyValue('--color-element-green').trim();
 		const [purple, green] = [glow(purpleLine), glow(greenLine)];
-		const branch = createBranch(
-			main,
-			{ purple, green, white: glow('#ffffff') },
-			purpleLine,
-			greenLine,
-		);
+		const white = glow('#ffffff');
+		const branch = createBranch(main, { purple, green, white, purpleLine, greenLine });
 		const particles: Particle[] = Array.from({ length: POINT_COUNT }, (_, i) => ({
 			at: (i / POINT_COUNT) * TAU,
 			radius: Math.sqrt(Math.random()) * 0.08,
@@ -97,9 +92,7 @@
 		}
 
 		function layOut() {
-			const { x, y } = placement(true).project(curve(EXIT_AT));
-			const { left, top } = main.getBoundingClientRect();
-			branch.layOut({ x: x - left, y: y - top }, narrow);
+			branch.layOut(placement(true).project(curve(EXIT_AT)), narrow);
 		}
 
 		/** Draws the branch, then the ∞ over it; true if any of them is on screen. */
@@ -108,11 +101,8 @@
 			context.clearRect(0, 0, canvas.width, canvas.height);
 			const { scale, centreY, screenHeight, project } = placement();
 			const infinityOnScreen = centreY > -scale && centreY < screenHeight + scale;
-			const { left, top } = main.getBoundingClientRect();
 			const branchOnScreen = branch.draw(context, {
 				length,
-				scroll: -top,
-				left,
 				ratio,
 				screenHeight,
 				time,
@@ -208,15 +198,10 @@
 				flow += (0.22 + boost) * step;
 				branchFlow += (26 + boost * 300) * step;
 			} else boost = 0;
-			// The branch follows the scroll, also while paused, catching up in about half a second whatever the
-			// frame rate; with reduced motion, it is whole from the start.
+			// The branch follows the scroll even when paused, in about half a second at any frame rate; whole when still.
 			const target = reducedMotion.matches
 				? branch.total
-				: branch.target(
-						-main.getBoundingClientRect().top,
-						canvas.clientHeight,
-						scrollY + innerHeight >= html.scrollHeight - 2,
-					);
+				: branch.target(canvas.clientHeight, scrollY + innerHeight >= html.scrollHeight - 2);
 			length += (target - length) * (1 - 0.86 ** (Math.min(elapsed, 0.25) * 60));
 			if (reducedMotion.matches || Math.abs(target - length) < 0.5) length = target;
 			const onScreen = draw();
@@ -231,8 +216,7 @@
 		addEventListener('scroll', requestFrame, { passive: true });
 		document.addEventListener('animation', requestFrame);
 		reducedMotion.addEventListener('change', requestFrame);
-		// Laid out again and redrawn at once, before the screen shows the canvas cleared by its new size, whenever
-		// the screen, the ∞'s box or the page changes size (a pinned section, an open question).
+		// Laid out and redrawn before the next paint whenever the screen, the ∞'s box or the page changes size.
 		const resize = new ResizeObserver(() => {
 			// The canvas covers the screen: 1.5 is enough for glowing points and saves a lot of work.
 			ratio = Math.min(devicePixelRatio || 1, 1.5);

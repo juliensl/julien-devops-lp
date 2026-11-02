@@ -1,7 +1,6 @@
-// The branch: it leaves the dotted ∞'s purple loop and grows with the scroll beside the home page's sections,
-// down to the final button. DottedInfinity draws it on the ∞'s canvas, in the same style.
+// The branch out of the dotted ∞, grown with the scroll beside the home page's sections down to the final button.
 
-export type Point = { x: number; y: number };
+type Point = { x: number; y: number };
 type Sample = Point & { length: number };
 
 interface Leaf extends Point {
@@ -24,18 +23,18 @@ interface Pin {
 	stageHeight: number;
 }
 
-export interface Sprites {
+/** The glowing points, drawn once per colour, and the colours of the thin line and of the leaves. */
+interface Style {
 	purple: HTMLCanvasElement;
 	green: HTMLCanvasElement;
 	white: HTMLCanvasElement;
+	purpleLine: string;
+	greenLine: string;
 }
 
-export interface Frame {
+interface Frame {
 	/** How far the branch has grown along its route. */
 	length: number;
-	/** The scroll from the top of `main`, and `main`'s left edge on screen. */
-	scroll: number;
-	left: number;
 	ratio: number;
 	screenHeight: number;
 	time: number;
@@ -51,12 +50,7 @@ const GROWTH_LINE = 0.62;
 /** The first stretch of the branch bends to follow the ∞ as it sways and turns. */
 const JOINT = 80;
 
-export function createBranch(
-	main: HTMLElement,
-	sprites: Sprites,
-	purpleLine: string,
-	greenLine: string,
-) {
+export function createBranch(main: HTMLElement, style: Style) {
 	let samples: Sample[] = [];
 	let resting: Point[] = [];
 	let restingExit: Point = { x: 0, y: 0 };
@@ -68,7 +62,7 @@ export function createBranch(
 	let tipRadius = 9;
 	let purpleOnly = { from: Infinity, to: -1 };
 	let pins: Pin[] = [];
-	let services: { pin: Pin; length: number; cards: number } | null = null;
+	let services: { pin: Pin; length: number; cardCount: number } | null = null;
 	let steps: { pin: Pin; marks: [progress: number, length: number][] } | null = null;
 	let points = {
 		offset: new Float32Array(0),
@@ -120,11 +114,12 @@ export function createBranch(
 		return (Math.atan2(direction.y, direction.x) * 180) / Math.PI;
 	};
 
-	/** Lays the route over the page as it is now. `exit` is where it leaves the ∞ at rest, from `main`'s corner. */
-	function layOut(exit: Point, isNarrow: boolean) {
+	/** Lays the route over the page as it is now, from where it leaves the ∞ at rest, on screen. */
+	function layOut(exitOnScreen: Point, isNarrow: boolean) {
 		narrow = isNarrow;
-		restingExit = exit;
 		const origin = main.getBoundingClientRect();
+		const exit = { x: exitOnScreen.x - origin.left, y: exitOnScreen.y - origin.top };
+		restingExit = exit;
 		const measure = (e: Element) => {
 			const r = e.getBoundingClientRect();
 			return {
@@ -147,16 +142,15 @@ export function createBranch(
 				stageHeight: stage.offsetHeight,
 			};
 		});
-		// Measured as if the pinned sections took no extra scroll: what is below one moves up by its travel, and
-		// what is inside one by how far its stage has slid.
+		// Measured as if the pinned sections took no extra scroll, so the branch holds still while one is pinned.
 		const place = (e: Element) => {
 			const box = measure(e);
-			let up = 0;
+			let rise = 0;
 			for (const pin of pins) {
-				if (box.y >= pin.bottom - 1) up += pin.travel;
-				else if (e !== pin.section && pin.section.contains(e)) up += pin.slid;
+				if (box.y >= pin.bottom - 1) rise += pin.travel;
+				else if (e !== pin.section && pin.section.contains(e)) rise += pin.slid;
 			}
-			return { ...box, y: box.y - up, bottom: box.bottom - up };
+			return { ...box, y: box.y - rise, bottom: box.bottom - rise };
 		};
 
 		const width = main.clientWidth;
@@ -167,8 +161,7 @@ export function createBranch(
 		const left = Math.max(9, text.x - 34);
 		const right = width - left;
 		const leafSize = left < 40 ? 12 : 30;
-		// Where the margin is tight, the leaves towards the page point up more and the nodes are smaller, so as
-		// not to reach the text.
+		// On a tight margin, steeper leaves and smaller glows keep clear of the text.
 		const tight = text.x - left < 20;
 		tipRadius = tight ? 6 : 9;
 		const inwards = tight ? -65 : -38;
@@ -223,6 +216,8 @@ export function createBranch(
 		let stepsEntry: Point | null = null;
 		let stepsExit: Point | null = null;
 		let purpleStretch: Point[] = [];
+		let servicesPin: Pin | undefined;
+		let stepsPin: Pin | undefined;
 		for (const section of sections.slice(1, -1)) {
 			const at = place(section);
 			const first = place(section.firstElementChild ?? section);
@@ -230,9 +225,9 @@ export function createBranch(
 
 			if (section.dataset.section === 'services') {
 				const cards = [...section.querySelectorAll('[data-card]')].map(place);
+				servicesPin = pin;
 				if (pin) {
-					// Pinned: beside the title, with a leaf per card that grows as the card arrives. Once the cards
-					// have passed, under the title and down the right margin.
+					// Pinned: beside the title, a leaf per card; once the cards have passed, under the title and down.
 					const title = place(section.querySelector('h2')!.parentElement!);
 					for (let k = 0; k < cards.length; k++) {
 						const point = down(title.y + 8 + (k * (title.height - 8)) / (cards.length - 1));
@@ -257,6 +252,7 @@ export function createBranch(
 
 			if (section.dataset.section === 'steps') {
 				// Along the stairs, with a node over each number, or down the margin beside them.
+				stepsPin = pin;
 				const heading = place(section.querySelector('h2')!);
 				if (offMargin()) across((at.y + heading.y) / 2, left);
 				stepsEntry = down(heading.bottom + 14, left);
@@ -297,16 +293,14 @@ export function createBranch(
 			}
 
 			if (section.dataset.section === 'about') {
-				// Purple only: half round the photo's top arch, then down beside it, or down the right margin when the
-				// text is under it. A leaf on top of the arch, another halfway down beside the photo.
+				// Purple only: half round the photo's arch, then down beside it, or the right margin if the text is below.
 				const image = section.querySelector('img')!;
 				const photo = place(image);
 				const textBelow = place(image.nextElementSibling!).y > photo.y + photo.height / 2;
 				const radius = photo.width / 2 + 16;
 				const centreX = photo.x + photo.width / 2;
 				const centreY = photo.y + photo.width / 2;
-				// Down the margin to the height of the arch's top, so as not to wander towards the text above, then to
-				// the photo's side.
+				// Down the margin first, so as not to drift towards the text above.
 				down(centreY - radius);
 				down(centreY, centreX - radius);
 				const arch = last();
@@ -372,16 +366,14 @@ export function createBranch(
 			? { from: lengthAt(purpleStretch[0]), to: lengthAt(purpleStretch[1]) }
 			: { from: Infinity, to: -1 };
 
-		const servicesPin = pins.find((p) => p.section.dataset.section === 'services');
 		services =
 			servicesPin && titleEnd
 				? {
 						pin: servicesPin,
 						length: lengthAt(titleEnd),
-						cards: leaves.filter((l) => l.card !== undefined).length,
+						cardCount: leaves.filter((l) => l.card !== undefined).length,
 					}
 				: null;
-		const stepsPin = pins.find((p) => p.section.dataset.section === 'steps');
 		steps =
 			stepsPin && stepsEntry && stepsExit
 				? {
@@ -416,9 +408,10 @@ export function createBranch(
 		return marks[marks.length - 1][1];
 	}
 
-	/** How far the branch should have grown at this scroll: whole at the bottom of the page. */
-	function target(scroll: number, screenHeight: number, atBottom: boolean) {
+	/** How far the branch should have grown at the current scroll: whole at the bottom of the page. */
+	function target(screenHeight: number, atBottom: boolean) {
 		if (atBottom) return total;
+		const scroll = -main.getBoundingClientRect().top;
 		const line = virtual(scroll) + screenHeight * GROWTH_LINE;
 		let length = 0;
 		for (const sample of samples) {
@@ -430,8 +423,7 @@ export function createBranch(
 			length = Math.min(length, services.length);
 		if (steps && scroll < steps.pin.start + steps.pin.travel)
 			length = Math.min(length, alongSteps(progress(scroll, steps.pin)));
-		// At the top of the page, the ∞ alone: the Hero's stretch grows with the first scroll, until the growth
-		// line reaches its end.
+		// At the top only the ∞: the Hero's stretch grows with the first scroll, up to where the growth line takes over.
 		const reach = Math.max(
 			hero.endY - screenHeight * GROWTH_LINE - hero.topScroll,
 			screenHeight * 0.25,
@@ -444,9 +436,10 @@ export function createBranch(
 	/** Draws the branch as far as it has grown; true if any of it is on screen. */
 	function draw(context: CanvasRenderingContext2D, frame: Frame) {
 		const { length, ratio, time, flow } = frame;
-		const scroll = virtual(frame.scroll);
+		const { left, top: mainTop } = main.getBoundingClientRect();
+		const scroll = virtual(-mainTop);
 		if (frame.exit && resting.length) {
-			const dx = frame.exit.x - frame.left - restingExit.x;
+			const dx = frame.exit.x - left - restingExit.x;
 			const dy = frame.exit.y + scroll - restingExit.y;
 			for (let i = 0; i < resting.length; i++) {
 				const k = 1 - samples[i].length / JOINT;
@@ -454,14 +447,14 @@ export function createBranch(
 				samples[i].y = resting[i].y + dy * k;
 			}
 		}
-		context.setTransform(ratio, 0, 0, ratio, frame.left * ratio, -scroll * ratio);
+		context.setTransform(ratio, 0, 0, ratio, left * ratio, -scroll * ratio);
 		const [top, bottom] = [scroll - 40, scroll + frame.screenHeight + 40];
 		const seen = (y: number) => y > top && y < bottom;
 
 		// A thin line, and points that flow along it in a helix.
 		context.globalCompositeOperation = 'source-over';
 		context.globalAlpha = 0.28;
-		context.strokeStyle = purpleLine;
+		context.strokeStyle = style.purpleLine;
 		context.lineWidth = 1.2;
 		context.beginPath();
 		let drawing = false;
@@ -505,7 +498,7 @@ export function createBranch(
 			const purpleHere = s > purpleOnly.from && s < purpleOnly.to;
 			context.globalAlpha = (0.55 + depth * 0.35) * Math.min(s / 40, 1);
 			context.drawImage(
-				green[i] && !purpleHere ? sprites.green : sprites.purple,
+				green[i] && !purpleHere ? style.green : style.purple,
 				point.x - direction.y * away - size,
 				point.y + direction.x * away - size,
 				size * 2,
@@ -518,30 +511,18 @@ export function createBranch(
 			if (node.length > length || !seen(node.y)) continue;
 			const glow = (Math.min((length - node.length) / 30, 1) * nodeRadius) / 12;
 			context.globalAlpha = 0.95;
-			context.drawImage(
-				sprites.purple,
-				node.x - 12 * glow,
-				node.y - 12 * glow,
-				24 * glow,
-				24 * glow,
-			);
-			context.drawImage(
-				sprites.white,
-				node.x - 3.5 * glow,
-				node.y - 3.5 * glow,
-				7 * glow,
-				7 * glow,
-			);
+			context.drawImage(style.purple, node.x - 12 * glow, node.y - 12 * glow, 24 * glow, 24 * glow);
+			context.drawImage(style.white, node.x - 3.5 * glow, node.y - 3.5 * glow, 7 * glow, 7 * glow);
 		}
 
 		// The leaves grow as the tip passes them; in the pinned Services, as their card arrives.
-		const cards = services ? progress(frame.scroll, services.pin) * (services.cards - 1) : 0;
+		const cardsPassed = services ? progress(-mainTop, services.pin) * (services.cardCount - 1) : 0;
 		for (const leaf of leaves) {
 			if (leaf.length > length || !seen(leaf.y)) continue;
-			let g = length >= total - 0.5 ? 1 : Math.min((length - leaf.length) / 60, 1);
+			let grown = length >= total - 0.5 ? 1 : Math.min((length - leaf.length) / 60, 1);
 			if (leaf.card !== undefined && services)
-				g = Math.min(Math.max((cards - leaf.card) * 2 + 1, 0), 1);
-			if (g > 0) drawLeaf(context, leaf, 1 - (1 - g) ** 2, time);
+				grown = Math.min(Math.max((cardsPassed - leaf.card) * 2 + 1, 0), 1);
+			if (grown > 0) drawLeaf(context, leaf, 1 - (1 - grown) ** 2, time);
 		}
 
 		// The tip, while it grows.
@@ -549,8 +530,8 @@ export function createBranch(
 			const tip = pointAt(length);
 			context.globalAlpha = 0.9;
 			const [r, core] = [tipRadius, tipRadius / 3];
-			context.drawImage(sprites.green, tip.x - r, tip.y - r, r * 2, r * 2);
-			context.drawImage(sprites.white, tip.x - core, tip.y - core, core * 2, core * 2);
+			context.drawImage(style.green, tip.x - r, tip.y - r, r * 2, r * 2);
+			context.drawImage(style.white, tip.x - core, tip.y - core, core * 2, core * 2);
 		}
 		return true;
 	}
@@ -565,7 +546,7 @@ export function createBranch(
 		context.rotate(((leaf.angle + sway) * Math.PI) / 180);
 		context.globalCompositeOperation = 'source-over';
 		context.globalAlpha = 0.16;
-		context.fillStyle = greenLine;
+		context.fillStyle = style.greenLine;
 		context.beginPath();
 		context.moveTo(0, 0);
 		context.quadraticCurveTo(length / 2, -width * 1.4, length, 0);
@@ -579,15 +560,15 @@ export function createBranch(
 			const x = u * length;
 			const y = width * Math.sin(Math.PI * u) ** 0.8;
 			context.globalAlpha = 0.8;
-			context.drawImage(sprites.green, x - size, -y - size, size * 2, size * 2);
-			context.drawImage(sprites.green, x - size, y - size, size * 2, size * 2);
+			context.drawImage(style.green, x - size, -y - size, size * 2, size * 2);
+			context.drawImage(style.green, x - size, y - size, size * 2, size * 2);
 			if (k % 2) {
 				context.globalAlpha = 0.45;
-				context.drawImage(sprites.green, x - size * 0.8, -size * 0.8, size * 1.6, size * 1.6);
+				context.drawImage(style.green, x - size * 0.8, -size * 0.8, size * 1.6, size * 1.6);
 			}
 		}
 		context.globalAlpha = 0.9;
-		context.drawImage(sprites.green, length - 2.5, -2.5, 5, 5);
+		context.drawImage(style.green, length - 2.5, -2.5, 5, 5);
 		context.restore();
 	}
 
@@ -601,8 +582,7 @@ export function createBranch(
 	};
 }
 
-/** A smooth curve through the points (Catmull-Rom, tangents at most a third of each stretch), sampled with the
-    length along it. */
+/** A smooth curve through the points (Catmull-Rom, tangents capped), sampled with the length along it. */
 function sampled(points: Point[]) {
 	const tangent = (a: Point, c: Point, max: number) => {
 		const [x, y] = [(c.x - a.x) / 6, (c.y - a.y) / 6];
