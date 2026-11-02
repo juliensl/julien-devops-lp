@@ -129,7 +129,7 @@ _Avoid_: original language
 **Legal information**:
 The page that identifies Julien as a provider: name, status, registration, address and contact details.
 _Portuguese_: Informação legal
-_Avoid_: legal notice, mentions légales (only as the French title), terms and conditions
+_Avoid_: legal notice, mentions légales (only as the English and French titles), terms and conditions
 
 **Privacy policy**:
 The page that explains which personal data of Visitors, CTOs and Testimonial authors is processed, by whom and what for.

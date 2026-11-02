@@ -1,5 +1,6 @@
 import type { AudienceId } from '../config/audiences';
 import { PREFIXES, type Language } from '../config/site';
+import type { LegalPageId } from './legal';
 
 /** The questions page («Os teus desafios») in a language, at an audience's anchor if given. */
 export function questionsPath(language: Language, audience?: AudienceId): string {
@@ -22,4 +23,9 @@ export function pathInLanguage(path: string, from: Language, to: Language): stri
 /** The ecology page in a language. */
 export function ecologyPath(language: Language): string {
 	return `${PREFIXES[language]}ecology/`;
+}
+
+/** A legal page in a language: `/pt/legal/` or `/pt/privacy/`. */
+export function legalPath(language: Language, page: LegalPageId): string {
+	return `${PREFIXES[language]}${page}/`;
 }
