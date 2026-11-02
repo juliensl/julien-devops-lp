@@ -2,7 +2,7 @@
 // Guarantee, "Quem é o Julien" and the final CTA.
 import { expect, test } from '@playwright/test';
 import { inEachBuild } from './builds';
-import { LANGUAGES, NAME, BOOKING_PAGE, type Language } from './expected';
+import { LANGUAGES, LINKEDIN, NAME, BOOKING_PAGE, type Language } from './expected';
 
 // The expected values, taken from the spec (#54). In Portuguese, the approved texts are exactly as
 // the spec gives them; French and English are translations the intern reviews before the Commercial
@@ -50,6 +50,7 @@ const EXPECTED = {
 			title: 'Quem é o Julien',
 			wayOfWorking:
 				'Trabalho à distância, em português, francês e inglês. Uso tecnologias standard, sem lock-in, e documento tudo para a tua equipa ficar autónoma.',
+			linkedin: 'Ver o meu perfil no LinkedIn',
 		},
 		finalCta: {
 			title: 'Nunca perdes a infraestrutura.',
@@ -103,6 +104,7 @@ const EXPECTED = {
 			title: 'Qui est Julien',
 			wayOfWorking:
 				"Je travaille à distance, en portugais, en français et en anglais. J'utilise des technologies standard, sans lock-in, et je documente tout pour que ton équipe soit autonome.",
+			linkedin: 'Voir mon profil LinkedIn',
 		},
 		finalCta: {
 			title: "Tu ne perds jamais l'infrastructure.",
@@ -152,6 +154,7 @@ const EXPECTED = {
 			title: 'Who is Julien',
 			wayOfWorking:
 				'I work remotely, in Portuguese, French and English. I use standard technologies, with no lock-in, and document everything so your team can run on its own.',
+			linkedin: 'See my LinkedIn profile',
 		},
 		finalCta: {
 			title: 'You never lose the infrastructure.',
@@ -264,7 +267,7 @@ inEachBuild((build) => {
 				expect(tip.width / barWidth).toBeLessThan(0.02);
 			});
 
-			test(`"${about.title}": the photo, the name, the Designation and the way of working`, async ({
+			test(`"${about.title}": the photo, the name, the Designation, the way of working and LinkedIn`, async ({
 				page,
 			}) => {
 				const images = new Map<string, string>();
@@ -278,6 +281,9 @@ inEachBuild((build) => {
 				await expect(section.getByText(NAME, { exact: true })).toBeVisible();
 				await expect(section.getByText(designation, { exact: true })).toBeVisible();
 				await expect(section.getByText(about.wayOfWorking, { exact: true })).toBeVisible();
+				await expect(
+					section.getByRole('link', { name: about.linkedin, exact: true }),
+				).toHaveAttribute('href', LINKEDIN);
 
 				// Far from the top: the photo is only requested when it is reached.
 				const photo = section.getByRole('img', { name: NAME, exact: true });

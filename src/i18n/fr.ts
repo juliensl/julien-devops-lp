@@ -416,6 +416,7 @@ export const fr: Dictionary = {
 			title: 'Qui est Julien',
 			wayOfWorking:
 				"Je travaille à distance, en portugais, en français et en anglais. J'utilise des technologies standard, sans lock-in, et je documente tout pour que ton équipe soit autonome.",
+			linkedin: 'Voir mon profil LinkedIn',
 		},
 		testimonials: {
 			title: 'Ce que disent les clients',

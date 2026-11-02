@@ -472,6 +472,7 @@ export const pt = {
 			title: 'Quem é o Julien',
 			wayOfWorking:
 				'Trabalho à distância, em português, francês e inglês. Uso tecnologias standard, sem lock-in, e documento tudo para a tua equipa ficar autónoma.',
+			linkedin: 'Ver o meu perfil no LinkedIn',
 		},
 		/** The Testimonials. Their texts, authors and approvals are in src/config/testimonials.ts. */
 		testimonials: {
