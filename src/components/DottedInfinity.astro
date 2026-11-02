@@ -1,0 +1,216 @@
+---
+// The dotted ∞, drawn in the Hero's `[data-infinity]` box on one canvas fixed over the screen, behind
+// the content. Still when paused or with reduced motion.
+---
+
+<canvas
+	aria-hidden="true"
+	data-dotted-infinity
+	class="pointer-events-none fixed inset-0 -z-1 size-full"
+></canvas>
+
+<script>
+	import { afterLoad } from '../scripts/after-load';
+	import { glow } from '../scripts/glow';
+
+	type Point = [x: number, y: number, z: number];
+
+	interface Particle {
+		/** Where it starts on the curve, in radians. */
+		at: number;
+		/** How far it strays from the curve as it spins around it, and where its spin starts. */
+		radius: number;
+		phase: number;
+		/** Its speed and size, relative to the others. */
+		speed: number;
+		size: number;
+	}
+
+	const TAU = Math.PI * 2;
+
+	afterLoad(() => {
+		const canvas = document.querySelector<HTMLCanvasElement>('[data-dotted-infinity]');
+		const box = document.querySelector<HTMLElement>('[data-infinity]');
+		if (canvas && box) start(canvas, box);
+	});
+
+	function start(canvas: HTMLCanvasElement, box: HTMLElement) {
+		const context = canvas.getContext('2d')!;
+		const html = document.documentElement;
+		const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+		const styles = getComputedStyle(canvas);
+		const purpleLine = styles.getPropertyValue('--color-element-purple').trim();
+		const greenLine = styles.getPropertyValue('--color-element-green').trim();
+		const [purple, green] = [glow(purpleLine), glow(greenLine)];
+		const particles: Particle[] = Array.from({ length: 340 }, (_, i) => ({
+			at: (i / 340) * TAU,
+			radius: Math.sqrt(Math.random()) * 0.08,
+			phase: Math.random() * TAU,
+			speed: 0.75 + Math.random() * 0.5,
+			size: 0.55 + Math.random() * 0.95,
+		}));
+
+		let ratio = 1;
+		let small = false;
+		let nearScreen = false;
+		let cleared = true;
+		let pendingFrame = 0;
+		let lastFrame = 0;
+		let lastScroll = scrollY;
+		let time = 0;
+		/** How far the points have flowed along the curve, and the extra speed scrolling gives them. */
+		let flow = 0;
+		let boost = 0;
+		const moving = () => !reducedMotion.matches && html.dataset.animation !== 'paused';
+
+		function draw() {
+			context.setTransform(ratio, 0, 0, ratio, 0, 0);
+			context.clearRect(0, 0, canvas.width, canvas.height);
+			const { left, top, width, height } = box.getBoundingClientRect();
+			const scale = width * (small ? 0.44 : 0.5);
+			const centreX = left + width / 2;
+			const centreY = top + height / 2;
+			const screenHeight = canvas.clientHeight;
+			if (centreY < -scale || centreY > screenHeight + scale) return;
+
+			// It turns a little as it rises above the middle of the screen, and sways while it flows.
+			const risen = reducedMotion.matches
+				? 0
+				: Math.min(Math.max((screenHeight / 2 - centreY) / (screenHeight * 0.6), 0), 1);
+			const yaw = -0.4 + risen * 0.6 + 0.12 * Math.sin(time * 0.35);
+			const pitch = 0.5 + risen * 0.3;
+			const project = (point: Point) => {
+				const [x, y, depth, perspective] = projected(point, pitch, yaw);
+				return [centreX + x * scale, centreY + y * scale, depth, perspective];
+			};
+
+			// Faint thin lines give the shape: the left loop purple, the right one green.
+			context.globalCompositeOperation = 'source-over';
+			context.globalAlpha = 0.22;
+			context.lineWidth = 1;
+			for (const [from, color] of [
+				[Math.PI / 2, purpleLine],
+				[-Math.PI / 2, greenLine],
+			] as const) {
+				context.beginPath();
+				for (let i = 0; i <= 90; i++) {
+					const [x, y] = project(curve(from + (i / 90) * Math.PI));
+					context.lineTo(x, y);
+				}
+				context.strokeStyle = color;
+				context.stroke();
+			}
+
+			// The points flow along the curve, each spinning around it, and take the color of the
+			// loop they are in: they blend as they cross the middle.
+			context.globalCompositeOperation = 'lighter';
+			const baseSize = scale * 0.026;
+			for (let i = 0; i < particles.length; i++) {
+				if (small && i % 3 === 2) continue;
+				const { at, radius, phase, speed, size } = particles[i];
+				const t = at + flow * speed;
+				const [x, y, z] = curve(t);
+				const ahead = curve(t + 0.002);
+				// The tangent, and two normals to move the point off the curve.
+				const length = Math.hypot(ahead[0] - x, ahead[1] - y, ahead[2] - z) || 1;
+				const [tx, ty, tz] = [
+					(ahead[0] - x) / length,
+					(ahead[1] - y) / length,
+					(ahead[2] - z) / length,
+				];
+				const flat = Math.hypot(tx, ty) || 1;
+				const [nx, ny] = [-ty / flat, tx / flat];
+				const angle = phase + flow * 0.6;
+				const along = Math.cos(angle) * radius;
+				const across = Math.sin(angle) * radius;
+				const [px, py, depth, perspective] = project([
+					x + along * nx - across * tz * ny,
+					y + along * ny + across * tz * nx,
+					z + across * (tx * ny - ty * nx),
+				]);
+				const nearness = Math.min(Math.max(0.3 + (depth + 1.2) * 0.32, 0.2), 1);
+				const radiusOnScreen = baseSize * size * perspective;
+				const greenShare = Math.min(Math.max((x + 0.12) / 0.24, 0), 1);
+				for (const [sprite, share] of [
+					[purple, 1 - greenShare],
+					[green, greenShare],
+				] as const) {
+					if (share < 0.02) continue;
+					context.globalAlpha = nearness * share;
+					context.drawImage(
+						sprite,
+						px - radiusOnScreen,
+						py - radiusOnScreen,
+						radiusOnScreen * 2,
+						radiusOnScreen * 2,
+					);
+				}
+			}
+			context.globalAlpha = 1;
+			cleared = false;
+		}
+
+		function frame(now: number) {
+			pendingFrame = 0;
+			const scrolled = Math.abs(scrollY - lastScroll);
+			lastScroll = scrollY;
+			if (!nearScreen) {
+				if (!cleared) context.clearRect(0, 0, canvas.width, canvas.height);
+				cleared = true;
+				lastFrame = 0;
+				return;
+			}
+			const running = moving();
+			if (running) {
+				const elapsed = lastFrame ? Math.min((now - lastFrame) / 1000, 0.05) : 0;
+				boost = (boost + scrolled * 0.003) * 0.04 ** elapsed;
+				time += elapsed;
+				flow += (0.22 + boost) * elapsed;
+			} else boost = 0;
+			lastFrame = running ? now : 0;
+			draw();
+			if (running) requestFrame();
+		}
+		function requestFrame() {
+			pendingFrame ||= requestAnimationFrame(frame);
+		}
+
+		// Paused or still, it is only redrawn when the page moves under it.
+		addEventListener('scroll', requestFrame, { passive: true });
+		document.addEventListener('animation', requestFrame);
+		reducedMotion.addEventListener('change', requestFrame);
+		new IntersectionObserver(
+			([entry]) => {
+				nearScreen = entry.isIntersecting;
+				requestFrame();
+			},
+			{ rootMargin: '200px' },
+		).observe(box);
+		new ResizeObserver(() => {
+			// The canvas covers the screen: 1.5 is enough for glowing points and saves a lot of work.
+			ratio = Math.min(devicePixelRatio || 1, 1.5);
+			small = innerWidth < 700;
+			canvas.width = Math.round(canvas.clientWidth * ratio);
+			canvas.height = Math.round(canvas.clientHeight * ratio);
+			requestFrame();
+		}).observe(canvas);
+	}
+
+	/** A lemniscate of Bernoulli with depth: its two loops cross at different heights. */
+	function curve(t: number): Point {
+		const sin = Math.sin(t);
+		const cos = Math.cos(t);
+		const d = 1 + sin * sin;
+		return [cos / d, (sin * cos) / d, 0.3 * sin];
+	}
+
+	/** Turns a point around the vertical axis, then the horizontal one, with perspective. */
+	function projected([x, y, z]: Point, pitch: number, yaw: number) {
+		const turnedX = x * Math.cos(yaw) + z * Math.sin(yaw);
+		const turnedZ = -x * Math.sin(yaw) + z * Math.cos(yaw);
+		const tiltedY = y * Math.cos(pitch) - turnedZ * Math.sin(pitch);
+		const depth = y * Math.sin(pitch) + turnedZ * Math.cos(pitch);
+		const perspective = 3 / (3 - depth);
+		return [turnedX * perspective, tiltedY * perspective, depth, perspective];
+	}
+</script>
