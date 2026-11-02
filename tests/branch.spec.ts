@@ -194,31 +194,39 @@ inEachBuild((build) => {
 				}
 			});
 
-			// Paused, so each place holds still; steps shorter than the growth line see every part once grown.
-			for (const width of [375, 1024, 1440]) {
-				test(`at ${width} px, as it grows down the whole page, it never shows behind text or controls, and no JS error`, async ({
+			test.describe('in Chromium', () => {
+				// The branch's geometry is the same in every browser; these walks are long in WebKit.
+				test.skip(
+					({ browserName }) => browserName !== 'chromium',
+					'the walks run in Chromium only',
+				);
+
+				// Paused, so each place holds still; steps shorter than the growth line see every part once grown.
+				for (const width of [375, 1024, 1440]) {
+					test(`at ${width} px, as it grows down the whole page, it never shows behind text or controls, and no JS error`, async ({
+						page,
+					}) => {
+						// Some 30 places down the page, each read whole.
+						test.slow();
+						const errors = collectErrors(page);
+						await page.setViewportSize({ width, height: 800 });
+						await openWithClock(page, prefix);
+						await pauseButton(page, pause).click();
+						await expectNothingBehindText(page, 0.55 * 800);
+						expect(errors).toEqual([]);
+					});
+				}
+
+				test('at 768 px, with reduced motion, the whole branch never shows behind text or controls, and no JS error', async ({
 					page,
 				}) => {
-					// Some 30 places down the page, each read whole.
-					test.slow();
 					const errors = collectErrors(page);
-					await page.setViewportSize({ width, height: 800 });
+					await page.emulateMedia({ reducedMotion: 'reduce' });
+					await page.setViewportSize({ width: 768, height: 800 });
 					await openWithClock(page, prefix);
-					await pauseButton(page, pause).click();
-					await expectNothingBehindText(page, 0.55 * 800);
+					await expectNothingBehindText(page, 0.9 * 800);
 					expect(errors).toEqual([]);
 				});
-			}
-
-			test('at 768 px, with reduced motion, the whole branch never shows behind text or controls, and no JS error', async ({
-				page,
-			}) => {
-				const errors = collectErrors(page);
-				await page.emulateMedia({ reducedMotion: 'reduce' });
-				await page.setViewportSize({ width: 768, height: 800 });
-				await openWithClock(page, prefix);
-				await expectNothingBehindText(page, 0.9 * 800);
-				expect(errors).toEqual([]);
 			});
 
 			for (const width of [1024, 1440]) {
