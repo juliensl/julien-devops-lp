@@ -64,6 +64,8 @@ export function createBranch(
 	let hero = { length: 0, endY: 0, topScroll: 0 };
 	let leaves: Leaf[] = [];
 	let nodes: Sample[] = [];
+	let nodeRadius = 12;
+	let tipRadius = 9;
 	let purpleOnly = { from: Infinity, to: -1 };
 	let pins: Pin[] = [];
 	let services: { pin: Pin; length: number; cards: number } | null = null;
@@ -165,6 +167,12 @@ export function createBranch(
 		const left = Math.max(9, text.x - 34);
 		const right = width - left;
 		const leafSize = left < 40 ? 12 : 30;
+		// Where the margin is tight, the leaves towards the page point up more and the nodes are smaller, so as
+		// not to reach the text.
+		const tight = text.x - left < 20;
+		tipRadius = tight ? 6 : 9;
+		const inwards = tight ? -65 : -38;
+		const towardsPage = (onRight: boolean) => (onRight ? -180 - inwards : inwards);
 
 		const route: Point[] = [exit];
 		const wanted: { near: Point; angle: number; size: number; card?: number; along?: boolean }[] =
@@ -172,7 +180,7 @@ export function createBranch(
 		const nodesAt: Point[] = [];
 		const last = () => route[route.length - 1];
 		// Down to `y` at `x`, in a slight wave.
-		const wave = Math.min(7, left - 4);
+		const wave = Math.min(7, left - 4, text.x - left - 8);
 		const down = (y: number, x = last().x) => {
 			if (y - last().y > 70)
 				route.push({ x: x + (route.length % 2 ? wave : -wave), y: (last().y + y) / 2 });
@@ -180,18 +188,18 @@ export function createBranch(
 			route.push(point);
 			return point;
 		};
-		// Across to `x`, at `y`.
-		const across = (y: number, x: number) => {
+		// Across to `x`, at `y`, turning within `turn` px above and below it.
+		const across = (y: number, x: number, turn = 40) => {
 			const from = last();
-			if (y - 40 > from.y) down(y - 40);
+			if (y - turn > from.y) down(y - turn);
 			const side = Math.sign(x - from.x);
-			route.push({ x: from.x + side * 50, y }, { x: x - side * 50, y }, { x, y: y + 40 });
+			route.push({ x: from.x + side * 50, y }, { x: x - side * 50, y }, { x, y: y + turn });
 		};
 		const offMargin = () => Math.abs(last().x - left) > 12;
 		// A pair of leaves: one towards the page and, where the margin has room, one away from it.
 		const pair = (point: Point) => {
 			const onRight = point.x > width / 2;
-			wanted.push({ near: point, angle: onRight ? -142 : -38, size: leafSize });
+			wanted.push({ near: point, angle: towardsPage(onRight), size: leafSize });
 			if (left > 40)
 				wanted.push({ near: point, angle: onRight ? -32 : -148, size: leafSize * 0.8 });
 		};
@@ -228,11 +236,18 @@ export function createBranch(
 					const title = place(section.querySelector('h2')!.parentElement!);
 					for (let k = 0; k < cards.length; k++) {
 						const point = down(title.y + 8 + (k * (title.height - 8)) / (cards.length - 1));
-						wanted.push({ near: point, angle: k % 2 ? -150 : -35, size: leafSize, card: k });
+						wanted.push({
+							near: point,
+							angle: k % 2 ? -150 : towardsPage(false),
+							size: leafSize,
+							card: k,
+						});
 					}
 					titleEnd = last();
 					const track = section.querySelector('[data-track]')!;
-					across((place(track.previousElementSibling!).bottom + place(track).y) / 2, right);
+					// The gap between the title and the cards is narrow: the turns stay inside it.
+					const [above, below] = [place(track.previousElementSibling!).bottom, place(track).y];
+					across((above + below) / 2, right, Math.max((below - above) / 2 - 8, 4));
 					down(at.y + pin.stageHeight - 20);
 				} else {
 					for (const y of new Set(cards.map((card) => card.y))) pair(down(y + 20));
@@ -247,9 +262,10 @@ export function createBranch(
 				stepsEntry = down(heading.bottom + 14, left);
 				const numbers = [...section.querySelectorAll('[data-number]')].map(place);
 				const inRow = numbers[1].y < numbers[0].y + numbers[0].height;
+				nodeRadius = tight && !inRow ? 8 : 12;
 				for (const number of numbers) {
 					const node = inRow
-						? { x: number.x + 8, y: number.y - 14 }
+						? { x: number.x + 8, y: number.y - 21 }
 						: { x: left, y: number.y + 22 };
 					if (inRow) route.push(node);
 					else down(node.y);
@@ -264,7 +280,7 @@ export function createBranch(
 					wanted.push(
 						inRow
 							? { near, angle: k % 2 ? -50 : -130, size: leafSize, along: true }
-							: { near, angle: -38, size: leafSize },
+							: { near, angle: towardsPage(false), size: leafSize },
 					);
 				}
 				if (inRow) {
@@ -289,6 +305,9 @@ export function createBranch(
 				const radius = photo.width / 2 + 16;
 				const centreX = photo.x + photo.width / 2;
 				const centreY = photo.y + photo.width / 2;
+				// Down the margin to the height of the arch's top, so as not to wander towards the text above, then to
+				// the photo's side.
+				down(centreY - radius);
 				down(centreY, centreX - radius);
 				const arch = last();
 				for (let a = 1; a <= 12; a++) {
@@ -302,7 +321,7 @@ export function createBranch(
 				down(at.bottom - 30, x);
 				wanted.push({
 					near: { x, y: (besideFrom + photo.bottom) / 2 },
-					angle: textBelow ? -142 : -38,
+					angle: towardsPage(textBelow),
 					size: leafSize,
 				});
 				purpleStretch = [arch, last()];
@@ -319,10 +338,11 @@ export function createBranch(
 		const button = place(final.querySelector('a')!);
 		if (offMargin()) across(place(final).y, left);
 		const end = down(button.y + button.height / 2);
+		const [up, forwards, back] = tight ? [-60, -95, -130] : [-70, -15, -125];
 		wanted.push(
-			{ near: end, angle: -70, size: leafSize * 1.2 },
-			{ near: end, angle: -15, size: leafSize },
-			{ near: end, angle: -125, size: leafSize * 0.85 },
+			{ near: end, angle: up, size: leafSize * 1.2 },
+			{ near: end, angle: forwards, size: leafSize },
+			{ near: end, angle: back, size: leafSize * 0.85 },
 		);
 
 		samples = sampled(route);
@@ -496,10 +516,22 @@ export function createBranch(
 		// A brighter purple node over each Step, once the branch gets there.
 		for (const node of nodes) {
 			if (node.length > length || !seen(node.y)) continue;
-			const g = Math.min((length - node.length) / 30, 1);
+			const glow = (Math.min((length - node.length) / 30, 1) * nodeRadius) / 12;
 			context.globalAlpha = 0.95;
-			context.drawImage(sprites.purple, node.x - 12 * g, node.y - 12 * g, 24 * g, 24 * g);
-			context.drawImage(sprites.white, node.x - 3.5 * g, node.y - 3.5 * g, 7 * g, 7 * g);
+			context.drawImage(
+				sprites.purple,
+				node.x - 12 * glow,
+				node.y - 12 * glow,
+				24 * glow,
+				24 * glow,
+			);
+			context.drawImage(
+				sprites.white,
+				node.x - 3.5 * glow,
+				node.y - 3.5 * glow,
+				7 * glow,
+				7 * glow,
+			);
 		}
 
 		// The leaves grow as the tip passes them; in the pinned Services, as their card arrives.
@@ -516,8 +548,9 @@ export function createBranch(
 		if (length > 0 && length < total - 1) {
 			const tip = pointAt(length);
 			context.globalAlpha = 0.9;
-			context.drawImage(sprites.green, tip.x - 9, tip.y - 9, 18, 18);
-			context.drawImage(sprites.white, tip.x - 3, tip.y - 3, 6, 6);
+			const [r, core] = [tipRadius, tipRadius / 3];
+			context.drawImage(sprites.green, tip.x - r, tip.y - r, r * 2, r * 2);
+			context.drawImage(sprites.white, tip.x - core, tip.y - core, core * 2, core * 2);
 		}
 		return true;
 	}

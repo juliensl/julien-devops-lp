@@ -199,15 +199,17 @@
 			const scrolled = Math.abs(scrollY - lastScroll);
 			lastScroll = scrollY;
 			const running = !still();
+			const elapsed = lastFrame ? (now - lastFrame) / 1000 : 1 / 60;
+			lastFrame = now;
 			if (running) {
-				const elapsed = lastFrame ? Math.min((now - lastFrame) / 1000, 0.05) : 0;
-				boost = (boost + scrolled * 0.003) * 0.04 ** elapsed;
-				time += elapsed;
-				flow += (0.22 + boost) * elapsed;
-				branchFlow += (26 + boost * 300) * elapsed;
+				const step = Math.min(elapsed, 0.05);
+				boost = (boost + scrolled * 0.003) * 0.04 ** step;
+				time += step;
+				flow += (0.22 + boost) * step;
+				branchFlow += (26 + boost * 300) * step;
 			} else boost = 0;
-			lastFrame = running ? now : 0;
-			// The branch follows the scroll, also while paused; with reduced motion, it is whole from the start.
+			// The branch follows the scroll, also while paused, catching up in about half a second whatever the
+			// frame rate; with reduced motion, it is whole from the start.
 			const target = reducedMotion.matches
 				? branch.total
 				: branch.target(
@@ -215,10 +217,11 @@
 						canvas.clientHeight,
 						scrollY + innerHeight >= html.scrollHeight - 2,
 					);
-			length += (target - length) * 0.14;
+			length += (target - length) * (1 - 0.86 ** (Math.min(elapsed, 0.25) * 60));
 			if (reducedMotion.matches || Math.abs(target - length) < 0.5) length = target;
 			const onScreen = draw();
 			if ((running && onScreen) || length !== target) requestFrame();
+			else lastFrame = 0;
 		}
 		function requestFrame() {
 			pendingFrame ||= requestAnimationFrame(frame);
@@ -241,6 +244,7 @@
 				canvas.height = height;
 			}
 			layOut();
+			if (reducedMotion.matches) length = branch.total;
 			draw();
 			requestFrame();
 		});

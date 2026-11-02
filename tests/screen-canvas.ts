@@ -69,6 +69,8 @@ export function look(page: Page, { checkText = false, regions = [] as Box[] } = 
 			// Fixed elements, such as the pause button, float above the canvas on their own background.
 			const floats = (e: Element | null): boolean =>
 				!!e && (getComputedStyle(e).position === 'fixed' || floats(e.parentElement));
+			const onScreen = ({ left, top, right, bottom }: DOMRect) =>
+				right > 0 && bottom > 0 && left < clientWidth && top < clientHeight;
 			const drawnUnder = ({ left, top, right, bottom }: DOMRect) => {
 				const x = Math.max(0, Math.floor(left * scale));
 				const y = Math.max(0, Math.floor(top * scale));
@@ -86,13 +88,15 @@ export function look(page: Page, { checkText = false, regions = [] as Box[] } = 
 					node.textContent!.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT,
 			});
 			for (let node = texts.nextNode(); node; node = texts.nextNode()) {
-				if (floats(node.parentElement)) continue;
 				const range = document.createRange();
 				range.selectNodeContents(node);
-				if ([...range.getClientRects()].some(drawnUnder)) covered.push(node.textContent!.trim());
+				const rects = [...range.getClientRects()].filter(onScreen);
+				if (rects.length && !floats(node.parentElement) && rects.some(drawnUnder))
+					covered.push(node.textContent!.trim());
 			}
 			for (const control of main.querySelectorAll('a, button, input, select, summary')) {
-				if (!floats(control) && drawnUnder(control.getBoundingClientRect()))
+				const rect = control.getBoundingClientRect();
+				if (onScreen(rect) && !floats(control) && drawnUnder(rect))
 					covered.push(control.outerHTML.slice(0, 80));
 			}
 			return { drawn, fingerprint, count, drawnIn, covered };
