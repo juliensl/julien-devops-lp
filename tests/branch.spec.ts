@@ -238,8 +238,11 @@ inEachBuild((build) => {
 					const services = page.locator('[data-section="services"]');
 					const header = (await page.getByRole('banner').boundingBox())!;
 					const { top, travel } = await services.evaluate((s, headerBottom) => {
-						const top = s.getBoundingClientRect().top + scrollY - headerBottom;
-						return { top, travel: s.offsetHeight - (innerHeight - headerBottom) };
+						const { top, height } = s.getBoundingClientRect();
+						return {
+							top: top + scrollY - headerBottom,
+							travel: height - (innerHeight - headerBottom),
+						};
 					}, header.y + header.height);
 					// From the first card to the last, then once the section has let go.
 					for (const share of [0, 0.25, 0.5, 0.75, 1, 1.5]) {
