@@ -37,7 +37,9 @@ inEachBuild((build) => {
 		}
 	});
 
-	test('the 404 header has the logo and no language switcher or menu', async ({ page }) => {
+	test('the 404 header has the logo and no language switcher, LinkedIn or menu', async ({
+		page,
+	}) => {
 		await page.goto(missingPaths[0]);
 		const header = page.getByRole('banner');
 		// The first published language: French, the Default language, when it is published.
@@ -48,6 +50,7 @@ inEachBuild((build) => {
 		for (const { name } of Object.values(LANGUAGES)) {
 			await expect(header.getByText(name)).toHaveCount(0);
 		}
+		await expect(header.getByRole('link', { name: 'LinkedIn' })).toHaveCount(0);
 		// The phone menu would only hold the languages: the button that opens it (the `<summary>`) does not exist.
 		await expect(header.locator('summary')).toHaveCount(0);
 	});

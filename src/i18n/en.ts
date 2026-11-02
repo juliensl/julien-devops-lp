@@ -402,6 +402,7 @@ export const en: Dictionary = {
 			title: 'Who is Julien',
 			wayOfWorking:
 				'I work remotely, in Portuguese, French and English. I use standard technologies, with no lock-in, and document everything so your team can run on its own.',
+			linkedin: 'See my LinkedIn profile',
 		},
 		testimonials: {
 			title: 'What clients say',
