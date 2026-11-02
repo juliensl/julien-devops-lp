@@ -62,9 +62,6 @@ const sliders: { name: keyof typeof FIELDS; hint?: [BadgeKind, string] }[] = [
 		{/* As on the home page, the pause button is the first focus after the header. */}
 		<PauseButton {...t.animation} />
 
-		{/* The flowing leaf of points stands where the ∞ is in prototype v3's Hero, away from the title, and
-		    below the text on a phone (#69, decided with the intern). The badge legend runs below them, in a
-		    row on a computer. */}
 		<div class="page-width grid gap-x-16 gap-y-8 pt-14 sm:pt-20 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:items-center">
 			<div class="grid gap-5">
 				<p class="label flex items-center gap-2">

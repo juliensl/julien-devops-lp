@@ -469,8 +469,6 @@ inEachBuild((build) => {
 			});
 		});
 
-		// The flowing leaf stands where the ∞ is in the Hero of prototype v3, away from the title, and the
-		// badge legend runs below them (#69, decided with the intern).
 		test.describe(`${path} flowing leaf`, () => {
 			const boxes = async (page: Page) => ({
 				title: (await page.getByRole('heading', { level: 1 }).boundingBox())!,

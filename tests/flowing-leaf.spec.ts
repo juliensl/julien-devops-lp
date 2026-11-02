@@ -1,6 +1,4 @@
-// The flowing leaf of points (#69, #54 «Direção visual › Folha»): green points flow along the outline
-// and purple ones along the midrib and the veins, swaying in 3D. It is in the home page's Ecology section
-// and, on the ecology page, where the ∞ is in the Hero of prototype v3 (decided with the intern).
+// The flowing leaf in the home page's Ecology section; its place on the ecology page is in ecology.spec.ts.
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { inEachBuild } from './builds';
 import { LANGUAGES } from './expected';

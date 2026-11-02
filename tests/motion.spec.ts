@@ -5,7 +5,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { inEachBuild, pagesOf } from './builds';
 import { LANGUAGES } from './expected';
 
-// The pages with automatic animations: the home page and the ecology page, with its flowing leaf (#69).
+// The pages with automatic animations: the home page and the ecology page.
 const animatedPagesOf = (prefix: string) => [prefix, `${prefix}ecology/`];
 const ANIMATED_PAGES = new Set<string>(
 	Object.values(LANGUAGES).flatMap(({ prefix }) => animatedPagesOf(prefix)),
