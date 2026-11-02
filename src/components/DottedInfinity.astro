@@ -1,6 +1,5 @@
 ---
-// The dotted ∞, drawn in the Hero's `[data-infinity]` box on one canvas fixed over the screen, behind
-// the content. Still when paused or with reduced motion.
+// The dotted ∞, drawn in the Hero's `[data-infinity]` box on one canvas fixed behind the content.
 ---
 
 <canvas
@@ -27,6 +26,7 @@
 	}
 
 	const TAU = Math.PI * 2;
+	const POINT_COUNT = 340;
 
 	afterLoad(() => {
 		const canvas = document.querySelector<HTMLCanvasElement>('[data-dotted-infinity]');
@@ -42,8 +42,8 @@
 		const purpleLine = styles.getPropertyValue('--color-element-purple').trim();
 		const greenLine = styles.getPropertyValue('--color-element-green').trim();
 		const [purple, green] = [glow(purpleLine), glow(greenLine)];
-		const particles: Particle[] = Array.from({ length: 340 }, (_, i) => ({
-			at: (i / 340) * TAU,
+		const particles: Particle[] = Array.from({ length: POINT_COUNT }, (_, i) => ({
+			at: (i / POINT_COUNT) * TAU,
 			radius: Math.sqrt(Math.random()) * 0.08,
 			phase: Math.random() * TAU,
 			speed: 0.75 + Math.random() * 0.5,
@@ -51,7 +51,7 @@
 		}));
 
 		let ratio = 1;
-		let small = false;
+		let narrow = false;
 		let nearScreen = false;
 		let cleared = true;
 		let pendingFrame = 0;
@@ -61,13 +61,13 @@
 		/** How far the points have flowed along the curve, and the extra speed scrolling gives them. */
 		let flow = 0;
 		let boost = 0;
-		const moving = () => !reducedMotion.matches && html.dataset.animation !== 'paused';
+		const still = () => reducedMotion.matches || html.dataset.animation === 'paused';
 
 		function draw() {
 			context.setTransform(ratio, 0, 0, ratio, 0, 0);
 			context.clearRect(0, 0, canvas.width, canvas.height);
 			const { left, top, width, height } = box.getBoundingClientRect();
-			const scale = width * (small ? 0.44 : 0.5);
+			const scale = width * (narrow ? 0.44 : 0.5);
 			const centreX = left + width / 2;
 			const centreY = top + height / 2;
 			const screenHeight = canvas.clientHeight;
@@ -80,8 +80,8 @@
 			const yaw = -0.4 + risen * 0.6 + 0.12 * Math.sin(time * 0.35);
 			const pitch = 0.5 + risen * 0.3;
 			const project = (point: Point) => {
-				const [x, y, depth, perspective] = projected(point, pitch, yaw);
-				return [centreX + x * scale, centreY + y * scale, depth, perspective];
+				const { x, y, depth, perspective } = projected(point, pitch, yaw);
+				return { x: centreX + x * scale, y: centreY + y * scale, depth, perspective };
 			};
 
 			// Faint thin lines give the shape: the left loop purple, the right one green.
@@ -94,19 +94,18 @@
 			] as const) {
 				context.beginPath();
 				for (let i = 0; i <= 90; i++) {
-					const [x, y] = project(curve(from + (i / 90) * Math.PI));
+					const { x, y } = project(curve(from + (i / 90) * Math.PI));
 					context.lineTo(x, y);
 				}
 				context.strokeStyle = color;
 				context.stroke();
 			}
 
-			// The points flow along the curve, each spinning around it, and take the color of the
-			// loop they are in: they blend as they cross the middle.
+			// The points flow along the curve, spinning around it, and blend colours as they cross the middle.
 			context.globalCompositeOperation = 'lighter';
 			const baseSize = scale * 0.026;
 			for (let i = 0; i < particles.length; i++) {
-				if (small && i % 3 === 2) continue;
+				if (narrow && i % 3 === 2) continue;
 				const { at, radius, phase, speed, size } = particles[i];
 				const t = at + flow * speed;
 				const [x, y, z] = curve(t);
@@ -123,7 +122,12 @@
 				const angle = phase + flow * 0.6;
 				const along = Math.cos(angle) * radius;
 				const across = Math.sin(angle) * radius;
-				const [px, py, depth, perspective] = project([
+				const {
+					x: px,
+					y: py,
+					depth,
+					perspective,
+				} = project([
 					x + along * nx - across * tz * ny,
 					y + along * ny + across * tz * nx,
 					z + across * (tx * ny - ty * nx),
@@ -160,7 +164,7 @@
 				lastFrame = 0;
 				return;
 			}
-			const running = moving();
+			const running = !still();
 			if (running) {
 				const elapsed = lastFrame ? Math.min((now - lastFrame) / 1000, 0.05) : 0;
 				boost = (boost + scrolled * 0.003) * 0.04 ** elapsed;
@@ -180,20 +184,27 @@
 		document.addEventListener('animation', requestFrame);
 		reducedMotion.addEventListener('change', requestFrame);
 		new IntersectionObserver(
-			([entry]) => {
-				nearScreen = entry.isIntersecting;
+			(entries) => {
+				nearScreen = entries.at(-1)!.isIntersecting;
 				requestFrame();
 			},
 			{ rootMargin: '200px' },
 		).observe(box);
-		new ResizeObserver(() => {
+		// Redrawn at once, before the screen shows the canvas cleared by its new size.
+		const resize = new ResizeObserver(() => {
 			// The canvas covers the screen: 1.5 is enough for glowing points and saves a lot of work.
 			ratio = Math.min(devicePixelRatio || 1, 1.5);
-			small = innerWidth < 700;
-			canvas.width = Math.round(canvas.clientWidth * ratio);
-			canvas.height = Math.round(canvas.clientHeight * ratio);
-			requestFrame();
-		}).observe(canvas);
+			narrow = innerWidth < 700;
+			const width = Math.round(canvas.clientWidth * ratio);
+			const height = Math.round(canvas.clientHeight * ratio);
+			if (canvas.width !== width || canvas.height !== height) {
+				canvas.width = width;
+				canvas.height = height;
+			}
+			if (nearScreen) draw();
+		});
+		resize.observe(canvas);
+		resize.observe(box);
 	}
 
 	/** A lemniscate of Bernoulli with depth: its two loops cross at different heights. */
@@ -211,6 +222,6 @@
 		const tiltedY = y * Math.cos(pitch) - turnedZ * Math.sin(pitch);
 		const depth = y * Math.sin(pitch) + turnedZ * Math.cos(pitch);
 		const perspective = 3 / (3 - depth);
-		return [turnedX * perspective, tiltedY * perspective, depth, perspective];
+		return { x: turnedX * perspective, y: tiltedY * perspective, depth, perspective };
 	}
 </script>

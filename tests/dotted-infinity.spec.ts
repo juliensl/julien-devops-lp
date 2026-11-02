@@ -5,11 +5,9 @@ import { LANGUAGES } from './expected';
 
 type Box = { x: number; y: number; width: number; height: number };
 
-/** What the canvas that covers the screen shows: where it drew (CSS px), a fingerprint of its pixels,
-    and the text and controls with something drawn behind them. Fixed elements, such as the pause
-    button, float above the canvas on their own background. */
-function look(page: Page) {
-	return page.evaluate(() => {
+/** What the canvas covering the screen shows: where it drew, a pixel fingerprint, and the text drawn behind. */
+function look(page: Page, { checkText = false } = {}) {
+	return page.evaluate((checkText) => {
 		const { clientWidth, clientHeight } = document.documentElement;
 		const canvases = [...document.querySelectorAll('canvas')];
 		const canvas = canvases.find((c) => {
@@ -48,6 +46,10 @@ function look(page: Page) {
 						height: (bottom - top + 1) / scale,
 					};
 
+		const covered: string[] = [];
+		if (!checkText) return { drawn, fingerprint, covered };
+
+		// Fixed elements, such as the pause button, float above the canvas on their own background.
 		const floats = (e: Element | null): boolean =>
 			!!e && (getComputedStyle(e).position === 'fixed' || floats(e.parentElement));
 		const drawnUnder = ({ left, top, right, bottom }: DOMRect) => {
@@ -63,9 +65,9 @@ function look(page: Page) {
 		};
 		const main = document.querySelector('main')!;
 		const texts = document.createTreeWalker(main, NodeFilter.SHOW_TEXT, {
-			acceptNode: (node) => (node.textContent!.trim() ? 1 : 2),
+			acceptNode: (node) =>
+				node.textContent!.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT,
 		});
-		const covered: string[] = [];
 		for (let node = texts.nextNode(); node; node = texts.nextNode()) {
 			if (floats(node.parentElement)) continue;
 			const range = document.createRange();
@@ -77,7 +79,7 @@ function look(page: Page) {
 				covered.push(control.outerHTML.slice(0, 80));
 		}
 		return { drawn, fingerprint, covered };
-	});
+	}, checkText);
 }
 
 /** Scrolls the page, and waits a few frames for the canvas to follow it. */
@@ -126,12 +128,12 @@ inEachBuild((build) => {
 				test(`at ${width} px, the ∞ is under the Hero text`, async ({ page }) => {
 					await page.setViewportSize({ width, height: 800 });
 					await page.goto(prefix);
-					const lastText = (await hero(page).locator('p').last().boundingBox())!;
+					const note = hero(page).locator('p').last();
 					// The ∞ is below the first screen: scroll it into view, then measure.
-					await scrollPage(page, lastText.y - 100);
+					await scrollPage(page, (await note.boundingBox())!.y - 100);
 					const infinity = await drawnBox(page);
-					const note = (await hero(page).locator('p').last().boundingBox())!;
-					expect(infinity.y, 'under the note').toBeGreaterThan(note.y + note.height);
+					const { y, height } = (await note.boundingBox())!;
+					expect(infinity.y, 'under the note').toBeGreaterThan(y + height);
 				});
 			}
 
@@ -144,7 +146,7 @@ inEachBuild((build) => {
 					let seen = 0;
 					for (let scroll = 0; scroll < y + height; scroll += 250) {
 						await scrollPage(page, scroll);
-						const { drawn, covered } = await look(page);
+						const { drawn, covered } = await look(page, { checkText: true });
 						if (drawn) seen++;
 						expect(covered, `scrolled ${scroll} px`).toEqual([]);
 					}
@@ -157,9 +159,9 @@ inEachBuild((build) => {
 			}) => {
 				await page.goto(prefix);
 				const { x, y, width, height } = await drawnBox(page);
-				const { hidden, underThePointer } = await page.evaluate(
+				const { exposed, underThePointer } = await page.evaluate(
 					([x, y]) => ({
-						hidden: [...document.querySelectorAll('canvas')].filter(
+						exposed: [...document.querySelectorAll('canvas')].filter(
 							(c) => c.closest('[aria-hidden="true"]') === null,
 						).length,
 						underThePointer: document
@@ -168,7 +170,7 @@ inEachBuild((build) => {
 					}),
 					[x + width / 2, y + height / 2],
 				);
-				expect(hidden, 'canvases screen readers would find').toBe(0);
+				expect(exposed, 'canvases screen readers would find').toBe(0);
 				expect(underThePointer, 'canvases a click would reach').toBe(0);
 			});
 
