@@ -1,19 +1,21 @@
 ---
 // The sticky header of every page: the logo, «Os teus desafios» with its submenu of audiences,
-// 🍃 Ecology, the language switcher and the button.
-// On mobile, the audiences and the languages move into a `<details>` menu, which opens without JS; the
+// 🍃 Ecology, the language switcher, LinkedIn and the button.
+// On mobile, the audiences, the languages and LinkedIn move into a `<details>` menu, which opens without JS; the
 // button and the leaf always stay visible, the leaf without its word. Below 360 px, Ecology only lives
 // in the menu.
 // On a page with no equivalents in other languages (the 404), the header keeps only the logo and the button,
 // and the logo leads to the home page of the first published language.
 // The parts that arrive with the pages they lead to have their place marked with the ticket.
 import { PHASE, PREFIXES, type Language } from '../config/site';
+import { values } from '../config/values';
 import { dictionaries } from '../i18n';
 import { ecologyPath } from '../lib/paths';
 import AudienceLinks from './AudienceLinks.astro';
 import BookingButton from './BookingButton';
 import LanguageSwitcher from './LanguageSwitcher.astro';
 import Leaf from './Leaf.astro';
+import LinkedInLogo from './LinkedInLogo.astro';
 import Logo from './Logo.astro';
 
 interface Props {
@@ -82,6 +84,16 @@ const onEcology = Astro.url.pathname === ecology ? 'page' : undefined;
 			{!noEquivalents && (
 				<LanguageSwitcher language={language} label={t.header.languages} class="max-md:hidden" />
 			)}
+
+			{!noEquivalents && (
+				<a
+					href={values.linkedin}
+					class="inline-flex size-11 items-center justify-center rounded-md text-foreground-secondary transition-colors hover:text-foreground max-md:hidden"
+				>
+					<LinkedInLogo />
+					<span class="sr-only">LinkedIn</span>
+				</a>
+			)}
 		</div>
 
 		<BookingButton text={t.bookButton} compact />
@@ -120,6 +132,14 @@ const onEcology = Astro.url.pathname === ecology ? 'page' : undefined;
 					</a>
 
 					<LanguageSwitcher language={language} label={t.header.languages} large />
+
+					<a
+						href={values.linkedin}
+						class="flex min-h-11 items-center gap-2 rounded-[10px] px-2 text-foreground-secondary hover:bg-surface-2 hover:text-foreground"
+					>
+						<LinkedInLogo size={18} />
+						LinkedIn
+					</a>
 				</div>
 			</details>
 		)}

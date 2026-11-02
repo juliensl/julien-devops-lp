@@ -134,6 +134,28 @@ inEachBuild((build) => {
 				);
 			});
 
+			test('the header links to LinkedIn, between the languages and the button', async ({
+				page,
+			}) => {
+				await page.setViewportSize({ width: 1280, height: 700 });
+				await page.goto(path);
+				const header = page.getByRole('banner');
+				const linkedin = header.getByRole('link', { name: 'LinkedIn', exact: true });
+				await expect(linkedin).toHaveAttribute('href', LINKEDIN);
+				const box = (await linkedin.boundingBox())!;
+				expect(box.width).toBeGreaterThanOrEqual(44);
+				expect(box.height).toBeGreaterThanOrEqual(44);
+				const current = (await header
+					.locator('[aria-current]')
+					.filter({ hasText: label, visible: true })
+					.boundingBox())!;
+				const bookButton = (await header
+					.getByRole('link', { name: button, exact: true })
+					.boundingBox())!;
+				expect(box.x).toBeGreaterThanOrEqual(current.x + current.width);
+				expect(box.x + box.width).toBeLessThanOrEqual(bookButton.x);
+			});
+
 			test('the header button has a 44×44 px touch target', async ({ page }) => {
 				for (const width of [...PHONE_WIDTHS, 1280]) {
 					await page.setViewportSize({ width, height: 700 });
@@ -160,6 +182,17 @@ inEachBuild((build) => {
 						await expect(bookButton).toHaveAttribute('href', BOOKING_PAGE);
 						await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
 						await expect(bookButton).toBeInViewport({ ratio: 1 });
+					});
+
+					test('LinkedIn moves into the menu', async ({ page }) => {
+						await page.goto(path);
+						const linkedin = page
+							.getByRole('banner')
+							.getByRole('link', { name: 'LinkedIn', exact: true });
+						await expect(linkedin).toBeHidden();
+						await menuButton(page).click();
+						await expect(linkedin).toBeVisible();
+						await expect(linkedin).toHaveAttribute('href', LINKEDIN);
 					});
 
 					test('the languages move into the menu, which closes on an outside click and with Escape', async ({
