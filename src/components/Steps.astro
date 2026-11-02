@@ -61,8 +61,8 @@ const { title, steps } = Astro.props;
 
 			// With the section pinned, the progress goes from 0 (the stage pins) to 1 (it unpins). Each Step has
 			// its own slice of the progress and reaches its middle at (k + 0.5) / 5: the number lights up.
-			// The branch (#73) will light up the numbers as it reaches them, with this same calculation; with the
-			// section unpinned (mobile, reduced motion, short screen), the numbers are always lit.
+			// The branch reaches each Step's node at that same progress. With the section unpinned (mobile,
+			// reduced motion, short screen), the numbers are always lit.
 			const lightUp = () => {
 				pendingFrame = 0;
 				if (!section.hasAttribute('data-pinned')) return;

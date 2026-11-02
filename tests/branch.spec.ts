@@ -4,11 +4,14 @@ import { inEachBuild } from './builds';
 import { LANGUAGES } from './expected';
 import { isMoving, look, type Box } from './screen-canvas';
 
-/** The ∞'s box, on screen, with room for its points that spill out of it, and `more` px around. */
+/**
+ * Where the ∞ draws, on screen, and `more` px around: its box, with room for the points that spill out
+ * sideways and above it. Its points stay above 85 % of the box's height; the branch leaves it from below.
+ */
 async function infinityArea(page: Page, more = 0): Promise<Box> {
 	const { x, y, width, height } = (await page.locator('[data-infinity]').boundingBox())!;
 	const room = 48 + more;
-	return { x: x - room, y: y - room, width: width + 2 * room, height: height + 2 * room };
+	return { x: x - room, y: y - room, width: width + 2 * room, height: 0.92 * height + room + more };
 }
 
 /** How many pixels are drawn outside the ∞'s area, and how many of them just outside it. */
@@ -95,9 +98,14 @@ inEachBuild((build) => {
 		const { prefix, pause, resume } = LANGUAGES[language];
 
 		test.describe(`${prefix} branch`, () => {
-			for (const width of [375, 1280, 1440]) {
-				test(`at ${width} px, the top of the page shows the ∞ alone`, async ({ page }) => {
-					await page.setViewportSize({ width, height: 800 });
+			// On a tall screen, the ∞'s exit is above the growth line from the start.
+			for (const [width, height] of [
+				[375, 800],
+				[1280, 800],
+				[1920, 1080],
+			]) {
+				test(`at ${width}×${height}, the top of the page shows the ∞ alone`, async ({ page }) => {
+					await page.setViewportSize({ width, height });
 					await openWithClock(page, prefix);
 					await draw(page, 2);
 					expect((await look(page)).count, 'drawn').toBeGreaterThan(0);
