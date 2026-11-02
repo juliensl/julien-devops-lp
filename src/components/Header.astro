@@ -32,7 +32,7 @@ const onEcology = Astro.url.pathname === ecology ? 'page' : undefined;
 	<div class="page-width flex h-(--header-height) items-center gap-2 md:gap-4">
 		<a
 			href={PREFIXES[noEquivalents ? PHASE.publishedLanguages[0] : language]}
-			class="inline-flex min-h-11 shrink-0 items-center rounded-md text-[0.6875rem] min-[420px]:text-[0.8125rem] sm:text-[0.95rem]"
+			class="inline-flex min-h-11 shrink-0 items-center rounded-md"
 		>
 			<Logo />
 			<span class="sr-only">, {t.header.logoTarget}</span>

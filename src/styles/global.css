@@ -22,7 +22,7 @@
 	--color-green: #3ccf8e;
 	/* Strong green for outlines, decorative. */
 	--color-green-strong: #23915f;
-	/* Fixed colors of the ∞, the branch, the leaf and the logo, decorative. */
+	/* Fixed colors of the ∞, the branch and the leaf, decorative. */
 	--color-element-purple: #c3a6ff;
 	--color-element-green: #86d9a8;
 	/* Separator lines; the strong one has 3.5:1 with the background and can outline a control. */
@@ -30,7 +30,7 @@
 	--color-line-strong: #6d6480;
 }
 
-/* Bona Nova for headings and the logo; Geist for text, data and the interface. The
+/* Bona Nova for headings; Geist for text, data and the interface. The
    --font-* variables come from the Astro fonts API (astro.config.mjs), with the fallback font. */
 @theme inline {
 	--font-*: initial;

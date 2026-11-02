@@ -63,6 +63,26 @@ inEachBuild((build) => {
 				await expect(logo).toHaveAttribute('href', prefix);
 			});
 
+			test('the logo shows only the ∞ below 1024 px, and the ∞ with the name from 1024 px', async ({
+				page,
+			}) => {
+				// The whole image is 1697×400; the ∞ is its left 9/4.
+				for (const [width, ratio] of [
+					[320, 9 / 4],
+					[1023, 9 / 4],
+					[1024, 1697 / 400],
+				]) {
+					await page.setViewportSize({ width, height: 700 });
+					await page.goto(path);
+					const image = page.getByRole('banner').getByRole('img', { name: NAME });
+					await expect
+						.poll(() => image.evaluate((i: HTMLImageElement) => i.naturalWidth))
+						.toBeGreaterThan(0);
+					const box = (await image.boundingBox())!;
+					expect(box.width / box.height, `at ${width} px`).toBeCloseTo(ratio, 1);
+				}
+			});
+
 			test('the header stays at the top, with the button, when scrolling', async ({ page }) => {
 				await page.setViewportSize({ width: 1280, height: 400 });
 				await page.goto(path);
