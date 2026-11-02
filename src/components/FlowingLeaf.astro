@@ -1,0 +1,268 @@
+---
+// The decorative flowing leaf: a canvas, still when paused or with reduced motion, hidden without JS.
+interface Props {
+	/** Its largest width (`max-w-*`) and its place in the parent's layout. The leaf is square, and
+	    narrower when there is less room. */
+	class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<div
+	aria-hidden="true"
+	data-flowing-leaf
+	class:list={['aspect-square w-full noscript:hidden', className]}
+>
+	<canvas class="block size-full"></canvas>
+</div>
+
+<script>
+	import { afterLoad } from '../scripts/after-load';
+
+	type Point = [x: number, y: number, z: number];
+
+	interface Particle {
+		/** Where it is along the path, from 0 to 1. */
+		at: number;
+		/** How far it strays from the path as it spins around it, and where its spin starts. */
+		radius: number;
+		phase: number;
+		/** Its size, relative to the others. */
+		size: number;
+	}
+
+	interface Strand {
+		points: Point[];
+		/** The outline loops; the midrib and the veins run from their start to their end. */
+		closed: boolean;
+		color: string;
+		/** Turns along the path per second. */
+		speed: number;
+		particles: Particle[];
+	}
+
+	const TAU = Math.PI * 2;
+	// The paths of the icon in Leaf.astro (24 × 24), sampled at even steps, so nothing measures an SVG
+	// path on load: the closed outline, the stalk with the midrib, and the two veins. If the icon
+	// changes, sample them again.
+	const OUTLINE = [
+		5, 19.5, 4.74, 18.73, 4.55, 17.94, 4.42, 17.13, 4.36, 16.32, 4.37, 15.5, 4.46, 14.69, 4.62,
+		13.89, 4.85, 13.11, 5.14, 12.35, 5.5, 11.62, 5.91, 10.92, 6.37, 10.24, 6.87, 9.6, 7.41, 8.99,
+		7.99, 8.42, 8.6, 7.88, 9.24, 7.37, 9.9, 6.89, 10.58, 6.45, 11.29, 6.04, 12.01, 5.65, 12.74, 5.3,
+		13.49, 4.98, 14.25, 4.69, 15.03, 4.43, 15.81, 4.21, 16.6, 4.01, 17.4, 3.84, 18.2, 3.71, 19.01,
+		3.6, 19.82, 3.53, 20.5, 3.64, 20.5, 4.45, 20.46, 5.27, 20.39, 6.08, 20.29, 6.89, 20.15, 7.69,
+		19.99, 8.49, 19.79, 9.28, 19.56, 10.06, 19.3, 10.83, 19.01, 11.59, 18.68, 12.34, 18.32, 13.07,
+		17.93, 13.79, 17.51, 14.49, 17.05, 15.16, 16.56, 15.81, 16.03, 16.43, 15.47, 17.02, 14.87,
+		17.58, 14.24, 18.09, 13.57, 18.56, 12.87, 18.98, 12.14, 19.34, 11.39, 19.64, 10.6, 19.88, 9.81,
+		20.04, 9, 20.13, 8.18, 20.14, 7.37, 20.08, 6.56, 19.95, 5.77, 19.76, 5, 19.5,
+	];
+	const MIDRIB = [
+		3, 21.5, 3.58, 20.91, 4.16, 20.31, 4.74, 19.71, 5.32, 19.12, 5.9, 18.52, 6.48, 17.93, 7.06,
+		17.34, 7.64, 16.74, 8.22, 16.14, 8.8, 15.55, 9.38, 14.95, 9.96, 14.36, 10.54, 13.77, 11.12,
+		13.17, 11.7, 12.57, 12.28, 11.98, 12.86, 11.38, 13.44, 10.79, 14.02, 10.2, 14.6, 9.6,
+	];
+	// One vein up, one to the right, from the middle of the leaf outwards.
+	const VEINS = [
+		[8.1, 16.3, 8.1, 15.63, 8.1, 14.97, 8.1, 14.3, 8.1, 13.63, 8.1, 12.97, 8.1, 12.3],
+		[12.9, 11.4, 13.58, 11.4, 14.27, 11.4, 14.95, 11.4, 15.63, 11.4, 16.32, 11.4, 17, 11.4],
+	];
+
+	afterLoad(() => {
+		for (const leaf of document.querySelectorAll<HTMLElement>('[data-flowing-leaf]')) start(leaf);
+	});
+
+	function start(leaf: HTMLElement) {
+		const canvas = leaf.querySelector('canvas')!;
+		const context = canvas.getContext('2d')!;
+		const html = document.documentElement;
+		const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+		const styles = getComputedStyle(leaf);
+		const purple = styles.getPropertyValue('--color-element-purple').trim();
+		const green = styles.getPropertyValue('--color-element-green').trim();
+		const glows = new Map([purple, green].map((color) => [color, glow(color)]));
+
+		const strands: Strand[] = [
+			{
+				points: centred(OUTLINE),
+				closed: true,
+				color: green,
+				speed: 0.035,
+				particles: scatter(170),
+			},
+			{
+				points: centred(MIDRIB),
+				closed: false,
+				color: purple,
+				speed: 0.12,
+				particles: scatter(55),
+			},
+			...VEINS.map((vein) => ({
+				points: centred(vein),
+				closed: false,
+				color: purple,
+				speed: 0.3,
+				particles: scatter(9),
+			})),
+		];
+
+		let width = 0;
+		let height = 0;
+		let nearScreen = false;
+		let pendingFrame = 0;
+		let lastFrame = 0;
+		let time = 0;
+		const still = () => reducedMotion.matches || html.dataset.animation === 'paused';
+
+		function draw() {
+			context.clearRect(0, 0, width, height);
+			// The sway, around the vertical axis and a little around the horizontal one.
+			const yaw = reducedMotion.matches ? -0.35 : 0.45 * Math.sin(time * 0.45);
+			const pitch = 0.3 + (reducedMotion.matches ? 0 : 0.12 * Math.sin(time * 0.3));
+			const [cosYaw, sinYaw, cosPitch, sinPitch] = [
+				Math.cos(yaw),
+				Math.sin(yaw),
+				Math.cos(pitch),
+				Math.sin(pitch),
+			];
+			const scale = width * 0.42;
+			const project = ([x, y, z]: Point) => {
+				const turnedX = x * cosYaw + z * sinYaw;
+				const turnedZ = -x * sinYaw + z * cosYaw;
+				const tiltedY = y * cosPitch - turnedZ * sinPitch;
+				const depth = y * sinPitch + turnedZ * cosPitch;
+				const perspective = 3 / (3 - depth);
+				return {
+					x: width / 2 + turnedX * perspective * scale,
+					y: height / 2 + tiltedY * perspective * scale,
+					depth,
+					perspective,
+				};
+			};
+
+			// Faint thin lines give the shape.
+			context.globalCompositeOperation = 'source-over';
+			context.globalAlpha = 0.22;
+			context.lineWidth = Math.max(1, width / 360);
+			for (const { points, color } of strands) {
+				context.beginPath();
+				for (const point of points) {
+					const { x, y } = project(point);
+					context.lineTo(x, y);
+				}
+				context.strokeStyle = color;
+				context.stroke();
+			}
+
+			// The points flow: round the outline, from the stalk to the tip along the midrib, and out
+			// along the veins. Each one spins a little around its path and glows.
+			context.globalCompositeOperation = 'lighter';
+			const baseSize = width * 0.016;
+			for (const { points, closed, color, speed, particles } of strands) {
+				for (const particle of particles) {
+					const at = (particle.at + time * speed) % 1;
+					const [x, y, z] = along(points, at);
+					const angle = particle.phase + time * 1.2;
+					const { radius } = particle;
+					const projected = project([
+						x + radius * Math.cos(angle),
+						y + radius * Math.sin(angle),
+						z + radius * Math.sin(angle),
+					]);
+					const size = baseSize * particle.size * projected.perspective;
+					// The nearer, the brighter; on an open path, points fade in at its start.
+					const nearness = Math.min(Math.max(0.35 + (projected.depth + 1) * 0.35, 0.25), 1);
+					context.globalAlpha = nearness * (closed ? 1 : Math.min(at * 6, 1));
+					context.drawImage(
+						glows.get(color)!,
+						projected.x - size,
+						projected.y - size,
+						size * 2,
+						size * 2,
+					);
+				}
+			}
+			context.globalAlpha = 1;
+		}
+
+		function frame(now: number) {
+			pendingFrame = 0;
+			if (!nearScreen) return;
+			const moving = !still();
+			// After a pause or time off screen, it carries on from where it was.
+			if (moving && lastFrame) time += Math.min((now - lastFrame) / 1000, 0.05);
+			lastFrame = moving ? now : 0;
+			draw();
+			if (moving) requestFrame();
+		}
+		function requestFrame() {
+			pendingFrame ||= requestAnimationFrame(frame);
+		}
+
+		document.addEventListener('animation', requestFrame);
+		reducedMotion.addEventListener('change', requestFrame);
+		// It draws only when it is about to appear, and stops once well off screen.
+		new IntersectionObserver(
+			([entry]) => {
+				nearScreen = entry.isIntersecting;
+				lastFrame = 0;
+				requestFrame();
+			},
+			{ rootMargin: '200px' },
+		).observe(leaf);
+		new ResizeObserver(() => {
+			const ratio = Math.min(devicePixelRatio || 1, 2);
+			width = canvas.width = Math.round(canvas.clientWidth * ratio);
+			height = canvas.height = Math.round(canvas.clientHeight * ratio);
+			requestFrame();
+		}).observe(canvas);
+	}
+
+	/** The icon's points, centred and scaled to about -1…1, slightly curved in depth so the leaf isn't flat. */
+	function centred(coordinates: number[]) {
+		const points: Point[] = [];
+		for (let i = 0; i < coordinates.length; i += 2) {
+			const x = (coordinates[i] - 12) / 10;
+			const y = (coordinates[i + 1] - 12.5) / 10;
+			points.push([x, y, 0.28 * (x * x + y * y) - 0.15]);
+		}
+		return points;
+	}
+
+	function scatter(count: number): Particle[] {
+		return Array.from({ length: count }, (_, i) => ({
+			at: i / count,
+			radius: (Math.random() - 0.5) * 0.07,
+			phase: Math.random() * TAU,
+			size: 0.6 + Math.random() * 0.9,
+		}));
+	}
+
+	/** The point at `at` (0 to 1) along a path. */
+	function along(points: Point[], at: number): Point {
+		const position = at * (points.length - 1);
+		const index = Math.floor(position);
+		const fraction = position - index;
+		const from = points[index];
+		const to = points[Math.min(index + 1, points.length - 1)];
+		const between = (axis: number) => from[axis] + (to[axis] - from[axis]) * fraction;
+		return [between(0), between(1), between(2)];
+	}
+
+	/** A glowing point, white at the centre, drawn once per color. The color is `#rrggbb`, as the fixed
+	    colors are written in global.css. */
+	function glow(color: string) {
+		const sprite = document.createElement('canvas');
+		sprite.width = sprite.height = 64;
+		const context = sprite.getContext('2d')!;
+		const [r, g, b] = [1, 3, 5].map((i) => parseInt(color.slice(i, i + 2), 16));
+		const gradient = context.createRadialGradient(32, 32, 0, 32, 32, 32);
+		gradient.addColorStop(0, 'rgba(255, 255, 255, 0.95)');
+		gradient.addColorStop(0.16, `rgba(${r}, ${g}, ${b}, 1)`);
+		gradient.addColorStop(0.42, `rgba(${r}, ${g}, ${b}, 0.28)`);
+		gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+		context.fillStyle = gradient;
+		context.fillRect(0, 0, 64, 64);
+		return sprite;
+	}
+</script>
