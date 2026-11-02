@@ -6,7 +6,8 @@
 // with the pause button; with reduced motion, it stays still. Without JS, the canvas would stay empty:
 // CSS hides it.
 interface Props {
-	/** The largest width (`max-w-*`): the leaf is square, and narrower when there is less room. */
+	/** Its largest width (`max-w-*`) and its place in the parent's layout. The leaf is square, and
+	    narrower when there is less room. */
 	class?: string;
 }
 
@@ -29,9 +30,10 @@ const { class: className } = Astro.props;
 	interface Particle {
 		/** Where it is along the path, from 0 to 1. */
 		at: number;
-		/** The radius, phase and size of its spin around the path. */
+		/** How far it strays from the path as it spins around it, and where its spin starts. */
 		radius: number;
 		phase: number;
+		/** Its size, relative to the others. */
 		size: number;
 	}
 
@@ -46,8 +48,9 @@ const { class: className } = Astro.props;
 	}
 
 	const TAU = Math.PI * 2;
-	// The icon's paths (24 × 24), sampled at even steps, so nothing measures an SVG path on load: the
-	// closed outline, the stalk with the midrib, and the two veins.
+	// The paths of the icon in Leaf.astro (24 × 24), sampled at even steps, so nothing measures an SVG
+	// path on load: the closed outline, the stalk with the midrib, and the two veins. If the icon
+	// changes, sample them again.
 	const OUTLINE = [
 		5, 19.5, 4.74, 18.73, 4.55, 17.94, 4.42, 17.13, 4.36, 16.32, 4.37, 15.5, 4.46, 14.69, 4.62,
 		13.89, 4.85, 13.11, 5.14, 12.35, 5.5, 11.62, 5.91, 10.92, 6.37, 10.24, 6.87, 9.6, 7.41, 8.99,
@@ -84,24 +87,28 @@ const { class: className } = Astro.props;
 		const green = styles.getPropertyValue('--color-element-green').trim();
 		const glows = new Map([purple, green].map((color) => [color, glow(color)]));
 
-		const strand = (
-			coordinates: number[],
-			closed: boolean,
-			color: string,
-			speed: number,
-			count: number,
-		) =>
-			({
-				points: centred(coordinates),
-				closed,
-				color,
-				speed,
-				particles: scatter(count),
-			}) satisfies Strand;
-		const strands = [
-			strand(OUTLINE, true, green, 0.035, 170),
-			strand(MIDRIB, false, purple, 0.12, 55),
-			...VEINS.map((vein) => strand(vein, false, purple, 0.3, 9)),
+		const strands: Strand[] = [
+			{
+				points: centred(OUTLINE),
+				closed: true,
+				color: green,
+				speed: 0.035,
+				particles: scatter(170),
+			},
+			{
+				points: centred(MIDRIB),
+				closed: false,
+				color: purple,
+				speed: 0.12,
+				particles: scatter(55),
+			},
+			...VEINS.map((vein) => ({
+				points: centred(vein),
+				closed: false,
+				color: purple,
+				speed: 0.3,
+				particles: scatter(9),
+			})),
 		];
 
 		let width = 0;
@@ -161,17 +168,23 @@ const { class: className } = Astro.props;
 					const at = (particle.at + time * speed) % 1;
 					const [x, y, z] = along(points, at);
 					const angle = particle.phase + time * 1.2;
-					const offset = particle.radius;
-					const p = project([
-						x + offset * Math.cos(angle),
-						y + offset * Math.sin(angle),
-						z + offset * Math.sin(angle),
+					const { radius } = particle;
+					const projected = project([
+						x + radius * Math.cos(angle),
+						y + radius * Math.sin(angle),
+						z + radius * Math.sin(angle),
 					]);
-					const size = baseSize * particle.size * p.perspective;
+					const size = baseSize * particle.size * projected.perspective;
 					// The nearer, the brighter; on an open path, points fade in at its start.
-					const nearness = Math.min(Math.max(0.35 + (p.depth + 1) * 0.35, 0.25), 1);
+					const nearness = Math.min(Math.max(0.35 + (projected.depth + 1) * 0.35, 0.25), 1);
 					context.globalAlpha = nearness * (closed ? 1 : Math.min(at * 6, 1));
-					context.drawImage(glows.get(color)!, p.x - size, p.y - size, size * 2, size * 2);
+					context.drawImage(
+						glows.get(color)!,
+						projected.x - size,
+						projected.y - size,
+						size * 2,
+						size * 2,
+					);
 				}
 			}
 			context.globalAlpha = 1;
@@ -233,14 +246,16 @@ const { class: className } = Astro.props;
 	/** The point at `at` (0 to 1) along a path. */
 	function along(points: Point[], at: number): Point {
 		const position = at * (points.length - 1);
-		const i = Math.floor(position);
-		const k = position - i;
-		const a = points[i];
-		const b = points[Math.min(i + 1, points.length - 1)];
-		return [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k];
+		const index = Math.floor(position);
+		const fraction = position - index;
+		const from = points[index];
+		const to = points[Math.min(index + 1, points.length - 1)];
+		const between = (axis: number) => from[axis] + (to[axis] - from[axis]) * fraction;
+		return [between(0), between(1), between(2)];
 	}
 
-	/** A glowing point, white at the centre, drawn once per color. */
+	/** A glowing point, white at the centre, drawn once per color. The color is `#rrggbb`, as the fixed
+	    colors are written in global.css. */
 	function glow(color: string) {
 		const sprite = document.createElement('canvas');
 		sprite.width = sprite.height = 64;

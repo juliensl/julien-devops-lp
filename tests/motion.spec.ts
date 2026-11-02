@@ -6,9 +6,9 @@ import { inEachBuild, pagesOf } from './builds';
 import { LANGUAGES } from './expected';
 
 // The pages with automatic animations: the home page and the ecology page, with its flowing leaf (#69).
-const animatedPages = (prefix: string) => [prefix, `${prefix}ecology/`];
+const animatedPagesOf = (prefix: string) => [prefix, `${prefix}ecology/`];
 const ANIMATED_PAGES = new Set<string>(
-	Object.values(LANGUAGES).flatMap(({ prefix }) => animatedPages(prefix)),
+	Object.values(LANGUAGES).flatMap(({ prefix }) => animatedPagesOf(prefix)),
 );
 
 const WCAG_LEVELS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22a', 'wcag22aa'];
@@ -22,6 +22,22 @@ async function isMoving(page: Page) {
 	return !before.equals(await page.screenshot());
 }
 
+/** Each canvas of the page: whether it has drawn anything yet, and whether it is on screen. */
+function canvasesOf(page: Page) {
+	return page.evaluate(() =>
+		[...document.querySelectorAll('canvas')].map((canvas) => {
+			const blank = document.createElement('canvas');
+			blank.width = canvas.width;
+			blank.height = canvas.height;
+			const { top, bottom, width } = canvas.getBoundingClientRect();
+			return {
+				drawn: canvas.toDataURL() !== blank.toDataURL(),
+				onScreen: width > 0 && bottom > 0 && top < innerHeight,
+			};
+		}),
+	);
+}
+
 type Box = { x: number; y: number; width: number; height: number };
 
 function overlap(a: Box, b: Box) {
@@ -32,7 +48,7 @@ inEachBuild((build) => {
 	for (const language of build.phase.publishedLanguages) {
 		const { prefix, promise, button, pause, resume } = LANGUAGES[language];
 
-		for (const path of animatedPages(prefix))
+		for (const path of animatedPagesOf(prefix))
 			test.describe(path, () => {
 				test('the pause button stops the automatic animations and resumes them', async ({
 					page,
@@ -89,16 +105,8 @@ inEachBuild((build) => {
 						() => document.getAnimations().filter((a) => a.playState === 'running').length,
 					);
 					expect(running, 'animations running during loading').toBe(0);
-					const drawn = await page.evaluate(
-						() =>
-							[...document.querySelectorAll('canvas')].filter((canvas) => {
-								const blank = document.createElement('canvas');
-								blank.width = canvas.width;
-								blank.height = canvas.height;
-								return canvas.toDataURL() !== blank.toDataURL();
-							}).length,
-					);
-					expect(drawn, 'canvases drawn during loading').toBe(0);
+					const drawn = (await canvasesOf(page)).filter((canvas) => canvas.drawn);
+					expect(drawn, 'canvases drawn during loading').toEqual([]);
 					await expect(pauseButton(page, pause)).toBeHidden();
 
 					releaseFonts();
@@ -112,16 +120,15 @@ inEachBuild((build) => {
 				}) => {
 					await page.emulateMedia({ reducedMotion: 'reduce' });
 					await page.goto(path);
-					// A canvas draws its still image once, in the frames after load (the flowing leaf: its
-					// observer reports it on screen after one frame, and it draws in the next): wait for it.
-					await page.evaluate(
-						() =>
-							new Promise((resolve) =>
-								requestAnimationFrame(() =>
-									requestAnimationFrame(() => requestAnimationFrame(resolve)),
-								),
-							),
-					);
+					// A canvas draws its still image once, a few frames after load: wait for those on screen.
+					await expect
+						.poll(
+							async () => (await canvasesOf(page)).filter((c) => c.onScreen && !c.drawn).length,
+							{
+								message: 'canvases on screen still blank',
+							},
+						)
+						.toBe(0);
 					expect(await isMoving(page)).toBe(false);
 					await expect(pauseButton(page, pause)).toBeHidden();
 				});
