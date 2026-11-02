@@ -7,12 +7,16 @@ import { values } from '../config/values';
 import { dictionaries } from '../i18n';
 import Base from '../layouts/Base.astro';
 import AboutJulien from './AboutJulien.astro';
+import CloudChart from './CloudChart.astro';
 import FinalCta from './FinalCta';
 import Guarantee from './Guarantee';
 import Hero from './Hero';
+import HomeEcology from './HomeEcology.astro';
+import HomeQuestions from './HomeQuestions.astro';
 import PauseButton from './PauseButton.astro';
 import Services from './Services.astro';
 import Steps from './Steps.astro';
+import Testimonials from './Testimonials.astro';
 import TodayAndAfter from './TodayAndAfter';
 import TopDots from './TopDots.astro';
 import WhoItsFor from './WhoItsFor';
@@ -52,15 +56,15 @@ const t = dictionaries[language];
 
 		<Guarantee {...t.homePage.guarantee} />
 
-		{/* Cloud provider chart (#66) */}
+		<CloudChart language={language} {...t.homePage.cloudChart} />
 
 		<AboutJulien designation={t.designation} {...t.homePage.about} />
 
-		{/* Testimonials (#67) */}
+		<Testimonials language={language} {...t.homePage.testimonials} />
 
-		{/* Ecology (#68) */}
+		<HomeEcology language={language} />
 
-		{/* Questions (#70) */}
+		<HomeQuestions language={language} questions={t.questions} {...t.homePage.questions} />
 
 		<FinalCta language={language} buttonText={t.bookButton} {...t.homePage.finalCta} />
 	</main>

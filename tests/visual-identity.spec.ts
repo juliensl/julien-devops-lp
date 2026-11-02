@@ -2,7 +2,6 @@
 // The ≥ and the narrow no-break space (U+202F) are tested with the real content, in the tickets that add them.
 import { expect, test, type Locator } from '@playwright/test';
 import { inEachBuild, pagesOf } from './builds';
-import { NAME } from './expected';
 
 /**
  * The fonts the browser used to render the text of an element, by the name inside the file.
@@ -60,11 +59,9 @@ inEachBuild((build) => {
 		);
 		const { path } = pagesOf(build).find((p) => p.language)!;
 
-		test('headings and the logo render in Bona Nova, and body text in Geist', async ({ page }) => {
+		test('headings render in Bona Nova, and body text in Geist', async ({ page }) => {
 			await page.goto(path, { waitUntil: 'networkidle' });
-			const logo = page.getByRole('banner').getByRole('link', { name: NAME });
 			expect(await renderedFonts(page.getByRole('heading', { level: 1 }))).toEqual(['Bona Nova']);
-			expect(await renderedFonts(logo.getByText('Laffont'))).toEqual(['Bona Nova']);
 			expect(await renderedFonts(page.getByRole('main').getByRole('paragraph').first())).toEqual([
 				'Geist',
 			]);

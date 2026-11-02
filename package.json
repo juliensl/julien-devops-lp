@@ -18,6 +18,7 @@
 		"verify": "npm run check && npm run format:check && npm run build && npm run build:launch && npm test && npm run lighthouse",
 		"confirm": "playwright test -c playwright.publish.config.ts",
 		"share-image": "node scripts/share-image.ts",
+		"boundary-cases": "node scripts/boundary-cases.ts",
 		"astro": "astro"
 	},
 	"dependencies": {

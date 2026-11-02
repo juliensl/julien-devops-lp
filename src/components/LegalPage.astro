@@ -1,0 +1,68 @@
+---
+// The Legal information and the Privacy policy (#71, #54 «Páginas legais»): the page's Markdown, in its
+// language, from src/content/legal/, with the shared values in place of its placeholders. The footer of
+// every page leads to both.
+import type { Language } from '../config/site';
+import { values } from '../config/values';
+import Base from '../layouts/Base.astro';
+import { legalPage, withValues, type LegalPageId } from '../lib/legal';
+
+interface Props {
+	language: Language;
+	page: LegalPageId;
+}
+
+const { language, page } = Astro.props;
+const entry = await legalPage(language, page);
+if (!entry.rendered) throw new Error(`src/content/legal/${language}/${page}.md was not rendered.`);
+const html = withValues(entry.rendered.html, language);
+---
+
+<Base
+	language={language}
+	title={`${entry.data.title} · ${values.name}`}
+	description={entry.data.description}
+>
+	<main class="page-width pt-14 sm:pt-20">
+		<article class="max-w-3xl">
+			<h1 class="text-[clamp(2.25rem,4.4vw,3.5rem)] leading-[1.1]">{entry.data.title}</h1>
+			<Fragment set:html={html} />
+		</article>
+	</main>
+</Base>
+
+<style>
+	/* The Markdown's HTML, which Tailwind's reset leaves unstyled. */
+	article :global(h2) {
+		margin-top: 3rem;
+		font-size: clamp(1.6rem, 3vw, 2rem);
+		line-height: 1.15;
+	}
+	article :global(h3) {
+		margin-top: 2rem;
+		font-size: 1.25rem;
+		line-height: 1.2;
+	}
+	article :global(:is(p, ul)) {
+		margin-top: 1rem;
+	}
+	article :global(ul) {
+		display: grid;
+		gap: 0.5rem;
+		padding-left: 1.25rem;
+		list-style: disc;
+	}
+	article :global(li::marker) {
+		color: var(--color-green);
+	}
+	article :global(a) {
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+	article :global(a:hover) {
+		color: var(--color-green);
+	}
+	article :global(strong) {
+		font-weight: 600;
+	}
+</style>

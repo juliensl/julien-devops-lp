@@ -1,0 +1,59 @@
+---
+// The header's links to «Os teus desafios»: one per Audience, at its anchor on the questions page, then
+// «Ver todas as perguntas», marked as the current page there. In the desktop submenu, each Audience
+// shows its description; in the mobile menu, only its name.
+import { AUDIENCES } from '../config/audiences';
+import type { Language } from '../config/site';
+import { dictionaries } from '../i18n';
+import { questionsPath } from '../lib/paths';
+
+interface Props {
+	language: Language;
+	/** In the desktop submenu: each Audience's description under its name. */
+	descriptions?: boolean;
+	class?: string;
+}
+
+const { language, descriptions = false, class: className } = Astro.props;
+const { audiences, all } = dictionaries[language].questions;
+const allPath = questionsPath(language);
+const padding = descriptions ? 'px-3' : 'px-2';
+---
+
+<ul class={className}>
+	{AUDIENCES.map((id) => (
+		<li>
+			<a
+				href={questionsPath(language, id)}
+				class:list={[
+					padding,
+					'rounded-lg hover:bg-surface-2',
+					descriptions ? 'grid gap-0.5 py-2.5' : 'flex min-h-11 items-center',
+				]}
+			>
+				{descriptions ? (
+					<>
+						<span class="font-semibold text-foreground">{audiences[id].name}</span>
+						<span class="text-[0.8125rem] leading-snug text-foreground-secondary">
+							{audiences[id].description}
+						</span>
+					</>
+				) : (
+					audiences[id].name
+				)}
+			</a>
+		</li>
+	))}
+	<li>
+		<a
+			href={allPath}
+			aria-current={Astro.url.pathname === allPath ? 'page' : undefined}
+			class:list={[
+				padding,
+				'flex min-h-11 items-center rounded-lg font-semibold text-green hover:bg-surface-2',
+			]}
+		>
+			{all}
+		</a>
+	</li>
+</ul>

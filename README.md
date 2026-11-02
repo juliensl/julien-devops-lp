@@ -6,19 +6,20 @@ Static site in Astro, with React (rendered at build time) and Tailwind. The spec
 
 With Node 24 (`nvm use` reads `.nvmrc`):
 
-| Command                | What it does                                                             |
-| :--------------------- | :----------------------------------------------------------------------- |
-| `npm ci`               | Installs the dependencies                                                |
-| `npm run dev`          | Development server on `localhost:4321`                                   |
-| `npm run check`        | Checks the types: a text missing in one language makes it fail           |
-| `npm run format`       | Formats the code with Prettier                                           |
-| `npm run build`        | Build of the published site, in `dist/`                                  |
-| `npm run build:launch` | Test build with the Commercial launch, in `dist-launch/`                 |
-| `npm test`             | Playwright suite over both builds, which must already exist              |
-| `npm run lighthouse`   | Lighthouse in mobile mode over both builds (see below)                   |
-| `npm run verify`       | Everything the workflow runs on a PR into `main`, in the same order      |
-| `npm run confirm`      | Confirms that the published site is the one in `dist/`, from this commit |
-| `npm run share-image`  | Generates the share image from `dist/` (see below)                       |
+| Command                  | What it does                                                                   |
+| :----------------------- | :----------------------------------------------------------------------------- |
+| `npm ci`                 | Installs the dependencies                                                      |
+| `npm run dev`            | Development server on `localhost:4321`                                         |
+| `npm run check`          | Checks the types: a text missing in one language makes it fail                 |
+| `npm run format`         | Formats the code with Prettier                                                 |
+| `npm run build`          | Build of the published site, in `dist/`                                        |
+| `npm run build:launch`   | Test build with the Commercial launch, in `dist-launch/`                       |
+| `npm test`               | Playwright suite over both builds, which must already exist                    |
+| `npm run lighthouse`     | Lighthouse in mobile mode over both builds (see below)                         |
+| `npm run verify`         | Everything the workflow runs on a PR into `main`, in the same order            |
+| `npm run confirm`        | Confirms that the published site is the one in `dist/`, from this commit       |
+| `npm run share-image`    | Generates the share image from `dist/` (see below)                             |
+| `npm run boundary-cases` | Lists the cloud chart's providers within 0.05 of a threshold, for Julien (#75) |
 
 ## Branches
 
@@ -31,13 +32,18 @@ With Node 24 (`nvm use` reads `.nvmrc`):
 
 - `src/config/site.ts`: the domain and what each phase publishes (the published languages and `noindex`).
 - `src/config/values.ts`: the shared values (booking page, LinkedIn…). The build fails if one is missing.
+- `src/content/legal/<language>/`: the Legal information (`legal.md`) and the Privacy policy (`privacy.md`), in Markdown. The shared values go in as placeholders, such as `{email}` or `{legal.siret}`: an unknown one fails the build, and a `null` value (the VAT number until it is active) removes its line. The build also fails when a published language lacks one of the two pages.
+- `src/config/audiences.ts`: the four Audiences of «Os teus desafios». Their ids are the anchors of the questions page (`/pt/questions/#cto`), which the header submenu and the home page link to.
+- `src/config/testimonials.ts`: the Testimonials, with each author's written authorisation per language and the approval of each translation. A Testimonial only shows in a language its author authorised and, in English and Portuguese, whose translation the author approved. With none, the section disappears.
 - `src/i18n/`: the texts, one file per language. Portuguese is the Reference language; French and English are typed from it.
 - `src/localized-pages/<language>/`: one thin page file per page and per language. Only the pages of published languages are generated. Pages without a language stay in `src/pages/`. A new page only shows up in `npm run dev` after a restart.
 - `src/pages/404.astro`: the 404 page, in English only and always with `noindex`. `astro preview` and `.htaccess` show it for any address that does not exist.
 - `src/layouts/Base.astro`: the `<head>` of every page: `title`, `description`, `canonical`, `hreflang`, Open Graph, `noindex` and the commit.
 - `src/integrations/sitemap.ts`: writes `sitemap.xml` and `robots.txt` at the end of the build. The sitemap only lists pages without `noindex`.
-- `public/og-image.png`: the share image, a single one in English (the logo and the Designation), with its path and size in `src/config/share-image.ts`. It is generated with `npm run build && npm run share-image` (`scripts/share-image.ts`), which takes a picture of the logo from the built site. It only needs regenerating when the logo, the English Designation or the colours change.
+- `public/og-image.png`: the share image, a single one in English (the logo and the Designation), with its path and size in `src/config/share-image.ts`. It is generated with `npm run build && npm run share-image` (`scripts/share-image.ts`), which puts `src/assets/logo.png` on the background of the built site. It only needs regenerating when the logo, the English Designation or the colours change.
+- `src/assets/logo.png`: the logo, Julien's image cropped to its content. Below 1024 px the header shows only the ∞, its left 9/4 (`src/components/Logo.astro`). `public/favicon.ico` (16, 32 and 48 px) and `public/apple-touch-icon.png` (180 px) are made from that ∞; a new logo needs them redone.
 - `src/components/`: the components, shared by the three languages. The header and the footer reach every page through `src/layouts/Base.astro`.
+- `src/config/ecology.ts`: the ecology page's estimator: the intensity of each country (Ember 2025), the watts per vCPU (Cloud Carbon Footprint), the published PUE (Uptime Institute) and the calculation. The build writes the first result into the page and the browser recomputes it from the same file. A new year of Ember data changes this file and the year in the sources' names (`src/i18n/`).
 - `src/styles/global.css`: the colours and fonts of the visual identity, as Tailwind tokens (`bg-background`, `text-green`, `font-heading`…). Only these exist.
 - `src/assets/fonts/`: the site's 2 fonts, generated by `subset.sh` (it only needs to run again to change font or characters).
 - `src/scripts/`: the browser JavaScript, hand-written and without a library. `after-load.ts` starts it after the page loads. Automatic animations stop with the pause button (`src/components/PauseButton.astro`), which describes the signal each animation listens to.

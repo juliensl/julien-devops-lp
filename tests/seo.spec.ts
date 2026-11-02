@@ -48,6 +48,19 @@ inEachBuild((build) => {
 		expect(checked).toBe(languagePages.length * publishedLanguages.length);
 	});
 
+	test('the tab icon and the 180 px touch icon exist', async ({ page, request }) => {
+		await page.goto(languagePages[0].path);
+		for (const rel of ['icon', 'apple-touch-icon']) {
+			const href = await page.locator(`link[rel="${rel}"]`).getAttribute('href');
+			const response = await request.get(href!);
+			expect(response.status(), rel).toBe(200);
+			expect(response.headers()['content-type'], rel).toMatch(/^image\//);
+		}
+		const touch = await request.get('/apple-touch-icon.png');
+		const png = await touch.body();
+		expect([png.readUInt32BE(16), png.readUInt32BE(20)]).toEqual([180, 180]);
+	});
+
 	for (const { path } of languagePages) {
 		test(`${path}: the Open Graph has the page title and description and the image in English`, async ({
 			page,

@@ -1,24 +1,62 @@
 ---
-// The footer of every page: the name and LinkedIn.
-// The parts that arrive with the pages they lead to have their place marked with the ticket.
+// The footer of every page: the name, the email on the domain, LinkedIn, Ecology and the two legal pages.
+// On a page with no equivalents in other languages (the 404), the links lead, like the logo, to the first
+// published language.
+import { PHASE, type Language } from '../config/site';
 import { values } from '../config/values';
+import { dictionaries } from '../i18n';
+import { LEGAL_PAGES, legalPage } from '../lib/legal';
+import { ecologyPath, legalPath } from '../lib/paths';
+import Leaf from './Leaf.astro';
+
+interface Props {
+	language: Language;
+	noEquivalents?: boolean;
+}
+
+const { language, noEquivalents = false } = Astro.props;
+const target = noEquivalents ? PHASE.publishedLanguages[0] : language;
+const ecology = ecologyPath(target);
+/** The link text is the page's title, in the language of this page. */
+const legalLinks = await Promise.all(
+	LEGAL_PAGES.map(async (page) => ({
+		href: legalPath(target, page),
+		text: (await legalPage(language, page)).data.title,
+	})),
+);
+const linkClass =
+	'inline-flex min-h-6 items-center underline underline-offset-3 hover:text-foreground';
 ---
 
 <footer class="mt-20 border-t border-line text-sm text-foreground-secondary">
 	<div class="page-width flex flex-wrap items-center gap-x-6 gap-y-3 py-8">
 		<p class="font-heading text-lg text-foreground">{values.name}</p>
 
-		{/* The email on the domain (#71) */}
+		<a href={`mailto:${values.email}`} class={linkClass}>
+			{values.email}
+		</a>
 
-		<a
-			href={values.linkedin}
-			class="inline-flex min-h-6 items-center underline underline-offset-3 hover:text-foreground"
-		>
+		<a href={values.linkedin} class={linkClass}>
 			LinkedIn
 		</a>
 
-		{/* Ecology (#68) */}
+		<a
+			href={ecology}
+			aria-current={Astro.url.pathname === ecology ? 'page' : undefined}
+			class={`${linkClass} gap-1.5`}
+		>
+			<Leaf size={16} />
+			{dictionaries[language].ecology.link}
+		</a>
 
-		{/* Legal information and Privacy policy (#71) */}
+		{legalLinks.map(({ href, text }) => (
+			<a
+				href={href}
+				aria-current={Astro.url.pathname === href ? 'page' : undefined}
+				class={linkClass}
+			>
+				{text}
+			</a>
+		))}
 	</div>
 </footer>

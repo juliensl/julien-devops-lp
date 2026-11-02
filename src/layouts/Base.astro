@@ -59,8 +59,8 @@ const urlInLanguage = (l: Language) =>
 			</>
 		)}
 		<meta name="commit" content={commit} />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 		{/* Only the Hero font (the Promise, in Bona Nova) is preloaded. */}
 		<Font cssVariable="--font-bona-nova" preload />
 		<Font cssVariable="--font-geist" />
@@ -68,6 +68,6 @@ const urlInLanguage = (l: Language) =>
 	<body class="antialiased">
 		<Header language={language} noEquivalents={noEquivalents} />
 		<slot />
-		<Footer />
+		<Footer language={language} noEquivalents={noEquivalents} />
 	</body>
 </html>

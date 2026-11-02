@@ -267,10 +267,10 @@ inEachBuild((build) => {
 			test(`"${about.title}": the photo, the name, the Designation and the way of working`, async ({
 				page,
 			}) => {
-				const images: string[] = [];
+				const images = new Map<string, string>();
 				page.on('response', (response) => {
 					if (response.request().resourceType() === 'image') {
-						images.push(response.headers()['content-type'] ?? '');
+						images.set(response.url(), response.headers()['content-type'] ?? '');
 					}
 				});
 				await page.goto(prefix, { waitUntil: 'networkidle' });
@@ -280,13 +280,14 @@ inEachBuild((build) => {
 				await expect(section.getByText(about.wayOfWorking, { exact: true })).toBeVisible();
 
 				// Far from the top: the photo is only requested when it is reached.
-				expect(images).toEqual([]);
 				const photo = section.getByRole('img', { name: NAME, exact: true });
+				const photoUrl = new URL((await photo.getAttribute('src'))!, page.url()).href;
+				expect([...images.keys()]).not.toContain(photoUrl);
 				await photo.scrollIntoViewIfNeeded();
 				await expect(photo).toBeVisible();
-				// The only image on the page, in AVIF.
-				await expect(page.locator('img')).toHaveCount(1);
-				await expect.poll(() => images).toEqual(['image/avif']);
+				// The only image in the content (the logo is in the header), in AVIF.
+				await expect(page.getByRole('main').locator('img')).toHaveCount(1);
+				await expect.poll(() => images.get(photoUrl)).toBe('image/avif');
 			});
 
 			test('the sections are where #54 puts them, from "Para quem é", right after the Hero, to the final CTA, at the end', async ({

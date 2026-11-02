@@ -1,0 +1,533 @@
+---
+// The ecology page (#68, #54 «Página de ecologia»): the estimator, how it calculates, what infrastructure
+// can change, and the sources and limits. It ends with the button.
+// No provider environmental data, and no provider as an example of lower impact: the only expression
+// is Lower-impact hosting (CONTEXT.md).
+import {
+	COUNTRIES,
+	DAYS_PER_MONTH,
+	FIELDS,
+	FIRST_LOAD,
+	INTENSITIES,
+	INTENSITY_YEAR,
+	PUE_YEAR,
+	SOURCES,
+	WATTS,
+	figures,
+	type CountryCode,
+	type SourceId,
+} from '../config/ecology';
+import { HTML_CODES, PREFIXES, type Language } from '../config/site';
+import { values } from '../config/values';
+import { dictionaries } from '../i18n';
+import Base from '../layouts/Base.astro';
+import { withNonBreakingSpaces } from '../lib/spaces';
+import BookingButton from './BookingButton';
+import FlowingLeaf from './FlowingLeaf.astro';
+import Leaf from './Leaf.astro';
+import PauseButton from './PauseButton.astro';
+import ValueBadge, { type BadgeKind } from './ValueBadge.astro';
+
+interface Props {
+	language: Language;
+}
+
+const { language } = Astro.props;
+const t = dictionaries[language];
+const { page, estimator, method, levers, sources } = t.ecology;
+const { fields, units } = estimator;
+
+const locale = HTML_CODES[language];
+const format = (n: number, options?: Intl.NumberFormatOptions) =>
+	new Intl.NumberFormat(locale, options).format(n);
+/** The numbers of the first load. The script rewrites them in place when a field changes. */
+const firstFigures = figures(locale, FIRST_LOAD);
+const regionNames = new Intl.DisplayNames(locale, { type: 'region' });
+const countryName = (country: CountryCode) => regionNames.of(country)!;
+const alphabetical = COUNTRIES.toSorted((a, b) =>
+	countryName(a).localeCompare(countryName(b), locale),
+);
+const highestIntensity = Math.max(...Object.values(INTENSITIES));
+
+const sliders: { name: keyof typeof FIELDS; hint?: [BadgeKind, string] }[] = [
+	{ name: 'vcpu' },
+	{ name: 'utilisation', hint: ['assumption', estimator.hints.utilisation] },
+	{ name: 'hoursPerDay' },
+	{ name: 'pue', hint: ['published', estimator.hints.pue] },
+];
+---
+
+<Base language={language} title={`${page.title} · ${values.name}`} description={page.description}>
+	<main>
+		{/* As on the home page, the pause button is the first focus after the header. */}
+		<PauseButton {...t.animation} />
+
+		<div class="page-width grid gap-x-16 gap-y-8 pt-14 sm:pt-20 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:items-center">
+			<div class="grid gap-5">
+				<p class="label flex items-center gap-2">
+					<Leaf size={16} /> {page.title}
+				</p>
+				<h1 class="max-w-[20ch] text-[clamp(2rem,5vw,4.2rem)] leading-[1.05]">{page.heading}</h1>
+				<p class="max-w-2xl text-lg text-foreground-secondary">
+					{withNonBreakingSpaces(page.intro)}
+				</p>
+			</div>
+			<FlowingLeaf class="max-w-48 justify-self-center lg:max-w-80" />
+			<ul
+				aria-label={page.legend.label}
+				class="grid gap-3 border-l-2 border-green pl-6 text-sm text-foreground-secondary lg:col-span-2 lg:grid-cols-3 lg:gap-8 lg:border-l-0 lg:pl-0"
+			>
+				{(['published', 'assumption', 'calculated'] as const).map((kind) => (
+					<li class="grid items-center gap-x-3 gap-y-1 sm:grid-cols-[7rem_1fr] lg:grid-cols-[auto_1fr] lg:border-l-2 lg:border-green lg:pl-6">
+						<span>
+							<ValueBadge language={language} kind={kind} />
+						</span>
+						{page.legend[kind]}
+					</li>
+				))}
+			</ul>
+		</div>
+
+		<section aria-labelledby="estimator-title" data-estimator class="page-width grid gap-10 pt-20">
+			<div class="grid gap-4">
+				<p class="label">1 · {estimator.label}</p>
+				<h2 id="estimator-title" class="section-title">
+					{estimator.title}
+				</h2>
+				<p class="max-w-2xl text-foreground-secondary">{withNonBreakingSpaces(estimator.intro)}</p>
+			</div>
+
+			<div class="grid gap-x-12 gap-y-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
+				{/* Without JS the fields would change nothing: CSS hides them, and the page shows the first load. */}
+				<form class="grid content-start gap-6 border-t border-line-strong pt-6 noscript:hidden">
+					<div class="grid gap-2">
+						<label for="estimator-country">{fields.country}</label>
+						<select
+							id="estimator-country"
+							name="country"
+							class="min-h-11 rounded-[10px] border border-line-strong bg-background px-3"
+						>
+							{alphabetical.map((country) => (
+								<option value={country} selected={country === FIRST_LOAD.country}>
+									{countryName(country)}
+								</option>
+							))}
+						</select>
+					</div>
+					{sliders.map(({ name, hint }) => (
+						<div class="grid gap-2">
+							<div class="flex justify-between gap-4">
+								<label for={`estimator-${name}`}>{fields[name]}</label>
+								{/* Screen readers hear the value from the slider itself (aria-valuetext). */}
+								<span
+									aria-hidden="true"
+									data-figure={name}
+									class="font-semibold text-green tabular-nums"
+								>
+									{firstFigures[name]}
+								</span>
+							</div>
+							<input
+								type="range"
+								id={`estimator-${name}`}
+								name={name}
+								{...FIELDS[name]}
+								value={FIRST_LOAD[name]}
+								aria-valuetext={firstFigures[name]}
+							/>
+							{hint && (
+								<p class="flex flex-wrap items-center gap-2 text-[0.8125rem] text-foreground-secondary">
+									<ValueBadge language={language} kind={hint[0]} />
+									{withNonBreakingSpaces(hint[1])}
+								</p>
+							)}
+						</div>
+					))}
+				</form>
+
+				<div class="grid content-start gap-8 border-l-2 border-green pl-6">
+					<div role="group" aria-label={estimator.result} class="grid gap-6 sm:grid-cols-2">
+						<p class="grid justify-items-start gap-1.5">
+							<ValueBadge language={language} kind="calculated" />{' '}
+							<span class="result" data-figure="kwh">
+								{firstFigures.kwh}
+							</span>{' '}
+							<span class="text-sm text-foreground-secondary">{units.kwhPerMonth}</span>
+						</p>
+						<p class="grid justify-items-start gap-1.5">
+							<ValueBadge language={language} kind="calculated" />{' '}
+							<span class="result" data-figure="kg">
+								{firstFigures.kg}
+							</span>{' '}
+							<span class="text-sm text-foreground-secondary">
+								{units.kgPerMonth}, {estimator.locationBased}
+							</span>
+						</p>
+					</div>
+
+					{/* What screen readers hear once a field has changed, not at each step of a slider. */}
+					<p role="status" class="sr-only">
+						<span data-figure="kwh">{firstFigures.kwh}</span> {units.kwhPerMonth},{' '}
+						<span data-figure="kg">{firstFigures.kg}</span> {units.kgPerMonth} (
+						<span data-figure="country">{countryName(FIRST_LOAD.country)}</span>).
+					</p>
+
+					<div class="grid gap-3">
+						<h3 id="calculation-title" class="text-xl">
+							{estimator.calculation}
+						</h3>
+						<ul aria-labelledby="calculation-title" class="calculation">
+							<li>
+								<span class="operator"></span>
+								<span>
+									<span data-figure="vcpu">{firstFigures.vcpu}</span>&nbsp;{units.vcpu}
+								</span>
+								<ValueBadge language={language} kind="assumption" />
+							</li>
+							<li>
+								<span class="operator">×</span>
+								<span>
+									<span data-figure="watts">{firstFigures.watts}</span>&nbsp;{units.wattsPerVcpu}
+									<small>
+										{format(WATTS.idle)}&nbsp;W +{' '}
+										<span data-figure="utilisation">{firstFigures.utilisation}</span> × (
+										{format(WATTS.full)}&nbsp;W − {format(WATTS.idle)}&nbsp;W),{' '}
+										{estimator.wattsSource}
+									</small>
+								</span>
+								<ValueBadge language={language} kind="assumption" />
+							</li>
+							<li>
+								<span class="operator">×</span>
+								<span>
+									<span data-figure="hoursPerDay">{firstFigures.hoursPerDay}</span> {units.perDay}
+								</span>
+								<ValueBadge language={language} kind="assumption" />
+							</li>
+							<li>
+								<span class="operator">×</span>
+								<span>
+									{format(DAYS_PER_MONTH, { maximumFractionDigits: 1 })}&nbsp;{units.daysPerMonth}
+									<small>{format(365.25)} ÷ 12</small>
+								</span>
+								<ValueBadge language={language} kind="calculated" />
+							</li>
+							{/* The published PUE has its source; any other is the Visitor's assumption. */}
+							<li>
+								<span class="operator">×</span>
+								<span>
+									PUE&nbsp;<span data-figure="pue">{firstFigures.pue}</span>
+									<small data-pue="published">Uptime Institute, {PUE_YEAR}</small>
+								</span>
+								<span data-pue="published">
+									<ValueBadge language={language} kind="published" />
+								</span>
+								<span data-pue="assumption" hidden>
+									<ValueBadge language={language} kind="assumption" />
+								</span>
+							</li>
+							<li>
+								<span class="operator">=</span>
+								<span>
+									<span data-figure="kwh">{firstFigures.kwh}</span>&nbsp;{units.kwhPerMonth}
+								</span>
+								<ValueBadge language={language} kind="calculated" />
+							</li>
+							<li>
+								<span class="operator">×</span>
+								<span>
+									<span data-figure="intensity">{firstFigures.intensity}</span>&nbsp;g&nbsp;CO2e/kWh
+									<small>
+										<span data-figure="country">{countryName(FIRST_LOAD.country)}</span>, Ember{' '}
+										{INTENSITY_YEAR}, {estimator.lifeCycle}
+									</small>
+								</span>
+								<ValueBadge language={language} kind="published" />
+							</li>
+							<li>
+								<span class="operator">=</span>
+								<span>
+									<span data-figure="kg">{firstFigures.kg}</span>&nbsp;{units.kgPerMonth}
+								</span>
+								<ValueBadge language={language} kind="calculated" />
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+
+			<section
+				aria-labelledby="comparison-title"
+				class="grid gap-4 border-t border-line-strong pt-8"
+			>
+				<h3 id="comparison-title" class="text-xl">
+					{estimator.comparison}
+				</h3>
+				{/* A badge on each value: the intensities are published, the results calculated. */}
+				<p class="flex flex-wrap items-center gap-x-6 gap-y-2 text-[0.8125rem] text-foreground-secondary">
+					<span class="inline-flex items-center gap-2">
+						g&nbsp;CO2e/kWh, Ember {INTENSITY_YEAR}{' '}
+						<ValueBadge language={language} kind="published" />
+					</span>
+					<span class="inline-flex items-center gap-2">
+						{units.kgPerMonth} <ValueBadge language={language} kind="calculated" />
+					</span>
+				</p>
+				{/* Lowest intensity firstFigures. The bars are the intensity, so they don't change with the load. */}
+				<ul aria-labelledby="comparison-title" class="grid gap-1.5">
+					{COUNTRIES.map((country) => (
+						<li
+							data-country={country}
+							aria-current={country === FIRST_LOAD.country ? 'true' : undefined}
+							class="country"
+						>
+							<span>
+								{countryName(country)}{' '}
+								<small class="text-foreground-secondary">
+									{format(INTENSITIES[country], { minimumFractionDigits: 1 })}&nbsp;g/kWh
+								</small>
+							</span>
+							<span class="track" aria-hidden="true">
+								<span style={`width: ${(INTENSITIES[country] / highestIntensity) * 100}%`}></span>
+							</span>
+							<span class="text-right tabular-nums">
+								<span data-figure={`kg-${country}`}>{firstFigures[`kg-${country}`]}</span>&nbsp;kg
+							</span>
+						</li>
+					))}
+				</ul>
+			</section>
+		</section>
+
+		<section aria-labelledby="method-title" class="page-width grid gap-4 pt-20">
+			<p class="label">2 · {method.label}</p>
+			<h2 id="method-title" class="section-title">
+				{method.title}
+			</h2>
+			<ul class="mt-4 grid gap-6 md:grid-cols-3">
+				{method.cards.map(({ title, text }) => (
+					<li class="card border-t border-line-strong">
+						<h3>{title}</h3>
+						<p>{withNonBreakingSpaces(text)}</p>
+					</li>
+				))}
+			</ul>
+		</section>
+
+		<section aria-labelledby="levers-title" class="page-width grid gap-4 pt-20">
+			<p class="label">3 · {levers.label}</p>
+			<h2 id="levers-title" class="section-title">
+				{levers.title}
+			</h2>
+			<ul class="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+				{levers.cards.map(({ title, text }) => (
+					<li class="card border-t-2 border-green">
+						<h3>{title}</h3>
+						<p>{withNonBreakingSpaces(text)}</p>
+					</li>
+				))}
+			</ul>
+		</section>
+
+		<section aria-labelledby="sources-title" class="page-width grid gap-6 pt-20">
+			<h2 id="sources-title" class="text-[clamp(1.5rem,3vw,2rem)] leading-[1.15]">
+				{sources.title}
+			</h2>
+			<ol class="grid list-decimal gap-1.5 pl-5 text-sm text-foreground-secondary">
+				{(Object.entries(SOURCES) as [SourceId, string | null][]).map(([id, url]) => (
+					<li>
+						{url ? (
+							<a href={url} class="text-green underline underline-offset-3">
+								{sources.names[id]}
+							</a>
+						) : (
+							sources.names[id]
+						)}
+					</li>
+				))}
+			</ol>
+			<ul class="grid list-disc gap-1.5 pl-5 text-foreground-secondary">
+				{sources.limits.map((limit) => (
+					<li>{withNonBreakingSpaces(limit)}</li>
+				))}
+			</ul>
+			<div class="mt-4 flex flex-wrap items-center gap-x-8 gap-y-4">
+				<a
+					href={PREFIXES[language]}
+					class="inline-flex min-h-11 items-center underline underline-offset-3 hover:text-green"
+				>
+					{t.ecology.back}
+				</a>
+				<BookingButton text={t.bookButton} />
+			</div>
+		</section>
+	</main>
+</Base>
+
+<script>
+	import { figures, PUBLISHED_PUE, type CountryCode, type Load } from '../config/ecology';
+	import { afterLoad } from '../scripts/after-load';
+
+	// Each field rewrites the numbers at once; screen readers hear the result once a change is made
+	// (a slider released, a country chosen), not at every step of a drag.
+	afterLoad(() => {
+		for (const estimator of document.querySelectorAll<HTMLElement>('[data-estimator]')) {
+			const form = estimator.querySelector('form')!;
+			const country = form.querySelector('select')!;
+			const status = estimator.querySelector<HTMLElement>('[role="status"]')!;
+			const locale = document.documentElement.lang;
+
+			const load = (): Load => {
+				const data = new FormData(form);
+				const number = (name: string) => Number(data.get(name));
+				return {
+					country: data.get('country') as CountryCode,
+					vcpu: number('vcpu'),
+					utilisation: number('utilisation'),
+					hoursPerDay: number('hoursPerDay'),
+					pue: number('pue'),
+				};
+			};
+
+			/** The numbers of the current load, as the page writes them, and the country's name. */
+			const texts = (current: Load): Record<string, string> => ({
+				...figures(locale, current),
+				country: country.selectedOptions[0].text,
+			});
+
+			/** Writes each number in its `[data-figure]`, only where it changed: an unchanged status
+			 * says nothing. */
+			const fill = (elements: HTMLElement[], text: Record<string, string>) => {
+				for (const element of elements) {
+					const value = text[element.dataset.figure!];
+					if (element.textContent !== value) element.textContent = value;
+				}
+			};
+			const figuresOutsideStatus = [
+				...estimator.querySelectorAll<HTMLElement>('[data-figure]'),
+			].filter((element) => !status.contains(element));
+			const figuresInStatus = [...status.querySelectorAll<HTMLElement>('[data-figure]')];
+
+			/** Shows the current load: its numbers, the PUE's badge and the chosen country. */
+			const show = () => {
+				const current = load();
+				const text = texts(current);
+				fill(figuresOutsideStatus, text);
+				for (const slider of form.querySelectorAll<HTMLInputElement>('input[type="range"]')) {
+					slider.setAttribute('aria-valuetext', text[slider.name]);
+				}
+				const published = current.pue === PUBLISHED_PUE;
+				for (const element of estimator.querySelectorAll<HTMLElement>('[data-pue]')) {
+					element.hidden = (element.dataset.pue === 'published') !== published;
+				}
+				for (const row of estimator.querySelectorAll<HTMLElement>('[data-country]')) {
+					if (row.dataset.country === current.country) row.setAttribute('aria-current', 'true');
+					else row.removeAttribute('aria-current');
+				}
+			};
+
+			/** Tells screen readers the result. */
+			const announce = () => fill(figuresInStatus, texts(load()));
+
+			form.addEventListener('input', show);
+			form.addEventListener('change', announce);
+			form.addEventListener('submit', (event) => event.preventDefault());
+			// The browser may have kept the fields of an earlier visit.
+			show();
+			announce();
+		}
+	});
+</script>
+
+<style>
+	.section-title {
+		font-size: clamp(1.9rem, 3.6vw, 2.6rem);
+		line-height: 1.1;
+	}
+
+	/* The cards: open, with a line on top, as in the rest of the page. */
+	.card {
+		display: grid;
+		align-content: start;
+		gap: 0.5rem;
+		padding-top: 1.25rem;
+	}
+	.card h3 {
+		font-size: 1.25rem;
+		line-height: 1.2;
+	}
+	.card p {
+		color: var(--color-foreground-secondary);
+		font-size: 0.9375rem;
+	}
+
+	input[type='range'] {
+		width: 100%;
+		min-height: 1.5rem;
+		accent-color: var(--color-green);
+	}
+
+	.result {
+		font-family: var(--font-heading);
+		font-size: clamp(2.2rem, 5vw, 3.2rem);
+		line-height: 1;
+		color: var(--color-green);
+		font-variant-numeric: tabular-nums;
+	}
+
+	/* The calculation, one value per line: the operator, the value with its source, and its badge. */
+	.calculation {
+		display: grid;
+		gap: 0.6rem;
+		font-size: 0.9375rem;
+	}
+	.calculation li {
+		display: grid;
+		grid-template-columns: 1rem minmax(0, 1fr) auto;
+		gap: 0.75rem;
+		align-items: baseline;
+	}
+	.calculation small {
+		display: block;
+		color: var(--color-foreground-secondary);
+		font-size: 0.8125rem;
+	}
+	.operator {
+		color: var(--color-foreground-secondary);
+	}
+
+	/* The comparison: the country and its intensity, the bar, and the result. */
+	.country {
+		display: grid;
+		grid-template-columns: 11rem minmax(0, 1fr) 4.5rem;
+		gap: 0.75rem;
+		align-items: center;
+		padding: 0.15rem 0.4rem;
+		border-radius: 6px;
+		font-size: 0.875rem;
+	}
+	.country[aria-current] {
+		background: color-mix(in srgb, var(--color-green) 14%, transparent);
+		font-weight: 600;
+	}
+	.track {
+		height: 0.625rem;
+		border-radius: 999px;
+		background: var(--color-surface-2);
+	}
+	.track > span {
+		display: block;
+		height: 100%;
+		border-radius: inherit;
+		background: var(--color-green);
+	}
+	/* On a phone, the intensity goes below the country's name. */
+	@media (max-width: 640px) {
+		.country {
+			grid-template-columns: 7.5rem minmax(0, 1fr) 4rem;
+		}
+		.country small {
+			display: block;
+		}
+	}
+</style>
