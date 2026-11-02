@@ -5,22 +5,32 @@ import { LANGUAGES } from './expected';
 
 type Box = { x: number; y: number; width: number; height: number };
 
-/** What the canvas that covers the screen shows: where it drew (CSS px), and a fingerprint of its pixels. */
-function drawing(page: Page) {
+/** What the canvas that covers the screen shows: where it drew (CSS px), a fingerprint of its pixels,
+    and the text and controls with something drawn behind them. Fixed elements, such as the pause
+    button, float above the canvas on their own background. */
+function look(page: Page) {
 	return page.evaluate(() => {
 		const { clientWidth, clientHeight } = document.documentElement;
-		const canvas = [...document.querySelectorAll('canvas')].find((c) => {
+		const canvases = [...document.querySelectorAll('canvas')];
+		const canvas = canvases.find((c) => {
 			const { left, top, width, height } = c.getBoundingClientRect();
 			return left <= 0 && top <= 0 && width >= clientWidth && height >= clientHeight;
 		});
-		if (!canvas || !canvas.width || !canvas.height) return null;
-		const { data } = canvas.getContext('2d')!.getImageData(0, 0, canvas.width, canvas.height);
+		if (!canvas) {
+			const boxes = canvases.map((c) => c.getBoundingClientRect().toJSON());
+			throw new Error(`No canvas covers ${clientWidth}×${clientHeight}: ${JSON.stringify(boxes)}`);
+		}
+		const context = canvas.getContext('2d')!;
 		const scale = canvas.width / canvas.getBoundingClientRect().width;
+		const pixels = (x: number, y: number, width: number, height: number) =>
+			width > 0 && height > 0 ? context.getImageData(x, y, width, height).data : [];
+
 		let [left, top, right, bottom] = [Infinity, Infinity, -1, -1];
 		let fingerprint = 0;
-		for (let i = 0; i < data.length; i += 4) {
-			fingerprint = (fingerprint * 31 + data[i] + data[i + 1] * 3 + data[i + 3] * 7) | 0;
-			if (!data[i + 3]) continue;
+		const all = pixels(0, 0, canvas.width, canvas.height);
+		for (let i = 0; i < all.length; i += 4) {
+			fingerprint = (fingerprint * 31 + all[i] + all[i + 1] * 3 + all[i + 3] * 7) | 0;
+			if (!all[i + 3]) continue;
 			const x = (i / 4) % canvas.width;
 			const y = Math.floor(i / 4 / canvas.width);
 			left = Math.min(left, x);
@@ -37,31 +47,19 @@ function drawing(page: Page) {
 						width: (right - left + 1) / scale,
 						height: (bottom - top + 1) / scale,
 					};
-		return { drawn, fingerprint };
-	});
-}
 
-/** The text and controls of the page that have something drawn by the canvas behind them. The fixed
-    elements, such as the pause button, float above the canvas on their own background. */
-function textOverDrawing(page: Page) {
-	return page.evaluate(() => {
-		const { clientWidth, clientHeight } = document.documentElement;
-		const canvas = [...document.querySelectorAll('canvas')].find((c) => {
-			const { left, top, width, height } = c.getBoundingClientRect();
-			return left <= 0 && top <= 0 && width >= clientWidth && height >= clientHeight;
-		})!;
-		const context = canvas.getContext('2d')!;
-		const scale = canvas.width / canvas.getBoundingClientRect().width;
 		const floats = (e: Element | null): boolean =>
 			!!e && (getComputedStyle(e).position === 'fixed' || floats(e.parentElement));
 		const drawnUnder = ({ left, top, right, bottom }: DOMRect) => {
 			const x = Math.max(0, Math.floor(left * scale));
 			const y = Math.max(0, Math.floor(top * scale));
-			const width = Math.min(canvas.width, Math.ceil(right * scale)) - x;
-			const height = Math.min(canvas.height, Math.ceil(bottom * scale)) - y;
-			if (width <= 0 || height <= 0) return false;
-			const { data } = context.getImageData(x, y, width, height);
-			return data.some((value, i) => i % 4 === 3 && value > 0);
+			const under = pixels(
+				x,
+				y,
+				Math.min(canvas.width, Math.ceil(right * scale)) - x,
+				Math.min(canvas.height, Math.ceil(bottom * scale)) - y,
+			);
+			return under.some((value, i) => i % 4 === 3 && value > 0);
 		};
 		const main = document.querySelector('main')!;
 		const texts = document.createTreeWalker(main, NodeFilter.SHOW_TEXT, {
@@ -78,27 +76,38 @@ function textOverDrawing(page: Page) {
 			if (!floats(control) && drawnUnder(control.getBoundingClientRect()))
 				covered.push(control.outerHTML.slice(0, 80));
 		}
-		return covered;
+		return { drawn, fingerprint, covered };
 	});
 }
 
-/** Two frames later: the canvas has drawn what the page shows now. */
-const nextFrames = (page: Page) =>
-	page.evaluate(
-		() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))),
-	);
+/** Scrolls the page, and waits a few frames for the canvas to follow it. */
+async function scrollPage(page: Page, top: number) {
+	await page.evaluate(async (y) => {
+		scrollTo(0, y);
+		for (let i = 0; i < 3; i++) await new Promise(requestAnimationFrame);
+	}, top);
+}
+
+/** Two fingerprints of the ∞'s canvas, 1 s apart: different if it moved. */
+async function isMoving(page: Page) {
+	const before = (await look(page)).fingerprint;
+	await page.waitForTimeout(1000);
+	return (await look(page)).fingerprint !== before;
+}
 
 /** Where the ∞ is drawn, once it is. */
 async function drawnBox(page: Page): Promise<Box> {
 	await expect
-		.poll(async () => (await drawing(page))?.drawn, { message: 'the ∞ is drawn' })
+		.poll(async () => (await look(page)).drawn, { message: 'the ∞ is drawn' })
 		.toBeTruthy();
-	return (await drawing(page))!.drawn!;
+	return (await look(page)).drawn!;
 }
 
 inEachBuild((build) => {
 	for (const language of build.phase.publishedLanguages) {
-		const { prefix, promise, button } = LANGUAGES[language];
+		const { prefix, promise, button, pause, resume } = LANGUAGES[language];
+		const pauseButton = (page: Page, name: string) =>
+			page.getByRole('button', { name, exact: true });
 		const hero = (page: Page) => page.getByRole('region', { name: promise });
 
 		test.describe(`${prefix} dotted ∞`, () => {
@@ -119,8 +128,7 @@ inEachBuild((build) => {
 					await page.goto(prefix);
 					const lastText = (await hero(page).locator('p').last().boundingBox())!;
 					// The ∞ is below the first screen: scroll it into view, then measure.
-					await page.evaluate((y) => scrollTo(0, y - 100), lastText.y);
-					await nextFrames(page);
+					await scrollPage(page, lastText.y - 100);
 					const infinity = await drawnBox(page);
 					const note = (await hero(page).locator('p').last().boundingBox())!;
 					expect(infinity.y, 'under the note').toBeGreaterThan(note.y + note.height);
@@ -135,15 +143,76 @@ inEachBuild((build) => {
 					const { y, height } = (await hero(page).boundingBox())!;
 					let seen = 0;
 					for (let scroll = 0; scroll < y + height; scroll += 250) {
-						await page.evaluate((top) => scrollTo(0, top), scroll);
-						// A few frames, for the canvas to follow the page.
-						await page.waitForTimeout(150);
-						if ((await drawing(page))?.drawn) seen++;
-						expect(await textOverDrawing(page), `scrolled ${scroll} px`).toEqual([]);
+						await scrollPage(page, scroll);
+						const { drawn, covered } = await look(page);
+						if (drawn) seen++;
+						expect(covered, `scrolled ${scroll} px`).toEqual([]);
 					}
 					expect(seen, 'positions where the ∞ is on screen').toBeGreaterThan(1);
 				});
 			}
+
+			test('the ∞ is decorative: screen readers skip it and clicks go through it', async ({
+				page,
+			}) => {
+				await page.goto(prefix);
+				const { x, y, width, height } = await drawnBox(page);
+				const { hidden, underThePointer } = await page.evaluate(
+					([x, y]) => ({
+						hidden: [...document.querySelectorAll('canvas')].filter(
+							(c) => c.closest('[aria-hidden="true"]') === null,
+						).length,
+						underThePointer: document
+							.elementsFromPoint(x, y)
+							.filter((e) => e instanceof HTMLCanvasElement).length,
+					}),
+					[x + width / 2, y + height / 2],
+				);
+				expect(hidden, 'canvases screen readers would find').toBe(0);
+				expect(underThePointer, 'canvases a click would reach').toBe(0);
+			});
+
+			test('the pause button stops the ∞, and it flows again on resuming', async ({ page }) => {
+				await page.goto(prefix);
+				await drawnBox(page);
+				expect(await isMoving(page), 'before the pause').toBe(true);
+
+				await pauseButton(page, pause).click();
+				await expect.poll(() => isMoving(page), { message: 'paused', timeout: 10_000 }).toBe(false);
+
+				await pauseButton(page, resume).click();
+				expect(await isMoving(page), 'after resuming').toBe(true);
+			});
+
+			test('with reduced motion, the ∞ is a still image and the pause button does not appear', async ({
+				page,
+			}) => {
+				await page.emulateMedia({ reducedMotion: 'reduce' });
+				await page.goto(prefix);
+				await drawnBox(page);
+				expect(await isMoving(page)).toBe(false);
+				await expect(pauseButton(page, pause)).toBeHidden();
+			});
+
+			test('no JavaScript error while scrolling, resizing and pausing', async ({ page }) => {
+				const errors: string[] = [];
+				page.on('pageerror', (error) => errors.push(error.message));
+				page.on('console', (message) => {
+					if (message.type() === 'error') errors.push(message.text());
+				});
+				await page.goto(prefix);
+				await drawnBox(page);
+				const end = await page.evaluate(() => document.documentElement.scrollHeight);
+				for (const top of [400, 1500, end, 0]) await scrollPage(page, top);
+				await pauseButton(page, pause).click();
+				await scrollPage(page, 300);
+				await pauseButton(page, resume).click();
+				await page.setViewportSize({ width: 375, height: 700 });
+				await scrollPage(page, 500);
+				await page.emulateMedia({ reducedMotion: 'reduce' });
+				await scrollPage(page, 0);
+				expect(errors).toEqual([]);
+			});
 		});
 	}
 });
