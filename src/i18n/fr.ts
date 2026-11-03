@@ -143,14 +143,10 @@ export const fr: Dictionary = {
 				"Qui passe de quelques dizaines ou centaines à plusieurs milliers d'utilisateurs récurrents.",
 				'Une équipe de 5 à 20 personnes en général, dont au moins 3 devs.',
 			],
-			notLaunchedYet: "Ton SaaS n'est pas encore lancé ? Tu peux réserver l'échange quand même.",
-			exclusionsTitle: "Ce n'est pas pour",
-			exclusions: [
-				'Ceux qui ont déjà une pipeline CI, une application conteneurisée et une infrastructure avec auto-scaling.',
-				"Ce qui n'est ni web ni mobile.",
-				"Ceux qui refusent 100 à 500 €/mois de services et d'infrastructure.",
-				'Le secteur militaire.',
-			],
+			notLaunchedYet: {
+				text: "Ton SaaS n'est pas encore lancé ? Tu peux réserver l'échange quand même.",
+				link: "réserver l'échange",
+			},
 		},
 		todayAndAfter: {
 			title: "Aujourd'hui, et après.",
@@ -172,14 +168,6 @@ export const fr: Dictionary = {
 					title: 'Personne ne sait si ça tient.',
 					text: "Ça tourne avec les clients d'aujourd'hui. Avec beaucoup plus, personne ne sait le dire.",
 				},
-			],
-			alreadyTriedTitle: 'Ce que tu as déjà essayé',
-			alreadyTried: [
-				"Un freelance DevOps exécutant, qui n'apporte pas d'expertise.",
-				'Tester à la main, ou via un stagiaire.',
-				"Des outils de test que les devs doivent lancer en local, et qu'ils ne lancent jamais.",
-				'Demander à un dev de monter en compétence : des semaines perdues, un résultat médiocre.',
-				'Des freelances qui codent chacun à leur manière : chaque départ emporte la connaissance.',
 			],
 			afterTitle: 'Après',
 			after: [
@@ -276,7 +264,7 @@ export const fr: Dictionary = {
 			title: 'Disponible au moins 99 % du temps, chaque mois.',
 			text: "En 30 jours, je livre l'infrastructure. Pendant les 3 mois suivants, elle est disponible au moins 99 % du temps chaque mois. Sinon, je continue à travailler sans facturer jusqu'à y arriver.",
 			appliesWhen:
-				"S'applique quand tu prends les blocs 3 et 4 (et le 2, si l'application n'est pas encore conteneurisée).",
+				"S'applique quand tu prends l'Infrastructure scalable et l'Observabilité (et la Conteneurisation, si l'application n'est pas encore conteneurisée).",
 			conditionsTitle: 'Conditions',
 			conditions: [
 				'Un test écrit pour chaque bug corrigé.',
