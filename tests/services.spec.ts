@@ -13,8 +13,8 @@ interface Block {
 }
 
 // The Blocks and their tools come from the spec (#54); in Portuguese, the texts are the ones the
-// intern approved for the First review (#74). French and English are translations the intern
-// reviews before the Commercial launch (#75).
+// intern approved for the First review (#74). French is the intern's reviewed translation;
+// English is reviewed before the Commercial launch (#75).
 const EXPECTED: Record<
 	Language,
 	{
@@ -62,14 +62,14 @@ const EXPECTED: Record<
 	fr: {
 		label: 'Services',
 		title: 'Quatre couches de ton infrastructure.',
-		note: "Tu choisis les blocs que tu veux, dans n'importe quelle combinaison. 30 jours au maximum, à compter du début de la Mise en œuvre. Le bloc 3 demande une application conteneurisée, par le bloc 2 ou par ton équipe.",
+		note: 'Tu prends les blocs que tu veux, dans la combinaison de ton choix. 30 jours au maximum, à compter du début de la Mise en œuvre. Le bloc 3 demande une application conteneurisée, par le bloc 2 ou par ton équipe.',
 		blockLabel: 'Bloc',
 		toolsLabel: 'Outils',
 		blocks: [
 			{
 				name: 'Audit du code et pipeline CI',
 				summary: 'Les bugs sont attrapés à la pull request.',
-				text: "Chaque modification passe par les tests, le lint et l'analyse avant d'arriver en production, avec la sécurité au premier plan : dépendances aux failles connues, secrets oubliés dans le code et analyse du code lui-même. Ce qui est rouge ne passe pas.",
+				text: "Chaque modification passe par les tests, le lint et l'analyse avant d'arriver en production, avec la sécurité au premier plan : dépendances avec des failles connues, secrets oubliés dans le code et analyse du code lui-même. Ce qui est rouge ne passe pas.",
 				tools: ['SonarQube', 'Trivy'],
 			},
 			{
@@ -81,13 +81,13 @@ const EXPECTED: Record<
 			{
 				name: 'Infrastructure scalable',
 				summary: "L'infrastructure suit la charge.",
-				text: "Sur deux niveaux : du serverless de conteneurs pour les volumes moyens, Kubernetes quand la charge le justifie. Avec l'Infrastructure as Code, l'infrastructure est décrite dans du code et peut être recréée.",
+				text: "Sur deux niveaux : des conteneurs serverless pour les volumes moyens, Kubernetes quand la charge le justifie. Avec l'Infrastructure as Code, l'infrastructure est décrite sous forme de code et peut être recréée.",
 				tools: ['Kubernetes', 'Terraform'],
 			},
 			{
 				name: 'Observabilité',
 				summary: 'Tu vois les problèmes avant tes clients.',
-				text: "Un tableau de bord de santé en temps réel et une alerte immédiate en cas d'incident.",
+				text: "Un dashboard de santé en temps réel et une alerte immédiate en cas d'incident.",
 				tools: ['Grafana', 'Prometheus', 'ou les outils de ton cloud'],
 			},
 		],

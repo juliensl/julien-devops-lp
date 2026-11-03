@@ -64,8 +64,8 @@ const EXPECTED = {
 				'Une équipe de 5 à 20 personnes en général, dont au moins 3 devs.',
 			],
 			notLaunchedYet: {
-				text: "Ton SaaS n'est pas encore lancé ? Tu peux réserver l'échange quand même.",
-				link: "réserver l'échange",
+				text: "Ton SaaS n'est pas encore lancé ? Tu peux réserver l'Échange quand même.",
+				link: "réserver l'Échange",
 			},
 		},
 		todayAndAfter: {
@@ -76,20 +76,20 @@ const EXPECTED = {
 			title: 'Disponible au moins 99 % du temps, chaque mois.',
 			text: "En 30 jours, je livre l'infrastructure. Pendant les 3 mois suivants, elle est disponible au moins 99 % du temps chaque mois. Sinon, je continue à travailler sans facturer jusqu'à y arriver.",
 			appliesWhen:
-				"S'applique quand tu prends l'Infrastructure scalable et l'Observabilité (et la Conteneurisation, si l'application n'est pas encore conteneurisée).",
+				"La Garantie s'applique quand tu prends l'Infrastructure scalable et l'Observabilité (et la Conteneurisation, si l'application n'est pas encore conteneurisée).",
 			lists: ['Conditions', 'Exclusions'],
 			conditions: [
 				'Un test écrit pour chaque bug corrigé.',
 				'Aucun dev ne passe outre un test au rouge.',
 				'Un accès en lecture au dépôt.',
-				'Une personne technique qui répond sous 48 h.',
+				'Un interlocuteur technique qui répond sous 48 h.',
 			],
 			exclusions: [
 				'Les pannes du fournisseur cloud.',
 				'Les modifications qui ne sont pas passées par la pipeline.',
 			],
 			number: '99 %',
-			captions: ['avec service', 'au plus 1 % sans service'],
+			captions: ['en service', 'au plus 1 % hors service'],
 			note: 'Pendant les 3 mois qui suivent la livraison.',
 		},
 		about: {

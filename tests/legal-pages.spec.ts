@@ -115,7 +115,7 @@ const PRIVACY: Record<
 		],
 		rights: { heading: 'Tes droits', objection: 't’opposer' },
 		complaint: { heading: 'Réclamation', residence: 'pays où tu vis' },
-		afterDeath: 'Tes données après ta mort',
+		afterDeath: 'Tes données après ton décès',
 	},
 	en: {
 		controller: 'Data controller',
