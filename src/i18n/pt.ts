@@ -215,14 +215,11 @@ export const pt = {
 				'A passar de dezenas ou centenas para milhares de utilizadores recorrentes.',
 				'Uma equipa de normalmente 5 a 20 pessoas, com pelo menos 3 devs.',
 			],
-			notLaunchedYet: 'O teu SaaS ainda não foi lançado? Podes marcar a Conversa na mesma.',
-			exclusionsTitle: 'Não é para',
-			exclusions: [
-				'Quem já tem pipeline de CI, aplicação contentorizada e infraestrutura com auto-scaling.',
-				'O que não é web nem mobile.',
-				'Quem recusa 100 a 500 €/mês de serviços e infraestrutura.',
-				'O setor militar.',
-			],
+			/** Below the first statement: `link` is the part of `text` that leads to the booking page. */
+			notLaunchedYet: {
+				text: 'O teu SaaS ainda não foi lançado? Podes marcar a Conversa na mesma.',
+				link: 'marcar a Conversa',
+			},
 		},
 		todayAndAfter: {
 			title: 'Hoje, e depois.',
@@ -241,14 +238,6 @@ export const pt = {
 					title: 'Ninguém sabe se aguenta.',
 					text: 'Funciona com os clientes de hoje. Com muitos mais, ninguém sabe dizer.',
 				},
-			],
-			alreadyTriedTitle: 'O que já tentaste',
-			alreadyTried: [
-				'Um DevOps freelance que só executa, sem trazer experiência.',
-				'Testar à mão, ou pôr um estagiário a testar.',
-				'Ferramentas de teste que os devs têm de correr no portátil, e que nunca correm.',
-				'Pôr um dev a aprender DevOps: semanas perdidas, e um resultado fraco.',
-				'Freelancers que programam cada um à sua maneira: cada saída leva o conhecimento.',
 			],
 			afterTitle: 'Depois',
 			after: [
@@ -323,7 +312,7 @@ export const pt = {
 			title: 'Disponível pelo menos 99 % do tempo, em cada mês.',
 			text: 'Em 30 dias, entrego a infraestrutura. Nos 3 meses seguintes, ela está disponível pelo menos 99 % do tempo em cada mês. Se não estiver, continuo a trabalhar sem faturar até chegar lá.',
 			appliesWhen:
-				'Aplica-se quando contratas os blocos 3 e 4 (e o 2, se a aplicação ainda não estiver contentorizada).',
+				'Aplica-se quando contratas a Infraestrutura escalável e a Observabilidade (e a Contentorização, se a aplicação ainda não estiver contentorizada).',
 			conditionsTitle: 'Condições',
 			conditions: [
 				'Um teste escrito para cada bug corrigido.',

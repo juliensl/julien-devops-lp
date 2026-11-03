@@ -6,8 +6,6 @@ interface Props {
 	todayTitle: string;
 	/** What the CTO lives with today: the problem, in bold, and what it means. */
 	today: { title: string; text: string }[];
-	alreadyTriedTitle: string;
-	alreadyTried: string[];
 	afterTitle: string;
 	after: string[];
 }
@@ -15,16 +13,8 @@ interface Props {
 /** Each list item is an open row, with no box, separated from the previous one by a rule. */
 const itemClass = 'border-t border-line py-4 text-[1.0625rem]';
 
-/** The CTO recognizes the problem (what they live with and what they've tried) and sees what comes after. No numbers. */
-export default function TodayAndAfter({
-	title,
-	todayTitle,
-	today,
-	alreadyTriedTitle,
-	alreadyTried,
-	afterTitle,
-	after,
-}: Props) {
+/** The CTO recognizes the problem they live with and sees what comes after. No numbers. */
+export default function TodayAndAfter({ title, todayTitle, today, afterTitle, after }: Props) {
 	return (
 		<section
 			aria-labelledby="today-title"
@@ -34,32 +24,16 @@ export default function TodayAndAfter({
 				{title}
 			</h2>
 			<div className="grid gap-x-20 gap-y-14 lg:grid-cols-2">
-				<div className="grid content-start gap-12">
-					<List id="today-now" title={todayTitle} titleClass="text-foreground-secondary">
-						{today.map((problem) => (
-							<li key={problem.title} className={`${itemClass} text-foreground-secondary`}>
-								<strong className="font-semibold text-foreground">
-									{withNonBreakingSpaces(problem.title)}
-								</strong>{' '}
-								{withNonBreakingSpaces(problem.text)}
-							</li>
-						))}
-					</List>
-					<List
-						id="today-already-tried"
-						title={alreadyTriedTitle}
-						titleClass="text-foreground-secondary"
-					>
-						{alreadyTried.map((attempt) => (
-							<li
-								key={attempt}
-								className={`${itemClass} flex gap-3 text-foreground-secondary before:mt-[0.8em] before:h-px before:w-3 before:shrink-0 before:bg-line-strong`}
-							>
-								{withNonBreakingSpaces(attempt)}
-							</li>
-						))}
-					</List>
-				</div>
+				<List id="today-now" title={todayTitle} titleClass="text-foreground-secondary">
+					{today.map((problem) => (
+						<li key={problem.title} className={`${itemClass} text-foreground-secondary`}>
+							<strong className="font-semibold text-foreground">
+								{withNonBreakingSpaces(problem.title)}
+							</strong>{' '}
+							{withNonBreakingSpaces(problem.text)}
+						</li>
+					))}
+				</List>
 				<List id="today-after" title={afterTitle} titleClass="text-green">
 					{after.map((gain) => (
 						<li

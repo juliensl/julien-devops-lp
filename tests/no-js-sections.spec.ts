@@ -1,6 +1,6 @@
 // The home page sections that need no JavaScript (#63): "Para quem é", "Hoje, e depois", the
 // Guarantee, "Quem é o Julien" and the final CTA.
-import { expect, test } from '@playwright/test';
+import { expect, test, type Locator } from '@playwright/test';
 import { inEachBuild } from './builds';
 import { LANGUAGES, LINKEDIN, NAME, BOOKING_PAGE, type Language } from './expected';
 
@@ -16,24 +16,20 @@ const EXPECTED = {
 				'A passar de dezenas ou centenas para milhares de utilizadores recorrentes.',
 				'Uma equipa de normalmente 5 a 20 pessoas, com pelo menos 3 devs.',
 			],
-			notLaunchedYet: 'O teu SaaS ainda não foi lançado? Podes marcar a Conversa na mesma.',
-			notFor: 'Não é para',
-			exclusions: [
-				'Quem já tem pipeline de CI, aplicação contentorizada e infraestrutura com auto-scaling.',
-				'O que não é web nem mobile.',
-				'Quem recusa 100 a 500 €/mês de serviços e infraestrutura.',
-				'O setor militar.',
-			],
+			notLaunchedYet: {
+				text: 'O teu SaaS ainda não foi lançado? Podes marcar a Conversa na mesma.',
+				link: 'marcar a Conversa',
+			},
 		},
 		todayAndAfter: {
 			title: 'Hoje, e depois.',
-			lists: ['Hoje', 'O que já tentaste', 'Depois'],
+			lists: ['Hoje', 'Depois'],
 		},
 		guarantee: {
 			title: 'Disponível pelo menos 99 % do tempo, em cada mês.',
 			text: 'Em 30 dias, entrego a infraestrutura. Nos 3 meses seguintes, ela está disponível pelo menos 99 % do tempo em cada mês. Se não estiver, continuo a trabalhar sem faturar até chegar lá.',
 			appliesWhen:
-				'Aplica-se quando contratas os blocos 3 e 4 (e o 2, se a aplicação ainda não estiver contentorizada).',
+				'Aplica-se quando contratas a Infraestrutura escalável e a Observabilidade (e a Contentorização, se a aplicação ainda não estiver contentorizada).',
 			lists: ['Condições', 'Exclusões'],
 			conditions: [
 				'Um teste escrito para cada bug corrigido.',
@@ -67,24 +63,20 @@ const EXPECTED = {
 				"Qui passe de quelques dizaines ou centaines à plusieurs milliers d'utilisateurs récurrents.",
 				'Une équipe de 5 à 20 personnes en général, dont au moins 3 devs.',
 			],
-			notLaunchedYet: "Ton SaaS n'est pas encore lancé ? Tu peux réserver l'échange quand même.",
-			notFor: "Ce n'est pas pour",
-			exclusions: [
-				'Ceux qui ont déjà une pipeline CI, une application conteneurisée et une infrastructure avec auto-scaling.',
-				"Ce qui n'est ni web ni mobile.",
-				"Ceux qui refusent 100 à 500 €/mois de services et d'infrastructure.",
-				'Le secteur militaire.',
-			],
+			notLaunchedYet: {
+				text: "Ton SaaS n'est pas encore lancé ? Tu peux réserver l'échange quand même.",
+				link: "réserver l'échange",
+			},
 		},
 		todayAndAfter: {
 			title: "Aujourd'hui, et après.",
-			lists: ["Aujourd'hui", 'Ce que tu as déjà essayé', 'Après'],
+			lists: ["Aujourd'hui", 'Après'],
 		},
 		guarantee: {
 			title: 'Disponible au moins 99 % du temps, chaque mois.',
 			text: "En 30 jours, je livre l'infrastructure. Pendant les 3 mois suivants, elle est disponible au moins 99 % du temps chaque mois. Sinon, je continue à travailler sans facturer jusqu'à y arriver.",
 			appliesWhen:
-				"S'applique quand tu prends les blocs 3 et 4 (et le 2, si l'application n'est pas encore conteneurisée).",
+				"S'applique quand tu prends l'Infrastructure scalable et l'Observabilité (et la Conteneurisation, si l'application n'est pas encore conteneurisée).",
 			lists: ['Conditions', 'Exclusions'],
 			conditions: [
 				'Un test écrit pour chaque bug corrigé.',
@@ -120,24 +112,20 @@ const EXPECTED = {
 				'Growing from tens or hundreds to thousands of recurring users.',
 				'A team of usually 5 to 20 people, with at least 3 devs.',
 			],
-			notLaunchedYet: "Haven't launched your SaaS yet? You can still book the conversation.",
-			notFor: 'Not for',
-			exclusions: [
-				'Teams that already have a CI pipeline, a containerised application and auto-scaling infrastructure.',
-				"Anything that isn't web or mobile.",
-				'Teams that turn down €100 to €500 a month for services and infrastructure.',
-				'The military sector.',
-			],
+			notLaunchedYet: {
+				text: "Haven't launched your SaaS yet? You can still book the conversation.",
+				link: 'book the conversation',
+			},
 		},
 		todayAndAfter: {
 			title: 'Today, and after.',
-			lists: ['Today', "What you've already tried", 'After'],
+			lists: ['Today', 'After'],
 		},
 		guarantee: {
 			title: 'Available at least 99% of the time, every month.',
 			text: "In 30 days, I deliver the infrastructure. For the next 3 months, it is available at least 99% of the time every month. If it isn't, I keep working without billing until it is.",
 			appliesWhen:
-				"Applies when you take blocks 3 and 4 (and 2, if the application isn't containerised yet).",
+				"Applies when you take Scalable infrastructure and Observability (and Containerisation, if the application isn't containerised yet).",
 			lists: ['Conditions', 'Exclusions'],
 			conditions: [
 				'A test written for every bug fixed.',
@@ -176,14 +164,13 @@ inEachBuild((build) => {
 		const sections = [whoItsFor, todayAndAfter, guarantee, about, finalCta];
 
 		test.describe(prefix, () => {
-			test(`"${button}" is in the header, in the Hero, at the end of "${whoItsFor.title}" and in the final CTA`, async ({
+			test(`"${button}" is in the header, in the Hero and in the final CTA, not in "${whoItsFor.title}"`, async ({
 				page,
 			}) => {
 				await page.goto(prefix);
 				const places = {
 					header: page.getByRole('banner'),
 					hero: page.getByRole('region', { name: promise }),
-					whoItsFor: page.getByRole('region', { name: whoItsFor.title }),
 					finalCta: page.getByRole('region', { name: finalCta.title }),
 				};
 				for (const [place, region] of Object.entries(places)) {
@@ -192,30 +179,47 @@ inEachBuild((build) => {
 					await expect(bookButton, place).toHaveAttribute('href', BOOKING_PAGE);
 					await expect(bookButton, place).not.toHaveAttribute('target');
 				}
-				// The button closes "Para quem é": it sits below the exclusions.
-				const exclusions = places.whoItsFor.getByRole('list', { name: whoItsFor.notFor });
-				const { y, height } = (await exclusions.boundingBox())!;
-				const bookButton = places.whoItsFor.getByRole('link', { name: button, exact: true });
-				expect((await bookButton.boundingBox())!.y).toBeGreaterThanOrEqual(y + height);
+				const whoItsForSection = page.getByRole('region', { name: whoItsFor.title });
+				await expect(whoItsForSection.getByRole('link', { name: button })).toHaveCount(0);
 			});
 
-			test(`"${whoItsFor.title}" shows the profile, the sentence for those not launched yet and the 4 exclusions`, async ({
+			test(`"${whoItsFor.title}" shows only the profile, with the sentence for those not launched yet below the first statement`, async ({
 				page,
 			}) => {
 				await page.goto(prefix);
 				const section = page.getByRole('region', { name: whoItsFor.title });
-				for (const sentence of [...whoItsFor.profile, whoItsFor.notLaunchedYet]) {
-					await expect(section.getByText(sentence, { exact: true })).toBeVisible();
+				await expect(section.getByRole('list')).toHaveCount(1);
+				await expect(section.getByRole('heading')).toHaveCount(1);
+				const items = section.getByRole('listitem');
+				await expect(items).toHaveCount(whoItsFor.profile.length);
+				for (const [k, statement] of whoItsFor.profile.entries()) {
+					await expect(items.nth(k).getByText(statement, { exact: true })).toBeVisible();
 				}
-				const exclusions = section.getByRole('list', { name: whoItsFor.notFor });
-				await expect(exclusions.getByRole('listitem')).toHaveText(whoItsFor.exclusions);
+
+				// In the first item, below its statement and in smaller type.
+				const statement = items.first().getByText(whoItsFor.profile[0], { exact: true });
+				const sentence = items.first().getByText(whoItsFor.notLaunchedYet.text, { exact: true });
+				await expect(sentence).toBeVisible();
+				const above = (await statement.boundingBox())!;
+				expect((await sentence.boundingBox())!.y).toBeGreaterThanOrEqual(above.y + above.height);
+				const fontSize = (text: Locator) =>
+					text.evaluate((e) => parseFloat(getComputedStyle(e).fontSize));
+				expect(await fontSize(sentence)).toBeLessThan(await fontSize(statement));
+
+				// Only its words lead to the booking page, in the same tab.
+				const link = section.getByRole('link');
+				await expect(link).toHaveCount(1);
+				await expect(sentence.getByRole('link')).toHaveText(whoItsFor.notLaunchedYet.link);
+				await expect(link).toHaveAttribute('href', BOOKING_PAGE);
+				await expect(link).not.toHaveAttribute('target');
 			});
 
-			test(`"${todayAndAfter.title}": what the CTO lives with, what they already tried and the change, with no numbers`, async ({
+			test(`"${todayAndAfter.title}": only what the CTO lives with and the change, with no numbers`, async ({
 				page,
 			}) => {
 				await page.goto(prefix);
 				const section = page.getByRole('region', { name: todayAndAfter.title });
+				await expect(section.getByRole('list')).toHaveCount(todayAndAfter.lists.length);
 				for (const list of todayAndAfter.lists) {
 					const items = section.getByRole('list', { name: list }).getByRole('listitem');
 					await expect(items.first(), list).toBeVisible();
