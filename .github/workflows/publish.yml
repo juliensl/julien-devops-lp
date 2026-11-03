@@ -1,7 +1,7 @@
 # After each merge into main: repeats the blocking checks, does the Publishing
 # to Infomaniak and confirms that each published page answers with this commit.
 # Documentation-only merges do not run this workflow.
-# If anything fails, the job turns red and GitHub emails whoever merged.
+# If anything fails, the run turns red and GitHub emails whoever merged.
 #
 # Rolling back: a revert PR, the normal way. In an emergency, "Re-run all jobs"
 # on an older run publishes that commit again.
@@ -27,10 +27,15 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  publish:
-    name: Verify and publish
+  # The same checks that block a PR into main, in 4 parts side by side.
+  tests:
+    name: Tests ${{ matrix.shard }}
     runs-on: ubuntu-latest
-    timeout-minutes: 50
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ['1/4', '2/4', '3/4', '4/4']
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -41,10 +46,48 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
 
-      # The same checks that block a PR, without the Lighthouse performance targets.
       - uses: ./.github/actions/verify
         with:
+          shard: ${{ matrix.shard }}
+
+  # Without the performance targets.
+  lighthouse:
+    name: Lighthouse
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - uses: ./.github/actions/verify
+        with:
+          lighthouse: true
           performance: false
+
+  # Starts only when every check above passed.
+  publish:
+    name: Publish
+    needs: [tests, lighthouse]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      # Checks and builds this commit again: the published folder is this job's dist/.
+      - uses: ./.github/actions/verify
 
       # Until Julien creates the secrets (#57), Publishing is skipped with a warning.
       # The secrets keep their Portuguese names (PUBLICACAO_*) until Julien decides otherwise.
@@ -80,6 +123,10 @@ jobs:
           PUBLISH_SERVER: ${{ secrets.PUBLICACAO_SERVIDOR }}
           PUBLISH_USER: ${{ secrets.PUBLICACAO_UTILIZADOR }}
         run: publish/publish.sh
+
+      - name: Chromium for the Confirmation
+        if: steps.secrets.outputs.publish == 'true'
+        run: npx playwright install --with-deps chromium
 
       - name: Confirmation
         if: steps.secrets.outputs.publish == 'true'
