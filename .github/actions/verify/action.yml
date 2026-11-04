@@ -1,6 +1,6 @@
 # The blocking checks, the same in a PR (ci.yml) and before each
 # Publishing (publish.yml). Leaves both builds done.
-# Each job runs one part of the Playwright suite (`shard`) or the Lighthouse run,
+# Each job runs one part of the Playwright suite (`part`) or the Lighthouse run,
 # so the parts run side by side; with neither, it only checks and builds.
 # Runs after checkout and setup-node, which stay in the workflows: Dependabot
 # only updates the actions it finds there.
@@ -8,8 +8,8 @@ name: Verify
 description: Installs, checks types and formatting, makes both builds, then runs one part of the Playwright suite or Lighthouse.
 
 inputs:
-  shard:
-    description: 'The part of the Playwright suite this job runs, as "1/4". Empty: no suite.'
+  part:
+    description: 'The part of the Playwright suite this job runs: a browser and a shard of its tests, as "webkit 1/3". Empty: no suite.'
     required: false
     default: ''
   lighthouse:
@@ -20,10 +20,6 @@ inputs:
     description: 'With Lighthouse, also measures performance, with 3 runs per page (warning only). Publishing turns it off.'
     required: false
     default: 'true'
-  quick:
-    description: 'Quick checks for PRs into develop: the Playwright suite on Chromium only.'
-    required: false
-    default: 'false'
 
 runs:
   using: composite
@@ -47,21 +43,26 @@ runs:
       run: npm run build:launch
       shell: bash
 
-    # Lighthouse and the quick checks only need Chromium.
-    - name: Playwright browsers
-      if: inputs.shard != '' || inputs.lighthouse == 'true'
+    # Only the part's browser; Lighthouse uses Chromium.
+    - name: Playwright browser
+      if: inputs.part != '' || inputs.lighthouse == 'true'
       env:
-        BROWSERS: ${{ (inputs.shard == '' || inputs.quick == 'true') && 'chromium' || 'chromium webkit' }}
-      run: npx playwright install --with-deps $BROWSERS
+        PART: ${{ inputs.part }}
+      run: |
+        browser=${PART%% *}
+        npx playwright install --with-deps "${browser:-chromium}"
       shell: bash
 
-    # The quick checks leave out the webkit project; the lighthouse project only tests the checker.
+    # The lighthouse project only tests the checker: it runs with Chromium.
     - name: Playwright suite
-      if: inputs.shard != ''
+      if: inputs.part != ''
       env:
-        SHARD: ${{ inputs.shard }}
-        PROJECTS: ${{ inputs.quick == 'true' && '--project=chromium --project=lighthouse' || '' }}
-      run: npm test -- --shard=$SHARD $PROJECTS
+        PART: ${{ inputs.part }}
+      run: |
+        read -r browser shard <<<"$PART"
+        projects=(--project="$browser")
+        [[ $browser == chromium ]] && projects+=(--project=lighthouse)
+        npm test -- "${projects[@]}" --shard="$shard"
       shell: bash
 
     # SEO, sizes, fonts and requests block. Performance only warns, in the job summary.

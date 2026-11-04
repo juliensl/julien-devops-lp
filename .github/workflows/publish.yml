@@ -1,4 +1,5 @@
-# After each merge into main: repeats the blocking checks, does the Publishing
+# After each merge into main: repeats the blocking checks on Chromium (WebKit
+# already ran in the release PR's checks), does the Publishing
 # to Infomaniak and confirms that each published page answers with this commit.
 # Documentation-only merges do not run this workflow.
 # If anything fails, the run turns red and GitHub emails whoever merged.
@@ -27,15 +28,11 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # The same checks that block a PR into main, in 4 parts side by side.
+  # The Playwright suite on Chromium: it stops a merge that skipped the checks.
   tests:
-    name: Tests ${{ matrix.shard }}
+    name: Tests chromium
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-    strategy:
-      fail-fast: false
-      matrix:
-        shard: ['1/4', '2/4', '3/4', '4/4']
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -48,7 +45,7 @@ jobs:
 
       - uses: ./.github/actions/verify
         with:
-          shard: ${{ matrix.shard }}
+          part: chromium 1/1
 
   # Without the performance targets.
   lighthouse:
