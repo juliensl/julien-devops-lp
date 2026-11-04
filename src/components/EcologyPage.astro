@@ -26,6 +26,7 @@ import BookingButton from './BookingButton';
 import FlowingLeaf from './FlowingLeaf.astro';
 import Leaf from './Leaf.astro';
 import PauseButton from './PauseButton.astro';
+import TopDots from './TopDots.astro';
 import ValueBadge, { type BadgeKind } from './ValueBadge.astro';
 
 interface Props {
@@ -59,6 +60,7 @@ const sliders: { name: keyof typeof FIELDS; hint?: [BadgeKind, string] }[] = [
 
 <Base language={language} title={`${page.title} · ${values.name}`} description={page.description}>
 	<main>
+		<TopDots />
 		{/* As on the home page, the pause button is the first focus after the header. */}
 		<PauseButton {...t.animation} />
 

@@ -26,7 +26,7 @@ export interface Phase {
 	noindex: boolean;
 }
 
-export const FIRST_REVIEW: Phase = { publishedLanguages: ['pt'], noindex: true };
+export const FIRST_REVIEW: Phase = { publishedLanguages: ['fr', 'pt'], noindex: true };
 export const COMMERCIAL_LAUNCH: Phase = { publishedLanguages: LANGUAGES, noindex: false };
 
 /** The phase of the published site. */

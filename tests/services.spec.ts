@@ -13,13 +13,21 @@ interface Block {
 }
 
 // The Blocks and their tools come from the spec (#54); in Portuguese, the texts are the ones the
-// intern approved for the First review (#74). French and English are translations the intern
-// reviews before the Commercial launch (#75).
+// intern approved for the First review (#74). French is the intern's reviewed translation;
+// English is reviewed before the Commercial launch (#75).
 const EXPECTED: Record<
 	Language,
-	{ title: string; note: string; blockLabel: string; toolsLabel: string; blocks: Block[] }
+	{
+		label: string;
+		title: string;
+		note: string;
+		blockLabel: string;
+		toolsLabel: string;
+		blocks: Block[];
+	}
 > = {
 	pt: {
+		label: 'Serviços',
 		title: 'Quatro camadas da tua infraestrutura.',
 		note: 'Contratas os blocos que quiseres, em qualquer combinação. No máximo 30 dias, a contar do início da Implementação. O bloco 3 precisa de uma aplicação contentorizada, pelo bloco 2 ou pela tua equipa.',
 		blockLabel: 'Bloco',
@@ -52,15 +60,16 @@ const EXPECTED: Record<
 		],
 	},
 	fr: {
+		label: 'Services',
 		title: 'Quatre couches de ton infrastructure.',
-		note: "Tu choisis les blocs que tu veux, dans n'importe quelle combinaison. 30 jours au maximum, à compter du début de la Mise en œuvre. Le bloc 3 demande une application conteneurisée, par le bloc 2 ou par ton équipe.",
+		note: 'Tu prends les blocs que tu veux, dans la combinaison de ton choix. 30 jours au maximum, à compter du début de la Mise en œuvre. Le bloc 3 demande une application conteneurisée, par le bloc 2 ou par ton équipe.',
 		blockLabel: 'Bloc',
 		toolsLabel: 'Outils',
 		blocks: [
 			{
 				name: 'Audit du code et pipeline CI',
 				summary: 'Les bugs sont attrapés à la pull request.',
-				text: "Chaque modification passe par les tests, le lint et l'analyse avant d'arriver en production, avec la sécurité au premier plan : dépendances aux failles connues, secrets oubliés dans le code et analyse du code lui-même. Ce qui est rouge ne passe pas.",
+				text: "Chaque modification passe par les tests, le lint et l'analyse avant d'arriver en production, avec la sécurité au premier plan : dépendances avec des failles connues, secrets oubliés dans le code et analyse du code lui-même. Ce qui est rouge ne passe pas.",
 				tools: ['SonarQube', 'Trivy'],
 			},
 			{
@@ -72,18 +81,19 @@ const EXPECTED: Record<
 			{
 				name: 'Infrastructure scalable',
 				summary: "L'infrastructure suit la charge.",
-				text: "Sur deux niveaux : du serverless de conteneurs pour les volumes moyens, Kubernetes quand la charge le justifie. Avec l'Infrastructure as Code, l'infrastructure est décrite dans du code et peut être recréée.",
+				text: "Sur deux niveaux : des conteneurs serverless pour les volumes moyens, Kubernetes quand la charge le justifie. Avec l'Infrastructure as Code, l'infrastructure est décrite sous forme de code et peut être recréée.",
 				tools: ['Kubernetes', 'Terraform'],
 			},
 			{
 				name: 'Observabilité',
 				summary: 'Tu vois les problèmes avant tes clients.',
-				text: "Un tableau de bord de santé en temps réel et une alerte immédiate en cas d'incident.",
+				text: "Un dashboard de santé en temps réel et une alerte immédiate en cas d'incident.",
 				tools: ['Grafana', 'Prometheus', 'ou les outils de ton cloud'],
 			},
 		],
 	},
 	en: {
+		label: 'Services',
 		title: 'Four layers of your infrastructure.',
 		note: 'You hire the blocks you want, in any combination. At most 30 days from the start of the Implementation. Block 3 needs a containerised application, from block 2 or from your team.',
 		blockLabel: 'Block',
@@ -139,8 +149,8 @@ const WIDE_SCREEN: Viewport = {
 	width: 2560,
 	height: 1440,
 };
-// A laptop screen, lower than DESKTOP: the section still pins there.
-const LAPTOP: Viewport = { label: 'on a laptop', width: 1536, height: 730 };
+// The lowest and narrowest laptop window where the section must still pin.
+const SMALL_LAPTOP: Viewport = { label: 'on a small laptop', width: 1054, height: 695 };
 // Pinned, part of the cards would be hidden below the screen.
 const SHORT_SCREEN: Viewport = {
 	...DESKTOP,
@@ -338,6 +348,14 @@ inEachBuild((build) => {
 				await scrollToSection(page, language);
 				await expect(counter(page, language, 1)).toBeVisible();
 				expect((await progressBar(page, language).boundingBox())?.width ?? 0).toBeLessThan(1);
+				const label = (await section(page, language)
+					.getByText(EXPECTED[language].label, { exact: true })
+					.boundingBox())!;
+				const counterBox = (await counter(page, language, 1).boundingBox())!;
+				expect(
+					Math.abs(counterBox.y + counterBox.height / 2 - (label.y + label.height / 2)),
+					'the counter on the line of the label',
+				).toBeLessThan(label.height / 2);
 
 				// Down 100 px at a time, while the title stays put: the counter only goes up, one by one.
 				const counts = [1];
@@ -362,11 +380,11 @@ inEachBuild((build) => {
 			});
 
 			// On the lowest screen where the section pins, the cards come closest to the button.
-			test(`${LAPTOP.label}, while the cards pass, the pause button never covers them`, async ({
+			test(`${SMALL_LAPTOP.label}, while the cards pass, the pause button never covers them`, async ({
 				page,
 			}) => {
 				const button = page.getByRole('button', { name: LANGUAGES[language].pause, exact: true });
-				await openPage(page, prefix, LAPTOP);
+				await openPage(page, prefix, SMALL_LAPTOP);
 				await scrollToSection(page, language);
 				const buttonBox = (await button.boundingBox())!;
 				// Down 200 px at a time, while the title stays put (pinned).

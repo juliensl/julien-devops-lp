@@ -141,14 +141,10 @@ export const en: Dictionary = {
 				'Growing from tens or hundreds to thousands of recurring users.',
 				'A team of usually 5 to 20 people, with at least 3 devs.',
 			],
-			notLaunchedYet: "Haven't launched your SaaS yet? You can still book the conversation.",
-			exclusionsTitle: 'Not for',
-			exclusions: [
-				'Teams that already have a CI pipeline, a containerised application and auto-scaling infrastructure.',
-				"Anything that isn't web or mobile.",
-				'Teams that turn down €100 to €500 a month for services and infrastructure.',
-				'The military sector.',
-			],
+			notLaunchedYet: {
+				text: "Haven't launched your SaaS yet? You can still book the conversation.",
+				link: 'book the conversation',
+			},
 		},
 		todayAndAfter: {
 			title: 'Today, and after.',
@@ -167,14 +163,6 @@ export const en: Dictionary = {
 					title: 'Nobody knows if it will hold.',
 					text: "It works with today's customers. With many more, nobody can say.",
 				},
-			],
-			alreadyTriedTitle: "What you've already tried",
-			alreadyTried: [
-				'A DevOps freelancer who only executes, without bringing expertise.',
-				'Testing by hand, or getting an intern to do it.',
-				'Test tools that devs have to run locally, and never do.',
-				'Asking a dev to learn DevOps: weeks lost, and a poor result.',
-				'Freelancers who each code their own way: every departure takes the knowledge with it.',
 			],
 			afterTitle: 'After',
 			after: [
@@ -269,7 +257,7 @@ export const en: Dictionary = {
 			title: 'Available at least 99% of the time, every month.',
 			text: "In 30 days, I deliver the infrastructure. For the next 3 months, it is available at least 99% of the time every month. If it isn't, I keep working without billing until it is.",
 			appliesWhen:
-				"Applies when you take blocks 3 and 4 (and 2, if the application isn't containerised yet).",
+				"Applies when you take Scalable infrastructure and Observability (and Containerisation, if the application isn't containerised yet).",
 			conditionsTitle: 'Conditions',
 			conditions: [
 				'A test written for every bug fixed.',
@@ -402,6 +390,7 @@ export const en: Dictionary = {
 			title: 'Who is Julien',
 			wayOfWorking:
 				'I work remotely, in Portuguese, French and English. I use standard technologies, with no lock-in, and document everything so your team can run on its own.',
+			linkedin: 'See my LinkedIn profile',
 		},
 		testimonials: {
 			title: 'What clients say',

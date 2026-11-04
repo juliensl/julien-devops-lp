@@ -1,0 +1,257 @@
+---
+// The dotted ∞ in the Hero's `[data-infinity]` box and its branch down the page, on one canvas behind the content.
+---
+
+<canvas
+	aria-hidden="true"
+	data-dotted-infinity
+	class="pointer-events-none fixed inset-0 -z-1 size-full"
+></canvas>
+
+<script>
+	import { afterLoad } from '../scripts/after-load';
+	import { createBranch } from '../scripts/branch';
+	import { glow } from '../scripts/glow';
+
+	type Point = [x: number, y: number, z: number];
+
+	interface Particle {
+		/** Where it starts on the curve, in radians. */
+		at: number;
+		/** How far it strays from the curve as it spins around it, and where its spin starts. */
+		radius: number;
+		phase: number;
+		/** Its speed and size, relative to the others. */
+		speed: number;
+		size: number;
+	}
+
+	const TAU = Math.PI * 2;
+	const POINT_COUNT = 340;
+	/** Where the branch leaves the ∞: at the bottom left of the purple loop. */
+	const EXIT_AT = (Math.PI * 5) / 4;
+
+	afterLoad(() => {
+		const canvas = document.querySelector<HTMLCanvasElement>('[data-dotted-infinity]');
+		const box = document.querySelector<HTMLElement>('[data-infinity]');
+		const main = box?.closest('main');
+		if (canvas && box && main) start(canvas, box, main);
+	});
+
+	function start(canvas: HTMLCanvasElement, box: HTMLElement, main: HTMLElement) {
+		const context = canvas.getContext('2d')!;
+		const html = document.documentElement;
+		const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+		const styles = getComputedStyle(canvas);
+		const purpleLine = styles.getPropertyValue('--color-element-purple').trim();
+		const greenLine = styles.getPropertyValue('--color-element-green').trim();
+		const [purple, green] = [glow(purpleLine), glow(greenLine)];
+		const white = glow('#ffffff');
+		const branch = createBranch(main, { purple, green, white, purpleLine, greenLine });
+		const particles: Particle[] = Array.from({ length: POINT_COUNT }, (_, i) => ({
+			at: (i / POINT_COUNT) * TAU,
+			radius: Math.sqrt(Math.random()) * 0.08,
+			phase: Math.random() * TAU,
+			speed: 0.75 + Math.random() * 0.5,
+			size: 0.55 + Math.random() * 0.95,
+		}));
+
+		let ratio = 1;
+		let narrow = false;
+		let pendingFrame = 0;
+		let lastFrame = 0;
+		let lastScroll = scrollY;
+		let time = 0;
+		/** How far the points have flowed along the curve, and the extra speed scrolling gives them. */
+		let flow = 0;
+		let boost = 0;
+		/** How far the branch has grown, and how far its points have flowed along it. */
+		let length = 0;
+		let branchFlow = 0;
+		const still = () => reducedMotion.matches || html.dataset.animation === 'paused';
+
+		/** Where the ∞ is on screen and how it is turned; `resting` leaves out the sway and the turn on scroll. */
+		function placement(resting = false) {
+			const { left, top, width, height } = box.getBoundingClientRect();
+			const scale = width * (narrow ? 0.44 : 0.5);
+			const centreX = left + width / 2;
+			const centreY = top + height / 2;
+			const screenHeight = canvas.clientHeight;
+			// It turns a little as it rises above the middle of the screen, and sways while it flows.
+			const risen =
+				resting || reducedMotion.matches
+					? 0
+					: Math.min(Math.max((screenHeight / 2 - centreY) / (screenHeight * 0.6), 0), 1);
+			const yaw = -0.4 + risen * 0.6 + (resting ? 0 : 0.12 * Math.sin(time * 0.35));
+			const pitch = 0.5 + risen * 0.3;
+			const project = (point: Point) => {
+				const { x, y, depth, perspective } = projected(point, pitch, yaw);
+				return { x: centreX + x * scale, y: centreY + y * scale, depth, perspective };
+			};
+			return { scale, centreY, screenHeight, project };
+		}
+
+		function layOut() {
+			branch.layOut(placement(true).project(curve(EXIT_AT)), narrow);
+		}
+
+		/** Draws the branch, then the ∞ over it; true if any of them is on screen. */
+		function draw() {
+			context.setTransform(ratio, 0, 0, ratio, 0, 0);
+			context.clearRect(0, 0, canvas.width, canvas.height);
+			const { scale, centreY, screenHeight, project } = placement();
+			const infinityOnScreen = centreY > -scale && centreY < screenHeight + scale;
+			const branchOnScreen = branch.draw(context, {
+				length,
+				ratio,
+				screenHeight,
+				time,
+				flow: branchFlow,
+				exit: infinityOnScreen ? project(curve(EXIT_AT)) : null,
+			});
+			context.setTransform(ratio, 0, 0, ratio, 0, 0);
+			if (infinityOnScreen) drawInfinity(scale, project);
+			context.globalAlpha = 1;
+			return infinityOnScreen || branchOnScreen;
+		}
+
+		function drawInfinity(scale: number, project: ReturnType<typeof placement>['project']) {
+			// Faint thin lines give the shape: the left loop purple, the right one green.
+			context.globalCompositeOperation = 'source-over';
+			context.globalAlpha = 0.22;
+			context.lineWidth = 1;
+			for (const [from, color] of [
+				[Math.PI / 2, purpleLine],
+				[-Math.PI / 2, greenLine],
+			] as const) {
+				context.beginPath();
+				for (let i = 0; i <= 90; i++) {
+					const { x, y } = project(curve(from + (i / 90) * Math.PI));
+					context.lineTo(x, y);
+				}
+				context.strokeStyle = color;
+				context.stroke();
+			}
+
+			// The points flow along the curve, spinning around it, and blend colours as they cross the middle.
+			context.globalCompositeOperation = 'lighter';
+			const baseSize = scale * 0.026;
+			for (let i = 0; i < particles.length; i++) {
+				if (narrow && i % 3 === 2) continue;
+				const { at, radius, phase, speed, size } = particles[i];
+				const t = at + flow * speed;
+				const [x, y, z] = curve(t);
+				const ahead = curve(t + 0.002);
+				// The tangent, and two normals to move the point off the curve.
+				const length = Math.hypot(ahead[0] - x, ahead[1] - y, ahead[2] - z) || 1;
+				const [tx, ty, tz] = [
+					(ahead[0] - x) / length,
+					(ahead[1] - y) / length,
+					(ahead[2] - z) / length,
+				];
+				const flat = Math.hypot(tx, ty) || 1;
+				const [nx, ny] = [-ty / flat, tx / flat];
+				const angle = phase + flow * 0.6;
+				const along = Math.cos(angle) * radius;
+				const across = Math.sin(angle) * radius;
+				const {
+					x: px,
+					y: py,
+					depth,
+					perspective,
+				} = project([
+					x + along * nx - across * tz * ny,
+					y + along * ny + across * tz * nx,
+					z + across * (tx * ny - ty * nx),
+				]);
+				const nearness = Math.min(Math.max(0.3 + (depth + 1.2) * 0.32, 0.2), 1);
+				const radiusOnScreen = baseSize * size * perspective;
+				const greenShare = Math.min(Math.max((x + 0.12) / 0.24, 0), 1);
+				for (const [sprite, share] of [
+					[purple, 1 - greenShare],
+					[green, greenShare],
+				] as const) {
+					if (share < 0.02) continue;
+					context.globalAlpha = nearness * share;
+					context.drawImage(
+						sprite,
+						px - radiusOnScreen,
+						py - radiusOnScreen,
+						radiusOnScreen * 2,
+						radiusOnScreen * 2,
+					);
+				}
+			}
+		}
+
+		function frame(now: number) {
+			pendingFrame = 0;
+			const scrolled = Math.abs(scrollY - lastScroll);
+			lastScroll = scrollY;
+			const running = !still();
+			const elapsed = lastFrame ? (now - lastFrame) / 1000 : 1 / 60;
+			lastFrame = now;
+			if (running) {
+				const step = Math.min(elapsed, 0.05);
+				boost = (boost + scrolled * 0.003) * 0.04 ** step;
+				time += step;
+				flow += (0.22 + boost) * step;
+				branchFlow += (26 + boost * 300) * step;
+			} else boost = 0;
+			// The branch follows the scroll even when paused, in about half a second at any frame rate; whole when still.
+			const target = reducedMotion.matches
+				? branch.total
+				: branch.target(canvas.clientHeight, scrollY + innerHeight >= html.scrollHeight - 2);
+			length += (target - length) * (1 - 0.86 ** (Math.min(elapsed, 0.25) * 60));
+			if (reducedMotion.matches || Math.abs(target - length) < 0.5) length = target;
+			const onScreen = draw();
+			if ((running && onScreen) || length !== target) requestFrame();
+			else lastFrame = 0;
+		}
+		function requestFrame() {
+			pendingFrame ||= requestAnimationFrame(frame);
+		}
+
+		// Paused or still, it is only redrawn when the page moves under it.
+		addEventListener('scroll', requestFrame, { passive: true });
+		document.addEventListener('animation', requestFrame);
+		reducedMotion.addEventListener('change', requestFrame);
+		// Laid out and redrawn before the next paint whenever the screen, the ∞'s box or the page changes size.
+		const resize = new ResizeObserver(() => {
+			// The canvas covers the screen: 1.5 is enough for glowing points and saves a lot of work.
+			ratio = Math.min(devicePixelRatio || 1, 1.5);
+			narrow = innerWidth < 700;
+			const width = Math.round(canvas.clientWidth * ratio);
+			const height = Math.round(canvas.clientHeight * ratio);
+			if (canvas.width !== width || canvas.height !== height) {
+				canvas.width = width;
+				canvas.height = height;
+			}
+			layOut();
+			if (reducedMotion.matches) length = branch.total;
+			draw();
+			requestFrame();
+		});
+		resize.observe(canvas);
+		resize.observe(box);
+		resize.observe(main);
+	}
+
+	/** A lemniscate of Bernoulli with depth: its two loops cross at different heights. */
+	function curve(t: number): Point {
+		const sin = Math.sin(t);
+		const cos = Math.cos(t);
+		const d = 1 + sin * sin;
+		return [cos / d, (sin * cos) / d, 0.3 * sin];
+	}
+
+	/** Turns a point around the vertical axis, then the horizontal one, with perspective. */
+	function projected([x, y, z]: Point, pitch: number, yaw: number) {
+		const turnedX = x * Math.cos(yaw) + z * Math.sin(yaw);
+		const turnedZ = -x * Math.sin(yaw) + z * Math.cos(yaw);
+		const tiltedY = y * Math.cos(pitch) - turnedZ * Math.sin(pitch);
+		const depth = y * Math.sin(pitch) + turnedZ * Math.cos(pitch);
+		const perspective = 3 / (3 - depth);
+		return { x: turnedX * perspective, y: tiltedY * perspective, depth, perspective };
+	}
+</script>

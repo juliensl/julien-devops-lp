@@ -201,6 +201,22 @@ inEachBuild((build) => {
 					expect(checked, 'focused elements').toBeGreaterThan(2);
 				});
 
+				// The dots stay fixed at the top of the screen, so they still move far from the leaf.
+				if (path !== prefix) {
+					test('at the bottom of the page, the dots at the top still move, and stop with the pause', async ({
+						page,
+					}) => {
+						await page.goto(path);
+						await page.getByRole('contentinfo').scrollIntoViewIfNeeded();
+						expect(await isMoving(page), 'at the bottom').toBe(true);
+
+						await pauseButton(page, pause).click();
+						await expect
+							.poll(() => isMoving(page), { message: 'paused', timeout: 10_000 })
+							.toBe(false);
+					});
+				}
+
 				// The room kept for the button comes with it, the same on both pages: the Hero's button checks it.
 				if (path === prefix) {
 					test('after a scroll, focus does not stay under the button', async ({ page }) => {

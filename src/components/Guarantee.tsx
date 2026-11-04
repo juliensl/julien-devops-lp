@@ -43,6 +43,7 @@ export default function Guarantee({
 	return (
 		<section
 			aria-labelledby="guarantee-title"
+			data-section="guarantee"
 			className="page-width grid gap-14 py-[clamp(5rem,11vw,9rem)]"
 		>
 			<div className="grid gap-x-16 gap-y-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-end">

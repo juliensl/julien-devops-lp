@@ -7,19 +7,23 @@ import { Image } from 'astro:assets';
 import photo from '../../data/IMG_2030.png';
 import { values } from '../config/values';
 import { withNonBreakingSpaces } from '../lib/spaces';
+import LinkedInLogo from './LinkedInLogo.astro';
 
 interface Props {
 	title: string;
 	designation: string;
 	/** Where and how he works: remotely, the languages, standard technologies and everything documented. */
 	wayOfWorking: string;
+	/** The text of the link to his LinkedIn profile. */
+	linkedin: string;
 }
 
-const { title, designation, wayOfWorking } = Astro.props;
+const { title, designation, wayOfWorking, linkedin } = Astro.props;
 ---
 
 <section
 	aria-labelledby="about-title"
+	data-section="about"
 	class="page-width grid items-center gap-x-20 gap-y-12 py-[clamp(5rem,10vw,8rem)] lg:grid-cols-[minmax(0,4fr)_minmax(0,7fr)]"
 >
 	{/* Far from the top: it only loads when the Visitor gets there. */}
@@ -44,6 +48,13 @@ const { title, designation, wayOfWorking } = Astro.props;
 		<p class="max-w-2xl font-heading text-[clamp(1.4rem,2.6vw,2rem)] leading-snug">
 			{withNonBreakingSpaces(wayOfWorking)}
 		</p>
+		<a
+			href={values.linkedin}
+			class="inline-flex min-h-11 items-center gap-2 justify-self-start font-semibold text-purple underline-offset-3 hover:underline"
+		>
+			<LinkedInLogo size={18} />
+			{linkedin}
+		</a>
 		{/* The proof (career, projects, clients) goes here once it exists (#54). */}
 	</div>
 </section>

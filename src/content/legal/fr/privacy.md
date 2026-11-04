@@ -14,8 +14,8 @@ Ce site n'utilise pas de cookies, n'enregistre rien dans ton navigateur et ne fa
 ### Journaux du serveur et statistiques
 
 - **Données :** l'adresse IP complète, la date et l'heure, la page demandée, le navigateur et la page d'où tu viens.
-- **Finalité :** faire fonctionner et protéger le site, et compter les visites dans des statistiques agrégées, établies uniquement à partir de ces journaux.
-- **Base légale :** l'intérêt légitime d'avoir un site sûr et de savoir combien de visites il reçoit.
+- **Finalité :** faire fonctionner et protéger le site, et compter les visites sous forme de statistiques agrégées, établies uniquement à partir de ces journaux.
+- **Base légale :** l'intérêt légitime d'avoir un site sécurisé et de savoir combien de visites il reçoit.
 - **Destinataires :** Infomaniak, qui héberge le site, en Suisse, un pays qui bénéficie d'une décision d'adéquation de la Commission européenne.
 - **Durée de conservation :** le temps pendant lequel Infomaniak conserve les journaux, au moins 7 jours. Aucune copie n'est faite.
 
@@ -23,16 +23,16 @@ Ce site n'utilise pas de cookies, n'enregistre rien dans ton navigateur et ne fa
 
 - **Données :** ton adresse e-mail, ton nom et ce que tu écris.
 - **Finalité :** te répondre.
-- **Base légale :** l'intérêt légitime de répondre à qui écrit.
-- **Destinataires :** Google, qui conserve la boîte mail (Google Workspace).
+- **Base légale :** l'intérêt légitime de répondre aux personnes qui écrivent.
+- **Destinataires :** Google, qui héberge la boîte mail (Google Workspace).
 - **Durée de conservation :** si tu ne deviens pas client, 3 ans après ton dernier contact.
 
 ### Réservations de l'Échange
 
-- **Données :** le prénom, le nom, l'e-mail, le téléphone, les réponses aux questions du formulaire et les e-mails des invités.
+- **Données :** le prénom, le nom, l'e-mail, le téléphone, les réponses aux questions du formulaire et les adresses e-mail des invités.
 - **Finalité :** réserver et préparer l'Échange.
 - **Base légale :** les mesures précontractuelles que tu demandes en réservant.
-- **Destinataires :** Calendly, qui gère la réservation, et Google (Calendar et Meet), aux États-Unis, dans le cadre du Data Privacy Framework.
+- **Destinataires :** Calendly, qui gère la réservation, et Google (Agenda et Meet), aux États-Unis, dans le cadre du Data Privacy Framework.
 - **Durée de conservation :** si tu ne deviens pas client, 3 ans après ton dernier contact.
 
 ### Clients
@@ -40,8 +40,8 @@ Ce site n'utilise pas de cookies, n'enregistre rien dans ton navigateur et ne fa
 - **Données :** les coordonnées des personnes avec qui Julien travaille, les contrats et les factures.
 - **Finalité :** exécuter le contrat et facturer.
 - **Base légale :** l'exécution du contrat et les obligations légales comptables.
-- **Destinataires :** Google (Google Workspace) et, lorsque la loi l'exige, l'expert-comptable et l'administration fiscale.
-- **Durée de conservation :** pendant toute la relation commerciale, puis les durées légales (factures et documents comptables : 10 ans).
+- **Destinataires :** Google (Google Workspace) et, lorsque la loi l'exige, le comptable et l'administration fiscale.
+- **Durée de conservation :** pendant toute la relation commerciale, puis pendant les durées légales (factures et documents comptables : 10 ans).
 
 ### Auteurs des Témoignages
 
@@ -57,8 +57,8 @@ Tu peux demander l'accès à tes données, leur rectification, leur effacement, 
 
 ## Réclamation
 
-Si tu estimes que tes données ne sont pas bien traitées, tu peux introduire une réclamation auprès de la CNIL ([cnil.fr/fr/plaintes](https://www.cnil.fr/fr/plaintes)), ou de l'autorité du pays où tu vis.
+Si tu estimes que tes données ne sont pas bien traitées, tu peux introduire une réclamation auprès de la CNIL, l'autorité française de protection des données ([cnil.fr/fr/plaintes](https://www.cnil.fr/fr/plaintes)), ou auprès de l'autorité du pays où tu vis.
 
-## Tes données après ta mort
+## Tes données après ton décès
 
-Tu peux définir des directives relatives à la conservation, à l'effacement et à la communication de tes données après ta mort. Pour cela, écris à {email}.
+Tu peux définir des directives relatives à la conservation, à l'effacement et à la communication de tes données après ton décès. Pour cela, écris à {email}.

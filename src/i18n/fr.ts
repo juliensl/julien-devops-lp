@@ -1,4 +1,4 @@
-// Translated from Portuguese, to be reviewed by the intern before the Commercial launch (#75).
+// Translated from Portuguese, the Reference language, and reviewed by the intern.
 // The Promise and the Designation are the ones Julien approved.
 import type { Dictionary } from './pt';
 
@@ -22,7 +22,7 @@ export const fr: Dictionary = {
 		link: 'Écologie',
 		home: {
 			title: "L'infrastructure aussi a une empreinte.",
-			text: "L'endroit où tourne l'application, combien de temps elle tourne et avec quelle efficacité changent son impact environnemental. La page écologie te permet d'estimer une charge selon le pays où elle tourne, en séparant données publiées, hypothèses et calculs.",
+			text: "L'endroit où tourne l'application, sa durée de fonctionnement et son efficacité changent son impact environnemental. La page écologie te permet d'estimer une charge selon le pays où elle tourne, en séparant données publiées, hypothèses et calculs.",
 			link: 'Ouvrir la page écologie',
 		},
 		page: {
@@ -31,7 +31,7 @@ export const fr: Dictionary = {
 				"Estime l'énergie et les émissions d'une charge selon le pays où elle tourne, avec le calcul complet, la méthode, les sources et les limites.",
 			heading: "Les choix d'infrastructure ont aussi des conséquences environnementales.",
 			intro:
-				"L'endroit où tourne l'application, combien de temps elle tourne et avec quelle efficacité changent l'énergie qu'elle consomme et les émissions de l'électricité qu'elle utilise. Ici, tu estimes une charge selon le pays où elle tourne, avec la méthode et les sources sous les yeux.",
+				"L'endroit où tourne l'application, sa durée de fonctionnement et son efficacité font varier l'énergie qu'elle consomme et les émissions de l'électricité qu'elle utilise. Ici, tu estimes une charge selon le pays où elle tourne, avec la méthode et les sources sous les yeux.",
 			legend: {
 				label: 'Comment lire les données de cette page',
 				published: "valeur d'une base de données ou d'une étude publiques, avec année et source",
@@ -77,7 +77,7 @@ export const fr: Dictionary = {
 			cards: [
 				{
 					title: 'Location-based',
-					text: "Utilise la moyenne annuelle de l'électricité produite dans le pays. Ne compte pas les contrats d'énergie renouvelable : ce serait la méthode market-based, absente ici parce qu'elle demande des données contractuelles que nous n'avons pas.",
+					text: "Cette méthode utilise la moyenne annuelle de l'électricité produite dans le pays. Elle ne tient pas compte des contrats d'énergie renouvelable : ce serait la méthode market-based, absente ici parce qu'elle demande des données contractuelles que nous n'avons pas.",
 				},
 				{
 					title: 'Cycle de vie',
@@ -85,7 +85,7 @@ export const fr: Dictionary = {
 				},
 				{
 					title: 'Seulement les processeurs',
-					text: "L'estimateur compte l'énergie des vCPU et l'efficacité du centre de données. La mémoire, le stockage, le réseau et la fabrication des serveurs restent en dehors, donc la valeur réelle est plus élevée.",
+					text: "L'estimateur prend en compte l'énergie des vCPU et l'efficacité du centre de données. La mémoire, le stockage, le réseau et la fabrication des serveurs en sont exclus, donc la valeur réelle est plus élevée.",
 				},
 			],
 		},
@@ -114,7 +114,7 @@ export const fr: Dictionary = {
 		sources: {
 			title: 'Sources et limites',
 			names: {
-				ember: "Ember, production d'électricité annuelle par pays (intensité carbone, 2025)",
+				ember: "Ember, production annuelle d'électricité par pays (intensité carbone, 2025)",
 				cloudCarbonFootprint: 'Cloud Carbon Footprint, méthodologie',
 				uptimeInstitute: 'Uptime Institute, PUE moyen du secteur (enquête 2026)',
 				research:
@@ -133,7 +133,7 @@ export const fr: Dictionary = {
 		description: `${promise} Pour les CTO de SaaS en croissance.`,
 		hero: {
 			support:
-				'Les bugs sont repérés dans la pull request, pas par ton client. Et tes devs se remettent à coder au lieu de faire du support.',
+				'Les bugs sont attrapés à la pull request, pas par ton client. Et tes devs se remettent à coder au lieu de faire du support.',
 			note: 'Échange de 45 min sur Google Meet, gratuit.',
 		},
 		whoItsFor: {
@@ -143,14 +143,10 @@ export const fr: Dictionary = {
 				"Qui passe de quelques dizaines ou centaines à plusieurs milliers d'utilisateurs récurrents.",
 				'Une équipe de 5 à 20 personnes en général, dont au moins 3 devs.',
 			],
-			notLaunchedYet: "Ton SaaS n'est pas encore lancé ? Tu peux réserver l'échange quand même.",
-			exclusionsTitle: "Ce n'est pas pour",
-			exclusions: [
-				'Ceux qui ont déjà une pipeline CI, une application conteneurisée et une infrastructure avec auto-scaling.',
-				"Ce qui n'est ni web ni mobile.",
-				"Ceux qui refusent 100 à 500 €/mois de services et d'infrastructure.",
-				'Le secteur militaire.',
-			],
+			notLaunchedYet: {
+				text: "Ton SaaS n'est pas encore lancé ? Tu peux réserver l'Échange quand même.",
+				link: "réserver l'Échange",
+			},
 		},
 		todayAndAfter: {
 			title: "Aujourd'hui, et après.",
@@ -173,17 +169,9 @@ export const fr: Dictionary = {
 					text: "Ça tourne avec les clients d'aujourd'hui. Avec beaucoup plus, personne ne sait le dire.",
 				},
 			],
-			alreadyTriedTitle: 'Ce que tu as déjà essayé',
-			alreadyTried: [
-				"Un freelance DevOps exécutant, qui n'apporte pas d'expertise.",
-				'Tester à la main, ou via un stagiaire.',
-				"Des outils de test que les devs doivent lancer en local, et qu'ils ne lancent jamais.",
-				'Demander à un dev de monter en compétence : des semaines perdues, un résultat médiocre.',
-				'Des freelances qui codent chacun à leur manière : chaque départ emporte la connaissance.',
-			],
 			afterTitle: 'Après',
 			after: [
-				'Les bugs sont attrapés dans la pull request, pas par ton client.',
+				'Les bugs sont attrapés à la pull request, pas par ton client.',
 				"Tes devs récupèrent les journées qu'ils passaient en support.",
 				"Ton équipe grandit sans craindre qu'un junior casse la prod.",
 				"Tu ajoutes des fonctionnalités sans en casser d'autres.",
@@ -193,14 +181,14 @@ export const fr: Dictionary = {
 		services: {
 			label: 'Services',
 			title: 'Quatre couches de ton infrastructure.',
-			note: "Tu choisis les blocs que tu veux, dans n'importe quelle combinaison. 30 jours au maximum, à compter du début de la Mise en œuvre. Le bloc 3 demande une application conteneurisée, par le bloc 2 ou par ton équipe.",
+			note: 'Tu prends les blocs que tu veux, dans la combinaison de ton choix. 30 jours au maximum, à compter du début de la Mise en œuvre. Le bloc 3 demande une application conteneurisée, par le bloc 2 ou par ton équipe.',
 			blockLabel: 'Bloc',
 			toolsLabel: 'Outils',
 			blocks: [
 				{
 					name: 'Audit du code et pipeline CI',
 					summary: 'Les bugs sont attrapés à la pull request.',
-					text: "Chaque modification passe par les tests, le lint et l'analyse avant d'arriver en production, avec la sécurité au premier plan : dépendances aux failles connues, secrets oubliés dans le code et analyse du code lui-même. Ce qui est rouge ne passe pas.",
+					text: "Chaque modification passe par les tests, le lint et l'analyse avant d'arriver en production, avec la sécurité au premier plan : dépendances avec des failles connues, secrets oubliés dans le code et analyse du code lui-même. Ce qui est rouge ne passe pas.",
 					tools: ['SonarQube', 'Trivy'],
 				},
 				{
@@ -212,13 +200,13 @@ export const fr: Dictionary = {
 				{
 					name: 'Infrastructure scalable',
 					summary: "L'infrastructure suit la charge.",
-					text: "Sur deux niveaux : du serverless de conteneurs pour les volumes moyens, Kubernetes quand la charge le justifie. Avec l'Infrastructure as Code, l'infrastructure est décrite dans du code et peut être recréée.",
+					text: "Sur deux niveaux : des conteneurs serverless pour les volumes moyens, Kubernetes quand la charge le justifie. Avec l'Infrastructure as Code, l'infrastructure est décrite sous forme de code et peut être recréée.",
 					tools: ['Kubernetes', 'Terraform'],
 				},
 				{
 					name: 'Observabilité',
 					summary: 'Tu vois les problèmes avant tes clients.',
-					text: "Un tableau de bord de santé en temps réel et une alerte immédiate en cas d'incident.",
+					text: "Un dashboard de santé en temps réel et une alerte immédiate en cas d'incident.",
 					tools: ['Grafana', 'Prometheus'],
 					toolsAlternative: 'ou les outils de ton cloud',
 				},
@@ -246,7 +234,7 @@ export const fr: Dictionary = {
 				},
 				monitoring: {
 					description: 'Une anomalie dans le signal déclenche une alerte immédiate.',
-					dashboard: 'tableau de bord',
+					dashboard: 'dashboard',
 					alert: 'alerte',
 				},
 			},
@@ -276,13 +264,13 @@ export const fr: Dictionary = {
 			title: 'Disponible au moins 99 % du temps, chaque mois.',
 			text: "En 30 jours, je livre l'infrastructure. Pendant les 3 mois suivants, elle est disponible au moins 99 % du temps chaque mois. Sinon, je continue à travailler sans facturer jusqu'à y arriver.",
 			appliesWhen:
-				"S'applique quand tu prends les blocs 3 et 4 (et le 2, si l'application n'est pas encore conteneurisée).",
+				"La Garantie s'applique quand tu prends l'Infrastructure scalable et l'Observabilité (et la Conteneurisation, si l'application n'est pas encore conteneurisée).",
 			conditionsTitle: 'Conditions',
 			conditions: [
 				'Un test écrit pour chaque bug corrigé.',
 				'Aucun dev ne passe outre un test au rouge.',
 				'Un accès en lecture au dépôt.',
-				'Une personne technique qui répond sous 48 h.',
+				'Un interlocuteur technique qui répond sous 48 h.',
 			],
 			exclusionsTitle: 'Exclusions',
 			exclusions: [
@@ -291,8 +279,8 @@ export const fr: Dictionary = {
 			],
 			number: '99 %',
 			belowNumber: 'du temps, chaque mois',
-			inService: 'avec service',
-			outOfService: 'au plus 1 % sans service',
+			inService: 'en service',
+			outOfService: 'au plus 1 % hors service',
 			note: 'Pendant les 3 mois qui suivent la livraison.',
 		},
 		// «Souveraineté des données» is the name Julien approved (#46).
@@ -300,12 +288,12 @@ export const fr: Dictionary = {
 			label: 'Fournisseurs cloud',
 			title: 'Quel cloud pour quelle entreprise ?',
 			intro:
-				"Choisis un scénario. Chaque barre montre quels critères de ce scénario le fournisseur remplit. C'est une orientation pour l'échange, pas un classement : aucun fournisseur n'est idéal pour toutes les entreprises.",
+				"Choisis un scénario. Chaque barre montre quels critères de ce scénario le fournisseur remplit. C'est un repère pour l'Échange, pas un classement : aucun fournisseur n'est idéal pour toutes les entreprises.",
 			scenariosLabel: "Scénario d'entreprise",
 			scenarios: {
 				beforeLaunch: {
 					name: 'Avant le lancement',
-					description: 'Petite équipe, sans temps pour gérer des serveurs.',
+					description: "Petite équipe, qui n'a pas le temps de gérer des serveurs.",
 				},
 				growth: {
 					name: 'SaaS en croissance',
@@ -318,7 +306,7 @@ export const fr: Dictionary = {
 				},
 				variableLoad: {
 					name: 'Charge très variable',
-					description: 'Des pics forts et des périodes calmes.',
+					description: 'De forts pics et des périodes creuses.',
 				},
 				costControl: {
 					name: 'Coûts maîtrisés',
@@ -340,21 +328,21 @@ export const fr: Dictionary = {
 			values: { yes: 'Oui', partly: 'En partie', no: 'Non' },
 			hint: 'Clique sur une barre pour voir les faits.',
 			colon: ' :',
-			read: 'lue le',
+			read: 'consultée le',
 			source: 'Source',
 			sources: 'Sources',
 			outboundTraffic: 'Trafic sortant',
 			footnote:
-				"Les faits viennent des pages officielles des fournisseurs et de l'ANSSI. Les poids de chaque scénario et le critère « Visibilité et maîtrise des coûts » sont l'avis de Julien.",
+				"Les faits viennent des pages officielles des fournisseurs et de l'ANSSI. Les poids de chaque scénario et le critère « Visibilité et maîtrise des coûts » reflètent l'avis de Julien.",
 			notes: {
 				aws: {
 					paas: 'App Runner est fermé aux nouveaux clients depuis le 30/04/2026.',
 					europeanHeadquarters:
-						"Siège à Seattle, États-Unis. En Europe, annonce l'AWS European Sovereign Cloud, avec une région en Allemagne.",
+						"Siège à Seattle, États-Unis. En Europe, AWS annonce l'AWS European Sovereign Cloud, avec une région en Allemagne.",
 					secNumCloud: "Absent du catalogue SecNumCloud de l'ANSSI.",
 					euRegions: "6 régions dans l'UE.",
 					costs:
-						'Coûts par compte et par étiquette, avec prévision. Budgets avec alertes et actions automatiques.',
+						'Coûts par compte et par tag, avec prévision. Budgets avec alertes et actions automatiques.',
 				},
 				googleCloud: {
 					paas: "Cloud Run déploie à partir du code source ou d'un dépôt Git.",
@@ -363,7 +351,7 @@ export const fr: Dictionary = {
 						'Offre de Thales avec la technologie Google Cloud, qualifiée depuis le 17/12/2025 au nom de Thales.',
 					euRegions: "11 régions dans l'UE.",
 					costs:
-						'Coûts par projet et par étiquette, avec prévision. Budgets avec alertes et plafonds qui arrêtent certains services.',
+						'Coûts par projet et par tag, avec prévision. Budgets avec alertes et plafonds qui arrêtent certains services.',
 				},
 				infomaniak: {
 					containers:
@@ -377,12 +365,12 @@ export const fr: Dictionary = {
 				},
 				azure: {
 					europeanHeadquarters:
-						'Siège à Redmond, États-Unis. En Europe, annonce des partenaires : Bleu, en France, et Delos Cloud, en Allemagne.',
+						'Siège à Redmond, États-Unis. En Europe, Microsoft annonce des partenaires : Bleu, en France, et Delos Cloud, en Allemagne.',
 					secNumCloud:
 						"Absent du catalogue SecNumCloud de l'ANSSI. Bleu, partenaire de Microsoft, est en cours de qualification.",
 					euRegions: "13 régions dans l'UE, dont 2 à accès restreint.",
 					costs:
-						'Coûts par abonnement, par ressource et par étiquette, avec prévision. Budgets avec alertes seulement.',
+						'Coûts par abonnement, par ressource et par tag, avec prévision. Budgets avec alertes seulement.',
 				},
 				ovhcloud: {
 					containers: 'Conteneurs serverless annoncés comme « Coming soon ».',
@@ -391,7 +379,7 @@ export const fr: Dictionary = {
 					secNumCloud: '3 offres IaaS qualifiées.',
 					euRegions: "7 régions dans l'UE.",
 					costs:
-						'Consommation par projet et par ressource, avec prévision. Étiquettes non trouvées. Alerte sur la prévision, sans limite.',
+						'Consommation par projet et par ressource, avec prévision. Tags non trouvés. Alerte sur la prévision, sans limite.',
 				},
 				scaleway: {
 					paas: 'Non trouvé. Le plus proche : les Serverless Functions.',
@@ -400,7 +388,7 @@ export const fr: Dictionary = {
 						"En cours de qualification : pas encore dans le catalogue SecNumCloud de l'ANSSI.",
 					euRegions: "4 régions dans l'UE.",
 					costs:
-						'Coûts par projet et par produit. Étiquettes et prévision non trouvées. Les alertes ne font que prévenir.',
+						'Coûts par projet et par produit. Tags et prévision non trouvés. Les alertes ne font que prévenir.',
 				},
 			},
 			outbound: {
@@ -416,6 +404,7 @@ export const fr: Dictionary = {
 			title: 'Qui est Julien',
 			wayOfWorking:
 				"Je travaille à distance, en portugais, en français et en anglais. J'utilise des technologies standard, sans lock-in, et je documente tout pour que ton équipe soit autonome.",
+			linkedin: 'Voir mon profil LinkedIn',
 		},
 		testimonials: {
 			title: 'Ce que disent les clients',
@@ -436,11 +425,11 @@ export const fr: Dictionary = {
 		},
 		finalCta: {
 			title: "Tu ne perds jamais l'infrastructure.",
-			text: "Même si ton équipe ne se lance pas tout de suite dans les tests, tu gardes une pipeline propre, documentée et aux standards du marché, prête pour le jour où tu décides d'y aller.",
+			text: "Même si ton équipe ne se lance pas tout de suite dans les tests, tu gardes une pipeline propre, documentée et aux standards du marché, prête pour le jour où tu décideras d'y aller.",
 			conversation: 'Échange de 45 min sur Google Meet, gratuit et sans engagement.',
 			// Not shown while the booking page is in French (values.ts).
 			bookingNotice:
-				"La page de réservation est en français, mais l'échange peut se faire en anglais ou en portugais.",
+				"La page de réservation est en français, mais l'Échange peut se faire en anglais ou en portugais.",
 		},
 	},
 	questions: {
@@ -456,12 +445,12 @@ export const fr: Dictionary = {
 					{
 						question: 'Que fais-tu, exactement ?',
 						answer:
-							"Je livre l'infrastructure DevOps dont un SaaS a besoin pour grandir, en quatre blocs : pipeline CI et audit du code, conteneurisation, infrastructure scalable et observabilité. Tu prends ceux que tu veux, dans n'importe quelle combinaison.",
+							"Je livre l'infrastructure DevOps dont un SaaS a besoin pour grandir, en quatre blocs : audit du code et pipeline CI, conteneurisation, infrastructure scalable et observabilité. Tu prends ceux que tu veux, dans la combinaison de ton choix.",
 					},
 					{
 						question: 'Combien de temps ça prend ?',
 						answer:
-							"30 jours au maximum, pour n'importe quelle combinaison de blocs, à compter du début de la Mise en œuvre. Le délai exact figure dans la Proposition d'intervention.",
+							"30 jours au maximum, quelle que soit la combinaison de blocs, à compter du début de la Mise en œuvre. Le délai exact figure dans la Proposition d'intervention.",
 					},
 					{
 						question: 'Combien ça coûte ?',
@@ -476,7 +465,7 @@ export const fr: Dictionary = {
 					{
 						question: 'Je peux prendre seulement certains blocs ?',
 						answer:
-							"Oui, dans n'importe quelle combinaison. Le bloc 3 demande une application conteneurisée, par le bloc 2 ou par ton équipe.",
+							'Oui, dans la combinaison de ton choix. Le bloc 3 demande une application conteneurisée, par le bloc 2 ou par ton équipe.',
 					},
 				],
 			},
@@ -489,7 +478,7 @@ export const fr: Dictionary = {
 					{
 						question: 'Qui écrit les tests ?',
 						answer:
-							"Ton équipe. Je n'écris pas de tests : je livre le système qui les exécute, les mesure et bloque ce qui est au rouge.",
+							"Ton équipe. Je n'écris pas de tests : je livre le système qui les lance, les mesure et bloque ce qui est rouge.",
 					},
 					{
 						question: 'Faut-il arrêter le développement ?',
@@ -504,12 +493,12 @@ export const fr: Dictionary = {
 					{
 						question: 'De quels accès as-tu besoin ?',
 						answer:
-							"Pour le Diagnostic, un accès en lecture au dépôt. Au cloud (métriques et logs) seulement si le problème touche l'infrastructure, les performances, les coûts ou la disponibilité. Jamais de mots de passe, de clés privées ni de droits d'administrateur. Pour la Mise en œuvre, j'ai besoin d'un accès en écriture au dépôt et d'un compte sur ton cloud avec les droits nécessaires pour créer l'infrastructure des blocs choisis. Tu retires ces accès à la Livraison et passation.",
+							"Pour le Diagnostic, un accès en lecture au dépôt. Un accès au cloud (métriques et logs) seulement si le problème touche l'infrastructure, les performances, les coûts ou la disponibilité. Jamais de mots de passe, de clés privées ni de droits d'administrateur. Pour la Mise en œuvre, j'ai besoin d'un accès en écriture au dépôt et d'un compte sur ton cloud avec les droits nécessaires pour créer l'infrastructure des blocs choisis. Tu retires ces accès à la Livraison et passation.",
 					},
 					{
 						question: 'Comment fonctionne la Garantie de disponibilité ?',
 						answer:
-							"En 30 jours, je livre l'infrastructure. Pendant les 3 mois suivants, elle est disponible au moins 99 % du temps chaque mois. Sinon, je continue à travailler sans facturer jusqu'à y arriver. Elle s'applique avec les blocs 3 et 4, et demande un test écrit pour chaque bug corrigé, aucun dev qui passe outre un test au rouge, un accès en lecture au dépôt et une personne technique qui répond sous 48 h.",
+							"En 30 jours, je livre l'infrastructure. Pendant les 3 mois suivants, elle est disponible au moins 99 % du temps chaque mois. Sinon, je continue à travailler sans facturer jusqu'à y arriver. La Garantie s'applique avec les blocs 3 et 4, et demande un test écrit pour chaque bug corrigé, aucun dev qui passe outre un test au rouge, un accès en lecture au dépôt et un interlocuteur technique qui répond sous 48 h.",
 					},
 					{
 						question: "Quels outils utilises-tu pour l'observabilité ?",
@@ -528,7 +517,7 @@ export const fr: Dictionary = {
 				description: 'Risques, coûts, continuité, prévisibilité et impact sur le business.',
 				questions: [
 					{
-						question: 'Combien ça va coûter, et quand vais-je le savoir ?',
+						question: 'Combien ça va coûter, et quand est-ce que je le saurai ?',
 						answer:
 							"Un prix fixe, que je donne dans la Proposition d'intervention. La Proposition arrive après le Diagnostic gratuit, qui prend 2 à 3 jours ouvrés à partir du moment où j'ai les accès, ou 3 à 5 si le cloud est inclus.",
 					},
@@ -548,7 +537,7 @@ export const fr: Dictionary = {
 							"Le bloc 1 ne touche pas à la production. Pour les blocs 2 et 3, l'objectif est d'éviter les interruptions ; si la migration touche des bases de données ou des services critiques, une courte interruption, planifiée à l'avance, est possible. Il y a toujours un plan pour revenir à la version précédente.",
 					},
 					{
-						question: 'Quel retour puis-je attendre ?',
+						question: 'Quel retour sur investissement puis-je attendre ?',
 						answer:
 							"Moins de temps à corriger des problèmes. Plus de temps pour développer le produit. J'aide les équipes SaaS à automatiser les tests et les livraisons, à détecter les régressions plus tôt et à rendre l'infrastructure plus fiable, pour qu'elles puissent grandir avec plus de confiance.",
 					},
@@ -568,12 +557,12 @@ export const fr: Dictionary = {
 					{
 						question: "Qu'est-ce qui change au quotidien pour l'équipe ?",
 						answer:
-							"L'objectif est de réduire le temps perdu en tâches manuelles et en problèmes récurrents, de faciliter la détection des régressions et de rendre les livraisons plus fiables. L'équipe gagne des processus plus clairs, une meilleure visibilité sur l'infrastructure et plus de temps pour se concentrer sur le développement du produit. Les résultats dépendent du contexte et de l'état initial de chaque projet.",
+							"L'objectif est de réduire le temps perdu en tâches manuelles et en problèmes récurrents, de faciliter la détection des régressions et de rendre les livraisons plus fiables. L'équipe bénéficie de processus plus clairs, d'une meilleure visibilité sur l'infrastructure et de plus de temps pour se concentrer sur le développement du produit. Les résultats dépendent du contexte et de l'état initial de chaque projet.",
 					},
 					{
 						question: 'Qui maintient la pipeline ensuite ?',
 						answer:
-							'Ton équipe. La documentation technique et la passation à la fin vous rendent autonomes.',
+							'Ton équipe. La documentation technique et la passation à la fin la rendent autonome.',
 					},
 					{
 						question: 'Avec qui parles-tu au quotidien ?',
@@ -583,12 +572,12 @@ export const fr: Dictionary = {
 					{
 						question: 'Pouvons-nous continuer à coder pendant la migration ?',
 						answer:
-							'Oui. Le travail avance en parallèle, sur des branches, des environnements de test et une infrastructure séparée. À la fin, une courte période sans modification du code peut être nécessaire, convenue avec vous.',
+							"Oui. Le travail avance en parallèle, sur des branches, des environnements de test et une infrastructure séparée. À la fin, une courte période sans modification du code peut être nécessaire, convenue avec l'équipe.",
 					},
 					{
 						question: 'Quels outils allons-nous utiliser ?',
 						answer:
-							'Bloc 1 : SonarQube et Trivy. Bloc 2 : Docker. Bloc 3 : Kubernetes et Terraform. Bloc 4 : Grafana et Prometheus, ou les outils de votre cloud.',
+							'Bloc 1 : SonarQube et Trivy. Bloc 2 : Docker. Bloc 3 : Kubernetes et Terraform. Bloc 4 : Grafana et Prometheus, ou les outils de ton cloud.',
 					},
 				],
 			},
@@ -598,7 +587,7 @@ export const fr: Dictionary = {
 				'Questions et réponses pour les CTO, les CEO et les équipes techniques de SaaS : délais, coûts, accès, risques et outils.',
 			title: 'Des réponses pour chaque profil.',
 			intro:
-				"Choisis ton profil ou cherche un mot. Si ta question n'est pas ici, pose-la-moi pendant l'Échange.",
+				"Choisis ton profil ou cherche un mot. Si ta question n'y est pas, pose-la-moi pendant l'Échange.",
 			filter: 'Filtrer par profil',
 			everyone: 'Toutes',
 			search: 'Chercher dans les questions',
