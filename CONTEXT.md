@@ -98,7 +98,7 @@ _Avoid_: rating, avis (the names on Malt), review, recommendation
 ## Page phases
 
 **First review**:
-The first complete version of the page, in Portuguese only, reviewed with Julien before the Commercial launch.
+The first complete version of the page, in French and Portuguese, reviewed with Julien before the Commercial launch.
 _Portuguese_: Primeira validação
 _Avoid_: beta, MVP
 
