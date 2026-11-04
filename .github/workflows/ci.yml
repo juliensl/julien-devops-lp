@@ -1,8 +1,9 @@
 # The checks that block a PR: any failure turns it red.
 # The steps live in .github/actions/verify, shared with Publishing.
 # The Playwright suite is split into 4 jobs that run side by side.
-# PRs into main (releases and hotfixes) run them all, plus Lighthouse;
-# PRs into any other branch, develop included, run the quick checks.
+# PRs into main (releases and hotfixes) run every check: Chromium in 1 job,
+# WebKit (about 3 times slower) in 3, plus Lighthouse.
+# PRs into any other branch, develop included, run the quick checks: Chromium in 4 jobs.
 # Documentation-only PRs do not run this workflow.
 name: Checks
 
@@ -24,13 +25,13 @@ concurrency:
 
 jobs:
   tests:
-    name: Tests ${{ matrix.shard }}
+    name: Tests ${{ matrix.part }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
-        shard: ['1/4', '2/4', '3/4', '4/4']
+        part: ${{ fromJSON(github.base_ref == 'main' && '["chromium 1/1", "webkit 1/3", "webkit 2/3", "webkit 3/3"]' || '["chromium 1/4", "chromium 2/4", "chromium 3/4", "chromium 4/4"]') }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -43,8 +44,7 @@ jobs:
 
       - uses: ./.github/actions/verify
         with:
-          shard: ${{ matrix.shard }}
-          quick: ${{ github.base_ref != 'main' }}
+          part: ${{ matrix.part }}
 
       - name: Playwright report
         if: failure()
