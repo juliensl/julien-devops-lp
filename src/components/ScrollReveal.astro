@@ -1,0 +1,71 @@
+---
+// Titles and blocks marked `data-reveal` fade in when the scroll brings them up to the branch's growth line.
+// What is on screen when the page loads stays; without JS or with reduced motion, nothing is hidden.
+// It goes last in <main>: its load callback then runs after the other scripts have set the page up.
+---
+
+<script>
+	import { afterLoad } from '../scripts/after-load';
+	import { GROWTH_LINE } from '../scripts/growth-line';
+
+	const FADE_MS = 600;
+	/** Blocks that reach the line together come in one after the other, in reading order. */
+	const STAGGER_MS = 120;
+	const MAX_DELAY_MS = 480;
+
+	afterLoad(() => {
+		const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+		if (reducedMotion.matches) return;
+
+		const pending = new Set(
+			[...document.querySelectorAll<HTMLElement>('[data-reveal]')].filter(
+				(block) => block.getBoundingClientRect().top >= innerHeight,
+			),
+		);
+		for (const block of pending) block.setAttribute('data-pending', '');
+
+		const reveal = (blocks: HTMLElement[], fade = true) => {
+			for (const [k, block] of blocks.entries()) {
+				pending.delete(block);
+				block.removeAttribute('data-pending');
+				if (fade)
+					block.animate(
+						{ opacity: [0, 1] },
+						{
+							duration: FADE_MS,
+							delay: Math.min(k * STAGGER_MS, MAX_DELAY_MS),
+							easing: 'ease',
+							fill: 'backwards',
+						},
+					);
+			}
+		};
+
+		let frame = 0;
+		/** How far down the screen a block shows, as a share of its height. */
+		let reach = GROWTH_LINE;
+		const check = () => {
+			frame = 0;
+			const line = innerHeight * reach;
+			reach = GROWTH_LINE;
+			// At the bottom of the page, the last blocks may never rise as far as the line.
+			const atBottom = scrollY + innerHeight >= document.documentElement.scrollHeight - 2;
+			reveal([...pending].filter((block) => atBottom || block.getBoundingClientRect().top < line));
+		};
+		const schedule = () => (frame ||= requestAnimationFrame(check));
+
+		addEventListener('scroll', schedule, { passive: true });
+		addEventListener('resize', schedule);
+		// A block that comes on screen without a scroll (a filter, a question closing) shows at once, as at load.
+		new ResizeObserver(() => {
+			reach = 1;
+			schedule();
+		}).observe(document.body);
+		// The keyboard can reach a link before the scroll brings it to the line.
+		addEventListener('focusin', ({ target }) => {
+			const block = (target as Element).closest<HTMLElement>('[data-pending]');
+			if (block && pending.has(block)) reveal([block]);
+		});
+		reducedMotion.addEventListener('change', () => reveal([...pending], false));
+	});
+</script>

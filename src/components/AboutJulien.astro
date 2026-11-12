@@ -34,22 +34,24 @@ const { title, designation, wayOfWorking, linkedin } = Astro.props;
 		format="avif"
 		quality={55}
 		loading="lazy"
+		data-reveal
 		decoding="async"
 		class="aspect-4/5 w-full max-w-72 rounded-[999px_999px_14px_14px] object-cover lg:max-w-none"
 	/>
 	<div class="grid gap-6">
-		<h2 id="about-title" class="label font-body">
+		<h2 id="about-title" data-reveal class="label font-body">
 			{title}
 		</h2>
-		<div class="grid gap-2">
+		<div data-reveal class="grid gap-2">
 			<p class="font-heading text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">{values.name}</p>
 			<p class="text-lg text-purple">{designation}</p>
 		</div>
-		<p class="max-w-2xl font-heading text-[clamp(1.4rem,2.6vw,2rem)] leading-snug">
+		<p data-reveal class="max-w-2xl font-heading text-[clamp(1.4rem,2.6vw,2rem)] leading-snug">
 			{withNonBreakingSpaces(wayOfWorking)}
 		</p>
 		<a
 			href={values.linkedin}
+			data-reveal
 			class="inline-flex min-h-11 items-center gap-2 justify-self-start font-semibold text-purple underline-offset-3 hover:underline"
 		>
 			<LinkedInLogo size={18} />

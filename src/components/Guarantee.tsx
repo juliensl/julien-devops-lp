@@ -47,13 +47,13 @@ export default function Guarantee({
 			className="page-width grid gap-14 py-[clamp(5rem,11vw,9rem)]"
 		>
 			<div className="grid gap-x-16 gap-y-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-end">
-				<div className="grid gap-4">
+				<div data-reveal className="grid gap-4">
 					<p className="label">{label}</p>
 					<h2 id="guarantee-title" className="text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">
 						{withNonBreakingSpaces(title)}
 					</h2>
 				</div>
-				<div className="grid gap-4">
+				<div data-reveal className="grid gap-4">
 					<p className="max-w-[34rem] text-lg text-foreground-secondary">
 						{withNonBreakingSpaces(text)}
 					</p>
@@ -61,7 +61,7 @@ export default function Guarantee({
 				</div>
 			</div>
 
-			<figure className="grid gap-4">
+			<figure data-reveal className="grid gap-4">
 				<p className="guarantee-number">{withNonBreakingSpaces(number)}</p>
 				<p className="mb-6 text-lg">{withNonBreakingSpaces(belowNumber)}</p>
 				<div className="guarantee-bar" aria-hidden="true">
@@ -87,7 +87,7 @@ export default function Guarantee({
 
 function List({ id, title, items }: { id: string; title: string; items: string[] }) {
 	return (
-		<div className="grid content-start gap-4">
+		<div data-reveal className="grid content-start gap-4">
 			<h3 id={id} className="text-2xl">
 				{title}
 			</h3>

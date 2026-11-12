@@ -14,6 +14,7 @@ import Base from '../layouts/Base.astro';
 import { withNonBreakingSpaces } from '../lib/spaces';
 import BookingButton from './BookingButton';
 import Question from './Question.astro';
+import ScrollReveal from './ScrollReveal.astro';
 
 interface Props {
 	language: Language;
@@ -106,13 +107,13 @@ const total = AUDIENCES.reduce((n, id) => n + audiences[id].questions.length, 0)
 			<div class="grid gap-14">
 				{AUDIENCES.map((id) => (
 					<section id={id} aria-labelledby={`${id}-title`} data-audience={id} class="grid gap-4">
-						<div class="grid gap-1">
+						<div data-reveal class="grid gap-1">
 							<h2 id={`${id}-title`} class="text-[clamp(1.7rem,3.2vw,2.3rem)] leading-[1.1]">
 								{audiences[id].name}
 							</h2>
 							<p class="text-foreground-secondary">{audiences[id].description}</p>
 						</div>
-						<div>
+						<div data-reveal>
 							{audiences[id].questions.map(({ question, answer }) => (
 								<Question question={question} answer={answer} />
 							))}
@@ -126,13 +127,18 @@ const total = AUDIENCES.reduce((n, id) => n + audiences[id].questions.length, 0)
 		</div>
 
 		<section aria-labelledby="not-found-title" class="page-width pt-20">
-			<div class="flex flex-wrap items-center justify-between gap-6 border-t-2 border-green pt-10">
+			<div
+				data-reveal
+				class="flex flex-wrap items-center justify-between gap-6 border-t-2 border-green pt-10"
+			>
 				<h2 id="not-found-title" class="text-[clamp(1.7rem,3.2vw,2.3rem)] leading-[1.1]">
 					{withNonBreakingSpaces(page.notFound)}
 				</h2>
 				<BookingButton text={t.bookButton} />
 			</div>
 		</section>
+
+		<ScrollReveal />
 	</main>
 </Base>
 

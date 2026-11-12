@@ -98,6 +98,13 @@
 	}
 }
 
+/* A block still waiting for the scroll (ScrollReveal.astro, Steps.astro). On paper, everything shows. */
+@media screen {
+	[data-pending] {
+		opacity: 0;
+	}
+}
+
 /* The content width, the same in the header, the sections and the footer. */
 @utility page-width {
 	width: 100%;

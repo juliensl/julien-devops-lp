@@ -1,7 +1,7 @@
 // The Steps section (#65): the 5 Steps, from the Conversation to the Delivery and handover. On
-// desktop, the section stays pinned and the number of each Step lights up when its turn comes; on a
-// phone and with reduced motion, it is not pinned.
-import { expect, test, type Page } from '@playwright/test';
+// desktop, the section stays pinned; on a phone and with reduced motion, it is not pinned. Each Step
+// shows when the branch reaches it and goes again when the branch shrinks back above it.
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import { inEachBuild } from './builds';
 import { LANGUAGES, type Language } from './expected';
 
@@ -50,8 +50,8 @@ const EXPECTED: Record<Language, { title: string; steps: [string, string][] }> =
 	},
 };
 
-/** A lit number has the data green (#54, "Direção visual"). */
-const LIT_COLOR = 'rgb(60, 207, 142)';
+/** Unpinned, the branch's tip follows the line at 62 % of the screen. */
+const GROWTH_LINE = 0.62;
 
 /** Where the Visitor opens the page. */
 interface Viewport {
@@ -123,6 +123,14 @@ async function scrollDown(page: Page, language: Language, distance: number) {
 	};
 }
 
+/** Scrolls until the middle of `element` is `y` px from the top of the screen. */
+async function placeMiddle(element: Locator, y: number) {
+	await element.evaluate((e, y) => {
+		const { top, height } = e.getBoundingClientRect();
+		scrollBy(0, top + height / 2 - y);
+	}, y);
+}
+
 inEachBuild((build) => {
 	for (const language of build.phase.publishedLanguages) {
 		const { prefix } = LANGUAGES[language];
@@ -144,22 +152,48 @@ inEachBuild((build) => {
 				);
 			});
 
-			test('on desktop, the number of each Step lights up when its turn comes', async ({
+			test('on desktop, each Step shows when its turn comes, and goes again on the way back up', async ({
 				page,
 			}) => {
 				await openPage(page, prefix, DESKTOP);
 				await scrollToSection(page, language);
 				const steps = section(page, language).getByRole('listitem');
+				const expectShown = async (shown: number) => {
+					for (let k = 0; k < 5; k++) {
+						await expect(steps.nth(k), `${shown} shown`).toHaveCSS(
+							'opacity',
+							k < shown ? '1' : '0',
+						);
+					}
+				};
+
+				// Each half screen of scroll shows one more Step, in order; back up, they go in reverse.
+				for (let shown = 0; shown <= 5; shown++) {
+					await expectShown(shown);
+					if (shown < 5) await page.evaluate((d) => scrollBy(0, d), 0.5 * DESKTOP.height);
+				}
+				for (let shown = 4; shown >= 0; shown--) {
+					await page.evaluate((d) => scrollBy(0, -d), 0.5 * DESKTOP.height);
+					await expectShown(shown);
+				}
+			});
+
+			test('on a phone, each Step shows once its number passes the growth line, and goes again below it', async ({
+				page,
+			}) => {
+				await openPage(page, prefix, PHONE);
+				const steps = section(page, language).getByRole('listitem');
+				const line = GROWTH_LINE * PHONE.height;
 				const stepNumber = (k: number) => steps.nth(k).getByText(String(k + 1), { exact: true });
 
-				// Each half screen of scroll lights up one more number, in order.
-				for (let lit = 0; lit <= 5; lit++) {
-					for (let k = 0; k < 5; k++) {
-						if (k < lit) await expect(stepNumber(k), `${lit} lit`).toHaveCSS('color', LIT_COLOR);
-						else await expect(stepNumber(k), `${lit} lit`).not.toHaveCSS('color', LIT_COLOR);
-					}
-					await page.evaluate((d) => scrollBy(0, d), 0.5 * DESKTOP.height);
+				for (let k = 0; k < 5; k++) {
+					await placeMiddle(stepNumber(k), line + 15);
+					await expect(steps.nth(k)).toHaveCSS('opacity', '0');
+					await placeMiddle(stepNumber(k), line - 15);
+					await expect(steps.nth(k)).toHaveCSS('opacity', '1');
 				}
+				await placeMiddle(stepNumber(0), line + 15);
+				await expect(steps.nth(0)).toHaveCSS('opacity', '0');
 			});
 
 			for (const viewport of [PHONE, REDUCED_MOTION, SHORT_SCREEN]) {

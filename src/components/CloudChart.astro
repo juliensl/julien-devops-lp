@@ -66,14 +66,14 @@ function summary(scenario: ScenarioId) {
 	class="page-width grid gap-10 py-[clamp(5rem,11vw,9rem)]"
 >
 	<div class="grid gap-x-16 gap-y-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-end">
-		<div class="grid gap-4">
+		<div data-reveal class="grid gap-4">
 			<p class="label">{t.label}</p>
 			<h2 id="cloud-chart-title" class="text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">
 				{withNonBreakingSpaces(t.title)}
 			</h2>
 			<p class="max-w-[36rem] text-foreground-secondary">{withNonBreakingSpaces(t.intro)}</p>
 		</div>
-		<fieldset class="flex flex-wrap gap-2 lg:justify-end">
+		<fieldset data-reveal class="flex flex-wrap gap-2 lg:justify-end">
 			<legend class="sr-only">{t.scenariosLabel}</legend>
 			{SCENARIOS.map(({ id }) => (
 				<label class="chip">
@@ -89,7 +89,7 @@ function summary(scenario: ScenarioId) {
 	{SCENARIOS.map(({ id: scenario }) => {
 		const weighted = criteriaOf(scenario);
 		return (
-			<div data-scenario={scenario} data-summary={summary(scenario)} class="panel">
+			<div data-scenario={scenario} data-summary={summary(scenario)} data-reveal class="panel">
 				<div class="flex flex-wrap justify-between gap-x-8 gap-y-3 [grid-area:top]">
 					<p class="max-w-[32rem]">
 						<strong class="font-semibold">{withColon(t.scenarios[scenario].name)}</strong>{' '}
@@ -200,7 +200,9 @@ function summary(scenario: ScenarioId) {
 		);
 	})}
 
-	<p class="text-sm text-foreground-secondary">{withNonBreakingSpaces(t.footnote)}</p>
+	<p data-reveal class="text-sm text-foreground-secondary">
+		{withNonBreakingSpaces(t.footnote)}
+	</p>
 </section>
 
 <script>
