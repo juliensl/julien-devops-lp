@@ -101,8 +101,16 @@ inEachBuild((build) => {
 					// Without the fonts, Playwright takes no screenshots: ask the browser what is running,
 					// and which canvases have drawn something.
 					await page.waitForTimeout(500);
+					// The Promise's fade-in is CSS: it starts with the first paint, without JS.
 					const running = await page.evaluate(
-						() => document.getAnimations().filter((a) => a.playState === 'running').length,
+						() =>
+							document
+								.getAnimations()
+								.filter(
+									(a) =>
+										a.playState === 'running' &&
+										!(a.effect as KeyframeEffect | null)?.target?.matches('[data-fade-in]'),
+								).length,
 					);
 					expect(running, 'animations running during loading').toBe(0);
 					const drawn = (await canvasesOf(page)).filter((canvas) => canvas.drawn);

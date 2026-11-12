@@ -89,6 +89,31 @@ inEachBuild((build) => {
 		});
 	}
 
+	test.describe('the Promise', () => {
+		const promise = (page: Page) => page.getByRole('heading', { level: 1 });
+
+		test('fades in as the home page opens', async ({ page }) => {
+			await openPage(page, prefix);
+			await expect(promise(page)).toHaveCSS('animation-name', 'fade-in');
+			await expect(promise(page)).toHaveCSS('opacity', '1');
+		});
+
+		test('with reduced motion, shows at once', async ({ page }) => {
+			await page.emulateMedia({ reducedMotion: 'reduce' });
+			await openPage(page, prefix);
+			await expect(promise(page)).toHaveCSS('animation-name', 'none');
+		});
+
+		test.describe('without JavaScript', () => {
+			test.use({ javaScriptEnabled: false });
+
+			test('shows at once', async ({ page }) => {
+				await page.goto(prefix);
+				await expect(promise(page)).toHaveCSS('animation-name', 'none');
+			});
+		});
+	});
+
 	test('a block reached with the keyboard shows at once, without waiting for the scroll', async ({
 		page,
 	}) => {

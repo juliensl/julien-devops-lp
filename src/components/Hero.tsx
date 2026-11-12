@@ -19,6 +19,7 @@ export default function Hero({ designation, promise, support, buttonText, note }
 				<p className="label">{designation}</p>
 				<h1
 					id="promise"
+					data-fade-in
 					className="mt-6 max-w-4xl text-[clamp(2.25rem,4.4vw,4.1rem)] leading-[1.05] tracking-[-0.012em]"
 				>
 					{promise}
