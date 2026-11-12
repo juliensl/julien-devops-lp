@@ -24,18 +24,20 @@ const others = AUDIENCES.filter((id) => id !== 'general');
 	class="page-width grid gap-x-16 gap-y-12 py-[clamp(5rem,10vw,8rem)] lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:items-start"
 >
 	<div class="grid gap-4">
-		<p class="label">{label}</p>
-		<h2 id="questions-title" class="text-[clamp(2rem,4vw,2.8rem)] leading-[1.08]">
+		<p data-reveal class="label">
+			{label}
+		</p>
+		<h2 id="questions-title" data-reveal class="text-[clamp(2rem,4vw,2.8rem)] leading-[1.08]">
 			{title}
 		</h2>
-		<div class="mt-2">
+		<div data-reveal class="mt-2">
 			{audiences.general.questions.map(({ question, answer }) => (
 				<Question question={question} answer={answer} />
 			))}
 		</div>
 	</div>
 
-	<div class="grid gap-3 lg:sticky lg:top-[calc(var(--header-height)+2rem)]">
+	<div data-reveal class="grid gap-3 lg:sticky lg:top-[calc(var(--header-height)+2rem)]">
 		<p id="questions-by-audience" class="text-sm text-foreground-secondary">
 			{byAudience}
 		</p>

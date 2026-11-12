@@ -4,6 +4,7 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { inEachBuild } from './builds';
 import { LANGUAGES, type Language } from './expected';
+import { fadesDone } from './reveal';
 
 interface Block {
 	name: string;
@@ -479,6 +480,8 @@ inEachBuild((build) => {
 				await openPage(page, prefix, PHONE);
 				await page.getByRole('button', { name: LANGUAGES[language].pause, exact: true }).click();
 				for (let k = 0; k < 4; k++) await scrollToCard(page, language, k);
+				// The cards still fade in with the scroll, as the branch still grows with it.
+				await fadesDone(page);
 				expect(await isMoving(...diagrams(page, language))).toBe(false);
 			});
 

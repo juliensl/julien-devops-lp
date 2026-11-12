@@ -26,6 +26,7 @@ import BookingButton from './BookingButton';
 import FlowingLeaf from './FlowingLeaf.astro';
 import Leaf from './Leaf.astro';
 import PauseButton from './PauseButton.astro';
+import ScrollReveal from './ScrollReveal.astro';
 import TopDots from './TopDots.astro';
 import ValueBadge, { type BadgeKind } from './ValueBadge.astro';
 
@@ -91,7 +92,7 @@ const sliders: { name: keyof typeof FIELDS; hint?: [BadgeKind, string] }[] = [
 		</div>
 
 		<section aria-labelledby="estimator-title" data-estimator class="page-width grid gap-10 pt-20">
-			<div class="grid gap-4">
+			<div data-reveal class="grid gap-4">
 				<p class="label">1 · {estimator.label}</p>
 				<h2 id="estimator-title" class="section-title">
 					{estimator.title}
@@ -101,7 +102,10 @@ const sliders: { name: keyof typeof FIELDS; hint?: [BadgeKind, string] }[] = [
 
 			<div class="grid gap-x-12 gap-y-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
 				{/* Without JS the fields would change nothing: CSS hides them, and the page shows the first load. */}
-				<form class="grid content-start gap-6 border-t border-line-strong pt-6 noscript:hidden">
+				<form
+					data-reveal
+					class="grid content-start gap-6 border-t border-line-strong pt-6 noscript:hidden"
+				>
 					<div class="grid gap-2">
 						<label for="estimator-country">{fields.country}</label>
 						<select
@@ -147,7 +151,7 @@ const sliders: { name: keyof typeof FIELDS; hint?: [BadgeKind, string] }[] = [
 					))}
 				</form>
 
-				<div class="grid content-start gap-8 border-l-2 border-green pl-6">
+				<div data-reveal class="grid content-start gap-8 border-l-2 border-green pl-6">
 					<div role="group" aria-label={estimator.result} class="grid gap-6 sm:grid-cols-2">
 						<p class="grid justify-items-start gap-1.5">
 							<ValueBadge language={language} kind="calculated" />{' '}
@@ -260,6 +264,7 @@ const sliders: { name: keyof typeof FIELDS; hint?: [BadgeKind, string] }[] = [
 
 			<section
 				aria-labelledby="comparison-title"
+				data-reveal
 				class="grid gap-4 border-t border-line-strong pt-8"
 			>
 				<h3 id="comparison-title" class="text-xl">
@@ -302,13 +307,15 @@ const sliders: { name: keyof typeof FIELDS; hint?: [BadgeKind, string] }[] = [
 		</section>
 
 		<section aria-labelledby="method-title" class="page-width grid gap-4 pt-20">
-			<p class="label">2 · {method.label}</p>
-			<h2 id="method-title" class="section-title">
+			<p data-reveal class="label">
+				2 · {method.label}
+			</p>
+			<h2 id="method-title" data-reveal class="section-title">
 				{method.title}
 			</h2>
 			<ul class="mt-4 grid gap-6 md:grid-cols-3">
 				{method.cards.map(({ title, text }) => (
-					<li class="card border-t border-line-strong">
+					<li data-reveal class="card border-t border-line-strong">
 						<h3>{title}</h3>
 						<p>{withNonBreakingSpaces(text)}</p>
 					</li>
@@ -317,13 +324,15 @@ const sliders: { name: keyof typeof FIELDS; hint?: [BadgeKind, string] }[] = [
 		</section>
 
 		<section aria-labelledby="levers-title" class="page-width grid gap-4 pt-20">
-			<p class="label">3 · {levers.label}</p>
-			<h2 id="levers-title" class="section-title">
+			<p data-reveal class="label">
+				3 · {levers.label}
+			</p>
+			<h2 id="levers-title" data-reveal class="section-title">
 				{levers.title}
 			</h2>
 			<ul class="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
 				{levers.cards.map(({ title, text }) => (
-					<li class="card border-t-2 border-green">
+					<li data-reveal class="card border-t-2 border-green">
 						<h3>{title}</h3>
 						<p>{withNonBreakingSpaces(text)}</p>
 					</li>
@@ -332,10 +341,10 @@ const sliders: { name: keyof typeof FIELDS; hint?: [BadgeKind, string] }[] = [
 		</section>
 
 		<section aria-labelledby="sources-title" class="page-width grid gap-6 pt-20">
-			<h2 id="sources-title" class="text-[clamp(1.5rem,3vw,2rem)] leading-[1.15]">
+			<h2 id="sources-title" data-reveal class="text-[clamp(1.5rem,3vw,2rem)] leading-[1.15]">
 				{sources.title}
 			</h2>
-			<ol class="grid list-decimal gap-1.5 pl-5 text-sm text-foreground-secondary">
+			<ol data-reveal class="grid list-decimal gap-1.5 pl-5 text-sm text-foreground-secondary">
 				{(Object.entries(SOURCES) as [SourceId, string | null][]).map(([id, url]) => (
 					<li>
 						{url ? (
@@ -348,12 +357,12 @@ const sliders: { name: keyof typeof FIELDS; hint?: [BadgeKind, string] }[] = [
 					</li>
 				))}
 			</ol>
-			<ul class="grid list-disc gap-1.5 pl-5 text-foreground-secondary">
+			<ul data-reveal class="grid list-disc gap-1.5 pl-5 text-foreground-secondary">
 				{sources.limits.map((limit) => (
 					<li>{withNonBreakingSpaces(limit)}</li>
 				))}
 			</ul>
-			<div class="mt-4 flex flex-wrap items-center gap-x-8 gap-y-4">
+			<div data-reveal class="mt-4 flex flex-wrap items-center gap-x-8 gap-y-4">
 				<a
 					href={PREFIXES[language]}
 					class="inline-flex min-h-11 items-center underline underline-offset-3 hover:text-green"
@@ -363,6 +372,8 @@ const sliders: { name: keyof typeof FIELDS; hint?: [BadgeKind, string] }[] = [
 				<BookingButton text={t.bookButton} />
 			</div>
 		</section>
+
+		<ScrollReveal />
 	</main>
 </Base>
 

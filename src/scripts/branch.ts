@@ -1,4 +1,5 @@
 // The branch out of the dotted ∞, grown with the scroll beside the home page's sections down to the final button.
+import { GROWTH_LINE } from './growth-line';
 
 type Point = { x: number; y: number };
 type Sample = Point & { length: number };
@@ -45,8 +46,6 @@ interface Frame {
 }
 
 const TAU = Math.PI * 2;
-/** The tip follows the line at 62 % of the screen. */
-const GROWTH_LINE = 0.62;
 /** The first stretch of the branch bends to follow the ∞ as it sways and turns. */
 const JOINT = 80;
 

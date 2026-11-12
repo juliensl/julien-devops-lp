@@ -98,6 +98,27 @@
 	}
 }
 
+/* A block still waiting for the scroll (ScrollReveal.astro, Steps.astro). On paper, everything shows. */
+@media screen {
+	[data-pending] {
+		opacity: 0;
+	}
+}
+
+/* The Promise fades in as the page opens, as the blocks below do when they reach the branch's line. In
+   CSS, it starts with the first paint, without waiting for the JS; without JS, like them, it just shows. */
+@media screen and (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+	[data-fade-in] {
+		animation: fade-in 0.6s ease backwards;
+	}
+}
+@keyframes fade-in {
+	/* Not from 0: a fully transparent title would only count as painted (LCP) once the fade ends. */
+	from {
+		opacity: 0.1;
+	}
+}
+
 /* The content width, the same in the header, the sections and the footer. */
 @utility page-width {
 	width: 100%;
