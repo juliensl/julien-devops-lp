@@ -16,6 +16,7 @@ const VARIANTS = [
 	<button type="button" data-step="-1" class="cursor-pointer rounded-full px-2.5 py-1 hover:bg-white/10">←</button>
 	<span data-label class="min-w-56 text-center"></span>
 	<button type="button" data-step="1" class="cursor-pointer rounded-full px-2.5 py-1 hover:bg-white/10">→</button>
+	<button type="button" data-density class="cursor-pointer rounded-full border border-[#ffd84d]/50 px-2.5 py-1 hover:bg-white/10"></button>
 	<button type="button" data-replay class="cursor-pointer rounded-full border border-[#ffd84d]/50 px-2.5 py-1 hover:bg-white/10">
 		↻ Repetir
 	</button>
@@ -41,6 +42,27 @@ const VARIANTS = [
 	for (const button of bar.querySelectorAll<HTMLButtonElement>('[data-step]')) {
 		button.addEventListener('click', () => go(Number(button.dataset.step)));
 	}
+	// Density presets: points, how far they stray from the line, their size.
+	const DENSITIES = [
+		['170 pontos', { points: '170', spread: '0.08', size: '0.065' }],
+		['110 pontos', { points: '110', spread: '0.05', size: '0.065' }],
+		['80 pontos', { points: '80', spread: '0.04', size: '0.06' }],
+		['60 pontos', { points: '60', spread: '0.03', size: '0.055' }],
+	] as const;
+	const points = new URLSearchParams(location.search).get('points') ?? '170';
+	const density = Math.max(
+		DENSITIES.findIndex(([, preset]) => preset.points === points),
+		0,
+	);
+	const densityButton = bar.querySelector<HTMLButtonElement>('[data-density]')!;
+	densityButton.textContent = `● ${DENSITIES[density][0]}`;
+	densityButton.addEventListener('click', () => {
+		const url = new URL(location.href);
+		for (const [key, value] of Object.entries(DENSITIES[(density + 1) % DENSITIES.length][1])) {
+			url.searchParams.set(key, value);
+		}
+		location.href = url.href;
+	});
 	bar.querySelector('[data-replay]')!.addEventListener('click', () =>
 		document.dispatchEvent(new Event('logo-replay')),
 	);

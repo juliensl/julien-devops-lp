@@ -44,7 +44,10 @@ const [first, last] = values.name.split(' ');
 	type Point = [x: number, y: number, z: number];
 
 	const TAU = Math.PI * 2;
-	const POINT_COUNT = 170;
+	const search = new URLSearchParams(location.search);
+	const POINT_COUNT = Number(search.get('points') ?? 170);
+	const SPREAD = Number(search.get('spread') ?? 0.08);
+	const SIZE = Number(search.get('size') ?? 0.065);
 	/** The pen starts where the two loops cross and runs one lap in this many seconds. */
 	const START = Math.PI / 2;
 	const DURATION = 1.8;
@@ -69,7 +72,7 @@ const [first, last] = values.name.split(' ');
 		const particles = Array.from({ length: POINT_COUNT }, (_, i) => ({
 			// Offset from the pen's start, so a point lights up when the pen reaches it.
 			along: (i / POINT_COUNT) * TAU,
-			radius: Math.sqrt(Math.random()) * 0.08,
+			radius: Math.sqrt(Math.random()) * SPREAD,
 			phase: Math.random() * TAU,
 			size: 0.55 + Math.random() * 0.95,
 		}));
@@ -124,7 +127,7 @@ const [first, last] = values.name.split(' ');
 
 			// The points the pen has passed, lighting up.
 			context.globalCompositeOperation = 'lighter';
-			const baseSize = scale * 0.065;
+			const baseSize = scale * SIZE;
 			for (const { along, radius, phase, size } of particles) {
 				const lit = Math.min(Math.max((pen - along) / FADE, 0), 1);
 				if (lit === 0) continue;
