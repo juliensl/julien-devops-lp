@@ -113,8 +113,9 @@
 	}
 }
 @keyframes fade-in {
+	/* Not from 0: a fully transparent title would only count as painted (LCP) once the fade ends. */
 	from {
-		opacity: 0;
+		opacity: 0.1;
 	}
 }
 
