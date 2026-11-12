@@ -1,0 +1,53 @@
+---
+// PROTOTYPE (throwaway, branch prototype/dotted-logo): switches the logo variant and replays the pen.
+// Only rendered by the dev server.
+const VARIANTS = [
+	['A', 'duas linhas'],
+	['B', 'uma linha'],
+	['C', 'uma linha, maiúsculas'],
+];
+---
+
+<div
+	data-logo-switcher
+	data-variants={JSON.stringify(VARIANTS)}
+	class="fixed bottom-18 left-1/2 z-50 flex -translate-x-1/2 items-center gap-1 rounded-full border-2 border-[#ffd84d] bg-black px-2 py-1.5 font-mono text-sm text-[#ffd84d] shadow-[0_8px_24px_rgb(0_0_0/0.6)]"
+>
+	<button type="button" data-step="-1" class="cursor-pointer rounded-full px-2.5 py-1 hover:bg-white/10">←</button>
+	<span data-label class="min-w-56 text-center"></span>
+	<button type="button" data-step="1" class="cursor-pointer rounded-full px-2.5 py-1 hover:bg-white/10">→</button>
+	<button type="button" data-replay class="cursor-pointer rounded-full border border-[#ffd84d]/50 px-2.5 py-1 hover:bg-white/10">
+		↻ Repetir
+	</button>
+</div>
+
+<script>
+	const bar = document.querySelector<HTMLElement>('[data-logo-switcher]')!;
+	// The header's backdrop blur would hold a fixed child: the bar lives in the body.
+	document.body.append(bar);
+	const variants: [string, string][] = JSON.parse(bar.dataset.variants!);
+	const current = new URLSearchParams(location.search).get('variant') ?? 'A';
+	const index = Math.max(
+		variants.findIndex(([key]) => key === current),
+		0,
+	);
+	bar.querySelector('[data-label]')!.textContent = `${variants[index][0]} (${variants[index][1]})`;
+
+	const go = (step: number) => {
+		const url = new URL(location.href);
+		url.searchParams.set('variant', variants[(index + step + variants.length) % variants.length][0]);
+		location.href = url.href;
+	};
+	for (const button of bar.querySelectorAll<HTMLButtonElement>('[data-step]')) {
+		button.addEventListener('click', () => go(Number(button.dataset.step)));
+	}
+	bar.querySelector('[data-replay]')!.addEventListener('click', () =>
+		document.dispatchEvent(new Event('logo-replay')),
+	);
+	addEventListener('keydown', (event) => {
+		const target = event.target as HTMLElement;
+		if (target.closest('input, textarea, [contenteditable]')) return;
+		if (event.key === 'ArrowLeft') go(-1);
+		if (event.key === 'ArrowRight') go(1);
+	});
+</script>

@@ -17,6 +17,7 @@ import LanguageSwitcher from './LanguageSwitcher.astro';
 import Leaf from './Leaf.astro';
 import LinkedInLogo from './LinkedInLogo.astro';
 import Logo from './Logo.astro';
+import LogoPrototypeSwitcher from './LogoPrototypeSwitcher.astro';
 
 interface Props {
 	language: Language;
@@ -39,6 +40,7 @@ const onEcology = Astro.url.pathname === ecology ? 'page' : undefined;
 			<Logo />
 			<span class="sr-only">, {t.header.logoTarget}</span>
 		</a>
+		{import.meta.env.DEV && <LogoPrototypeSwitcher />}
 
 		<div class="ml-auto flex items-center gap-4">
 			{!noEquivalents && (
