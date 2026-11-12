@@ -42,7 +42,7 @@
 		};
 
 		let frame = 0;
-		/** How far down the screen a block shows, as a share of its height. */
+		/** How far down the screen a block shows, as a share of the screen's height. */
 		let reach = GROWTH_LINE;
 		const check = () => {
 			frame = 0;
@@ -57,7 +57,10 @@
 		addEventListener('scroll', schedule, { passive: true });
 		addEventListener('resize', schedule);
 		// A block that comes on screen without a scroll (a filter, a question closing) shows at once, as at load.
+		let height = document.body.offsetHeight;
 		new ResizeObserver(() => {
+			if (document.body.offsetHeight === height) return;
+			height = document.body.offsetHeight;
 			reach = 1;
 			schedule();
 		}).observe(document.body);
