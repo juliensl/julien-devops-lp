@@ -7,7 +7,7 @@ const [first, last] = values.name.split(' ');
 ---
 
 <span data-logo class="inline-flex items-center gap-3">
-	<canvas data-logo-infinity aria-hidden="true" class="aspect-2/1 h-10 lg:h-12"></canvas>
+	<canvas data-logo-infinity aria-hidden="true" class="h-[calc(var(--logo-height)*5/6)] lg:h-(--logo-height)" style="--logo-height: 48px; aspect-ratio: 2"></canvas>
 
 	{/* A: two lines, uppercase and spaced, like Julien's image. */}
 	<span data-variant="A" class="flex flex-col gap-1 leading-none max-lg:sr-only">
@@ -45,8 +45,8 @@ const [first, last] = values.name.split(' ');
 
 	const TAU = Math.PI * 2;
 	const search = new URLSearchParams(location.search);
-	const POINT_COUNT = Number(search.get('points') ?? 170);
-	const SPREAD = Number(search.get('spread') ?? 0.08);
+	const POINT_COUNT = Number(search.get('points') ?? 110);
+	const SPREAD = Number(search.get('spread') ?? 0.05);
 	const SIZE = Number(search.get('size') ?? 0.065);
 	/** The pen starts where the two loops cross and runs one lap in this many seconds. */
 	const START = Math.PI / 2;
@@ -55,7 +55,10 @@ const [first, last] = values.name.split(' ');
 	const FADE = 0.6;
 	/** The Hero's resting tilt. */
 	const PITCH = 0.5;
-	const YAW = -0.4;
+	const YAW = Number(search.get('yaw') ?? -0.4);
+	/** Narrows the ∞ by squeezing it sideways. */
+	const SQUASH = Number(search.get('squash') ?? 1);
+	const HEIGHT = search.get('height') ?? '48';
 
 	afterLoad(() => {
 		const canvas = document.querySelector<HTMLCanvasElement>('[data-logo-infinity]');
@@ -186,6 +189,20 @@ const [first, last] = values.name.split(' ');
 			requestAnimationFrame(frame);
 		}
 
+		{
+			const xs: number[] = [];
+			const ys: number[] = [];
+			for (let i = 0; i < 200; i++) {
+				const { x, y } = projected(curve((i / 200) * TAU));
+				xs.push(x);
+				ys.push(y);
+			}
+			const spanX = Math.max(...xs) - Math.min(...xs) + 0.2;
+			const spanY = Math.max(...ys) - Math.min(...ys) + 0.2;
+			canvas.style.aspectRatio = String(spanX / spanY);
+			canvas.style.setProperty('--logo-height', `${HEIGHT}px`);
+		}
+
 		new ResizeObserver(() => {
 			ratio = Math.min(devicePixelRatio || 1, 3);
 			width = canvas.clientWidth;
@@ -214,6 +231,6 @@ const [first, last] = values.name.split(' ');
 		const tiltedY = y * Math.cos(PITCH) - turnedZ * Math.sin(PITCH);
 		const depth = y * Math.sin(PITCH) + turnedZ * Math.cos(PITCH);
 		const perspective = 3 / (3 - depth);
-		return { x: turnedX * perspective, y: tiltedY * perspective, depth, perspective };
+		return { x: turnedX * perspective * SQUASH, y: tiltedY * perspective, depth, perspective };
 	}
 </script>

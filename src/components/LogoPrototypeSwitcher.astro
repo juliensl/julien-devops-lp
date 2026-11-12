@@ -14,7 +14,7 @@ const VARIANTS = [
 	class="fixed bottom-18 left-1/2 z-50 flex -translate-x-1/2 items-center gap-1 rounded-full border-2 border-[#ffd84d] bg-black px-2 py-1.5 font-mono text-sm text-[#ffd84d] shadow-[0_8px_24px_rgb(0_0_0/0.6)]"
 >
 	<button type="button" data-step="-1" class="cursor-pointer rounded-full px-2.5 py-1 hover:bg-white/10">←</button>
-	<span data-label class="min-w-56 text-center"></span>
+	<span data-label class="min-w-36 text-center"></span>
 	<button type="button" data-step="1" class="cursor-pointer rounded-full px-2.5 py-1 hover:bg-white/10">→</button>
 	<button type="button" data-density class="cursor-pointer rounded-full border border-[#ffd84d]/50 px-2.5 py-1 hover:bg-white/10"></button>
 	<button type="button" data-replay class="cursor-pointer rounded-full border border-[#ffd84d]/50 px-2.5 py-1 hover:bg-white/10">
@@ -42,23 +42,30 @@ const VARIANTS = [
 	for (const button of bar.querySelectorAll<HTMLButtonElement>('[data-step]')) {
 		button.addEventListener('click', () => go(Number(button.dataset.step)));
 	}
-	// Density presets: points, how far they stray from the line, their size.
-	const DENSITIES = [
-		['170 pontos', { points: '170', spread: '0.08', size: '0.065' }],
-		['110 pontos', { points: '110', spread: '0.05', size: '0.065' }],
-		['80 pontos', { points: '80', spread: '0.04', size: '0.06' }],
-		['60 pontos', { points: '60', spread: '0.03', size: '0.055' }],
+	// Size presets: the ∞'s height from 1024 px (5/6 of it below), and how it is narrowed.
+	const SIZES = [
+		['48 px, como estava', { height: '48', squash: '1', yaw: '-0.4' }],
+		['40 px', { height: '40', squash: '1', yaw: '-0.4' }],
+		['40 px, apertado', { height: '40', squash: '0.8', yaw: '-0.4' }],
+		['40 px, rodado', { height: '40', squash: '1', yaw: '-0.6' }],
+		['36 px, apertado', { height: '36', squash: '0.8', yaw: '-0.4' }],
+		['36 px, rodado', { height: '36', squash: '1', yaw: '-0.6' }],
 	] as const;
-	const points = new URLSearchParams(location.search).get('points') ?? '170';
-	const density = Math.max(
-		DENSITIES.findIndex(([, preset]) => preset.points === points),
+	const search = new URLSearchParams(location.search);
+	const size = Math.max(
+		SIZES.findIndex(
+			([, preset]) =>
+				preset.height === (search.get('height') ?? '48') &&
+				preset.squash === (search.get('squash') ?? '1') &&
+				preset.yaw === (search.get('yaw') ?? '-0.4'),
+		),
 		0,
 	);
-	const densityButton = bar.querySelector<HTMLButtonElement>('[data-density]')!;
-	densityButton.textContent = `● ${DENSITIES[density][0]}`;
-	densityButton.addEventListener('click', () => {
+	const sizeButton = bar.querySelector<HTMLButtonElement>('[data-density]')!;
+	sizeButton.textContent = `∞ ${size + 1}/${SIZES.length}: ${SIZES[size][0]}`;
+	sizeButton.addEventListener('click', () => {
 		const url = new URL(location.href);
-		for (const [key, value] of Object.entries(DENSITIES[(density + 1) % DENSITIES.length][1])) {
+		for (const [key, value] of Object.entries(SIZES[(size + 1) % SIZES.length][1])) {
 			url.searchParams.set(key, value);
 		}
 		location.href = url.href;
