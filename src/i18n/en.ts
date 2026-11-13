@@ -1,6 +1,6 @@
-// Translated from Portuguese, to be reviewed by the intern before the Commercial launch (#75).
+// Typed from French, the Reference language. A text still in French waits for its translation.
 // The Designation is the one Julien approved.
-import type { Dictionary } from './pt';
+import type { Dictionary } from './fr';
 
 const promise = 'In 30 days, I deliver the DevOps infrastructure you need to scale your SaaS.';
 
