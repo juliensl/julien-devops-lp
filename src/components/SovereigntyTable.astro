@@ -34,8 +34,7 @@ const dateFormat = new Intl.DateTimeFormat(locale, {
 /** A source's link text: the site it is on. */
 const hostnameOf = (url: string) => new URL(url).hostname.replace(/^www\./, '');
 /** "Label: text", with the language's colon. */
-const labelled = (label: string, text: string) =>
-	withNonBreakingSpaces(`${label}${t.colon} ${text}`);
+const labelled = (label: string, text: string) => `${label}${t.colon} ${text}`;
 
 const COLUMNS: ColumnId[] = [
 	'headquarters',
@@ -138,7 +137,7 @@ function references(provider: Provider) {
 					{cells(provider).map((lines) => (
 						<td>
 							{lines.map((line) => (
-								<span class="block">{line}</span>
+								<span class="block">{withNonBreakingSpaces(line)}</span>
 							))}
 						</td>
 					))}
