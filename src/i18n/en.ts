@@ -233,22 +233,32 @@ export const en: Dictionary = {
 			},
 		},
 		steps: {
-			title: 'Five steps, always in the same order.',
+			title: 'Cinq étapes pour avancer sereinement.',
 			steps: [
-				{ name: 'Conversation', sentence: '45 min on Google Meet, free of charge.' },
 				{
-					name: 'Diagnosis',
+					name: 'Échange initial',
 					sentence:
-						'Free. 2 to 3 business days once access is granted, or 3 to 5 if it includes the cloud.',
+						'45 minutes sur Google Meet pour comprendre ton produit, tes priorités et tes contraintes. Gratuit, sans engagement.',
 				},
 				{
-					name: 'Intervention proposal',
-					sentence: 'Which blocks, in what timeframe and at what fixed price.',
+					name: 'Diagnostic',
+					sentence:
+						'Un premier état des lieux gratuit de ton code et, si nécessaire, de ton infrastructure. Retour sous 3 à 5 jours ouvrés après réception des accès utiles.',
 				},
-				{ name: 'Implementation', sentence: 'At most 30 calendar days.' },
 				{
-					name: 'Delivery and handover',
-					sentence: 'Documentation and handover, so the team can be self-sufficient.',
+					name: "Proposition d'intervention",
+					sentence:
+						'Un périmètre précis, des priorités, un calendrier et un prix convenus avant de commencer.',
+				},
+				{
+					name: 'Mise en œuvre',
+					sentence:
+						"J'interviens avec ton équipe, en limitant les perturbations du développement. Un point d'avancement régulier, en principe chaque semaine, permet de suivre les actions et les décisions.",
+				},
+				{
+					name: 'Livraison & passation',
+					sentence:
+						'Documentation, vérifications finales et transfert de connaissances pour que ton équipe reste autonome.',
 				},
 			],
 		},
