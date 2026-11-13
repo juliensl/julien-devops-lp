@@ -597,7 +597,7 @@ export const fr = {
 			/** Before each Block's number: "Bloc 1". */
 			blockLabel: 'Bloc',
 			/** The name of each Block's list of tools, for screen readers. */
-			toolsLabel: 'Outils',
+			toolsLabel: 'Domaines et outils',
 			/** The 4 Blocks. A language with fewer than 4 makes `astro check` fail. */
 			blocks: [
 				{

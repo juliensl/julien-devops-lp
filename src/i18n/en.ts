@@ -495,7 +495,7 @@ export const en: Dictionary = {
 			intro:
 				"De la qualité du code à la supervision en production, j'interviens sur les points qui freinent ton équipe. Après un diagnostic, nous définissons ensemble le périmètre, les priorités et l'ordre des interventions. Tu peux me confier un besoin ciblé ou un projet complet.",
 			blockLabel: 'Block',
-			toolsLabel: 'Tools',
+			toolsLabel: 'Domaines et outils',
 			blocks: [
 				{
 					name: 'Audit du code & CI/CD',

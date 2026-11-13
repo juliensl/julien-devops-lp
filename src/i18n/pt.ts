@@ -560,7 +560,7 @@ export const pt: Dictionary = {
 			intro:
 				'Da qualidade do código à monitorização em produção, intervenho nos pontos que travam a tua equipa. Depois de um diagnóstico, definimos juntos o âmbito, as prioridades e a ordem das intervenções. Podes confiar-me uma necessidade específica ou um projeto completo.',
 			blockLabel: 'Bloco',
-			toolsLabel: 'Ferramentas',
+			toolsLabel: 'Áreas e ferramentas',
 			blocks,
 			diagrams: {
 				pipeline: {
