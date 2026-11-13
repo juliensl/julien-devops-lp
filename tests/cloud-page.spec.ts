@@ -67,7 +67,7 @@ const PROVIDERS = ['AWS', 'Google Cloud', 'Infomaniak', 'Microsoft Azure', 'OVHc
 
 type Rating = 'consider' | 'possible' | 'unsuitable';
 
-// Each scenario's ratings with the facts checked on 16/10/2026, provider by provider, in alphabetical
+// Each scenario's ratings with the facts checked on 13/11/2026, provider by provider, in alphabetical
 // order. The scenarios are in the order of Julien's document.
 const RESULTS: { ratings: Rating[] }[] = [
 	// Before launch
@@ -113,7 +113,7 @@ const EXPECTED: Record<
 			'Escolhe um cenário para ver os pontos fortes, os limites e as fontes oficiais de cada fornecedor.',
 		legend:
 			'Os resultados são pontos de referência para preparar uma decisão, não uma classificação universal. Os critérios e a sua importância podem variar conforme o projeto. Os dados têm data e as avaliações de adequação são indicativas.',
-		verified: 'Factos verificados a 16/10/2026.',
+		verified: 'Factos verificados a 13/11/2026.',
 		scenarios: [
 			'Antes do lançamento',
 			'SaaS em crescimento',
@@ -135,14 +135,14 @@ const EXPECTED: Record<
 			],
 		],
 		opinion: 'opinião do Julien',
-		read: '16/10/2026',
+		read: '13/11/2026',
 	},
 	fr: {
 		title: 'Compare les fournisseurs selon tes priorités',
 		instruction:
 			'Choisis un scénario pour voir les points forts, les limites et les sources officielles de chaque fournisseur.',
 		legend: FRENCH_LEGEND,
-		verified: 'Faits vérifiés le 16 oct. 2026.',
+		verified: 'Faits vérifiés le 13 nov. 2026.',
 		scenarios: [
 			'Avant le lancement',
 			'SaaS en croissance',
@@ -164,14 +164,14 @@ const EXPECTED: Record<
 			],
 		],
 		opinion: 'avis de Julien',
-		read: '16 oct. 2026',
+		read: '13 nov. 2026',
 	},
 	en: {
 		title: 'Compare les fournisseurs selon tes priorités',
 		instruction:
 			'Choisis un scénario pour voir les points forts, les limites et les sources officielles de chaque fournisseur.',
 		legend: FRENCH_LEGEND,
-		verified: 'Faits vérifiés le Oct 16, 2026.',
+		verified: 'Faits vérifiés le Nov 13, 2026.',
 		scenarios: [
 			'Before launch',
 			'Growing SaaS',
@@ -189,7 +189,7 @@ const EXPECTED: Record<
 			['Cost visibility and control', 'Partly', 'Outbound traffic: paid beyond 100 GB/month.'],
 		],
 		opinion: "Julien's opinion",
-		read: 'Oct 16, 2026',
+		read: 'Nov 13, 2026',
 	},
 };
 
