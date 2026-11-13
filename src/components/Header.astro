@@ -1,12 +1,11 @@
 ---
 // The sticky header of every page: the logo, «Os teus desafios» with its submenu of audiences,
-// «Recursos» with its submenu of pages, 🍃 Ecology, the language switcher, LinkedIn and the button.
+// Resources with its submenu of pages, 🍃 Ecology, the language switcher, LinkedIn and the button.
 // Below 1024 px, the audiences, the pages, the languages and LinkedIn move into a `<details>` menu,
 // which opens without JS; the button and the leaf always stay visible, the leaf without its word on
 // phones. Below 360 px, Ecology only lives in the menu.
 // On a page with no equivalents in other languages (the 404), the header keeps only the logo and the button,
 // and the logo leads to the home page of the first published language.
-// The parts that arrive with the pages they lead to have their place marked with the ticket.
 import { PHASE, PREFIXES, type Language } from '../config/site';
 import { values } from '../config/values';
 import { dictionaries } from '../i18n';
