@@ -90,6 +90,10 @@ A CTO's requirement that data stays in the European Union, with a European provi
 _Portuguese_: Soberania dos dados
 _Avoid_: data in the EU (only says where the data is), sovereign cloud (the providers' marketing label)
 
+**Resources**:
+The header submenu of the pages that help a CTO decide: choosing a cloud, ecology, data sovereignty and availability. Its French label is «Ressources».
+_Portuguese_: Recursos
+
 **Testimonial**:
 A quote from someone who worked with Julien, published with the author's written permission, with their first name, job title and company.
 _Portuguese_: Testemunho
