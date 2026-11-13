@@ -417,29 +417,29 @@ export const en: Dictionary = {
 				description: 'For anyone evaluating the service.',
 				questions: [
 					{
-						question: 'What exactly do you do?',
+						question: 'Que fais-tu, exactement ?',
 						answer:
-							'I deliver the DevOps infrastructure a SaaS needs to grow, in four blocks: CI pipeline and code audit, containerisation, scalable infrastructure and observability. You hire the ones you want, in any combination.',
+							"J'interviens sur quatre domaines : audit et CI/CD, nettoyage et optimisation du code, infrastructure scalable et observabilité. L'objectif est de réduire les problèmes récurrents et de permettre à l'application de grandir sur des bases plus solides. Le périmètre de chaque mission est défini après diagnostic.",
 					},
 					{
-						question: 'How long does it take?',
+						question: 'Combien de temps ça prend ?',
 						answer:
-							'At most 30 days, for any combination of blocks, from the start of the Implementation. The exact timeframe comes in the Intervention proposal.',
+							"Cela dépend de l'état du code, des services existants et des travaux prioritaires. Après le diagnostic, je propose un calendrier réaliste, avec des étapes et des livrables précis. Il n'y a pas de promesse artificielle de tout réaliser en 30 jours.",
 					},
 					{
-						question: 'How much does it cost?',
+						question: 'Combien ça coûte ?',
 						answer:
-							'A fixed price, which I give in the Intervention proposal, after the free Diagnosis.',
+							"Le prix est défini à partir du périmètre convenu après un premier diagnostic gratuit. La proposition distingue mes honoraires des éventuels coûts récurrents de cloud et d'outils.",
 					},
 					{
-						question: 'How does it start?',
+						question: 'Comment ça commence ?',
 						answer:
-							'With a 45 min Conversation on Google Meet. Then come the free Diagnosis, the Intervention proposal, the Implementation and the Delivery and handover.',
+							"Nous commençons par un échange gratuit de 45 minutes. Viennent ensuite le diagnostic, la proposition d'intervention, la mise en œuvre avec des points d'avancement réguliers, puis la livraison et la passation à ton équipe.",
 					},
 					{
-						question: 'Can I hire only some of the blocks?',
+						question: 'Puis-je choisir seulement certains blocs ?',
 						answer:
-							'Yes, in any combination. Block 3 needs a containerised application, from block 2 or from your team.',
+							"Oui, je peux intervenir sur un besoin ciblé. L'ordre et les dépendances techniques sont déterminés après diagnostic. La garantie de conformité technique de trois mois présentée sur ce site concerne uniquement les prestations complètes couvrant les quatre blocs.",
 					},
 				],
 			},
@@ -450,38 +450,39 @@ export const en: Dictionary = {
 					'Infrastructure, CI/CD, testing, scaling, reliability, observability and working with the team.',
 				questions: [
 					{
-						question: 'Who writes the tests?',
+						question: 'Qui écrit les tests ?',
 						answer:
-							"Your team. I don't write tests: I deliver the system that runs them, measures them and blocks whatever is failing.",
+							"Je mets en place et j'améliore l'automatisation des contrôles. Lorsque des tests ou des corrections de code sont nécessaires, nous décidons ensemble qui les réalise et dans quel périmètre. Dans le bloc d'optimisation, je peux écrire ou adapter les tests liés aux modifications que je prends en charge.",
 					},
 					{
-						question: 'Do we have to stop development?',
+						question: "Faut-il arrêter le développement pendant l'intervention ?",
 						answer:
-							'No. Block 1 involves no migration and no risk to production. In blocks 2 and 3 the work runs in parallel (branches, test environments, separate infrastructure). Some changes need coordination with the devs, and at the end of the migration a short period with no code changes may be needed, agreed with you.',
+							"En principe non. Le travail est organisé avec des branches, des environnements adaptés et des validations progressives. Certaines migrations ou modifications critiques peuvent exiger une fenêtre de changement planifiée avec l'équipe.",
 					},
 					{
-						question: 'Which stacks and clouds do you work with?',
+						question: 'Avec quelles stacks et quels clouds travailles-tu ?',
 						answer:
-							'CI: GitHub Actions, GitLab CI, Azure DevOps and Google Cloud Build. Cloud: AWS, Google Cloud, Microsoft Azure, OVHcloud, Scaleway and Infomaniak. The choice depends on your needs and budget, and can include lower-impact hosting.',
+							"J'utilise notamment GitHub Actions, GitLab CI, Terraform, Docker, Kubernetes, Grafana et les services natifs des clouds. Je travaille avec AWS, Google Cloud, Azure, Scaleway, OVHcloud et d'autres fournisseurs selon le projet. Les outils sont choisis en fonction du contexte, pas imposés à l'avance.",
 					},
 					{
-						question: 'What access do you need?',
+						question: 'De quels accès as-tu besoin ?',
 						answer:
-							'For the Diagnosis, read access to the repository. Access to the cloud (metrics and logs) only if the problem is about infrastructure, performance, costs or availability. Never passwords, private keys or administrator permissions. For the Implementation, I need write access to the repository and an account on your cloud with the permissions needed to create the infrastructure of the blocks you hired. You remove that access at the Delivery and handover.',
+							"Pour le diagnostic, des accès en lecture au code et, si nécessaire, aux métriques et à la configuration cloud. Pour l'implémentation, des droits adaptés aux opérations convenues. Je privilégie des accès nominatifs, limités au strict nécessaire et révocables à la fin de la mission. Il n'est pas nécessaire de partager des mots de passe ou des clés privées.",
 					},
 					{
-						question: 'How does the Availability Guarantee work?',
+						question: 'Que couvre la garantie de trois mois ?',
 						answer:
-							"In 30 days, I deliver the infrastructure. For the next 3 months, it is available at least 99% of the time every month. If it isn't, I keep working without billing until it is. It applies with blocks 3 and 4, and requires a test written for every bug fixed, no dev pushing past a failing test, read access to the repository and a technical contact who replies within 48 h.",
+							"Pour une prestation complète couvrant les quatre blocs, elle concerne les défauts de conception ou de configuration de l'infrastructure qui me sont imputables, selon les conditions contractuelles. L'objectif de disponibilité est défini avec le client. Il ne s'agit ni d'une garantie de zéro bug applicatif, ni d'une astreinte 24 h/24.",
 					},
 					{
-						question: 'Which observability tools do you use?',
-						answer: "Standard tools, such as Grafana and Prometheus, or your cloud's own.",
+						question: "Quels outils utilises-tu pour l'observabilité ?",
+						answer:
+							"Selon le contexte, Grafana, Prometheus, des solutions de logs et de tracing, ou les outils de supervision natifs du fournisseur cloud. Le but est de disposer d'indicateurs utiles et d'alertes exploitables, plutôt que de multiplier les dashboards.",
 					},
 					{
-						question: 'How do we work together?',
+						question: 'Comment travaillons-nous ensemble ?',
 						answer:
-							'Remotely, over Google Meet. I talk with the CTO and the devs, mostly with the CTO.',
+							"J'échange directement avec les personnes concernées : CTO, tech lead, développeurs et responsable du projet. Nous organisons des points d'avancement réguliers, généralement chaque semaine, et nous documentons les décisions importantes.",
 					},
 				],
 			},
@@ -491,33 +492,34 @@ export const en: Dictionary = {
 				description: 'Risks, costs, continuity, predictability and business impact.',
 				questions: [
 					{
-						question: 'How much will it cost, and when will I know?',
+						question: "Quand connaîtrai-je le budget de l'intervention ?",
 						answer:
-							'A fixed price, which I give in the Intervention proposal. The proposal comes after the free Diagnosis, which takes 2 to 3 business days from when I have access, or 3 to 5 if it includes the cloud.',
+							'Après le diagnostic gratuit, tu reçois une proposition précisant les travaux, le calendrier et le prix de mon intervention. Les éventuels coûts mensuels des fournisseurs sont présentés séparément.',
 					},
 					{
-						question: 'What about infrastructure costs?',
+						question: 'Combien coûtera le cloud ensuite ?',
 						answer:
-							'On top of the fixed price, the infrastructure and tools have their own monthly cost, which you pay directly to the providers, on your own accounts. The service assumes a budget of €100 to €500 a month for these costs.',
+							"Le coût dépend de l'architecture, du trafic, des données, de la région et du niveau de disponibilité recherché. Je présente une estimation argumentée avant les décisions structurantes, avec les hypothèses et les principaux postes de dépenses.",
 					},
 					{
-						question: 'Will we depend on you?',
+						question: 'Mon entreprise va-t-elle dépendre de toi ?',
 						answer:
-							'No. I only use standard technologies and document everything. You can change provider whenever you want, and you never lose the infrastructure.',
+							"Mon objectif est l'inverse : je privilégie des technologies documentées, une infrastructure décrite comme du code et une passation claire. Les dépendances propres au fournisseur choisi sont expliquées dès la conception.",
 					},
 					{
-						question: 'What are the risks for production?',
+						question: 'Y a-t-il un risque pour la production ?',
 						answer:
-							"Block 1 doesn't touch production. In blocks 2 and 3, the aim is to avoid downtime; if the migration involves databases or critical services, there may be a short downtime, scheduled in advance. There is always a plan to roll back to the previous version.",
+							"Toute intervention présente des risques, mais ils sont évalués avant l'exécution. Nous préparons les tests, les sauvegardes et, lorsque c'est pertinent, un plan de retour arrière. Les changements sensibles sont coordonnés avec ton équipe.",
 					},
 					{
-						question: 'What return can I expect?',
+						question: 'Quel retour sur investissement puis-je attendre ?',
 						answer:
-							'Less time fixing problems. More time building the product. I help SaaS teams automate testing and delivery, catch regressions earlier and make their infrastructure more reliable, so they can grow with more confidence.',
+							'Moins de temps perdu sur les incidents et les tâches répétitives, un code plus maintenable et des déploiements plus fiables. Les gains exacts dépendent de la situation de départ ; le diagnostic sert aussi à identifier les améliorations à plus forte valeur.',
 					},
 					{
-						question: 'Which languages and countries do you work in?',
-						answer: 'With clients from any country, remotely, in Portuguese, French or English.',
+						question: 'Dans quelles langues travailles-tu ?',
+						answer:
+							"Je peux intervenir en français, en anglais et en portugais, selon les besoins de l'équipe et du projet.",
 					},
 				],
 			},
@@ -528,46 +530,47 @@ export const en: Dictionary = {
 					'Devs and tech leads who will work with the pipeline and the new infrastructure.',
 				questions: [
 					{
-						question: "What changes in the team's day-to-day?",
+						question: "Qu'est-ce qui change au quotidien ?",
 						answer:
-							"The aim is to cut the time lost on manual tasks and recurring problems, make regressions easier to catch and make deliveries more reliable. The team gets clearer processes, more visibility into the infrastructure and more time to focus on building the product. Results depend on each project's context and starting point.",
+							"Des contrôles automatisés plus utiles, moins de tâches manuelles, une meilleure visibilité sur les problèmes et un code progressivement plus simple à maintenir. Les modifications de workflow sont préparées avec l'équipe, pas imposées sans discussion.",
 					},
 					{
-						question: 'Who maintains the pipeline afterwards?',
+						question: 'Qui maintient les pipelines après ton départ ?',
 						answer:
-							'Your team. The technical documentation and the handover at the end leave you self-sufficient.',
+							'Ton équipe conserve les outils, les configurations et la documentation. Je prévois une passation pour que leur fonctionnement soit compris et que les évolutions puissent être réalisées en autonomie.',
 					},
 					{
-						question: 'Who do you talk to day to day?',
+						question: 'Avec qui communiques-tu pendant la mission ?',
 						answer:
-							'The CTO and the devs, mostly the CTO, over Google Meet. There are no regular status meetings.',
+							'Avec les interlocuteurs techniques et métier utiles au projet. Nous prévoyons un point de suivi régulier, normalement hebdomadaire, et des échanges complémentaires lorsque des décisions ou des validations sont nécessaires.',
 					},
 					{
-						question: 'Can we keep coding during the migration?',
+						question: 'Peut-on continuer à développer pendant les changements ?',
 						answer:
-							'Yes. The work runs in parallel, on branches, test environments and separate infrastructure. At the end, a short period with no code changes may be needed, agreed with you.',
+							"Oui, l'objectif est de préserver le rythme de développement. Les modifications sont préparées et testées en parallèle lorsque c'est possible. Une fenêtre de stabilisation ou de migration peut être convenue pour les changements sensibles.",
 					},
 					{
-						question: 'Which tools will we use?',
+						question: 'Quels outils allons-nous utiliser ?',
 						answer:
-							"Block 1: SonarQube and Trivy. Block 2: Docker. Block 3: Kubernetes and Terraform. Block 4: Grafana and Prometheus, or your cloud's own tools.",
+							"Il n'y a pas de stack imposée. Selon le projet : pipelines CI/CD, analyse de code, outils de refactoring et de performance, Docker, services de conteneurs managés, Kubernetes, Terraform, Grafana, Prometheus ou équivalents. Je privilégie les outils pertinents pour l'équipe et l'existant.",
 					},
 				],
 			},
 		},
 		page: {
 			description:
-				'Questions and answers for SaaS CTOs, CEOs and tech teams: timelines, costs, access, risks and tools.',
-			title: 'Answers for every role.',
+				"Questions et réponses pour les CEO, les CTO et les développeurs : le code, l'infrastructure, les coûts et notre façon de travailler.",
+			title: 'Des réponses concrètes, selon ton rôle.',
 			intro:
-				"Pick your role or search for a word. If your question isn't here, ask me in the Conversation.",
+				"Tu es CEO, CTO, développeur ou tu portes le projet seul ? Retrouve les réponses aux questions les plus fréquentes sur le code, l'infrastructure, les coûts et notre façon de travailler. Et si ta question n'est pas ici, parlons-en.",
 			filter: 'Filter by role',
 			everyone: 'All',
 			search: 'Search the questions',
 			searchPlaceholder: 'Search: tests, costs, access…',
 			noResults: 'No questions with those words.',
 			index: 'Roles',
-			notFound: "Can't find your question?",
+			notFound: 'Tu ne trouves pas ta réponse ?',
+			notFoundText: 'Réserve un échange gratuit et parlons de ton contexte.',
 		},
 	},
 };
