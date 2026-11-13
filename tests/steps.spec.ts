@@ -224,6 +224,17 @@ inEachBuild((build) => {
 				});
 			}
 
+			// Only a normal space allows a line break.
+			test('a number never sits apart from what it measures, a range never breaks, and ? ! : ; » never start a line', async ({
+				page,
+			}) => {
+				await page.goto(prefix);
+				const text = await section(page, language).textContent();
+				expect(text).not.toMatch(/\d /);
+				expect(text).not.toMatch(/\d\s(a|à|e|et|to|and) [\d€]/);
+				expect(text).not.toMatch(/ [?!:;»]/);
+			});
+
 			test.describe('without JavaScript', () => {
 				test.use({ javaScriptEnabled: false });
 
