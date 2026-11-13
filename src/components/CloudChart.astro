@@ -12,6 +12,7 @@ import {
 	PROVIDERS,
 	RATINGS,
 	SCENARIOS,
+	VERIFIED,
 	criteriaOf,
 	rating,
 	score,
@@ -24,7 +25,7 @@ import { HTML_CODES, type Language } from '../config/site';
 import type { Dictionary } from '../i18n/fr';
 import { withNonBreakingSpaces } from '../lib/spaces';
 
-type Props = Dictionary['homePage']['cloudChart'] & { language: Language };
+type Props = Dictionary['cloud']['chart'] & { language: Language };
 
 const { language, ...t } = Astro.props;
 
@@ -63,15 +64,14 @@ function summary(scenario: ScenarioId) {
 <section
 	aria-labelledby="cloud-chart-title"
 	data-cloud-chart
-	class="page-width grid gap-10 py-[clamp(5rem,11vw,9rem)]"
+	class="page-width grid gap-10 pt-[clamp(4rem,9vw,7rem)]"
 >
 	<div class="grid gap-x-16 gap-y-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-end">
 		<div data-reveal class="grid gap-4">
-			<p class="label">{t.label}</p>
 			<h2 id="cloud-chart-title" class="text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">
 				{withNonBreakingSpaces(t.title)}
 			</h2>
-			<p class="max-w-[36rem] text-foreground-secondary">{withNonBreakingSpaces(t.intro)}</p>
+			<p class="max-w-[36rem] text-foreground-secondary">{withNonBreakingSpaces(t.instruction)}</p>
 		</div>
 		<fieldset data-reveal class="flex flex-wrap gap-2 lg:justify-end">
 			<legend class="sr-only">{t.scenariosLabel}</legend>
@@ -200,9 +200,14 @@ function summary(scenario: ScenarioId) {
 		);
 	})}
 
-	<p data-reveal class="text-sm text-foreground-secondary">
-		{withNonBreakingSpaces(t.footnote)}
-	</p>
+	<div data-reveal class="grid max-w-3xl gap-2 text-sm text-foreground-secondary">
+		<p>{withNonBreakingSpaces(t.legend)}</p>
+		<p>
+			{withNonBreakingSpaces(
+				`${t.footnote} ${t.verified} ${dateFormat.format(new Date(VERIFIED))}.`,
+			)}
+		</p>
+	</div>
 </section>
 
 <script>

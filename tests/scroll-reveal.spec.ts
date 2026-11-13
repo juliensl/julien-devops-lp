@@ -34,7 +34,12 @@ async function placeTop(page: Page, block: Locator, y: number) {
 
 inEachBuild((build) => {
 	const { prefix } = LANGUAGES[build.phase.publishedLanguages[0]];
-	const pages = { home: prefix, ecology: `${prefix}ecology/`, questions: `${prefix}questions/` };
+	const pages = {
+		home: prefix,
+		ecology: `${prefix}ecology/`,
+		questions: `${prefix}questions/`,
+		cloud: `${prefix}cloud/`,
+	};
 
 	for (const [name, path] of Object.entries(pages)) {
 		test.describe(`${name} page`, () => {

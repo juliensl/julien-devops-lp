@@ -7,7 +7,6 @@ import { values } from '../config/values';
 import { dictionaries } from '../i18n';
 import Base from '../layouts/Base.astro';
 import AboutJulien from './AboutJulien.astro';
-import CloudChart from './CloudChart.astro';
 import DottedInfinity from './DottedInfinity.astro';
 import FinalCta from './FinalCta';
 import Guarantee from './Guarantee';
@@ -57,8 +56,6 @@ const t = dictionaries[language];
 		<Steps {...t.homePage.steps} />
 
 		<Guarantee {...t.homePage.guarantee} />
-
-		<CloudChart language={language} {...t.homePage.cloudChart} />
 
 		<AboutJulien designation={t.designation} {...t.homePage.about} />
 

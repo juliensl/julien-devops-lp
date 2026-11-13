@@ -20,6 +20,11 @@ export function pathInLanguage(path: string, from: Language, to: Language): stri
 	return PREFIXES[to] + path.slice(PREFIXES[from].length);
 }
 
+/** The «Choisir son cloud» page in a language. */
+export function cloudPath(language: Language): string {
+	return `${PREFIXES[language]}cloud/`;
+}
+
 /** The ecology page in a language. */
 export function ecologyPath(language: Language): string {
 	return `${PREFIXES[language]}ecology/`;

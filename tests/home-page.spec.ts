@@ -51,6 +51,11 @@ inEachBuild((build) => {
 			);
 		});
 
+		test(`${prefix}: the cloud provider chart is on its own page, not here`, async ({ page }) => {
+			await page.goto(prefix);
+			await expect(page.getByRole('button', { name: /^Microsoft Azure,/ })).toHaveCount(0);
+		});
+
 		test(`${prefix}: "${button}" leads to the booking page, in the same tab`, async ({ page }) => {
 			await page.goto(prefix);
 			const buttons = page.getByRole('link', { name: button, exact: true });
