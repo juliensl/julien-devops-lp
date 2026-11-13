@@ -156,6 +156,37 @@ export const pt: Dictionary = {
 		},
 		back: 'Voltar à página principal',
 	},
+	sovereignty: {
+		name: 'Soberania dos dados',
+		description:
+			'Alojar uma aplicação na Europa não basta para perceber por onde circulam os dados. A soberania constrói-se com escolhas técnicas, contratuais e organizacionais.',
+		title: 'Os teus dados estão mesmo sob o teu controlo?',
+		intro:
+			'Alojar uma aplicação na Europa não basta, por si só, para perceber por onde circulam os dados nem que prestadores lhes podem aceder. A soberania constrói-se com escolhas técnicas, contratuais e organizacionais.',
+		sections: [
+			{
+				title: 'Alojamento europeu: um primeiro passo, não uma resposta completa.',
+				text: 'A localização dos servidores conta, mas também é preciso olhar para a empresa que fornece o serviço, os subcontratantes, as cópias de segurança, a supervisão, os acessos de administração e os serviços externos usados pela aplicação.',
+			},
+			{
+				title: 'Os dados não ficam forçosamente onde corre o teu servidor.',
+				text: 'Uma ferramenta de análise, um sistema de logs, uma CDN, um serviço de autenticação, uma solução de e-mail ou uma API de inteligência artificial pode tratar alguns dados fora do teu alojamento principal. Mapear estes fluxos permite detetar as transferências e as dependências que facilmente se esquecem.',
+			},
+			{
+				title: 'Fornecedor francês, europeu ou internacional: que diferenças?',
+				text: 'A boa escolha depende das tuas obrigações, das funcionalidades necessárias e das garantias contratuais oferecidas. Um fornecedor europeu não oferece automaticamente todas as garantias esperadas, e uma região europeia de um fornecedor internacional não resolve, por si só, todas as questões jurídicas.',
+			},
+			{
+				title: 'Regulamentação, contratos e proteções técnicas.',
+				text: 'RGPD, transferências internacionais, regras de jurisdição, cifragem e controlo dos acessos devem ser analisados em conjunto. O CLOUD Act norte-americano pode contar na análise de alguns fornecedores, mas a sua existência não significa que todos os dados alojados nessas empresas sejam livremente acessíveis. As exigências setoriais, como o SecNumCloud quando se aplicam, devem ser verificadas nos referenciais oficiais.',
+			},
+			{
+				title: 'Uma arquitetura adaptada às tuas restrições de soberania.',
+				text: 'Ajudo-te a identificar as dependências técnicas, a comparar as opções de alojamento e a integrar na arquitetura as restrições de localização, de segurança e de reversibilidade. Para as conclusões jurídicas e regulamentares, a análise deve ser validada pelos especialistas competentes.',
+			},
+		],
+		cta: 'Vamos falar da soberania da tua infraestrutura',
+	},
 	homePage: {
 		description: `${promise} Automatizo a qualidade do código, reduzo a dívida técnica e construo uma infraestrutura capaz de acompanhar o teu crescimento.`,
 		hero: {

@@ -25,6 +25,11 @@ export function ecologyPath(language: Language): string {
 	return `${PREFIXES[language]}ecology/`;
 }
 
+/** The data sovereignty page in a language. */
+export function sovereigntyPath(language: Language): string {
+	return `${PREFIXES[language]}sovereignty/`;
+}
+
 /** A legal page in a language: `/pt/legal/` or `/pt/privacy/`. */
 export function legalPath(language: Language, page: LegalPageId): string {
 	return `${PREFIXES[language]}${page}/`;

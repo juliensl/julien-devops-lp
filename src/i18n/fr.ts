@@ -177,6 +177,40 @@ export const fr = {
 		},
 		back: "Retour à la page d'accueil",
 	},
+	/** The data sovereignty page, in «Ressources». */
+	sovereignty: {
+		/** The page's name, in «Ressources» and in its title. */
+		name: 'Souveraineté des données',
+		description:
+			'Héberger une application en Europe ne suffit pas à comprendre où circulent les données. La souveraineté se construit par des choix techniques, contractuels et organisationnels.',
+		title: 'Tes données sont-elles vraiment sous ton contrôle ?',
+		intro:
+			'Héberger une application en Europe ne suffit pas, à lui seul, à comprendre où circulent les données ni quels prestataires peuvent y accéder. La souveraineté se construit par des choix techniques, contractuels et organisationnels.',
+		sections: [
+			{
+				title: 'Hébergement européen : une première étape, pas une réponse complète.',
+				text: "La localisation des serveurs compte, mais il faut aussi regarder la société qui fournit le service, les sous-traitants, les sauvegardes, la supervision, les accès d'administration et les services externes utilisés par l'application.",
+			},
+			{
+				title: 'Les données ne restent pas forcément là où tourne ton serveur.',
+				text: "Un outil d'analyse, un système de logs, un CDN, un service d'authentification, une solution d'e-mail ou une API d'intelligence artificielle peut traiter certaines données hors de ton hébergement principal. Cartographier ces flux permet de détecter les transferts et les dépendances que l'on oublie facilement.",
+			},
+			{
+				title: 'Fournisseur français, européen ou international : quelles différences ?',
+				text: "Le bon choix dépend de tes obligations, des fonctionnalités nécessaires et des garanties contractuelles offertes. Un fournisseur européen n'offre pas automatiquement toutes les garanties attendues, et une région européenne d'un fournisseur international ne règle pas à elle seule toutes les questions juridiques.",
+			},
+			{
+				title: 'Réglementation, contrats et protections techniques.',
+				text: "RGPD, transferts internationaux, règles de juridiction, chiffrement et contrôle des accès doivent être examinés ensemble. Le CLOUD Act américain peut compter dans l'analyse de certains fournisseurs, mais son existence ne signifie pas que toutes les données hébergées auprès de ces entreprises sont librement accessibles. Les exigences sectorielles, comme SecNumCloud lorsqu'elles s'appliquent, doivent être vérifiées dans les référentiels officiels.",
+			},
+			{
+				title: 'Une architecture adaptée à tes contraintes de souveraineté.',
+				text: "Je t'aide à identifier les dépendances techniques, à comparer les options d'hébergement et à intégrer les contraintes de localisation, de sécurité et de réversibilité dans l'architecture. Pour les conclusions juridiques et réglementaires, l'analyse doit être validée par les spécialistes compétents.",
+			},
+		] satisfies [Card, Card, Card, Card, Card],
+		/** The booking button at the end of the page. */
+		cta: 'Parlons de la souveraineté de ton infrastructure',
+	},
 	homePage: {
 		description: `${promise} J'automatise la qualité du code, je réduis la dette technique et je construis une infrastructure capable de suivre ta croissance.`,
 		hero: {
