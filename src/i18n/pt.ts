@@ -329,22 +329,32 @@ export const pt: Dictionary = {
 			},
 		},
 		steps: {
-			title: 'Cinco etapas, sempre pela mesma ordem.',
+			title: 'Cinco etapas para avançar com tranquilidade.',
 			steps: [
-				{ name: 'Conversa', sentence: '45 min por Google Meet, gratuita.' },
+				{
+					name: 'Conversa inicial',
+					sentence:
+						'45 minutos por Google Meet para perceber o teu produto, as tuas prioridades e as tuas restrições. Gratuita, sem compromisso.',
+				},
 				{
 					name: 'Diagnóstico',
 					sentence:
-						'Gratuito. 2 a 3 dias úteis depois de receber os acessos, ou 3 a 5 se incluir a cloud.',
+						'Um primeiro levantamento gratuito do teu código e, se for preciso, da tua infraestrutura. Resposta em 3 a 5 dias úteis depois de receber os acessos necessários.',
 				},
 				{
 					name: 'Proposta de intervenção',
-					sentence: 'Que blocos, em que prazo e por que preço fixo.',
+					sentence:
+						'Um âmbito preciso, prioridades, um calendário e um preço acordados antes de começar.',
 				},
-				{ name: 'Implementação', sentence: 'No máximo 30 dias de calendário.' },
+				{
+					name: 'Implementação',
+					sentence:
+						'Trabalho com a tua equipa, limitando as perturbações no desenvolvimento. Um ponto de situação regular, em princípio todas as semanas, permite acompanhar as ações e as decisões.',
+				},
 				{
 					name: 'Entrega e transferência',
-					sentence: 'Documentação e transferência para a equipa ficar autónoma.',
+					sentence:
+						'Documentação, verificações finais e transferência de conhecimento para que a tua equipa fique autónoma.',
 				},
 			],
 		},

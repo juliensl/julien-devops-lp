@@ -5,49 +5,60 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 import { inEachBuild } from './builds';
 import { LANGUAGES, type Language } from './expected';
 
-// The Steps, in order, and what each sentence says come from the spec (#54); in Portuguese, the
-// sentences are those of prototype v3. French and English are translations the intern reviews
-// before the Commercial launch (#75).
+// French is Julien's text, Portuguese its translation; English shows the French until it is translated.
+const FRENCH = {
+	title: 'Cinq étapes pour avancer sereinement.',
+	steps: [
+		[
+			'Échange initial',
+			'45 minutes sur Google Meet pour comprendre ton produit, tes priorités et tes contraintes. Gratuit, sans engagement.',
+		],
+		[
+			'Diagnostic',
+			'Un premier état des lieux gratuit de ton code et, si nécessaire, de ton infrastructure. Retour sous 3 à 5 jours ouvrés après réception des accès utiles.',
+		],
+		[
+			"Proposition d'intervention",
+			'Un périmètre précis, des priorités, un calendrier et un prix convenus avant de commencer.',
+		],
+		[
+			'Mise en œuvre',
+			"J'interviens avec ton équipe, en limitant les perturbations du développement. Un point d'avancement régulier, en principe chaque semaine, permet de suivre les actions et les décisions.",
+		],
+		[
+			'Livraison & passation',
+			'Documentation, vérifications finales et transfert de connaissances pour que ton équipe reste autonome.',
+		],
+	] as [string, string][],
+};
 const EXPECTED: Record<Language, { title: string; steps: [string, string][] }> = {
 	pt: {
-		title: 'Cinco etapas, sempre pela mesma ordem.',
+		title: 'Cinco etapas para avançar com tranquilidade.',
 		steps: [
-			['Conversa', '45 min por Google Meet, gratuita.'],
+			[
+				'Conversa inicial',
+				'45 minutos por Google Meet para perceber o teu produto, as tuas prioridades e as tuas restrições. Gratuita, sem compromisso.',
+			],
 			[
 				'Diagnóstico',
-				'Gratuito. 2 a 3 dias úteis depois de receber os acessos, ou 3 a 5 se incluir a cloud.',
+				'Um primeiro levantamento gratuito do teu código e, se for preciso, da tua infraestrutura. Resposta em 3 a 5 dias úteis depois de receber os acessos necessários.',
 			],
-			['Proposta de intervenção', 'Que blocos, em que prazo e por que preço fixo.'],
-			['Implementação', 'No máximo 30 dias de calendário.'],
-			['Entrega e transferência', 'Documentação e transferência para a equipa ficar autónoma.'],
-		],
-	},
-	fr: {
-		title: 'Cinq étapes, toujours dans le même ordre.',
-		steps: [
-			['Échange', '45 min sur Google Meet, gratuit.'],
 			[
-				'Diagnostic',
-				'Gratuit. 2 à 3 jours ouvrés après réception des accès, ou 3 à 5 si le cloud est inclus.',
+				'Proposta de intervenção',
+				'Um âmbito preciso, prioridades, um calendário e um preço acordados antes de começar.',
 			],
-			["Proposition d'intervention", 'Quels blocs, en combien de temps et pour quel prix fixe.'],
-			['Mise en œuvre', '30 jours calendaires au maximum.'],
-			['Livraison et passation', "Documentation et passation, pour que l'équipe soit autonome."],
-		],
-	},
-	en: {
-		title: 'Five steps, always in the same order.',
-		steps: [
-			['Conversation', '45 min on Google Meet, free of charge.'],
 			[
-				'Diagnosis',
-				'Free. 2 to 3 business days once access is granted, or 3 to 5 if it includes the cloud.',
+				'Implementação',
+				'Trabalho com a tua equipa, limitando as perturbações no desenvolvimento. Um ponto de situação regular, em princípio todas as semanas, permite acompanhar as ações e as decisões.',
 			],
-			['Intervention proposal', 'Which blocks, in what timeframe and at what fixed price.'],
-			['Implementation', 'At most 30 calendar days.'],
-			['Delivery and handover', 'Documentation and handover, so the team can be self-sufficient.'],
+			[
+				'Entrega e transferência',
+				'Documentação, verificações finais e transferência de conhecimento para que a tua equipa fique autónoma.',
+			],
 		],
 	},
+	fr: FRENCH,
+	en: FRENCH,
 };
 
 /** Unpinned, the branch's tip follows the line at 62 % of the screen. */
@@ -212,6 +223,17 @@ inEachBuild((build) => {
 					await expectFiveStepsVisible(page, language);
 				});
 			}
+
+			// Only a normal space allows a line break.
+			test('a number never sits apart from what it measures, a range never breaks, and ? ! : ; » never start a line', async ({
+				page,
+			}) => {
+				await page.goto(prefix);
+				const text = await section(page, language).textContent();
+				expect(text).not.toMatch(/\d /);
+				expect(text).not.toMatch(/\d\s(a|à|e|et|to|and) [\d€]/);
+				expect(text).not.toMatch(/ [?!:;»]/);
+			});
 
 			test.describe('without JavaScript', () => {
 				test.use({ javaScriptEnabled: false });
