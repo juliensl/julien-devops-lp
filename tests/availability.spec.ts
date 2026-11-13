@@ -50,7 +50,7 @@ const FRENCH = {
 			"Pour des usages particulièrement sensibles aux interruptions. L'architecture et les procédures d'exploitation doivent être étudiées au cas par cas.",
 		],
 	],
-	// Not in Julien's document: written from the levels' texts, for Julien to review.
+	// Not in Julien's document: written from the levels' texts.
 	architecture: {
 		title: "Ce que l'objectif demande à l'architecture",
 		intro:
@@ -260,6 +260,7 @@ inEachBuild((build) => {
 				await expect(result(page)).toContainText(`${c.objective} ${percent('99.9')}`);
 				await expect(result(page)).toContainText(perMonth(30, '43 min 12 s'));
 				await expect(result(page)).toContainText(perYear('8 h 45 min 36 s'));
+				await expect(calculator(page).getByRole('table')).toHaveCount(0);
 				await expect(calculator(page)).toContainText(c.text);
 				await expect(calculator(page)).toContainText(c.formula);
 			});
@@ -317,13 +318,38 @@ inEachBuild((build) => {
 		test.describe(`${path} calculator without JS`, () => {
 			test.use({ javaScriptEnabled: false });
 
-			test('shows the values of a 30-day month, without the choices', async ({ page }) => {
+			test('shows every level over a 30-day month and over a year, without the choices', async ({
+				page,
+			}) => {
 				await page.goto(path);
 				await expect(calculator(page).getByRole('radio')).toHaveCount(0);
-				await expect(result(page)).toContainText(`${c.objective} ${percent('99.9')}`);
-				await expect(result(page)).toContainText(perMonth(30, '43 min 12 s'));
-				await expect(result(page)).toContainText(perYear('8 h 45 min 36 s'));
+				await expect(result(page)).toBeHidden();
+				const table = calculator(page).getByRole('table', { name: c.result });
+				await expect(table.getByRole('columnheader')).toHaveText([
+					c.objective,
+					`${c.perMonth} (${month(30)})`,
+					`${c.perYear} (${month(365)})`,
+				]);
+				const rows = table.getByRole('row');
+				await expect(rows).toHaveCount(LEVELS.length + 1);
+				for (const [k, level] of LEVELS.entries()) {
+					const row = rows.nth(k + 1);
+					await expect(row.getByRole('rowheader')).toHaveText(percent(level.objective));
+					await expect(row.getByRole('cell')).toHaveText([
+						downtime(level.month),
+						downtime(level.year),
+					]);
+				}
 				await expect(calculator(page)).toContainText(c.formula);
+			});
+
+			test('on a 320 px phone, the table fits the screen', async ({ page }) => {
+				await page.setViewportSize({ width: 320, height: 640 });
+				await page.goto(path);
+				const overflow = await page.evaluate(
+					() => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+				);
+				expect(overflow).toBe(0);
 			});
 		});
 

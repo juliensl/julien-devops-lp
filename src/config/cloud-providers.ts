@@ -36,7 +36,7 @@ export const CRITERIA: { id: CriterionId; opinion?: true }[] = [
 	{ id: 'costs', opinion: true },
 ];
 
-/** In the order of Julien's document. */
+/** In the order the chart shows them. */
 export const SCENARIOS: { id: ScenarioId; weights: Partial<Record<CriterionId, number>> }[] = [
 	{ id: 'beforeLaunch', weights: { paas: 3, containers: 2, costs: 2 } },
 	{ id: 'growth', weights: { kubernetes: 2, containers: 2, euRegions: 1, costs: 1 } },
@@ -110,7 +110,7 @@ export const FACTS: Record<ProviderId, Record<CriterionId, Fact>> = {
 				source(
 					'https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/amzn-20251231.htm',
 				),
-				source('https://docs.aws.eu/esc/latest/userguide/introduction.html'),
+				source('https://aws.amazon.com/blogs/aws/opening-the-aws-european-sovereign-cloud/'),
 				source('https://docs.aws.eu/general/latest/gr/endpoints.html'),
 			],
 		},

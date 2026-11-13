@@ -1,10 +1,6 @@
-// The data sovereignty page's table: what official sources say about the standard public cloud of some
-// providers. Each value has its sources (URL and the day each was read) and its aggregation level. A
-// `null` value is one no official source states: the page shows «non communiqué». It is not a ranking:
-// the providers are in alphabetical order. The words of each value are in the dictionaries.
-// No imports, so that `node` can load it.
+// The data sovereignty page's facts and official sources. No imports, so that `node` can load it.
 
-export type ProviderId =
+export type SovereigntyProviderId =
 	| 'aws'
 	| 'exoscale'
 	| 'googleCloud'
@@ -34,7 +30,7 @@ export type Placement =
 	/** Partly outside the chosen location: some services, or the provider's own operational data. */
 	| 'partlyElsewhere';
 
-export interface Source {
+export interface SovereigntySource {
 	url: string;
 	/** The day the page was read, as YYYY-MM-DD. */
 	read: string;
@@ -46,28 +42,30 @@ export interface Source {
  */
 export type Level = 'company' | 'group' | 'contract' | 'offer' | 'namedOffer';
 
-export interface Fact<T> {
+export interface SovereigntyFact<T> {
 	value: T | null;
 	level: Level;
-	sources: Source[];
+	sources: SovereigntySource[];
 }
 
 export interface Provider {
-	id: ProviderId;
+	id: SovereigntyProviderId;
 	name: string;
 	/** The company's country, and its group's when it is another. */
-	headquarters: Fact<{ company: CountryCode; group?: CountryCode }>;
+	headquarters: SovereigntyFact<{ company: CountryCode; group?: CountryCode }>;
 	/** The countries of the regions in Europe, and whether there are others elsewhere. */
-	zones: Fact<{ europe: CountryCode[]; elsewhere: boolean }>;
+	zones: SovereigntyFact<{ europe: CountryCode[]; elsewhere: boolean }>;
 	/** The company a business customer in France signs with, and the law of that contract. */
-	contract: Fact<{ entity: string | null; law: Law | null }>;
-	backups: Fact<Placement>;
-	logs: Fact<Placement>;
+	contract: SovereigntyFact<{ entity: string | null; law: Law | null }>;
+	/** The country of the provider's parent company, as an official source names it. */
+	parent: SovereigntyFact<CountryCode>;
+	backups: SovereigntyFact<Placement>;
+	logs: SovereigntyFact<Placement>;
 	/**
 	 * SecNumCloud and HDS from the official French lists, which were searched for every provider, and
 	 * ISO/IEC 27001 from the provider.
 	 */
-	certifications: { value: Certification[]; sources: Source[] };
+	certifications: { value: Certification[]; sources: SovereigntySource[] };
 }
 
 export interface Certification {
@@ -80,10 +78,10 @@ export interface Certification {
 }
 
 export type ColumnId =
-	'headquarters' | 'zones' | 'contract' | 'backups' | 'logs' | 'certifications';
+	'headquarters' | 'zones' | 'contract' | 'parent' | 'backups' | 'logs' | 'certifications';
 
 const READ = '2026-11-13';
-const source = (url: string, read = READ): Source => ({ url, read });
+const source = (url: string, read = READ): SovereigntySource => ({ url, read });
 
 // ANSSI's catalogue of qualified offers (SecNumCloud), updated on 27/10/2026, and the Agence du
 // numérique en santé's list of certified health data hosts (HDS).
@@ -126,7 +124,7 @@ export const EU_MEMBERS: CountryCode[] = [
 ];
 
 /** In alphabetical order, so that the table does not look like a ranking. */
-export const PROVIDERS: Provider[] = [
+export const SOVEREIGNTY_PROVIDERS: Provider[] = [
 	{
 		id: 'aws',
 		name: 'AWS',
@@ -151,6 +149,16 @@ export const PROVIDERS: Provider[] = [
 			value: { entity: 'Amazon Web Services EMEA SARL', law: 'LU' },
 			level: 'contract',
 			sources: [source('https://aws.amazon.com/agreement/')],
+		},
+		parent: {
+			value: 'US',
+			level: 'group',
+			sources: [
+				source('https://aws.amazon.com/legal/aws-emea/'),
+				source(
+					'https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/amzn-20251231.htm',
+				),
+			],
 		},
 		backups: {
 			value: 'chosenRegion',
@@ -196,6 +204,14 @@ export const PROVIDERS: Provider[] = [
 			level: 'contract',
 			sources: [source('https://www.exoscale.com/terms/')],
 		},
+		parent: {
+			value: 'AT',
+			level: 'group',
+			sources: [
+				source('https://www.exoscale.com/terms/'),
+				source('https://www.exoscale.com/about-us/'),
+			],
+		},
 		backups: {
 			value: 'chosenCountry',
 			level: 'contract',
@@ -238,6 +254,11 @@ export const PROVIDERS: Provider[] = [
 				source('https://cloud.google.com/terms/regional-modifications'),
 			],
 		},
+		parent: {
+			value: 'US',
+			level: 'group',
+			sources: [source('https://cloud.google.com/terms/subprocessors')],
+		},
 		backups: {
 			value: 'otherRegionByDefault',
 			level: 'offer',
@@ -277,6 +298,11 @@ export const PROVIDERS: Provider[] = [
 			level: 'contract',
 			sources: [source('https://www.hetzner.com/legal/terms-and-conditions/')],
 		},
+		parent: {
+			value: null,
+			level: 'group',
+			sources: [source('https://www.hetzner.com/legal/legal-notice/')],
+		},
 		backups: {
 			value: 'inEu',
 			level: 'company',
@@ -312,6 +338,16 @@ export const PROVIDERS: Provider[] = [
 			level: 'contract',
 			sources: [
 				source('https://welcome.infomaniak.com/api/web-components/1/cgu/latest?id=1&locale=en_GB'),
+			],
+		},
+		parent: {
+			value: 'CH',
+			level: 'group',
+			sources: [
+				source(
+					'https://www.infomaniak.com/documents/financial/rapport-financier-semestriel-30-06-2026.pdf',
+				),
+				source('https://www.infomaniak.com/en/investors'),
 			],
 		},
 		backups: {
@@ -377,6 +413,16 @@ export const PROVIDERS: Provider[] = [
 				),
 			],
 		},
+		parent: {
+			value: 'US',
+			level: 'group',
+			sources: [
+				source('https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/msft-ex21.htm'),
+				source(
+					'https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/msft-20260630.htm',
+				),
+			],
+		},
 		backups: {
 			value: 'otherRegionByDefault',
 			level: 'offer',
@@ -424,6 +470,16 @@ export const PROVIDERS: Provider[] = [
 				source('https://fr.outscale.com/wp-content/uploads/2026/04/GTC-OUTSCALE-2025-12-15.pdf'),
 			],
 		},
+		parent: {
+			value: 'FR',
+			level: 'group',
+			sources: [
+				source(
+					'https://en.outscale.com/press-releases/archives/welcome-to-cloud-days-2021-the-annual-conference-of-3ds-outscale/',
+				),
+				source('https://en.outscale.com/legal-informations/'),
+			],
+		},
 		backups: {
 			value: 'chosenRegion',
 			level: 'offer',
@@ -462,6 +518,15 @@ export const PROVIDERS: Provider[] = [
 			sources: [
 				source(
 					'https://storage.gra.cloud.ovh.net/v1/AUTH_325716a587c64897acbef9a4a4726e38/contracts/814a669-contrat_genServices-FR-16.0.pdf',
+				),
+			],
+		},
+		parent: {
+			value: 'FR',
+			level: 'group',
+			sources: [
+				source(
+					'https://corporate.ovhcloud.com/sites/default/files/2026-11/ovh2026_urd_fr_light_1.pdf',
 				),
 			],
 		},
@@ -525,6 +590,11 @@ export const PROVIDERS: Provider[] = [
 				),
 			],
 		},
+		parent: {
+			value: 'FR',
+			level: 'group',
+			sources: [source('https://www-uploads.scaleway.com/Impact_Report2025_22ee3a8232.pdf')],
+		},
 		backups: {
 			value: 'chosenRegion',
 			level: 'contract',
@@ -567,4 +637,4 @@ export const NOTE_SOURCES = {
 			'https://www.govinfo.gov/content/pkg/PLAW-107publ56/html/PLAW-107publ56.htm',
 		),
 	},
-} satisfies Record<string, Record<string, Source>>;
+} satisfies Record<string, Record<string, SovereigntySource>>;

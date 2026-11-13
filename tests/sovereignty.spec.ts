@@ -19,6 +19,8 @@ interface Texts {
 		columns: string[];
 		/** Each row's provider and the country of its headquarters (and of its group, if another). */
 		headquarters: [provider: string, country: string][];
+		/** Each row's parent company line, in the jurisdictions column. */
+		parents: string[];
 		/** The AWS row, cell by cell after the provider. */
 		aws: string[];
 		notDisclosed: string;
@@ -46,6 +48,7 @@ const NOTE_LINKS = {
 
 /** The cells that say no official source states the value: the provider, then the column's number. */
 const NOT_DISCLOSED: [provider: string, column: number][] = [
+	['Hetzner', 3],
 	['Hetzner', 4],
 	['Infomaniak', 4],
 	['Microsoft Azure', 3],
@@ -105,7 +108,7 @@ const FR: Texts = {
 			'Fournisseur',
 			'Pays du siège',
 			"Zones d'hébergement",
-			'Juridiction du contrat',
+			'Juridictions',
 			'Sauvegardes et logs',
 			"Certifications de l'offre",
 			'Références officielles',
@@ -121,24 +124,35 @@ const FR: Texts = {
 			['OVHcloud', 'France'],
 			['Scaleway', 'France'],
 		],
+		parents: [
+			'Société mère : États-Unis',
+			'Société mère : Autriche',
+			'Société mère : États-Unis',
+			'Société mère : non communiqué',
+			'Société mère : Suisse',
+			'Société mère : États-Unis',
+			'Société mère : France',
+			'Société mère : France',
+			'Société mère : France',
+		],
 		aws: [
 			'États-Unis',
 			"UE : Allemagne, Espagne, France, Irlande, Italie, Suède Hors UE : Royaume-Uni, Suisse Aussi hors d'Europe",
-			'Amazon Web Services EMEA SARL Droit luxembourgeois',
+			'Amazon Web Services EMEA SARL Contrat : droit luxembourgeois Société mère : États-Unis',
 			"Sauvegardes : dans la région choisie (ailleurs seulement si tu le configures) Logs : une partie peut être hors de l'emplacement choisi",
 			'HDS ISO/IEC 27001',
 		],
 		notDisclosed: 'non communiqué',
-		read: 'Consultées le 13/11/2026',
+		read: 'Consultées le 13 nov. 2026',
 	},
 	notes: {
 		switzerland: [
 			"La Suisse ne fait pas partie de l'Union européenne. La Commission européenne reconnaît toutefois qu'elle assure un niveau de protection adéquat des données personnelles : des données personnelles peuvent y être transférées depuis l'UE sans garantie supplémentaire. Cela ne remplace pas le reste de l'analyse : contrat, sous-traitants, accès.",
-			"Sources : Union européenne, les 27 pays membres · Confédération suisse (DFAE), accords bilatéraux · Commission européenne, décisions d'adéquation · Décision 2000/518/CE. Consultées le 13/11/2026.",
+			"Sources : Union européenne, les 27 pays membres · Confédération suisse (DFAE), accords bilatéraux · Commission européenne, décisions d'adéquation · Décision 2000/518/CE. Consultées le 13 nov. 2026.",
 		],
 		cloudAct: [
 			"Le CLOUD Act et le Patriot Act ne sont pas synonymes. Le Patriot Act est une loi antiterroriste américaine de 2001. Le CLOUD Act, adopté en 2018, prévoit qu'un fournisseur soumis au droit américain doit communiquer, sur demande légale des autorités américaines, les données qu'il a en sa possession ou sous son contrôle, qu'elles soient stockées aux États-Unis ou ailleurs. Une entreprise non américaine peut aussi y être soumise si elle a des liens suffisants avec les États-Unis : cela s'apprécie au cas par cas.",
-			'Sources : 18 U.S.C. § 2713 (CLOUD Act) · Département de la Justice des États-Unis, livre blanc sur le CLOUD Act · Public Law 107-56 (USA PATRIOT Act). Consultées le 13/11/2026.',
+			'Sources : 18 U.S.C. § 2713 (CLOUD Act) · Département de la Justice des États-Unis, livre blanc sur le CLOUD Act · Public Law 107-56 (USA PATRIOT Act). Consultées le 13 nov. 2026.',
 		],
 	},
 };
@@ -162,21 +176,35 @@ const EXPECTED: Record<Language, Texts> = {
 				['OVHcloud', 'France'],
 				['Scaleway', 'France'],
 			],
+			parents: [
+				'Société mère : United States',
+				'Société mère : Austria',
+				'Société mère : United States',
+				'Société mère : non communiqué',
+				'Société mère : Switzerland',
+				'Société mère : United States',
+				'Société mère : France',
+				'Société mère : France',
+				'Société mère : France',
+			],
 			aws: [
 				'United States',
 				"UE : France, Germany, Ireland, Italy, Spain, Sweden Hors UE : Switzerland, United Kingdom Aussi hors d'Europe",
-				'Amazon Web Services EMEA SARL Droit luxembourgeois',
+				'Amazon Web Services EMEA SARL Contrat : droit luxembourgeois Société mère : United States',
 				FR.table.aws[3],
 				FR.table.aws[4],
 			],
-			read: 'Consultées le 11/13/2026',
+			read: 'Consultées le Nov 13, 2026',
 		},
 		notes: {
 			switzerland: [
 				FR.notes.switzerland[0],
-				FR.notes.switzerland[1].replace('13/11/2026', '11/13/2026'),
+				FR.notes.switzerland[1].replace('13 nov. 2026', 'Nov 13, 2026'),
 			],
-			cloudAct: [FR.notes.cloudAct[0], FR.notes.cloudAct[1].replace('13/11/2026', '11/13/2026')],
+			cloudAct: [
+				FR.notes.cloudAct[0],
+				FR.notes.cloudAct[1].replace('13 nov. 2026', 'Nov 13, 2026'),
+			],
 		},
 	},
 	pt: {
@@ -216,7 +244,7 @@ const EXPECTED: Record<Language, Texts> = {
 				'Fornecedor',
 				'País da sede',
 				'Zonas de alojamento',
-				'Jurisdição do contrato',
+				'Jurisdições',
 				'Cópias de segurança e logs',
 				'Certificações da oferta',
 				'Referências oficiais',
@@ -232,10 +260,21 @@ const EXPECTED: Record<Language, Texts> = {
 				['OVHcloud', 'França'],
 				['Scaleway', 'França'],
 			],
+			parents: [
+				'Sociedade-mãe: Estados Unidos',
+				'Sociedade-mãe: Áustria',
+				'Sociedade-mãe: Estados Unidos',
+				'Sociedade-mãe: não divulgado',
+				'Sociedade-mãe: Suíça',
+				'Sociedade-mãe: Estados Unidos',
+				'Sociedade-mãe: França',
+				'Sociedade-mãe: França',
+				'Sociedade-mãe: França',
+			],
 			aws: [
 				'Estados Unidos',
 				'UE: Alemanha, Espanha, França, Irlanda, Itália, Suécia Fora da UE: Reino Unido, Suíça Também fora da Europa',
-				'Amazon Web Services EMEA SARL Direito luxemburguês',
+				'Amazon Web Services EMEA SARL Contrato: direito luxemburguês Sociedade-mãe: Estados Unidos',
 				'Cópias de segurança: na região escolhida (noutro sítio só se o configurares) Logs: uma parte pode estar fora da localização escolhida',
 				'HDS ISO/IEC 27001',
 			],
@@ -299,6 +338,9 @@ inEachBuild((build) => {
 					await expect(rows.nth(k).getByRole('cell').first()).toHaveText(country, {
 						useInnerText: true,
 					});
+				}
+				for (const [k, parent] of expected.table.parents.entries()) {
+					await expect(rows.nth(k).getByRole('cell').nth(2)).toContainText(parent);
 				}
 				const aws = rows.filter({ has: page.getByRole('rowheader', { name: 'AWS' }) });
 				for (const [k, text] of expected.table.aws.entries()) {

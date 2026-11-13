@@ -10,7 +10,7 @@ export const LEVEL_IDS = Object.keys(LEVELS) as LevelId[];
 /** The months the calculator offers, in days. */
 export const MONTHS = [28, 30, 31];
 
-/** What the calculator opens with, and what the page shows without JS. */
+/** What the calculator opens with. Without JS, the page shows every level over FIRST_MONTH. */
 export const FIRST_LEVEL: LevelId = 'reinforced';
 export const FIRST_MONTH = 30;
 
@@ -25,11 +25,7 @@ export function objectiveText(objective: number, locale: string): string {
 	return `${new Intl.NumberFormat(locale).format(objective)}${space}%`;
 }
 
-/**
- * The longest downtime an objective (in %) allows over `days`, measured 24 h a day:
- * (1 − objective / 100) × the period in seconds. Written as the page shows it, to the nearest second
- * ("43 min 12 s"), after `about` when the exact value has a fraction of a second.
- */
+/** The longest downtime an objective (in %) allows over `days`, written as "43 min 12 s". */
 export function maxDowntime(objective: number, days: number, about: string): string {
 	const exact = ((100 - objective) / 100) * days * SECONDS_PER_DAY;
 	const total = Math.round(exact);

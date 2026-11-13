@@ -104,7 +104,7 @@ const EXPECTED: Record<
 		intro:
 			'Da qualidade do código à monitorização em produção, intervenho nos pontos que travam a tua equipa. Depois de um diagnóstico, definimos juntos o âmbito, as prioridades e a ordem das intervenções. Podes confiar-me uma necessidade específica ou um projeto completo.',
 		blockLabel: 'Bloco',
-		toolsLabel: 'Ferramentas',
+		toolsLabel: 'Áreas e ferramentas',
 		blocks: [
 			{
 				name: 'Auditoria do código e CI/CD',
@@ -171,8 +171,8 @@ const EXPECTED: Record<
 			},
 		],
 	},
-	fr: { ...FRENCH, blockLabel: 'Bloc', toolsLabel: 'Outils' },
-	en: { ...FRENCH, blockLabel: 'Block', toolsLabel: 'Tools' },
+	fr: { ...FRENCH, blockLabel: 'Bloc', toolsLabel: 'Domaines et outils' },
+	en: { ...FRENCH, blockLabel: 'Block', toolsLabel: 'Domaines et outils' },
 };
 
 /** Where the Visitor opens the page. */

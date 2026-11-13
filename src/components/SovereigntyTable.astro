@@ -1,16 +1,15 @@
 ---
-// The data sovereignty page's table: one row per provider, in alphabetical order, with the official
-// references of each value. On a phone only the table scrolls sideways, not the page; it takes the
-// keyboard focus so that the arrows can scroll it.
+// The table of providers: it scrolls sideways by itself, and takes focus so the arrows scroll it.
 import { HTML_CODES, type Language } from '../config/site';
 import {
 	EU_MEMBERS,
-	PROVIDERS,
+	SOVEREIGNTY_PROVIDERS,
 	type ColumnId,
 	type CountryCode,
 	type Provider,
 } from '../config/sovereignty';
 import { dictionaries } from '../i18n';
+import { readDays } from '../lib/dates';
 import { withNonBreakingSpaces } from '../lib/spaces';
 
 interface Props {
@@ -27,29 +26,23 @@ const countryList = (codes: CountryCode[]) =>
 		.map(countryName)
 		.toSorted((a, b) => a.localeCompare(b, locale))
 		.join(', ');
-const dateFormat = new Intl.DateTimeFormat(locale, {
-	day: '2-digit',
-	month: '2-digit',
-	year: 'numeric',
-	timeZone: 'UTC',
-});
 /** A source's link text: the site it is on. */
 const hostnameOf = (url: string) => new URL(url).hostname.replace(/^www\./, '');
 /** "Label: text", with the language's colon. */
-const labelled = (label: string, text: string) =>
-	withNonBreakingSpaces(`${label}${t.colon} ${text}`);
+const labelled = (label: string, text: string) => `${label}${t.colon} ${text}`;
 
 const COLUMNS: ColumnId[] = [
 	'headquarters',
 	'zones',
 	'contract',
+	'parent',
 	'backups',
 	'logs',
 	'certifications',
 ];
 
 /** Each cell's lines, «non communiqué» where no official source states the value. */
-function cells({ headquarters, zones, contract, backups, logs, certifications }: Provider) {
+function cells({ headquarters, zones, contract, parent, backups, logs, certifications }: Provider) {
 	const or = <T,>(value: T | null, text: (value: T) => string) =>
 		value === null ? t.notDisclosed : text(value);
 	return [
@@ -70,12 +63,18 @@ function cells({ headquarters, zones, contract, backups, logs, certifications }:
 					.map(([label, codes]) => labelled(label, countryList(codes)))
 					.concat(zones.value.elsewhere ? [t.elsewhere] : [])
 			: [t.notDisclosed],
-		contract.value
-			? [
-					or(contract.value.entity, (entity) => entity),
-					or(contract.value.law, (law) => t.laws[law]),
-				]
-			: [t.notDisclosed],
+		[
+			...(contract.value
+				? [
+						or(contract.value.entity, (entity) => entity),
+						labelled(
+							t.contract,
+							or(contract.value.law, (law) => t.laws[law]),
+						),
+					]
+				: [t.notDisclosed]),
+			labelled(t.parent, or(parent.value, countryName)),
+		],
 		[
 			labelled(
 				t.backups,
@@ -100,16 +99,15 @@ function references(provider: Provider) {
 			columns.set(url, [...(columns.get(url) ?? []), column]);
 		}
 	}
-	const days = new Set(COLUMNS.flatMap((column) => provider[column].sources.map((s) => s.read)));
 	return {
 		links: [...columns].map(([url, of]) => ({
 			url,
 			of: of.map((c) => t.references[c]).join(', '),
 		})),
-		read: `${t.read} ${[...days]
-			.sort()
-			.map((day) => dateFormat.format(new Date(day)))
-			.join(', ')}`,
+		read: `${t.read} ${readDays(
+			COLUMNS.flatMap((column) => provider[column].sources),
+			language,
+		)}`,
 	};
 }
 ---
@@ -132,7 +130,7 @@ function references(provider: Provider) {
 			</tr>
 		</thead>
 		<tbody>
-			{PROVIDERS.map((provider) => (
+			{SOVEREIGNTY_PROVIDERS.map((provider) => (
 				<tr>
 					<th scope="row" class="font-semibold">
 						{provider.name}
@@ -140,7 +138,7 @@ function references(provider: Provider) {
 					{cells(provider).map((lines) => (
 						<td>
 							{lines.map((line) => (
-								<span class="block">{line}</span>
+								<span class="block">{withNonBreakingSpaces(line)}</span>
 							))}
 						</td>
 					))}

@@ -150,7 +150,7 @@ export const pt: Dictionary = {
 				aws: {
 					paas: 'O App Runner fechou a novos clientes a 30/04/2026.',
 					europeanHeadquarters:
-						'Sede em Seattle, EUA. Na Europa, anuncia a AWS European Sovereign Cloud, com uma região na Alemanha.',
+						'Sede em Seattle, EUA. Na Europa, a AWS European Sovereign Cloud está disponível desde janeiro de 2026, com uma região na Alemanha.',
 					secNumCloud: 'Não está no catálogo SecNumCloud da ANSSI.',
 					euRegions: '6 regiões na UE.',
 					costs:
@@ -322,7 +322,7 @@ export const pt: Dictionary = {
 		back: 'Voltar à página principal',
 	},
 	sovereignty: {
-		name: 'Soberania dos dados',
+		link: 'Soberania dos dados',
 		description:
 			'Alojar uma aplicação na Europa não basta para perceber por onde circulam os dados. A soberania constrói-se com escolhas técnicas, contratuais e organizacionais.',
 		title: 'Os teus dados estão mesmo sob o teu controlo?',
@@ -376,7 +376,7 @@ export const pt: Dictionary = {
 				provider: 'Fornecedor',
 				headquarters: 'País da sede',
 				zones: 'Zonas de alojamento',
-				contract: 'Jurisdição do contrato',
+				contract: 'Jurisdições',
 				backupsAndLogs: 'Cópias de segurança e logs',
 				certifications: 'Certificações da oferta',
 				references: 'Referências oficiais',
@@ -388,13 +388,15 @@ export const pt: Dictionary = {
 			outsideEu: 'Fora da UE',
 			elsewhere: 'Também fora da Europa',
 			laws: {
-				CH: 'Direito suíço',
-				DE: 'Direito alemão',
-				FR: 'Direito francês',
-				IE: 'Direito irlandês',
-				LU: 'Direito luxemburguês',
-				'US-CA': 'Direito da Califórnia (Estados Unidos)',
+				CH: 'direito suíço',
+				DE: 'direito alemão',
+				FR: 'direito francês',
+				IE: 'direito irlandês',
+				LU: 'direito luxemburguês',
+				'US-CA': 'direito da Califórnia (Estados Unidos)',
 			},
+			contract: 'Contrato',
+			parent: 'Sociedade-mãe',
 			backups: 'Cópias de segurança',
 			logs: 'Logs',
 			placements: {
@@ -409,6 +411,7 @@ export const pt: Dictionary = {
 				headquarters: 'Sede',
 				zones: 'Zonas',
 				contract: 'Contrato',
+				parent: 'Sociedade-mãe',
 				backups: 'Cópias de segurança',
 				logs: 'Logs',
 				certifications: 'Certificações',
@@ -416,7 +419,7 @@ export const pt: Dictionary = {
 		},
 	},
 	availability: {
-		title: 'Disponibilidade e condições',
+		link: 'Disponibilidade e condições',
 		description:
 			'Compara os níveis de disponibilidade, calcula o teu tempo de indisponibilidade teórico e consulta as condições da garantia de conformidade.',
 		heading: 'Que nível de disponibilidade para o teu SaaS?',
@@ -560,7 +563,7 @@ export const pt: Dictionary = {
 			intro:
 				'Da qualidade do código à monitorização em produção, intervenho nos pontos que travam a tua equipa. Depois de um diagnóstico, definimos juntos o âmbito, as prioridades e a ordem das intervenções. Podes confiar-me uma necessidade específica ou um projeto completo.',
 			blockLabel: 'Bloco',
-			toolsLabel: 'Ferramentas',
+			toolsLabel: 'Áreas e ferramentas',
 			blocks,
 			diagrams: {
 				pipeline: {
