@@ -408,9 +408,10 @@ export const pt: Dictionary = {
 			byAudience: 'Perguntas para o teu perfil',
 		},
 		finalCta: {
-			title: 'Nunca perdes a infraestrutura.',
-			text: 'Mesmo que a tua equipa não avance logo com os testes, ficas com uma pipeline limpa, documentada e com os standards do mercado, pronta para quando decidires.',
-			conversation: 'Conversa de 45 min por Google Meet, gratuita e sem compromisso.',
+			title: 'O teu SaaS merece mais do que correções de emergência.',
+			text: 'Já tens um projeto em mente, ou simplesmente perguntas sobre o teu código, a tua infraestrutura ou o teu próximo deploy? Vamos falar disso. Uma primeira conversa chega para identificar as prioridades e ver como te posso ajudar.',
+			button: 'Marcar uma conversa gratuita',
+			conversation: '45 minutos por Google Meet. Sem compromisso.',
 			bookingNotice:
 				'A página de marcação está em francês, mas a Conversa pode ser em inglês ou em português.',
 		},

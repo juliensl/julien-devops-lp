@@ -488,9 +488,10 @@ export const fr = {
 			byAudience: 'Questions pour ton profil',
 		},
 		finalCta: {
-			title: "Tu ne perds jamais l'infrastructure.",
-			text: "Même si ton équipe ne se lance pas tout de suite dans les tests, tu gardes une pipeline propre, documentée et aux standards du marché, prête pour le jour où tu décideras d'y aller.",
-			conversation: 'Échange de 45 min sur Google Meet, gratuit et sans engagement.',
+			title: 'Ton SaaS mérite mieux que des correctifs en urgence.',
+			text: "Tu as déjà un projet en tête, ou simplement des questions sur ton code, ton infrastructure ou ton prochain déploiement ? Parlons-en. Un premier échange suffit pour identifier les priorités et voir comment je peux t'aider.",
+			button: 'Réserver un échange gratuit',
+			conversation: '45 minutes sur Google Meet. Sans engagement.',
 			// Not shown while the booking page is in French (values.ts).
 			bookingNotice:
 				"La page de réservation est en français, mais l'Échange peut se faire en anglais ou en portugais.",
