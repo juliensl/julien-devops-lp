@@ -1,28 +1,10 @@
-// The texts in Portuguese, the Reference language.
-// French and English are typed from this file: a missing text makes `astro check` fail.
+// Translated from French, the Reference language: same meaning, no added promises.
 // The texts carry no HTML: links, bold text and non-breaking spaces are added in the components.
-import type { AudienceId } from '../config/audiences';
-import type { CriterionId, ProviderId, Rating, ScenarioId } from '../config/cloud-providers';
-import type { SourceId } from '../config/ecology';
+import type { Dictionary } from './fr';
 
-const promise =
-	'Em 30 dias, entrego-te a infraestrutura DevOps de que precisas para escalar o teu SaaS.';
+const promise = 'Menos bugs. Um código mais limpo. Um SaaS pronto para crescer.';
 
-type Step = { name: string; sentence: string };
-
-type Card = { title: string; text: string };
-
-type Block = {
-	name: string;
-	summary: string;
-	text: string;
-	tools: string[];
-	/** Said after the tools, when the client's cloud can provide its own. */
-	toolsAlternative?: string;
-};
-
-/** The 4 Blocks, in the pitch's order. A language with fewer than 4 makes `astro check` fail. */
-const blocks: [Block, Block, Block, Block] = [
+const blocks: Dictionary['homePage']['services']['blocks'] = [
 	{
 		name: 'Pipeline de CI e auditoria de código',
 		summary: 'Os bugs ficam no pull request.',
@@ -50,42 +32,22 @@ const blocks: [Block, Block, Block, Block] = [
 	},
 ];
 
-type Question = { question: string; answer: string };
-
-type Audience = {
-	/** The audience's heading on the questions page, and its link in the header submenu. */
-	name: string;
-	/** In the filter. */
-	short: string;
-	description: string;
-	questions: Question[];
-};
-
-export const pt = {
-	designation: 'Consultor DevOps freelance para SaaS',
+export const pt: Dictionary = {
+	designation: 'Consultor DevOps',
 	promise,
 	bookButton: 'Marcar uma conversa',
 	header: {
-		/** Appended to the name in the logo, which links to the home page. */
 		logoTarget: 'página principal',
-		/** The name of the language switcher, for screen readers. */
 		languages: 'Língua',
-		/** The button that opens the menu on mobile. */
 		menu: 'Menu',
-		/** The submenu of the pages that help a CTO decide. */
 		resources: 'Recursos',
 	},
-	/** The fixed button that pauses the automatic animations: its name says what a click does. */
 	animation: {
 		pause: 'Pausar animação',
 		resume: 'Retomar animação',
 	},
-	/** The ecology page, and the links that lead to it. The texts of #54 are as validated there; the
-	 * others come from prototype v3. */
 	ecology: {
-		/** The links to the page, with the leaf, in the header and the footer. */
 		link: 'Ecologia',
-		/** The home page's Ecology section. */
 		home: {
 			title: 'A infraestrutura também tem pegada.',
 			text: 'Onde a aplicação corre, quanto corre e com que eficiência mudam o impacto ambiental. A página de ecologia deixa-te estimar uma carga conforme o país onde corre, separando dados publicados, hipóteses e cálculos.',
@@ -98,7 +60,6 @@ export const pt = {
 			heading: 'As escolhas de infraestrutura também têm consequências ambientais.',
 			intro:
 				'Onde a aplicação corre, quanto tempo corre e com que eficiência mudam a energia que consome e as emissões da eletricidade que usa. Aqui estimas uma carga, conforme o país onde corre, com o método e as fontes à vista.',
-			/** The badge on each value: what each of the three means. */
 			legend: {
 				label: 'Como ler os dados desta página',
 				published: 'valor de uma base de dados ou de um estudo públicos, com ano e fonte',
@@ -106,7 +67,6 @@ export const pt = {
 				calculated: 'resultado dos dois anteriores',
 			},
 		},
-		/** The only three badges (#54). */
 		badges: { published: 'Publicado', assumption: 'Hipótese', calculated: 'Calculado' },
 		estimator: {
 			label: 'Estimar uma carga',
@@ -120,16 +80,13 @@ export const pt = {
 				hoursPerDay: 'Horas por dia',
 				pue: 'Eficiência do centro de dados (PUE)',
 			},
-			/** Below the two fields whose first value comes from a source. */
 			hints: {
 				utilisation: '50 % é o valor do CCF quando não se conhece a utilização',
 				pue: '1,52 é a média do setor em 2026 (Uptime Institute); o fornecedor pode indicar o do centro que usas',
 			},
-			/** The name of the two results, for screen readers. */
 			result: 'Resultado',
 			calculation: 'O cálculo',
 			comparison: 'A mesma carga em cada país',
-			/** After each number of the calculation. */
 			units: {
 				vcpu: 'vCPU',
 				wattsPerVcpu: 'W por vCPU',
@@ -138,11 +95,8 @@ export const pt = {
 				kwhPerMonth: 'kWh por mês',
 				kgPerMonth: 'kg CO2e por mês',
 			},
-			/** Where the watts per vCPU come from. */
 			wattsSource: 'Cloud Carbon Footprint, processador desconhecido',
-			/** The kind of intensity, after the country and Ember's year. */
 			lifeCycle: 'ciclo de vida',
-			/** After the emissions result: the method's name, in English in every language (#54). */
 			locationBased: 'location-based',
 		},
 		method: {
@@ -161,9 +115,8 @@ export const pt = {
 					title: 'Só os processadores',
 					text: 'O estimador conta a energia dos vCPU e a eficiência do centro de dados. Memória, armazenamento, rede e fabrico dos servidores ficam de fora, por isso o valor real é maior.',
 				},
-			] satisfies [Card, Card, Card],
+			],
 		},
-		/** What infrastructure can change: the title and the 4 cards validated in #54. */
 		levers: {
 			label: 'O que a infraestrutura pode mudar',
 			title: 'Mais eficiência, mais visibilidade.',
@@ -184,7 +137,7 @@ export const pt = {
 					title: 'Alojamento com menor impacto ambiental',
 					text: 'Quando as necessidades e o orçamento o permitem, é uma das opções que proponho.',
 				},
-			] satisfies [Card, Card, Card, Card],
+			],
 		},
 		sources: {
 			title: 'Fontes e limites',
@@ -193,7 +146,7 @@ export const pt = {
 				cloudCarbonFootprint: 'Cloud Carbon Footprint, metodologia',
 				uptimeInstitute: 'Uptime Institute, PUE médio do setor (inquérito de 2026)',
 				research: 'Pesquisa própria sobre os dados ambientais dos fornecedores cloud (16/10/2026)',
-			} satisfies Record<SourceId, string>,
+			},
 			limits: [
 				'Estimativa ilustrativa, não uma medição da tua infraestrutura.',
 				'Os watts por vCPU são os do Cloud Carbon Footprint para um processador desconhecido; o servidor real pode consumir mais ou menos.',
@@ -204,63 +157,49 @@ export const pt = {
 		back: 'Voltar à página principal',
 	},
 	homePage: {
-		description: `${promise} Para CTO de SaaS em crescimento.`,
+		description: `${promise} Automatizo a qualidade do código, reduzo a dívida técnica e construo uma infraestrutura capaz de acompanhar o teu crescimento.`,
 		hero: {
 			support:
-				'Os bugs são apanhados no pull request, não pelo teu cliente. E os teus devs voltam a programar em vez de fazer suporte.',
-			note: 'Conversa de 45 min por Google Meet, gratuita.',
+				'Automatizo a qualidade do código, reduzo a dívida técnica e construo uma infraestrutura capaz de acompanhar o teu crescimento. Os teus programadores passam menos tempo a corrigir problemas, e mais tempo a fazer evoluir o teu produto.',
+			note: '45 min por Google Meet. Gratuita e sem compromisso.',
 		},
 		whoItsFor: {
-			title: 'Para quem é',
-			profile: [
-				'Um SaaS web ou mobile, já lançado.',
-				'A passar de dezenas ou centenas para milhares de utilizadores recorrentes.',
-				'Uma equipa de normalmente 5 a 20 pessoas, com pelo menos 3 devs.',
+			title: 'Para quem é?',
+			intro:
+				'Desenvolves um SaaS ou uma aplicação web, sozinho ou com uma equipa? Adapto-me à tua fase de desenvolvimento, à tua organização e às tuas restrições técnicas.',
+			situations: [
+				'Estás a preparar um lançamento e queres começar com bases sólidas.',
+				'O teu produto já está online e os bugs ou a manutenção atrasam as novidades.',
+				'Prevês um aumento de carga e queres evitar surpresas desagradáveis.',
 			],
-			/** Below the first statement: `link` is the part of `text` that leads to the booking page. */
-			notLaunchedYet: {
-				text: 'O teu SaaS ainda não foi lançado? Podes marcar a Conversa na mesma.',
-				link: 'marcar a Conversa',
-			},
+			button: 'Vamos falar do teu projeto',
 		},
 		todayAndAfter: {
-			title: 'Hoje, e depois.',
+			title: 'Hoje… e depois.',
 			todayTitle: 'Hoje',
 			today: [
-				{
-					title: 'Uma funcionalidade parte outra.',
-					text: 'A regressão passou a ser normal, e é o cliente que a descobre.',
-				},
-				{ title: 'Os devs fazem suporte.', text: 'Respondem a tickets em vez de programar.' },
-				{
-					title: 'Os testes fazem-se à mão.',
-					text: 'Dias inteiros, por quem não tem essa função.',
-				},
-				{
-					title: 'Ninguém sabe se aguenta.',
-					text: 'Funciona com os clientes de hoje. Com muitos mais, ninguém sabe dizer.',
-				},
+				'Uma nova funcionalidade parte outra, e os clientes descobrem as regressões.',
+				'Os teus programadores passam demasiado tempo com bugs, correções e suporte.',
+				'O código obsoleto acumula-se, as dependências envelhecem e o desempenho degrada-se.',
+				'Os testes e os deploys ainda dependem de verificações manuais.',
+				'Falta-te visibilidade sobre o estado real da tua aplicação e sobre a sua capacidade de suportar mais carga.',
 			],
 			afterTitle: 'Depois',
 			after: [
-				'Os bugs são apanhados no pull request, não pelo cliente.',
-				'Os devs recuperam os dias que passavam em suporte.',
-				'A equipa cresce sem medo de que um júnior parta a produção.',
-				'Acrescentas funcionalidades sem partir outras.',
-				'A infraestrutura acompanha a carga, e vês os problemas antes dos clientes.',
+				'As regressões são detetadas mais cedo graças às verificações automáticas.',
+				'As correções e as otimizações prioritárias tornam o teu código mais fácil de manter.',
+				'Uma parte da manutenção repetitiva é automatizada, para libertar tempo de desenvolvimento.',
+				'Os deploys são mais previsíveis e a infraestrutura adapta-se à carga prevista.',
+				'Tens indicadores e alertas para detetar os incidentes o mais cedo possível.',
 			],
 		},
-		/** The Services: the 4 Blocks, and the note on hiring them in any combination. */
 		services: {
 			label: 'Serviços',
 			title: 'Quatro camadas da tua infraestrutura.',
 			note: 'Contratas os blocos que quiseres, em qualquer combinação. No máximo 30 dias, a contar do início da Implementação. O bloco 3 precisa de uma aplicação contentorizada, pelo bloco 2 ou pela tua equipa.',
-			/** Before each Block's number: "Bloco 1". */
 			blockLabel: 'Bloco',
-			/** The name of each Block's list of tools, for screen readers. */
 			toolsLabel: 'Ferramentas',
 			blocks,
-			/** The words drawn in the Blocks' mini-diagrams, and what each one shows, for screen readers. */
 			diagrams: {
 				pipeline: {
 					description: 'Uma alteração com falha de segurança fica bloqueada antes da produção.',
@@ -287,8 +226,6 @@ export const pt = {
 				},
 			},
 		},
-		/** The 5 Steps, in glossary order, each with one sentence. A language with fewer than 5
-		 * makes `astro check` fail. */
 		steps: {
 			title: 'Cinco etapas, sempre pela mesma ordem.',
 			steps: [
@@ -307,7 +244,7 @@ export const pt = {
 					name: 'Entrega e transferência',
 					sentence: 'Documentação e transferência para a equipa ficar autónoma.',
 				},
-			] satisfies [Step, Step, Step, Step, Step],
+			],
 		},
 		guarantee: {
 			label: 'A Garantia',
@@ -330,14 +267,11 @@ export const pt = {
 			outOfService: 'no máximo 1 % sem serviço',
 			note: 'Nos 3 meses seguintes à entrega.',
 		},
-		/** The cloud provider chart. The names of the scenarios and criteria are #54's; the facts
-		 * behind each note are in src/config/cloud-providers.ts, with their sources. */
 		cloudChart: {
 			label: 'Fornecedores cloud',
 			title: 'Que cloud para que empresa?',
 			intro:
 				'Escolhe um cenário. Cada barra mostra que critérios desse cenário o fornecedor cumpre. É uma orientação para a Conversa, não uma classificação: não há um fornecedor ideal para todas as empresas.',
-			/** The name of the group of scenarios, for screen readers. */
 			scenariosLabel: 'Cenário de empresa',
 			scenarios: {
 				beforeLaunch: {
@@ -361,7 +295,7 @@ export const pt = {
 					name: 'Custos sob controlo',
 					description: 'Ver e controlar os custos de infraestrutura à medida que o SaaS cresce.',
 				},
-			} satisfies Record<ScenarioId, { name: string; description: string }>,
+			},
 			criteria: {
 				kubernetes: 'Kubernetes gerido',
 				containers: 'Contentores com escala automática',
@@ -370,30 +304,23 @@ export const pt = {
 				secNumCloud: 'Oferta SecNumCloud',
 				euRegions: 'Regiões na UE',
 				costs: 'Visibilidade e controlo dos custos',
-			} satisfies Record<CriterionId, string>,
-			/** Before a criterion's weight in the scenario: "peso 3". */
+			},
 			weight: 'peso',
-			/** Marks the criterion that is Julien's opinion, not a fact. */
 			opinion: 'opinião do Julien',
 			ratings: {
 				consider: 'A considerar',
 				possible: 'Possível',
 				unsuitable: 'Pouco indicado',
-			} satisfies Record<Rating, string>,
-			/** A provider's value on a criterion: 1, ½ or 0. */
+			},
 			values: { yes: 'Sim', partly: 'Em parte', no: 'Não' },
 			hint: 'Clica numa barra para ver os factos.',
-			/** After a label, before what it introduces: French puts a space before it. */
 			colon: ':',
-			/** Before the date each source was read. */
 			read: 'lida a',
 			source: 'Fonte',
 			sources: 'Fontes',
-			/** The note on outbound traffic, in the cost criterion. */
 			outboundTraffic: 'Tráfego de saída',
 			footnote:
 				'Os factos vêm das páginas oficiais dos fornecedores e da ANSSI. Os pesos de cada cenário e o critério «Visibilidade e controlo dos custos» são opinião do Julien.',
-			/** What each fact says, in words. No legal claims (#54). */
 			notes: {
 				aws: {
 					paas: 'O App Runner fechou a novos clientes a 30/04/2026.',
@@ -448,8 +375,7 @@ export const pt = {
 					costs:
 						'Custos por projeto e por produto. Etiquetas e previsão não encontradas. Os alertas só avisam.',
 				},
-			} satisfies Record<ProviderId, Partial<Record<CriterionId, string>>>,
-			/** Outbound traffic to the internet, from Europe. */
+			},
 			outbound: {
 				aws: 'pago depois de 100 GB/mês.',
 				googleCloud: 'pago desde o primeiro GB (Premium Tier).',
@@ -457,7 +383,7 @@ export const pt = {
 				azure: 'pago depois de 100 GB/mês.',
 				ovhcloud: 'incluído nas instâncias.',
 				scaleway: 'incluído nas instâncias.',
-			} satisfies Record<ProviderId, string>,
+			},
 		},
 		about: {
 			title: 'Quem é o Julien',
@@ -465,22 +391,17 @@ export const pt = {
 				'Trabalho à distância, em português, francês e inglês. Uso tecnologias standard, sem lock-in, e documento tudo para a tua equipa ficar autónoma.',
 			linkedin: 'Ver o meu perfil no LinkedIn',
 		},
-		/** The Testimonials. Their texts, authors and approvals are in src/config/testimonials.ts. */
 		testimonials: {
 			title: 'O que dizem os clientes',
-			/** What screen readers call the carousel and each Testimonial in it. */
 			carousel: 'carrossel',
 			slide: 'testemunho',
-			/** Between the two numbers of «1 de 3». */
 			of: 'de',
 			previous: 'Testemunho anterior',
 			next: 'Testemunho seguinte',
-			/** The strip of Testimonials, which slides sideways. */
 			strip: 'Testemunhos: desliza para ver os outros',
 			translated: 'Traduzido do francês',
 			malt: 'Ver no Malt',
 		},
-		/** The Questions section: its general questions and the Audiences come from `questions`. */
 		questions: {
 			label: 'Perguntas',
 			title: 'O essencial, antes da Conversa.',
@@ -494,14 +415,9 @@ export const pt = {
 				'A página de marcação está em francês, mas a Conversa pode ser em inglês ou em português.',
 		},
 	},
-	/** «Os teus desafios»: the questions by audience, on their page, in the header submenu and in the home
-	 * page's Questions section. The 23 answers are Julien's, word for word in French; each
-	 * audience is typed with its number of questions, so a language with one missing fails `astro check`. */
 	questions: {
-		/** The name of the page and of the header menu that leads to it. */
 		menu: 'Os teus desafios',
 		all: 'Ver todas as perguntas',
-		/** After a number of questions: «7 perguntas». The language's plural rules pick the form. */
 		count: { one: 'pergunta', other: 'perguntas' },
 		audiences: {
 			general: {
@@ -534,7 +450,7 @@ export const pt = {
 						answer:
 							'Sim, posso intervir numa necessidade específica. A ordem e as dependências técnicas são definidas depois do diagnóstico. A garantia de conformidade técnica de três meses apresentada neste site diz respeito apenas às prestações completas que cobrem os quatro blocos.',
 					},
-				] satisfies [Question, Question, Question, Question, Question],
+				],
 			},
 			cto: {
 				name: 'Para CTO',
@@ -577,7 +493,7 @@ export const pt = {
 						answer:
 							'Falo diretamente com as pessoas envolvidas: CTO, tech lead, programadores e responsável pelo projeto. Organizamos pontos de situação regulares, geralmente todas as semanas, e documentamos as decisões importantes.',
 					},
-				] satisfies [Question, Question, Question, Question, Question, Question, Question],
+				],
 			},
 			ceo: {
 				name: 'Para CEO',
@@ -614,7 +530,7 @@ export const pt = {
 						answer:
 							'Posso intervir em francês, em inglês e em português, consoante as necessidades da equipa e do projeto.',
 					},
-				] satisfies [Question, Question, Question, Question, Question, Question],
+				],
 			},
 			team: {
 				name: 'Para a equipa técnica',
@@ -646,30 +562,23 @@ export const pt = {
 						answer:
 							'Não há uma stack imposta. Consoante o projeto: pipelines de CI/CD, análise de código, ferramentas de refactoring e de desempenho, Docker, serviços de contentores geridos, Kubernetes, Terraform, Grafana, Prometheus ou equivalentes. Privilegio as ferramentas relevantes para a equipa e para o que já existe.',
 					},
-				] satisfies [Question, Question, Question, Question, Question],
+				],
 			},
-		} satisfies Record<AudienceId, Audience>,
+		},
 		page: {
 			description:
 				'Perguntas e respostas para CEO, CTO e programadores: o código, a infraestrutura, os custos e a nossa forma de trabalhar.',
 			title: 'Respostas concretas, de acordo com a tua função.',
 			intro:
 				'És CEO, CTO, programador ou levas o projeto sozinho? Encontra as respostas às perguntas mais frequentes sobre o código, a infraestrutura, os custos e a nossa forma de trabalhar. E, se a tua pergunta não estiver aqui, vamos falar disso.',
-			/** The name of the filter by audience, for screen readers. */
 			filter: 'Filtrar por perfil',
-			/** The filter's first choice: every audience. */
 			everyone: 'Todas',
-			/** The name of the search field, for screen readers. */
 			search: 'Pesquisar nas perguntas',
 			searchPlaceholder: 'Pesquisar: testes, custos, acessos…',
 			noResults: 'Nenhuma pergunta com essas palavras.',
-			/** The name of the index of audiences, for screen readers. */
 			index: 'Perfis',
 			notFound: 'Não encontras a tua resposta?',
-			/** Under «notFound», before the button. */
 			notFoundText: 'Marca uma conversa gratuita e vamos falar do teu contexto.',
 		},
 	},
 };
-
-export type Dictionary = typeof pt;

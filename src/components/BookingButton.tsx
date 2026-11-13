@@ -1,7 +1,7 @@
 import { values } from '../config/values';
 
 interface Props {
-	/** "Book a conversation", always with the same text in each language. */
+	/** "Book a conversation", or the call that ends the section it is in. */
 	text: string;
 	/** Smaller, for the header, but always with the 44×44 px touch target. */
 	compact?: boolean;

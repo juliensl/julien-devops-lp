@@ -1,11 +1,10 @@
-// Translated from Portuguese, to be reviewed by the intern before the Commercial launch (#75).
-// The Designation is the one Julien approved.
-import type { Dictionary } from './pt';
+// Typed from French, the Reference language. A text still in French waits for its translation.
+import type { Dictionary } from './fr';
 
-const promise = 'In 30 days, I deliver the DevOps infrastructure you need to scale your SaaS.';
+const promise = 'Moins de bugs. Un code plus propre. Un SaaS prêt à grandir.';
 
 export const en: Dictionary = {
-	designation: 'Freelance DevOps consultant for SaaS',
+	designation: 'Consultant DevOps',
 	promise,
 	bookButton: 'Book a conversation',
 	header: {
@@ -129,49 +128,40 @@ export const en: Dictionary = {
 		back: 'Back to the home page',
 	},
 	homePage: {
-		description: `${promise} For CTOs of growing SaaS companies.`,
+		description: `${promise} J'automatise la qualité du code, je réduis la dette technique et je construis une infrastructure capable de suivre ta croissance.`,
 		hero: {
 			support:
-				'Bugs get caught in the pull request, not by your customers. And your devs get back to coding instead of doing support.',
-			note: '45-min conversation on Google Meet, free of charge.',
+				"J'automatise la qualité du code, je réduis la dette technique et je construis une infrastructure capable de suivre ta croissance. Tes développeurs passent moins de temps à corriger les problèmes, et plus de temps à faire évoluer ton produit.",
+			note: '45 min sur Google Meet. Gratuit et sans engagement.',
 		},
 		whoItsFor: {
-			title: "Who it's for",
-			profile: [
-				'A web or mobile SaaS, already launched.',
-				'Growing from tens or hundreds to thousands of recurring users.',
-				'A team of usually 5 to 20 people, with at least 3 devs.',
+			title: 'Pour qui ?',
+			intro:
+				"Tu développes un SaaS ou une application web, seul ou avec une équipe ? Je m'adapte à ton stade de développement, à ton organisation et à tes contraintes techniques.",
+			situations: [
+				'Tu prépares un lancement et tu veux partir sur des bases solides.',
+				'Ton produit est déjà en ligne et les bugs ou la maintenance ralentissent les nouveautés.',
+				'Tu anticipes une montée en charge et tu veux éviter les mauvaises surprises.',
 			],
-			notLaunchedYet: {
-				text: "Haven't launched your SaaS yet? You can still book the conversation.",
-				link: 'book the conversation',
-			},
+			button: 'Parlons de ton projet',
 		},
 		todayAndAfter: {
-			title: 'Today, and after.',
-			todayTitle: 'Today',
+			title: "Aujourd'hui… et après.",
+			todayTitle: "Aujourd'hui",
 			today: [
-				{
-					title: 'One feature breaks another.',
-					text: "Regressions have become normal, and it's your customers who find them.",
-				},
-				{ title: 'Your devs do support.', text: 'They answer tickets instead of coding.' },
-				{
-					title: 'Testing is done by hand.',
-					text: "Whole days of it, by people for whom it isn't the job.",
-				},
-				{
-					title: 'Nobody knows if it will hold.',
-					text: "It works with today's customers. With many more, nobody can say.",
-				},
+				'Une nouvelle fonctionnalité en casse une autre, et les clients découvrent les régressions.',
+				'Tes développeurs passent trop de temps sur les bugs, les correctifs et le support.',
+				"Le code obsolète s'accumule, les dépendances vieillissent et les performances se dégradent.",
+				'Les tests et les déploiements reposent encore sur des vérifications manuelles.',
+				"Tu manques de visibilité sur l'état réel de ton application et sur sa capacité à monter en charge.",
 			],
-			afterTitle: 'After',
+			afterTitle: 'Après',
 			after: [
-				'Bugs get caught in the pull request, not by your customers.',
-				'Your devs get back the days they spent on support.',
-				'Your team grows without fear of a junior breaking production.',
-				'You add features without breaking others.',
-				'The infrastructure keeps up with the load, and you see problems before your customers do.',
+				'Les régressions sont détectées plus tôt grâce aux contrôles automatisés.',
+				'Les corrections et les optimisations prioritaires rendent ton code plus maintenable.',
+				'Une partie de la maintenance répétitive est automatisée, pour libérer du temps de développement.',
+				"Les déploiements sont plus prévisibles et l'infrastructure s'adapte à la charge prévue.",
+				"Tu disposes d'indicateurs et d'alertes pour détecter les incidents au plus tôt.",
 			],
 		},
 		services: {

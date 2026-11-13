@@ -1,29 +1,79 @@
 // The home page sections that need no JavaScript (#63): "Para quem é", "Hoje, e depois", the
 // Guarantee, "Quem é o Julien" and the final CTA.
-import { expect, test, type Locator } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import { inEachBuild } from './builds';
 import { LANGUAGES, LINKEDIN, NAME, BOOKING_PAGE, type Language } from './expected';
 
 // The expected values, taken from the spec (#54). In Portuguese, the approved texts are exactly as
 // the spec gives them; French and English are translations the intern reviews before the Commercial
 // launch (#75). The booking page is in French: the notice only appears in the other languages.
+// The new offer's texts are Julien's, in French; English keeps them until it is translated.
+const FRENCH = {
+	whoItsFor: {
+		title: 'Pour qui ?',
+		intro:
+			"Tu développes un SaaS ou une application web, seul ou avec une équipe ? Je m'adapte à ton stade de développement, à ton organisation et à tes contraintes techniques.",
+		situations: [
+			'Tu prépares un lancement et tu veux partir sur des bases solides.',
+			'Ton produit est déjà en ligne et les bugs ou la maintenance ralentissent les nouveautés.',
+			'Tu anticipes une montée en charge et tu veux éviter les mauvaises surprises.',
+		],
+		button: 'Parlons de ton projet',
+	},
+	todayAndAfter: {
+		title: "Aujourd'hui… et après.",
+		lists: ["Aujourd'hui", 'Après'],
+		items: [
+			[
+				'Une nouvelle fonctionnalité en casse une autre, et les clients découvrent les régressions.',
+				'Tes développeurs passent trop de temps sur les bugs, les correctifs et le support.',
+				"Le code obsolète s'accumule, les dépendances vieillissent et les performances se dégradent.",
+				'Les tests et les déploiements reposent encore sur des vérifications manuelles.',
+				"Tu manques de visibilité sur l'état réel de ton application et sur sa capacité à monter en charge.",
+			],
+			[
+				'Les régressions sont détectées plus tôt grâce aux contrôles automatisés.',
+				'Les corrections et les optimisations prioritaires rendent ton code plus maintenable.',
+				'Une partie de la maintenance répétitive est automatisée, pour libérer du temps de développement.',
+				"Les déploiements sont plus prévisibles et l'infrastructure s'adapte à la charge prévue.",
+				"Tu disposes d'indicateurs et d'alertes pour détecter les incidents au plus tôt.",
+			],
+		],
+	},
+};
+
 const EXPECTED = {
 	pt: {
 		whoItsFor: {
-			title: 'Para quem é',
-			profile: [
-				'Um SaaS web ou mobile, já lançado.',
-				'A passar de dezenas ou centenas para milhares de utilizadores recorrentes.',
-				'Uma equipa de normalmente 5 a 20 pessoas, com pelo menos 3 devs.',
+			title: 'Para quem é?',
+			intro:
+				'Desenvolves um SaaS ou uma aplicação web, sozinho ou com uma equipa? Adapto-me à tua fase de desenvolvimento, à tua organização e às tuas restrições técnicas.',
+			situations: [
+				'Estás a preparar um lançamento e queres começar com bases sólidas.',
+				'O teu produto já está online e os bugs ou a manutenção atrasam as novidades.',
+				'Prevês um aumento de carga e queres evitar surpresas desagradáveis.',
 			],
-			notLaunchedYet: {
-				text: 'O teu SaaS ainda não foi lançado? Podes marcar a Conversa na mesma.',
-				link: 'marcar a Conversa',
-			},
+			button: 'Vamos falar do teu projeto',
 		},
 		todayAndAfter: {
-			title: 'Hoje, e depois.',
+			title: 'Hoje… e depois.',
 			lists: ['Hoje', 'Depois'],
+			items: [
+				[
+					'Uma nova funcionalidade parte outra, e os clientes descobrem as regressões.',
+					'Os teus programadores passam demasiado tempo com bugs, correções e suporte.',
+					'O código obsoleto acumula-se, as dependências envelhecem e o desempenho degrada-se.',
+					'Os testes e os deploys ainda dependem de verificações manuais.',
+					'Falta-te visibilidade sobre o estado real da tua aplicação e sobre a sua capacidade de suportar mais carga.',
+				],
+				[
+					'As regressões são detetadas mais cedo graças às verificações automáticas.',
+					'As correções e as otimizações prioritárias tornam o teu código mais fácil de manter.',
+					'Uma parte da manutenção repetitiva é automatizada, para libertar tempo de desenvolvimento.',
+					'Os deploys são mais previsíveis e a infraestrutura adapta-se à carga prevista.',
+					'Tens indicadores e alertas para detetar os incidentes o mais cedo possível.',
+				],
+			],
 		},
 		guarantee: {
 			title: 'Disponível pelo menos 99 % do tempo, em cada mês.',
@@ -56,22 +106,8 @@ const EXPECTED = {
 		},
 	},
 	fr: {
-		whoItsFor: {
-			title: 'Pour qui',
-			profile: [
-				'Un SaaS web ou mobile, déjà lancé.',
-				"Qui passe de quelques dizaines ou centaines à plusieurs milliers d'utilisateurs récurrents.",
-				'Une équipe de 5 à 20 personnes en général, dont au moins 3 devs.',
-			],
-			notLaunchedYet: {
-				text: "Ton SaaS n'est pas encore lancé ? Tu peux réserver l'Échange quand même.",
-				link: "réserver l'Échange",
-			},
-		},
-		todayAndAfter: {
-			title: "Aujourd'hui, et après.",
-			lists: ["Aujourd'hui", 'Après'],
-		},
+		whoItsFor: FRENCH.whoItsFor,
+		todayAndAfter: FRENCH.todayAndAfter,
 		guarantee: {
 			title: 'Disponible au moins 99 % du temps, chaque mois.',
 			text: "En 30 jours, je livre l'infrastructure. Pendant les 3 mois suivants, elle est disponible au moins 99 % du temps chaque mois. Sinon, je continue à travailler sans facturer jusqu'à y arriver.",
@@ -105,22 +141,8 @@ const EXPECTED = {
 		},
 	},
 	en: {
-		whoItsFor: {
-			title: "Who it's for",
-			profile: [
-				'A web or mobile SaaS, already launched.',
-				'Growing from tens or hundreds to thousands of recurring users.',
-				'A team of usually 5 to 20 people, with at least 3 devs.',
-			],
-			notLaunchedYet: {
-				text: "Haven't launched your SaaS yet? You can still book the conversation.",
-				link: 'book the conversation',
-			},
-		},
-		todayAndAfter: {
-			title: 'Today, and after.',
-			lists: ['Today', 'After'],
-		},
+		whoItsFor: FRENCH.whoItsFor,
+		todayAndAfter: FRENCH.todayAndAfter,
 		guarantee: {
 			title: 'Available at least 99% of the time, every month.',
 			text: "In 30 days, I deliver the infrastructure. For the next 3 months, it is available at least 99% of the time every month. If it isn't, I keep working without billing until it is.",
@@ -183,47 +205,37 @@ inEachBuild((build) => {
 				await expect(whoItsForSection.getByRole('link', { name: button })).toHaveCount(0);
 			});
 
-			test(`"${whoItsFor.title}" shows only the profile, with the sentence for those not launched yet below the first statement`, async ({
+			test(`"${whoItsFor.title}": the introduction, the three situations and "${whoItsFor.button}", which leads to the booking page`, async ({
 				page,
 			}) => {
 				await page.goto(prefix);
 				const section = page.getByRole('region', { name: whoItsFor.title });
-				await expect(section.getByRole('list')).toHaveCount(1);
 				await expect(section.getByRole('heading')).toHaveCount(1);
-				const items = section.getByRole('listitem');
-				await expect(items).toHaveCount(whoItsFor.profile.length);
-				for (const [k, statement] of whoItsFor.profile.entries()) {
-					await expect(items.nth(k).getByText(statement, { exact: true })).toBeVisible();
-				}
+				await expect(section.getByText(whoItsFor.intro, { exact: true })).toBeVisible();
+				await expect(section.getByRole('list')).toHaveCount(1);
+				await expect(section.getByRole('listitem')).toHaveText(whoItsFor.situations);
 
-				// In the first item, below its statement and in smaller type.
-				const statement = items.first().getByText(whoItsFor.profile[0], { exact: true });
-				const sentence = items.first().getByText(whoItsFor.notLaunchedYet.text, { exact: true });
-				await expect(sentence).toBeVisible();
-				const above = (await statement.boundingBox())!;
-				expect((await sentence.boundingBox())!.y).toBeGreaterThanOrEqual(above.y + above.height);
-				const fontSize = (text: Locator) =>
-					text.evaluate((e) => parseFloat(getComputedStyle(e).fontSize));
-				expect(await fontSize(sentence)).toBeLessThan(await fontSize(statement));
-
-				// Only its words lead to the booking page, in the same tab.
+				// One button, below the situations, to the booking page in the same tab.
 				const link = section.getByRole('link');
 				await expect(link).toHaveCount(1);
-				await expect(sentence.getByRole('link')).toHaveText(whoItsFor.notLaunchedYet.link);
+				await expect(link).toHaveAccessibleName(whoItsFor.button);
 				await expect(link).toHaveAttribute('href', BOOKING_PAGE);
 				await expect(link).not.toHaveAttribute('target');
+				const list = (await section.getByRole('list').boundingBox())!;
+				expect((await link.boundingBox())!.y).toBeGreaterThanOrEqual(list.y + list.height);
 			});
 
-			test(`"${todayAndAfter.title}": only what the CTO lives with and the change, with no numbers`, async ({
+			test(`"${todayAndAfter.title}": five sentences on each side, with no titles and no numbers`, async ({
 				page,
 			}) => {
 				await page.goto(prefix);
 				const section = page.getByRole('region', { name: todayAndAfter.title });
 				await expect(section.getByRole('list')).toHaveCount(todayAndAfter.lists.length);
-				for (const list of todayAndAfter.lists) {
+				for (const [k, list] of todayAndAfter.lists.entries()) {
 					const items = section.getByRole('list', { name: list }).getByRole('listitem');
-					await expect(items.first(), list).toBeVisible();
+					await expect(items, list).toHaveText(todayAndAfter.items[k]);
 				}
+				await expect(section.locator('strong, b')).toHaveCount(0);
 				expect(await section.textContent()).not.toMatch(/\d/);
 			});
 
