@@ -35,7 +35,7 @@ With Node 24 (`nvm use` reads `.nvmrc`):
 - `src/content/legal/<language>/`: the Legal information (`legal.md`) and the Privacy policy (`privacy.md`), in Markdown. The shared values go in as placeholders, such as `{email}` or `{legal.siret}`: an unknown one fails the build, and a `null` value (the VAT number until it is active) removes its line. The build also fails when a published language lacks one of the two pages.
 - `src/config/audiences.ts`: the four Audiences of «Os teus desafios». Their ids are the anchors of the questions page (`/pt/questions/#cto`), which the header submenu and the home page link to.
 - `src/config/testimonials.ts`: the Testimonials, with each author's written authorisation per language and the approval of each translation. A Testimonial only shows in a language its author authorised and, in English and Portuguese, whose translation the author approved. With none, the section disappears.
-- `src/i18n/`: the texts, one file per language. Portuguese is the Reference language; French and English are typed from it.
+- `src/i18n/`: the texts, one file per language. French is the Reference language; Portuguese and English are typed from it.
 - `src/localized-pages/<language>/`: one thin page file per page and per language. Only the pages of published languages are generated. Pages without a language stay in `src/pages/`. A new page only shows up in `npm run dev` after a restart.
 - `src/pages/404.astro`: the 404 page, in English only and always with `noindex`. `astro preview` and `.htaccess` show it for any address that does not exist.
 - `src/layouts/Base.astro`: the `<head>` of every page: `title`, `description`, `canonical`, `hreflang`, Open Graph, `noindex` and the commit.

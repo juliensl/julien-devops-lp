@@ -2,6 +2,8 @@
 // The 5 Steps, from the Conversation to Delivery and handover: what happens after booking.
 // On desktop, the section stays pinned while the scroll goes through the Steps, about half a screen
 // each. On mobile, with reduced motion and without JS, it is a list read straight through.
+import { withNonBreakingSpaces } from '../lib/spaces';
+
 interface Props {
 	title: string;
 	steps: { name: string; sentence: string }[];
@@ -19,7 +21,7 @@ const { title, steps } = Astro.props;
 	<div data-stage>
 		<div class="page-width grid gap-12 py-[clamp(5rem,11vw,9rem)]">
 			<h2 id="steps-title" data-reveal class="text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">
-				{title}
+				{withNonBreakingSpaces(title)}
 			</h2>
 			{/* On mobile, one Step per row, with the number on the left. From 961 px, five
 			    staggered columns, each one a little lower than the one before. */}
@@ -37,9 +39,11 @@ const { title, steps } = Astro.props;
 							{k + 1}
 						</span>
 						<strong class="font-semibold min-[961px]:border-t min-[961px]:border-line-strong min-[961px]:pt-3">
-							{name}
+							{withNonBreakingSpaces(name)}
 						</strong>
-						<span class="text-[0.9375rem] text-foreground-secondary">{sentence}</span>
+						<span class="text-[0.9375rem] text-foreground-secondary">
+							{withNonBreakingSpaces(sentence)}
+						</span>
 					</li>
 				))}
 			</ol>

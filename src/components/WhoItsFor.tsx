@@ -1,48 +1,44 @@
-import { values } from '../config/values';
 import { withNonBreakingSpaces } from '../lib/spaces';
+import BookingButton from './BookingButton';
 
 interface Props {
 	title: string;
-	/** The profile, in 3 statements: the SaaS, the growth and the team. */
-	profile: string[];
-	/** For the CTO of a SaaS that hasn't launched yet, below the first statement: `link`, a part of `text`, leads to the booking page. */
-	notLaunchedYet: { text: string; link: string };
+	intro: string;
+	/** The situations the service is for, before or after the launch. */
+	situations: string[];
+	/** The text of the booking button that ends the section. */
+	button: string;
 }
 
-/** Right after the Hero: the CTO sees whether the service is for them, and a CTO not launched yet can still book. */
-export default function WhoItsFor({ title, profile, notLaunchedYet }: Props) {
-	const [beforeLink, afterLink] = notLaunchedYet.text.split(notLaunchedYet.link);
+/** Right after the Hero: the visitor sees whether the service is for them, and can book from there. */
+export default function WhoItsFor({ title, intro, situations, button }: Props) {
 	return (
 		<section
 			aria-labelledby="who-its-for-title"
 			className="page-width grid gap-10 py-[clamp(5rem,11vw,9rem)]"
 		>
-			<h2 id="who-its-for-title" data-reveal className="label font-body">
-				{title}
-			</h2>
+			<div className="grid gap-5">
+				<h2 id="who-its-for-title" data-reveal className="label font-body">
+					{withNonBreakingSpaces(title)}
+				</h2>
+				<p data-reveal className="max-w-3xl text-xl text-foreground-secondary">
+					{withNonBreakingSpaces(intro)}
+				</p>
+			</div>
 			<ul className="grid gap-x-12 gap-y-8 lg:grid-cols-3">
-				{profile.map((statement, k) => (
+				{situations.map((situation) => (
 					<li
-						key={statement}
+						key={situation}
 						data-reveal
-						className="grid content-start gap-4 border-t-2 border-green pt-5"
+						className="border-t-2 border-green pt-5 font-heading text-[clamp(1.375rem,2.2vw,1.75rem)] leading-tight"
 					>
-						<p className="font-heading text-[clamp(1.5rem,2.6vw,2rem)] leading-tight">
-							{withNonBreakingSpaces(statement)}
-						</p>
-						{k === 0 && (
-							<p className="text-lg text-purple">
-								{withNonBreakingSpaces(beforeLink)}
-								{/* A plain link to the booking page, in the same tab, like the booking button. */}
-								<a href={values.bookingPage} className="underline underline-offset-3">
-									{notLaunchedYet.link}
-								</a>
-								{withNonBreakingSpaces(afterLink)}
-							</p>
-						)}
+						{withNonBreakingSpaces(situation)}
 					</li>
 				))}
 			</ul>
+			<div data-reveal>
+				<BookingButton text={button} />
+			</div>
 		</section>
 	);
 }

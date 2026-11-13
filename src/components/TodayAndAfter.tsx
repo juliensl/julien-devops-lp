@@ -4,8 +4,8 @@ import { withNonBreakingSpaces } from '../lib/spaces';
 interface Props {
 	title: string;
 	todayTitle: string;
-	/** What the CTO lives with today: the problem, in bold, and what it means. */
-	today: { title: string; text: string }[];
+	/** What the team lives with today. */
+	today: string[];
 	afterTitle: string;
 	after: string[];
 }
@@ -21,16 +21,13 @@ export default function TodayAndAfter({ title, todayTitle, today, afterTitle, af
 			className="page-width grid gap-12 py-[clamp(5rem,11vw,9rem)]"
 		>
 			<h2 id="today-title" data-reveal className="text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">
-				{title}
+				{withNonBreakingSpaces(title)}
 			</h2>
 			<div className="grid gap-x-20 gap-y-14 lg:grid-cols-2">
 				<List id="today-now" title={todayTitle} titleClass="text-foreground-secondary">
 					{today.map((problem) => (
-						<li key={problem.title} className={`${itemClass} text-foreground-secondary`}>
-							<strong className="font-semibold text-foreground">
-								{withNonBreakingSpaces(problem.title)}
-							</strong>{' '}
-							{withNonBreakingSpaces(problem.text)}
+						<li key={problem} className={`${itemClass} text-foreground-secondary`}>
+							{withNonBreakingSpaces(problem)}
 						</li>
 					))}
 				</List>
