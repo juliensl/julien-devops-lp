@@ -115,13 +115,17 @@ const APPROVED: Record<AudienceId, [question: string, answer: string][]> = {
 	],
 };
 
-// «Os teus desafios», «Não encontras a tua pergunta?» and the audiences come from the spec (#54); the
-// audience names, from prototype v3. French and English are translations the intern reviews before the
-// Commercial launch (#75).
+// The page's title, introduction, description and closing lines are Julien's French, translated into
+// Portuguese; English shows the French until it is translated.
 const EXPECTED: Record<
 	Language,
 	{
 		menu: string;
+		/** The page's h1. */
+		title: string;
+		intro: string;
+		/** For search engines. */
+		description: string;
 		audiences: Record<AudienceId, string>;
 		/** The filter's choices: every audience, then each one. */
 		filter: Record<'all' | AudienceId, string>;
@@ -132,12 +136,19 @@ const EXPECTED: Record<
 		/** The last link of the header submenu. */
 		all: string;
 		notFound: string;
+		/** The line under «notFound», before the button. */
+		notFoundText: string;
 		/** The title of the home page's Questions section. */
 		homeTitle: string;
 	}
 > = {
 	pt: {
 		menu: 'Os teus desafios',
+		title: 'Respostas concretas, de acordo com a tua função.',
+		intro:
+			'És CEO, CTO, programador ou levas o projeto sozinho? Encontra as respostas às perguntas mais frequentes sobre o código, a infraestrutura, os custos e a nossa forma de trabalhar. E, se a tua pergunta não estiver aqui, vamos falar disso.',
+		description:
+			'Perguntas e respostas para CEO, CTO e programadores: o código, a infraestrutura, os custos e a nossa forma de trabalhar.',
 		audiences: {
 			general: 'Perguntas gerais',
 			cto: 'Para CTO',
@@ -148,11 +159,17 @@ const EXPECTED: Record<
 		questions: 'perguntas',
 		index: 'Perfis',
 		all: 'Ver todas as perguntas',
-		notFound: 'Não encontras a tua pergunta?',
+		notFound: 'Não encontras a tua resposta?',
+		notFoundText: 'Marca uma conversa gratuita e vamos falar do teu contexto.',
 		homeTitle: 'O essencial, antes da Conversa.',
 	},
 	fr: {
 		menu: 'Tes défis',
+		title: 'Des réponses concrètes, selon ton rôle.',
+		intro:
+			"Tu es CEO, CTO, développeur ou tu portes le projet seul ? Retrouve les réponses aux questions les plus fréquentes sur le code, l'infrastructure, les coûts et notre façon de travailler. Et si ta question n'est pas ici, parlons-en.",
+		description:
+			"Questions et réponses pour les CEO, les CTO et les développeurs : le code, l'infrastructure, les coûts et notre façon de travailler.",
 		audiences: {
 			general: 'Questions générales',
 			cto: 'Pour les CTO',
@@ -169,11 +186,17 @@ const EXPECTED: Record<
 		questions: 'questions',
 		index: 'Profils',
 		all: 'Voir toutes les questions',
-		notFound: 'Tu ne trouves pas ta question ?',
+		notFound: 'Tu ne trouves pas ta réponse ?',
+		notFoundText: 'Réserve un échange gratuit et parlons de ton contexte.',
 		homeTitle: "L'essentiel, avant l'Échange.",
 	},
 	en: {
 		menu: 'Your challenges',
+		title: 'Des réponses concrètes, selon ton rôle.',
+		intro:
+			"Tu es CEO, CTO, développeur ou tu portes le projet seul ? Retrouve les réponses aux questions les plus fréquentes sur le code, l'infrastructure, les coûts et notre façon de travailler. Et si ta question n'est pas ici, parlons-en.",
+		description:
+			"Questions et réponses pour les CEO, les CTO et les développeurs : le code, l'infrastructure, les coûts et notre façon de travailler.",
 		audiences: {
 			general: 'General questions',
 			cto: 'For CTOs',
@@ -184,7 +207,8 @@ const EXPECTED: Record<
 		questions: 'questions',
 		index: 'Roles',
 		all: 'See all questions',
-		notFound: "Can't find your question?",
+		notFound: 'Tu ne trouves pas ta réponse ?',
+		notFoundText: 'Réserve un échange gratuit et parlons de ton contexte.',
 		homeTitle: 'The essentials, before the Conversation.',
 	},
 };
@@ -205,8 +229,19 @@ const answerTo = (question: string) =>
 inEachBuild((build) => {
 	for (const language of build.phase.publishedLanguages) {
 		const path = questionsPath(language);
-		const { menu, audiences, filter, questions, index, all, notFound, homeTitle } =
-			EXPECTED[language];
+		const {
+			menu,
+			title,
+			intro,
+			audiences,
+			filter,
+			questions,
+			index,
+			all,
+			notFound,
+			notFoundText,
+			homeTitle,
+		} = EXPECTED[language];
 		const home = LANGUAGES[language].prefix;
 
 		test.describe(path, () => {
@@ -219,8 +254,15 @@ inEachBuild((build) => {
 				await page.goto(path);
 				await expect(page).toHaveTitle(`${menu} · ${NAME}`);
 				const description = page.locator('meta[name="description"]');
-				await expect(description).toHaveAttribute('content', /\S/);
+				await expect(description).toHaveAttribute('content', EXPECTED[language].description);
 				await expect(description).not.toHaveAttribute('content', homeDescription!);
+			});
+
+			test('opens with its title and introduction', async ({ page }) => {
+				await page.goto(path);
+				const main = page.getByRole('main');
+				await expect(main.getByRole('heading', { level: 1 })).toHaveText(title);
+				await expect(main.getByText(intro, { exact: true })).toBeVisible();
 			});
 
 			test('has the four audiences, each with its anchor and its questions in <details>', async ({
@@ -240,6 +282,9 @@ inEachBuild((build) => {
 				await page.goto(path);
 				const main = page.getByRole('main');
 				await expect(main.getByRole('heading').last()).toHaveText(notFound);
+				await expect(
+					main.getByRole('region', { name: notFound }).getByText(notFoundText, { exact: true }),
+				).toBeVisible();
 				const last = main.getByRole('link').last();
 				await expect(last).toHaveAccessibleName(LANGUAGES[language].button);
 				await expect(last).toHaveAttribute('href', BOOKING_PAGE);

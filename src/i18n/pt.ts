@@ -647,10 +647,10 @@ export const pt = {
 		} satisfies Record<AudienceId, Audience>,
 		page: {
 			description:
-				'Perguntas e respostas para CTO, CEO e equipas técnicas de SaaS: prazos, custos, acessos, riscos e ferramentas.',
-			title: 'Respostas para cada perfil.',
+				'Perguntas e respostas para CEO, CTO e programadores: o código, a infraestrutura, os custos e a nossa forma de trabalhar.',
+			title: 'Respostas concretas, de acordo com a tua função.',
 			intro:
-				'Escolhe o teu perfil ou pesquisa uma palavra. Se a tua pergunta não estiver aqui, faz-ma na Conversa.',
+				'És CEO, CTO, programador ou levas o projeto sozinho? Encontra as respostas às perguntas mais frequentes sobre o código, a infraestrutura, os custos e a nossa forma de trabalhar. E, se a tua pergunta não estiver aqui, vamos falar disso.',
 			/** The name of the filter by audience, for screen readers. */
 			filter: 'Filtrar por perfil',
 			/** The filter's first choice: every audience. */
@@ -661,7 +661,9 @@ export const pt = {
 			noResults: 'Nenhuma pergunta com essas palavras.',
 			/** The name of the index of audiences, for screen readers. */
 			index: 'Perfis',
-			notFound: 'Não encontras a tua pergunta?',
+			notFound: 'Não encontras a tua resposta?',
+			/** Under «notFound», before the button. */
+			notFoundText: 'Marca uma conversa gratuita e vamos falar do teu contexto.',
 		},
 	},
 };

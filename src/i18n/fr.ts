@@ -584,17 +584,18 @@ export const fr: Dictionary = {
 		},
 		page: {
 			description:
-				'Questions et réponses pour les CTO, les CEO et les équipes techniques de SaaS : délais, coûts, accès, risques et outils.',
-			title: 'Des réponses pour chaque profil.',
+				"Questions et réponses pour les CEO, les CTO et les développeurs : le code, l'infrastructure, les coûts et notre façon de travailler.",
+			title: 'Des réponses concrètes, selon ton rôle.',
 			intro:
-				"Choisis ton profil ou cherche un mot. Si ta question n'y est pas, pose-la-moi pendant l'Échange.",
+				"Tu es CEO, CTO, développeur ou tu portes le projet seul ? Retrouve les réponses aux questions les plus fréquentes sur le code, l'infrastructure, les coûts et notre façon de travailler. Et si ta question n'est pas ici, parlons-en.",
 			filter: 'Filtrer par profil',
 			everyone: 'Toutes',
 			search: 'Chercher dans les questions',
 			searchPlaceholder: 'Chercher : tests, coûts, accès…',
 			noResults: 'Aucune question avec ces mots.',
 			index: 'Profils',
-			notFound: 'Tu ne trouves pas ta question ?',
+			notFound: 'Tu ne trouves pas ta réponse ?',
+			notFoundText: 'Réserve un échange gratuit et parlons de ton contexte.',
 		},
 	},
 };

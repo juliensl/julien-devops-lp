@@ -131,9 +131,14 @@ const total = AUDIENCES.reduce((n, id) => n + audiences[id].questions.length, 0)
 				data-reveal
 				class="flex flex-wrap items-center justify-between gap-6 border-t-2 border-green pt-10"
 			>
-				<h2 id="not-found-title" class="text-[clamp(1.7rem,3.2vw,2.3rem)] leading-[1.1]">
-					{withNonBreakingSpaces(page.notFound)}
-				</h2>
+				<div class="grid gap-2">
+					<h2 id="not-found-title" class="text-[clamp(1.7rem,3.2vw,2.3rem)] leading-[1.1]">
+						{withNonBreakingSpaces(page.notFound)}
+					</h2>
+					<p class="text-lg text-foreground-secondary">
+						{withNonBreakingSpaces(page.notFoundText)}
+					</p>
+				</div>
 				<BookingButton text={t.bookButton} />
 			</div>
 		</section>

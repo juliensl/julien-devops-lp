@@ -567,17 +567,18 @@ export const en: Dictionary = {
 		},
 		page: {
 			description:
-				'Questions and answers for SaaS CTOs, CEOs and tech teams: timelines, costs, access, risks and tools.',
-			title: 'Answers for every role.',
+				"Questions et réponses pour les CEO, les CTO et les développeurs : le code, l'infrastructure, les coûts et notre façon de travailler.",
+			title: 'Des réponses concrètes, selon ton rôle.',
 			intro:
-				"Pick your role or search for a word. If your question isn't here, ask me in the Conversation.",
+				"Tu es CEO, CTO, développeur ou tu portes le projet seul ? Retrouve les réponses aux questions les plus fréquentes sur le code, l'infrastructure, les coûts et notre façon de travailler. Et si ta question n'est pas ici, parlons-en.",
 			filter: 'Filter by role',
 			everyone: 'All',
 			search: 'Search the questions',
 			searchPlaceholder: 'Search: tests, costs, access…',
 			noResults: 'No questions with those words.',
 			index: 'Roles',
-			notFound: "Can't find your question?",
+			notFound: 'Tu ne trouves pas ta réponse ?',
+			notFoundText: 'Réserve un échange gratuit et parlons de ton contexte.',
 		},
 	},
 };
