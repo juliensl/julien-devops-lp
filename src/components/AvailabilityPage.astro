@@ -64,7 +64,7 @@ const first = {
 			</div>
 
 			<div class="grid gap-x-12 gap-y-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
-				{/* Without JS a choice would change nothing: CSS hides them, and the page shows the first one. */}
+				{/* Without JS a choice would change nothing: CSS hides them, and a table shows every level. */}
 				<form
 					data-reveal
 					class="grid content-start gap-8 border-t border-line-strong pt-6 noscript:hidden"
@@ -99,7 +99,7 @@ const first = {
 				</form>
 
 				<div data-reveal class="grid content-start gap-6 border-l-2 border-green pl-6">
-					<div role="group" aria-labelledby="result-title" class="grid gap-6">
+					<div role="group" aria-labelledby="result-title" class="grid gap-6 noscript:hidden">
 						<h3 id="result-title" class="text-xl">
 							{calculator.result}
 						</h3>
@@ -129,8 +129,34 @@ const first = {
 						</div>
 					</div>
 
+					<table class="hidden text-sm noscript:table max-[360px]:text-xs">
+						<caption class="mb-4 text-start text-xl">{calculator.result}</caption>
+						<thead class="text-foreground-secondary">
+							<tr>
+								<th scope="col">{calculator.objective}</th>
+								<th scope="col">
+									{calculator.perMonth} ({inDays(FIRST_MONTH)})
+								</th>
+								<th scope="col">
+									{calculator.perYear} ({inDays(YEAR)})
+								</th>
+							</tr>
+						</thead>
+						<tbody class="tabular-nums">
+							{LEVEL_IDS.map((id) => (
+								<tr>
+									<th scope="row" class="font-semibold text-green">
+										{percent(LEVELS[id])}
+									</th>
+									<td>{maxDowntime(LEVELS[id], FIRST_MONTH, calculator.about)}</td>
+									<td>{maxDowntime(LEVELS[id], YEAR, calculator.about)}</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+
 					{/* What screen readers hear once the choice has changed. */}
-					<p role="status" class="sr-only">
+					<p role="status" class="sr-only noscript:hidden">
 						{calculator.objective}, <span data-figure="objective">{first.objective}</span>.{' '}
 						{calculator.perMonth} (<span data-figure="days">{first.days}</span>),{' '}
 						<span data-figure="month">{first.month}</span>. {calculator.perYear} ({inDays(YEAR)}),{' '}
@@ -287,6 +313,22 @@ const first = {
 		line-height: 1;
 		color: var(--color-green);
 		font-variant-numeric: tabular-nums;
+	}
+
+	/* The table that replaces the calculator without JS. */
+	table th,
+	table td {
+		padding: 0.5rem 0.75rem 0.5rem 0;
+		text-align: start;
+		vertical-align: top;
+		border-top: 1px solid var(--color-line);
+	}
+	table :is(th, td):last-child {
+		padding-right: 0;
+	}
+	thead th {
+		font-weight: 400;
+		border-top: 0;
 	}
 
 	.result {

@@ -10,7 +10,7 @@ export const LEVEL_IDS = Object.keys(LEVELS) as LevelId[];
 /** The months the calculator offers, in days. */
 export const MONTHS = [28, 30, 31];
 
-/** What the calculator opens with, and what the page shows without JS. */
+/** What the calculator opens with. Without JS, the page shows every level over FIRST_MONTH. */
 export const FIRST_LEVEL: LevelId = 'reinforced';
 export const FIRST_MONTH = 30;
 
