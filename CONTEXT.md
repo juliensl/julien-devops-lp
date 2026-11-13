@@ -1,6 +1,6 @@
 # Julien Laffont's landing page
 
-Page that presents the services of Julien Laffont, a freelance DevOps consultant, and leads CTOs of growing SaaS companies to book a conversation with him.
+Page that presents the services of Julien Laffont, a DevOps consultant, and leads the CTOs and founders of SaaS products and web applications to book a conversation with him.
 
 Issues and PRs are written in Portuguese, so each term also gives its Portuguese name (_Portuguese_).
 
@@ -41,27 +41,27 @@ _Avoid_: event type, event, Calendly link
 ## Service
 
 **Block**:
-Each of the four parts of Julien's service, which the CTO can hire separately or together: CI pipeline and code audit, containerisation, scalable infrastructure, observability.
+Each of the four levers of Julien's service: 1 code audit and CI/CD, 2 code cleanup and optimisation, 3 scalable infrastructure (with containerisation, when it is needed), 4 observability. The CTO can hire one specific need or a complete project; the scope, the priorities and the order of the work are set after the Diagnosis, not by the order of the Blocks.
 _Portuguese_: Bloco
 _Avoid_: module, phase, step (the steps of the collaboration)
 
 **Promise**:
-The page's main sentence: the result Julien delivers to the CTO, and how fast.
+The page's main sentence, in the Hero: what Julien's work brings, with no deadline («Moins de bugs. Un code plus propre. Un SaaS prêt à grandir.»).
 _Portuguese_: Promessa
 _Avoid_: slogan, tagline, short message
 
 **Designation**:
-The short sentence next to Julien's name that says what he does and for whom. There is one per language. It is not the Promise.
+The short phrase next to Julien's name that says what he does: «Consultant DevOps», with no «freelance pour SaaS». There is one per language. It is not the Promise.
 _Portuguese_: Designação
 _Avoid_: title, subtitle, tagline, slogan
 
 **Guarantee**:
-Julien's commitment on the Availability of the infrastructure he delivers, with the conditions the client meets and what Julien does if it fails.
+The three-month technical conformity guarantee after delivery, only for an intervention that covers the four Blocks: Julien fixes a design or configuration defect that comes from his work, under the conditions of the contract. It is not an Availability guarantee, an on-call service or a promise that the application never fails.
 _Portuguese_: Garantia
-_Avoid_: Garantie Sans Régression, Garantie Sans Bug
+_Avoid_: Garantie Sans Régression, Garantie Sans Bug, 99% guarantee
 
 **Availability**:
-The percentage of time the infrastructure delivered by Julien is working, measured month by month.
+The percentage of time the infrastructure works, as an objective chosen with the client and designed for: 99.5%, 99.9%, 99.95% or more. The right level depends on the business, the services used and the budget.
 _Portuguese_: Disponibilidade
 _Avoid_: SLA (the contract between the CTO's SaaS and its users), uptime
 
@@ -76,7 +76,7 @@ _Portuguese_: Diagnóstico
 _Avoid_: audit (the code audit is part of the first Block)
 
 **Intervention proposal**:
-The Step in which Julien, after the Diagnosis, tells the CTO which Blocks he will do, in what timeframe and at what fixed price.
+The Step in which Julien and the CTO, after the Diagnosis, agree on the scope, the priorities, the schedule and the price before the work starts.
 _Portuguese_: Proposta de intervenção
 _Avoid_: quote, devis, commercial proposal
 
@@ -120,7 +120,7 @@ _Portuguese_: Língua por defeito
 _Avoid_: main language
 
 **Reference language**:
-The language in which the texts are written and approved with Julien before being translated: Portuguese. French and English are translations of it. Testimonials are the exception: they start from the author's text, and translations are marked as such.
+The language in which the texts are written and approved with Julien before being translated: French. Julien's French texts are final; Portuguese is a faithful translation, with the same meaning and no added promises, and so is English. Testimonials are the exception: they start from the author's text, and translations are marked as such.
 _Portuguese_: Língua de referência
 _Avoid_: original language
 
