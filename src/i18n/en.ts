@@ -17,6 +17,135 @@ export const en: Dictionary = {
 		pause: 'Pause animation',
 		resume: 'Resume animation',
 	},
+	cloud: {
+		link: 'Choisir son cloud',
+		page: {
+			title: 'Quel cloud choisir pour ton entreprise ?',
+			description:
+				'Le meilleur cloud dépend de ton produit, de ton équipe, de ta croissance, de ton budget et de tes contraintes réglementaires. Compare les fournisseurs selon tes priorités.',
+			intro:
+				'Le meilleur cloud dépend de ton produit, de ton équipe, de ta croissance, de ton budget et de tes contraintes réglementaires. Compare les options selon ton contexte, plutôt que de choisir un fournisseur uniquement sur sa notoriété.',
+			cta: {
+				title: 'Tu hésites entre plusieurs architectures ?',
+				text: 'Parlons de ton projet et comparons les options adaptées à tes contraintes.',
+			},
+		},
+		chart: {
+			title: 'Compare les fournisseurs selon tes priorités',
+			instruction:
+				'Choisis un scénario pour voir les points forts, les limites et les sources officielles de chaque fournisseur.',
+			scenariosLabel: 'Company scenario',
+			scenarios: {
+				beforeLaunch: {
+					name: 'Before launch',
+					description: 'A small team, with no time to run servers.',
+				},
+				growth: {
+					name: 'Growing SaaS',
+					description: 'The product already has customers and the team is growing.',
+				},
+				dataSovereignty: {
+					name: 'Data sovereignty',
+					description:
+						'Data must stay in the EU, with a European provider, or the sector requires SecNumCloud.',
+				},
+				variableLoad: {
+					name: 'Highly variable load',
+					description: 'Strong peaks and quiet periods.',
+				},
+				costControl: {
+					name: 'Maîtrise des coûts',
+					description: 'See and control infrastructure costs as the SaaS grows.',
+				},
+			},
+			criteria: {
+				kubernetes: 'Managed Kubernetes',
+				containers: 'Autoscaling containers',
+				paas: 'PaaS',
+				europeanHeadquarters: 'Headquarters in Europe',
+				secNumCloud: 'SecNumCloud offering',
+				euRegions: 'EU regions',
+				costs: 'Cost visibility and control',
+			},
+			weight: 'weight',
+			opinion: "Julien's opinion",
+			ratings: { consider: 'Worth considering', possible: 'Possible', unsuitable: 'Less suited' },
+			values: { yes: 'Yes', partly: 'Partly', no: 'No' },
+			hint: 'Click a bar to see the facts.',
+			colon: ':',
+			read: 'read on',
+			source: 'Source',
+			sources: 'Sources',
+			outboundTraffic: 'Outbound traffic',
+			legend:
+				'Les résultats sont des repères pour préparer une décision, pas un classement universel. Les critères et leur importance peuvent varier selon le projet. Les données sont datées et les évaluations de pertinence sont indicatives.',
+			footnote:
+				'The facts come from the official pages of the providers and of the ANSSI. The weights of each scenario and the "Cost visibility and control" criterion are Julien\'s opinion.',
+			verified: 'Faits vérifiés le',
+			notes: {
+				aws: {
+					paas: 'App Runner closed to new customers on 30 April 2026.',
+					europeanHeadquarters:
+						'Headquarters in Seattle, USA. In Europe, it announces the AWS European Sovereign Cloud, with one region in Germany.',
+					secNumCloud: "Not in the ANSSI's SecNumCloud catalogue.",
+					euRegions: '6 regions in the EU.',
+					costs:
+						'Costs by account and by tag, with a forecast. Budgets with alerts and automatic actions.',
+				},
+				googleCloud: {
+					paas: 'Cloud Run deploys from source code or from a Git repository.',
+					europeanHeadquarters: 'Headquarters in Mountain View, USA.',
+					secNumCloud:
+						"Thales's offering, built on Google Cloud technology, qualified since 17 December 2025 in Thales's name.",
+					euRegions: '11 regions in the EU.',
+					costs:
+						'Costs by project and by label, with a forecast. Budgets with alerts and caps that stop some services.',
+				},
+				infomaniak: {
+					containers: 'No serverless containers: Jelastic Cloud scales Docker containers.',
+					paas: 'Deploys from Git.',
+					europeanHeadquarters: 'Headquarters in Geneva, Switzerland, outside the EU.',
+					secNumCloud: "Not in the ANSSI's SecNumCloud catalogue.",
+					euRegions: 'No region in the EU: its 2 regions are in Switzerland.',
+					costs:
+						'No documented cost dashboard, only an API. No budget alerts; resource quotas per project.',
+				},
+				azure: {
+					europeanHeadquarters:
+						'Headquarters in Redmond, USA. In Europe, it announces partners: Bleu, in France, and Delos Cloud, in Germany.',
+					secNumCloud:
+						"Not in the ANSSI's SecNumCloud catalogue. Bleu, a Microsoft partner, is being qualified.",
+					euRegions: '13 regions in the EU, 2 of them with restricted access.',
+					costs:
+						'Costs by subscription, by resource and by tag, with a forecast. Budgets with alerts only.',
+				},
+				ovhcloud: {
+					containers: 'Serverless containers announced as "Coming soon".',
+					paas: 'Web PaaS closed on 31 January 2025.',
+					europeanHeadquarters: 'Headquarters in Roubaix, France.',
+					secNumCloud: '3 qualified IaaS offerings.',
+					euRegions: '7 regions in the EU.',
+					costs:
+						'Usage by project and by resource, with a forecast. Tags not found. An alert on the forecast, with no limit.',
+				},
+				scaleway: {
+					paas: 'Not found. The closest are Serverless Functions.',
+					europeanHeadquarters: 'Headquarters in Paris, France.',
+					secNumCloud: "Being qualified: not yet in the ANSSI's SecNumCloud catalogue.",
+					euRegions: '4 regions in the EU.',
+					costs: 'Costs by project and by product. Tags and forecast not found. Alerts only warn.',
+				},
+			},
+			outbound: {
+				aws: 'paid beyond 100 GB/month.',
+				googleCloud: 'paid from the first GB (Premium Tier).',
+				infomaniak: 'included with instances.',
+				azure: 'paid beyond 100 GB/month.',
+				ovhcloud: 'included with instances.',
+				scaleway: 'included with instances.',
+			},
+		},
+	},
 	ecology: {
 		link: 'Ecology',
 		home: {
@@ -126,6 +255,100 @@ export const en: Dictionary = {
 			],
 		},
 		back: 'Back to the home page',
+	},
+	sovereignty: {
+		name: 'Souveraineté des données',
+		description:
+			'Héberger une application en Europe ne suffit pas à comprendre où circulent les données. La souveraineté se construit par des choix techniques, contractuels et organisationnels.',
+		title: 'Tes données sont-elles vraiment sous ton contrôle ?',
+		intro:
+			'Héberger une application en Europe ne suffit pas, à lui seul, à comprendre où circulent les données ni quels prestataires peuvent y accéder. La souveraineté se construit par des choix techniques, contractuels et organisationnels.',
+		sections: [
+			{
+				title: 'Hébergement européen : une première étape, pas une réponse complète.',
+				text: "La localisation des serveurs compte, mais il faut aussi regarder la société qui fournit le service, les sous-traitants, les sauvegardes, la supervision, les accès d'administration et les services externes utilisés par l'application.",
+			},
+			{
+				title: 'Les données ne restent pas forcément là où tourne ton serveur.',
+				text: "Un outil d'analyse, un système de logs, un CDN, un service d'authentification, une solution d'e-mail ou une API d'intelligence artificielle peut traiter certaines données hors de ton hébergement principal. Cartographier ces flux permet de détecter les transferts et les dépendances que l'on oublie facilement.",
+			},
+			{
+				title: 'Fournisseur français, européen ou international : quelles différences ?',
+				text: "Le bon choix dépend de tes obligations, des fonctionnalités nécessaires et des garanties contractuelles offertes. Un fournisseur européen n'offre pas automatiquement toutes les garanties attendues, et une région européenne d'un fournisseur international ne règle pas à elle seule toutes les questions juridiques.",
+			},
+			{
+				title: 'Réglementation, contrats et protections techniques.',
+				text: "RGPD, transferts internationaux, règles de juridiction, chiffrement et contrôle des accès doivent être examinés ensemble. Le CLOUD Act américain peut compter dans l'analyse de certains fournisseurs, mais son existence ne signifie pas que toutes les données hébergées auprès de ces entreprises sont librement accessibles. Les exigences sectorielles, comme SecNumCloud lorsqu'elles s'appliquent, doivent être vérifiées dans les référentiels officiels.",
+			},
+			{
+				title: 'Une architecture adaptée à tes contraintes de souveraineté.',
+				text: "Je t'aide à identifier les dépendances techniques, à comparer les options d'hébergement et à intégrer les contraintes de localisation, de sécurité et de réversibilité dans l'architecture. Pour les conclusions juridiques et réglementaires, l'analyse doit être validée par les spécialistes compétents.",
+			},
+		],
+		cta: 'Parlons de la souveraineté de ton infrastructure',
+		switzerland: {
+			text: "La Suisse ne fait pas partie de l'Union européenne. La Commission européenne reconnaît toutefois qu'elle assure un niveau de protection adéquat des données personnelles : des données personnelles peuvent y être transférées depuis l'UE sans garantie supplémentaire. Cela ne remplace pas le reste de l'analyse : contrat, sous-traitants, accès.",
+			sources: {
+				euMembers: 'Union européenne, les 27 pays membres',
+				notMember: 'Confédération suisse (DFAE), accords bilatéraux',
+				adequacy: "Commission européenne, décisions d'adéquation",
+				decision: 'Décision 2000/518/CE',
+			},
+		},
+		cloudAct: {
+			text: "Le CLOUD Act et le Patriot Act ne sont pas synonymes. Le Patriot Act est une loi antiterroriste américaine de 2001. Le CLOUD Act, adopté en 2018, prévoit qu'un fournisseur soumis au droit américain doit communiquer, sur demande légale des autorités américaines, les données qu'il a en sa possession ou sous son contrôle, qu'elles soient stockées aux États-Unis ou ailleurs. Une entreprise non américaine peut aussi y être soumise si elle a des liens suffisants avec les États-Unis : cela s'apprécie au cas par cas.",
+			sources: {
+				statute: '18 U.S.C. § 2713 (CLOUD Act)',
+				whitePaper: 'Département de la Justice des États-Unis, livre blanc sur le CLOUD Act',
+				patriotAct: 'Public Law 107-56 (USA PATRIOT Act)',
+			},
+		},
+		sources: 'Sources',
+		table: {
+			caption:
+				"Ce que disent les sources officielles sur le cloud public standard de quelques fournisseurs, par ordre alphabétique. Ce n'est pas un classement : vérifie chaque point pour ton offre et ton contrat.",
+			columns: {
+				provider: 'Fournisseur',
+				headquarters: 'Pays du siège',
+				zones: "Zones d'hébergement",
+				contract: 'Juridiction du contrat',
+				backupsAndLogs: 'Sauvegardes et logs',
+				certifications: "Certifications de l'offre",
+				references: 'Références officielles',
+			},
+			colon: ' :',
+			notDisclosed: 'non communiqué',
+			group: 'Groupe',
+			eu: 'UE',
+			outsideEu: 'Hors UE',
+			elsewhere: "Aussi hors d'Europe",
+			laws: {
+				CH: 'Droit suisse',
+				DE: 'Droit allemand',
+				FR: 'Droit français',
+				IE: 'Droit irlandais',
+				LU: 'Droit luxembourgeois',
+				'US-CA': 'Droit de la Californie (États-Unis)',
+			},
+			backups: 'Sauvegardes',
+			logs: 'Logs',
+			placements: {
+				chosenRegion: 'dans la région choisie (ailleurs seulement si tu le configures)',
+				chosenCountry: 'dans le pays choisi',
+				inEu: "dans l'UE si l'emplacement choisi y est, parfois sur un autre site",
+				otherRegionByDefault: 'par défaut, aussi dans une autre région (modifiable)',
+				partlyElsewhere: "une partie peut être hors de l'emplacement choisi",
+			},
+			read: 'Consultées le',
+			references: {
+				headquarters: 'Siège',
+				zones: 'Zones',
+				contract: 'Contrat',
+				backups: 'Sauvegardes',
+				logs: 'Logs',
+				certifications: 'Certifications',
+			},
+		},
 	},
 	availability: {
 		title: 'Disponibilité & conditions',
@@ -396,119 +619,6 @@ export const en: Dictionary = {
 			guarantee:
 				"Pour une intervention complète couvrant les quatre blocs, je propose une garantie de conformité technique de trois mois après la livraison : si un défaut de conception ou de configuration relevant de mon intervention est constaté, je prends en charge sa correction dans les conditions convenues au contrat. Il ne s'agit pas d'une astreinte 24 h/24 ni d'une garantie d'absence de panne applicative.",
 			link: 'Comprendre les niveaux de disponibilité et consulter les conditions',
-		},
-		cloudChart: {
-			label: 'Cloud providers',
-			title: 'Which cloud for which company?',
-			intro:
-				"Pick a scenario. Each bar shows which of the scenario's criteria the provider meets. It is a starting point for the Conversation, not a ranking: no provider is ideal for every company.",
-			scenariosLabel: 'Company scenario',
-			scenarios: {
-				beforeLaunch: {
-					name: 'Before launch',
-					description: 'A small team, with no time to run servers.',
-				},
-				growth: {
-					name: 'Growing SaaS',
-					description: 'The product already has customers and the team is growing.',
-				},
-				dataSovereignty: {
-					name: 'Data sovereignty',
-					description:
-						'Data must stay in the EU, with a European provider, or the sector requires SecNumCloud.',
-				},
-				variableLoad: {
-					name: 'Highly variable load',
-					description: 'Strong peaks and quiet periods.',
-				},
-				costControl: {
-					name: 'Costs under control',
-					description: 'See and control infrastructure costs as the SaaS grows.',
-				},
-			},
-			criteria: {
-				kubernetes: 'Managed Kubernetes',
-				containers: 'Autoscaling containers',
-				paas: 'PaaS',
-				europeanHeadquarters: 'Headquarters in Europe',
-				secNumCloud: 'SecNumCloud offering',
-				euRegions: 'EU regions',
-				costs: 'Cost visibility and control',
-			},
-			weight: 'weight',
-			opinion: "Julien's opinion",
-			ratings: { consider: 'Worth considering', possible: 'Possible', unsuitable: 'Less suited' },
-			values: { yes: 'Yes', partly: 'Partly', no: 'No' },
-			hint: 'Click a bar to see the facts.',
-			colon: ':',
-			read: 'read on',
-			source: 'Source',
-			sources: 'Sources',
-			outboundTraffic: 'Outbound traffic',
-			footnote:
-				'The facts come from the official pages of the providers and of the ANSSI. The weights of each scenario and the "Cost visibility and control" criterion are Julien\'s opinion.',
-			notes: {
-				aws: {
-					paas: 'App Runner closed to new customers on 30 April 2026.',
-					europeanHeadquarters:
-						'Headquarters in Seattle, USA. In Europe, it announces the AWS European Sovereign Cloud, with one region in Germany.',
-					secNumCloud: "Not in the ANSSI's SecNumCloud catalogue.",
-					euRegions: '6 regions in the EU.',
-					costs:
-						'Costs by account and by tag, with a forecast. Budgets with alerts and automatic actions.',
-				},
-				googleCloud: {
-					paas: 'Cloud Run deploys from source code or from a Git repository.',
-					europeanHeadquarters: 'Headquarters in Mountain View, USA.',
-					secNumCloud:
-						"Thales's offering, built on Google Cloud technology, qualified since 17 December 2025 in Thales's name.",
-					euRegions: '11 regions in the EU.',
-					costs:
-						'Costs by project and by label, with a forecast. Budgets with alerts and caps that stop some services.',
-				},
-				infomaniak: {
-					containers: 'No serverless containers: Jelastic Cloud scales Docker containers.',
-					paas: 'Deploys from Git.',
-					europeanHeadquarters: 'Headquarters in Geneva, Switzerland, outside the EU.',
-					secNumCloud: "Not in the ANSSI's SecNumCloud catalogue.",
-					euRegions: 'No region in the EU: its 2 regions are in Switzerland.',
-					costs:
-						'No documented cost dashboard, only an API. No budget alerts; resource quotas per project.',
-				},
-				azure: {
-					europeanHeadquarters:
-						'Headquarters in Redmond, USA. In Europe, it announces partners: Bleu, in France, and Delos Cloud, in Germany.',
-					secNumCloud:
-						"Not in the ANSSI's SecNumCloud catalogue. Bleu, a Microsoft partner, is being qualified.",
-					euRegions: '13 regions in the EU, 2 of them with restricted access.',
-					costs:
-						'Costs by subscription, by resource and by tag, with a forecast. Budgets with alerts only.',
-				},
-				ovhcloud: {
-					containers: 'Serverless containers announced as "Coming soon".',
-					paas: 'Web PaaS closed on 31 January 2025.',
-					europeanHeadquarters: 'Headquarters in Roubaix, France.',
-					secNumCloud: '3 qualified IaaS offerings.',
-					euRegions: '7 regions in the EU.',
-					costs:
-						'Usage by project and by resource, with a forecast. Tags not found. An alert on the forecast, with no limit.',
-				},
-				scaleway: {
-					paas: 'Not found. The closest are Serverless Functions.',
-					europeanHeadquarters: 'Headquarters in Paris, France.',
-					secNumCloud: "Being qualified: not yet in the ANSSI's SecNumCloud catalogue.",
-					euRegions: '4 regions in the EU.',
-					costs: 'Costs by project and by product. Tags and forecast not found. Alerts only warn.',
-				},
-			},
-			outbound: {
-				aws: 'paid beyond 100 GB/month.',
-				googleCloud: 'paid from the first GB (Premium Tier).',
-				infomaniak: 'included with instances.',
-				azure: 'paid beyond 100 GB/month.',
-				ovhcloud: 'included with instances.',
-				scaleway: 'included with instances.',
-			},
 		},
 		about: {
 			title: 'Qui est Julien ?',

@@ -1,0 +1,46 @@
+---
+// A note of the data sovereignty page, with its official sources and the day they were read.
+import { HTML_CODES, type Language } from '../config/site';
+import { NOTE_SOURCES } from '../config/sovereignty';
+import { dictionaries } from '../i18n';
+import { withNonBreakingSpaces } from '../lib/spaces';
+
+interface Props {
+	language: Language;
+	note: keyof typeof NOTE_SOURCES;
+}
+
+const { language, note } = Astro.props;
+const page = dictionaries[language].sovereignty;
+const { text, sources } = page[note];
+const links = Object.entries(NOTE_SOURCES[note]).map(([id, { url, read }]) => ({
+	url,
+	read,
+	name: sources[id as keyof typeof sources],
+}));
+const dateFormat = new Intl.DateTimeFormat(HTML_CODES[language], {
+	day: '2-digit',
+	month: '2-digit',
+	year: 'numeric',
+	timeZone: 'UTC',
+});
+const days = [...new Set(links.map(({ read }) => read))]
+	.sort()
+	.map((day) => dateFormat.format(new Date(day)));
+---
+
+<div class="grid gap-2 border-l-2 border-green pl-5">
+	<p>{withNonBreakingSpaces(text)}</p>
+	<p class="text-sm text-foreground-secondary">
+		{withNonBreakingSpaces(`${page.sources}${page.table.colon}`)}{' '}
+		{links.map(({ url, name }, k) => (
+			<>
+				{k > 0 && ' · '}
+				<a href={url} class="text-green underline underline-offset-3">
+					{withNonBreakingSpaces(name)}
+				</a>
+			</>
+		))}
+		. {withNonBreakingSpaces(`${page.table.read} ${days.join(', ')}.`)}
+	</p>
+</div>

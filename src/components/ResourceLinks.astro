@@ -3,7 +3,7 @@
 // the mobile menu. The page the Visitor is on is marked as the current page.
 import type { Language } from '../config/site';
 import { dictionaries } from '../i18n';
-import { availabilityPath, ecologyPath } from '../lib/paths';
+import { availabilityPath, cloudPath, ecologyPath, sovereigntyPath } from '../lib/paths';
 import { withNonBreakingSpaces } from '../lib/spaces';
 
 interface Props {
@@ -15,7 +15,9 @@ const { language, class: className } = Astro.props;
 const t = dictionaries[language];
 const pages = [
 	// One line per page, in the submenu's order.
+	{ name: t.cloud.link, path: cloudPath(language) },
 	{ name: t.ecology.link, path: ecologyPath(language) },
+	{ name: t.sovereignty.name, path: sovereigntyPath(language) },
 	{ name: t.availability.title, path: availabilityPath(language) },
 ];
 ---
