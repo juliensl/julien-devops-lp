@@ -322,7 +322,7 @@ export const pt: Dictionary = {
 		back: 'Voltar à página principal',
 	},
 	sovereignty: {
-		name: 'Soberania dos dados',
+		link: 'Soberania dos dados',
 		description:
 			'Alojar uma aplicação na Europa não basta para perceber por onde circulam os dados. A soberania constrói-se com escolhas técnicas, contratuais e organizacionais.',
 		title: 'Os teus dados estão mesmo sob o teu controlo?',
@@ -416,7 +416,7 @@ export const pt: Dictionary = {
 		},
 	},
 	availability: {
-		title: 'Disponibilidade e condições',
+		link: 'Disponibilidade e condições',
 		description:
 			'Compara os níveis de disponibilidade, calcula o teu tempo de indisponibilidade teórico e consulta as condições da garantia de conformidade.',
 		heading: 'Que nível de disponibilidade para o teu SaaS?',

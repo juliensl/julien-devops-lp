@@ -40,10 +40,10 @@ const first = {
 };
 ---
 
-<Base language={language} title={`${page.title} · ${values.name}`} description={page.description}>
+<Base language={language} title={`${page.link} · ${values.name}`} description={page.description}>
 	<main>
 		<div class="page-width grid gap-5 pt-14 sm:pt-20">
-			<p class="label">{page.title}</p>
+			<p class="label">{page.link}</p>
 			<h1 class="max-w-[20ch] text-[clamp(2rem,5vw,4.2rem)] leading-[1.05]">
 				{withNonBreakingSpaces(page.heading)}
 			</h1>

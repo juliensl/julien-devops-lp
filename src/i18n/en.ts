@@ -257,7 +257,7 @@ export const en: Dictionary = {
 		back: 'Back to the home page',
 	},
 	sovereignty: {
-		name: 'Souveraineté des données',
+		link: 'Souveraineté des données',
 		description:
 			'Héberger une application en Europe ne suffit pas à comprendre où circulent les données. La souveraineté se construit par des choix techniques, contractuels et organisationnels.',
 		title: 'Tes données sont-elles vraiment sous ton contrôle ?',
@@ -351,7 +351,7 @@ export const en: Dictionary = {
 		},
 	},
 	availability: {
-		title: 'Disponibilité & conditions',
+		link: 'Disponibilité & conditions',
 		description:
 			"Compare les niveaux de disponibilité, calcule ton temps d'indisponibilité théorique et consulte les conditions de la garantie de conformité.",
 		heading: 'Quel niveau de disponibilité pour ton SaaS ?',

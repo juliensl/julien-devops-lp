@@ -23,10 +23,10 @@ const REGULATION = 3;
 const last = page.sections.length - 1;
 ---
 
-<Base language={language} title={`${page.name} · ${values.name}`} description={page.description}>
+<Base language={language} title={`${page.link} · ${values.name}`} description={page.description}>
 	<main class="page-width grid grid-cols-[minmax(0,1fr)] gap-20 pt-14 sm:pt-20">
 		<div class="grid gap-5">
-			<p class="label">{page.name}</p>
+			<p class="label">{page.link}</p>
 			<h1 class="max-w-[22ch] text-[clamp(2.25rem,5vw,4rem)] leading-[1.05]">
 				{withNonBreakingSpaces(page.title)}
 			</h1>
