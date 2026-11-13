@@ -2,7 +2,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { inEachBuild } from './builds';
 import { LANGUAGES } from './expected';
-import { isMoving, look, type Box } from './screen-canvas';
+import { isMoving, look, scrollPage, type Box } from './screen-canvas';
 
 /** Where the ∞ draws, plus `more` px: its box and some room, down to 92 % (its points stay above 85 %). */
 async function infinityArea(page: Page, more = 0): Promise<Box> {
@@ -281,10 +281,12 @@ inEachBuild((build) => {
 					.toBeGreaterThan(0);
 				expect(await isMoving(page)).toBe(false);
 				await expect(pauseButton(page, pause)).toBeHidden();
-				await page.locator('[data-section="guarantee"]').scrollIntoViewIfNeeded();
-				await expect
-					.poll(async () => (await look(page)).count, { message: 'already down the page' })
-					.toBeGreaterThan(0);
+				const guarantee = await page
+					.locator('[data-section="guarantee"]')
+					.evaluate((section) => section.getBoundingClientRect().top + scrollY);
+				// Right after a scroll the canvas still shows the old frame: scrollPage waits for it to follow.
+				await scrollPage(page, guarantee);
+				expect((await look(page)).count, 'already down the page').toBeGreaterThan(0);
 				expect(await isMoving(page)).toBe(false);
 			});
 		});
