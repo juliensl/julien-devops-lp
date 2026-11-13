@@ -284,22 +284,32 @@ export const fr = {
 		/** The 5 Steps, in glossary order, each with one sentence. A language with fewer than 5
 		 * makes `astro check` fail. */
 		steps: {
-			title: 'Cinq étapes, toujours dans le même ordre.',
+			title: 'Cinq étapes pour avancer sereinement.',
 			steps: [
-				{ name: 'Échange', sentence: '45 min sur Google Meet, gratuit.' },
+				{
+					name: 'Échange initial',
+					sentence:
+						'45 minutes sur Google Meet pour comprendre ton produit, tes priorités et tes contraintes. Gratuit, sans engagement.',
+				},
 				{
 					name: 'Diagnostic',
 					sentence:
-						'Gratuit. 2 à 3 jours ouvrés après réception des accès, ou 3 à 5 si le cloud est inclus.',
+						'Un premier état des lieux gratuit de ton code et, si nécessaire, de ton infrastructure. Retour sous 3 à 5 jours ouvrés après réception des accès utiles.',
 				},
 				{
 					name: "Proposition d'intervention",
-					sentence: 'Quels blocs, en combien de temps et pour quel prix fixe.',
+					sentence:
+						'Un périmètre précis, des priorités, un calendrier et un prix convenus avant de commencer.',
 				},
-				{ name: 'Mise en œuvre', sentence: '30 jours calendaires au maximum.' },
 				{
-					name: 'Livraison et passation',
-					sentence: "Documentation et passation, pour que l'équipe soit autonome.",
+					name: 'Mise en œuvre',
+					sentence:
+						"J'interviens avec ton équipe, en limitant les perturbations du développement. Un point d'avancement régulier, en principe chaque semaine, permet de suivre les actions et les décisions.",
+				},
+				{
+					name: 'Livraison & passation',
+					sentence:
+						'Documentation, vérifications finales et transfert de connaissances pour que ton équipe reste autonome.',
 				},
 			] satisfies [Step, Step, Step, Step, Step],
 		},
