@@ -3,7 +3,7 @@
 import { HTML_CODES, type Language } from '../config/site';
 import {
 	EU_MEMBERS,
-	PROVIDERS,
+	SOVEREIGNTY_PROVIDERS,
 	type ColumnId,
 	type CountryCode,
 	type Provider,
@@ -123,7 +123,7 @@ function references(provider: Provider) {
 			</tr>
 		</thead>
 		<tbody>
-			{PROVIDERS.map((provider) => (
+			{SOVEREIGNTY_PROVIDERS.map((provider) => (
 				<tr>
 					<th scope="row" class="font-semibold">
 						{provider.name}

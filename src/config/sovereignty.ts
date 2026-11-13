@@ -1,6 +1,6 @@
 // The data sovereignty page's facts and official sources. No imports, so that `node` can load it.
 
-export type ProviderId =
+export type SovereigntyProviderId =
 	| 'aws'
 	| 'exoscale'
 	| 'googleCloud'
@@ -30,7 +30,7 @@ export type Placement =
 	/** Partly outside the chosen location: some services, or the provider's own operational data. */
 	| 'partlyElsewhere';
 
-export interface Source {
+export interface SovereigntySource {
 	url: string;
 	/** The day the page was read, as YYYY-MM-DD. */
 	read: string;
@@ -42,28 +42,28 @@ export interface Source {
  */
 export type Level = 'company' | 'group' | 'contract' | 'offer' | 'namedOffer';
 
-export interface Fact<T> {
+export interface SovereigntyFact<T> {
 	value: T | null;
 	level: Level;
-	sources: Source[];
+	sources: SovereigntySource[];
 }
 
 export interface Provider {
-	id: ProviderId;
+	id: SovereigntyProviderId;
 	name: string;
 	/** The company's country, and its group's when it is another. */
-	headquarters: Fact<{ company: CountryCode; group?: CountryCode }>;
+	headquarters: SovereigntyFact<{ company: CountryCode; group?: CountryCode }>;
 	/** The countries of the regions in Europe, and whether there are others elsewhere. */
-	zones: Fact<{ europe: CountryCode[]; elsewhere: boolean }>;
+	zones: SovereigntyFact<{ europe: CountryCode[]; elsewhere: boolean }>;
 	/** The company a business customer in France signs with, and the law of that contract. */
-	contract: Fact<{ entity: string | null; law: Law | null }>;
-	backups: Fact<Placement>;
-	logs: Fact<Placement>;
+	contract: SovereigntyFact<{ entity: string | null; law: Law | null }>;
+	backups: SovereigntyFact<Placement>;
+	logs: SovereigntyFact<Placement>;
 	/**
 	 * SecNumCloud and HDS from the official French lists, which were searched for every provider, and
 	 * ISO/IEC 27001 from the provider.
 	 */
-	certifications: { value: Certification[]; sources: Source[] };
+	certifications: { value: Certification[]; sources: SovereigntySource[] };
 }
 
 export interface Certification {
@@ -79,7 +79,7 @@ export type ColumnId =
 	'headquarters' | 'zones' | 'contract' | 'backups' | 'logs' | 'certifications';
 
 const READ = '2026-11-13';
-const source = (url: string, read = READ): Source => ({ url, read });
+const source = (url: string, read = READ): SovereigntySource => ({ url, read });
 
 // ANSSI's catalogue of qualified offers (SecNumCloud), updated on 27/10/2026, and the Agence du
 // numérique en santé's list of certified health data hosts (HDS).
@@ -122,7 +122,7 @@ export const EU_MEMBERS: CountryCode[] = [
 ];
 
 /** In alphabetical order, so that the table does not look like a ranking. */
-export const PROVIDERS: Provider[] = [
+export const SOVEREIGNTY_PROVIDERS: Provider[] = [
 	{
 		id: 'aws',
 		name: 'AWS',
@@ -563,4 +563,4 @@ export const NOTE_SOURCES = {
 			'https://www.govinfo.gov/content/pkg/PLAW-107publ56/html/PLAW-107publ56.htm',
 		),
 	},
-} satisfies Record<string, Record<string, Source>>;
+} satisfies Record<string, Record<string, SovereigntySource>>;
