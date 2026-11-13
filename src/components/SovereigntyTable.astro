@@ -9,6 +9,7 @@ import {
 	type Provider,
 } from '../config/sovereignty';
 import { dictionaries } from '../i18n';
+import { readDays } from '../lib/dates';
 import { withNonBreakingSpaces } from '../lib/spaces';
 
 interface Props {
@@ -25,12 +26,6 @@ const countryList = (codes: CountryCode[]) =>
 		.map(countryName)
 		.toSorted((a, b) => a.localeCompare(b, locale))
 		.join(', ');
-const dateFormat = new Intl.DateTimeFormat(locale, {
-	day: '2-digit',
-	month: '2-digit',
-	year: 'numeric',
-	timeZone: 'UTC',
-});
 /** A source's link text: the site it is on. */
 const hostnameOf = (url: string) => new URL(url).hostname.replace(/^www\./, '');
 /** "Label: text", with the language's colon. */
@@ -97,16 +92,15 @@ function references(provider: Provider) {
 			columns.set(url, [...(columns.get(url) ?? []), column]);
 		}
 	}
-	const days = new Set(COLUMNS.flatMap((column) => provider[column].sources.map((s) => s.read)));
 	return {
 		links: [...columns].map(([url, of]) => ({
 			url,
 			of: of.map((c) => t.references[c]).join(', '),
 		})),
-		read: `${t.read} ${[...days]
-			.sort()
-			.map((day) => dateFormat.format(new Date(day)))
-			.join(', ')}`,
+		read: `${t.read} ${readDays(
+			COLUMNS.flatMap((column) => provider[column].sources),
+			language,
+		)}`,
 	};
 }
 ---

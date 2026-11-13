@@ -129,16 +129,16 @@ const FR: Texts = {
 			'HDS ISO/IEC 27001',
 		],
 		notDisclosed: 'non communiqué',
-		read: 'Consultées le 13/11/2026',
+		read: 'Consultées le 13 nov. 2026',
 	},
 	notes: {
 		switzerland: [
 			"La Suisse ne fait pas partie de l'Union européenne. La Commission européenne reconnaît toutefois qu'elle assure un niveau de protection adéquat des données personnelles : des données personnelles peuvent y être transférées depuis l'UE sans garantie supplémentaire. Cela ne remplace pas le reste de l'analyse : contrat, sous-traitants, accès.",
-			"Sources : Union européenne, les 27 pays membres · Confédération suisse (DFAE), accords bilatéraux · Commission européenne, décisions d'adéquation · Décision 2000/518/CE. Consultées le 13/11/2026.",
+			"Sources : Union européenne, les 27 pays membres · Confédération suisse (DFAE), accords bilatéraux · Commission européenne, décisions d'adéquation · Décision 2000/518/CE. Consultées le 13 nov. 2026.",
 		],
 		cloudAct: [
 			"Le CLOUD Act et le Patriot Act ne sont pas synonymes. Le Patriot Act est une loi antiterroriste américaine de 2001. Le CLOUD Act, adopté en 2018, prévoit qu'un fournisseur soumis au droit américain doit communiquer, sur demande légale des autorités américaines, les données qu'il a en sa possession ou sous son contrôle, qu'elles soient stockées aux États-Unis ou ailleurs. Une entreprise non américaine peut aussi y être soumise si elle a des liens suffisants avec les États-Unis : cela s'apprécie au cas par cas.",
-			'Sources : 18 U.S.C. § 2713 (CLOUD Act) · Département de la Justice des États-Unis, livre blanc sur le CLOUD Act · Public Law 107-56 (USA PATRIOT Act). Consultées le 13/11/2026.',
+			'Sources : 18 U.S.C. § 2713 (CLOUD Act) · Département de la Justice des États-Unis, livre blanc sur le CLOUD Act · Public Law 107-56 (USA PATRIOT Act). Consultées le 13 nov. 2026.',
 		],
 	},
 };
@@ -169,14 +169,17 @@ const EXPECTED: Record<Language, Texts> = {
 				FR.table.aws[3],
 				FR.table.aws[4],
 			],
-			read: 'Consultées le 11/13/2026',
+			read: 'Consultées le Nov 13, 2026',
 		},
 		notes: {
 			switzerland: [
 				FR.notes.switzerland[0],
-				FR.notes.switzerland[1].replace('13/11/2026', '11/13/2026'),
+				FR.notes.switzerland[1].replace('13 nov. 2026', 'Nov 13, 2026'),
 			],
-			cloudAct: [FR.notes.cloudAct[0], FR.notes.cloudAct[1].replace('13/11/2026', '11/13/2026')],
+			cloudAct: [
+				FR.notes.cloudAct[0],
+				FR.notes.cloudAct[1].replace('13 nov. 2026', 'Nov 13, 2026'),
+			],
 		},
 	},
 	pt: {

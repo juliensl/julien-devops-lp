@@ -21,8 +21,9 @@ import {
 	type ScenarioId,
 	type Value,
 } from '../config/cloud-providers';
-import { HTML_CODES, type Language } from '../config/site';
+import type { Language } from '../config/site';
 import type { Dictionary } from '../i18n/fr';
+import { dayText } from '../lib/dates';
 import { withNonBreakingSpaces } from '../lib/spaces';
 
 type Props = Dictionary['cloud']['chart'] & { language: Language };
@@ -43,10 +44,6 @@ const labelled = (label: string, text: string) =>
 	withNonBreakingSpaces(`${label}${t.colon} ${text}`);
 /** A source's link text: the site it is on. */
 const hostnameOf = (url: string) => new URL(url).hostname.replace(/^www\./, '');
-const dateFormat = new Intl.DateTimeFormat(HTML_CODES[language], {
-	dateStyle: 'medium',
-	timeZone: 'UTC',
-});
 
 // One color per segment, from the heaviest criterion at the bottom.
 const segmentColor = (k: number) => `var(--segment-${k + 1})`;
@@ -182,9 +179,7 @@ function summary(scenario: ScenarioId) {
 														<>
 															{s > 0 && '; '}
 															<a href={url}>{hostnameOf(url)}</a>,{' '}
-															{withNonBreakingSpaces(
-																`${t.read} ${dateFormat.format(new Date(read))}`,
-															)}
+															{withNonBreakingSpaces(`${t.read} ${dayText(read, language)}`)}
 														</>
 													))}
 												</span>
@@ -202,11 +197,7 @@ function summary(scenario: ScenarioId) {
 
 	<div data-reveal class="grid max-w-3xl gap-2 text-sm text-foreground-secondary">
 		<p>{withNonBreakingSpaces(t.legend)}</p>
-		<p>
-			{withNonBreakingSpaces(
-				`${t.footnote} ${t.verified} ${dateFormat.format(new Date(VERIFIED))}.`,
-			)}
-		</p>
+		<p>{withNonBreakingSpaces(`${t.footnote} ${t.verified} ${dayText(VERIFIED, language)}.`)}</p>
 	</div>
 </section>
 
