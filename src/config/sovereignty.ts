@@ -55,7 +55,7 @@ export interface Fact<T> {
 export interface Provider {
 	id: ProviderId;
 	name: string;
-	/** The group's country, when it is not the company's. */
+	/** The company's country, and its group's when it is another. */
 	headquarters: Fact<{ company: CountryCode; group?: CountryCode }>;
 	/** The countries of the regions in Europe, and whether there are others elsewhere. */
 	zones: Fact<{ europe: CountryCode[]; elsewhere: boolean }>;
@@ -134,6 +134,7 @@ export const PROVIDERS: Provider[] = [
 			value: { company: 'US' },
 			level: 'company',
 			sources: [
+				source('https://aws.amazon.com/agreement/'),
 				source(
 					'https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/amzn-20251231.htm',
 				),
@@ -309,7 +310,9 @@ export const PROVIDERS: Provider[] = [
 		contract: {
 			value: { entity: 'Infomaniak Network SA', law: 'CH' },
 			level: 'contract',
-			sources: [source('https://www.infomaniak.com/en/legal/general-terms-and-conditions')],
+			sources: [
+				source('https://welcome.infomaniak.com/api/web-components/1/cgu/latest?id=1&locale=en_GB'),
+			],
 		},
 		backups: {
 			value: 'chosenCountry',
