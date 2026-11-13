@@ -47,6 +47,13 @@ const FRENCH = {
 		guarantee:
 			"Pour une intervention complète couvrant les quatre blocs, je propose une garantie de conformité technique de trois mois après la livraison : si un défaut de conception ou de configuration relevant de mon intervention est constaté, je prends en charge sa correction dans les conditions convenues au contrat. Il ne s'agit pas d'une astreinte 24 h/24 ni d'une garantie d'absence de panne applicative.",
 		link: 'Comprendre les niveaux de disponibilité et consulter les conditions',
+		/** Each objective, then the name of its level. */
+		levels: [
+			'99,5 % Disponibilité essentielle',
+			'99,9 % Disponibilité renforcée',
+			'99,95 % Haute disponibilité',
+			'99,99 % Disponibilité très élevée',
+		],
 		/** The heading of the page the link leads to. */
 		pageHeading: 'Quel niveau de disponibilité pour ton SaaS ?',
 	},
@@ -104,6 +111,12 @@ const EXPECTED = {
 			guarantee:
 				'Para uma intervenção completa que cubra os quatro blocos, proponho uma garantia de conformidade técnica de três meses após a entrega: se for detetado um defeito de conceção ou de configuração que caiba na minha intervenção, asseguro a sua correção nas condições acordadas no contrato. Não se trata de um serviço de piquete 24 h/24 nem de uma garantia de ausência de avarias da aplicação.',
 			link: 'Perceber os níveis de disponibilidade e consultar as condições',
+			levels: [
+				'99,5 % Disponibilidade essencial',
+				'99,9 % Disponibilidade reforçada',
+				'99,95 % Alta disponibilidade',
+				'99,99 % Disponibilidade muito elevada',
+			],
 			pageHeading: 'Que nível de disponibilidade para o teu SaaS?',
 		},
 		about: {
@@ -131,7 +144,15 @@ const EXPECTED = {
 	en: {
 		whoItsFor: FRENCH.whoItsFor,
 		todayAndAfter: FRENCH.todayAndAfter,
-		availability: FRENCH.availability,
+		availability: {
+			...FRENCH.availability,
+			levels: [
+				'99.5% Disponibilité essentielle',
+				'99.9% Disponibilité renforcée',
+				'99.95% Haute disponibilité',
+				'99.99% Disponibilité très élevée',
+			],
+		},
 		about: { ...FRENCH.about, linkedin: 'See my LinkedIn profile' },
 		finalCta: {
 			...FRENCH.finalCta,
@@ -142,8 +163,19 @@ const EXPECTED = {
 } satisfies Record<Language, unknown>;
 
 // The numbers in Julien's texts (#54, "Só se publica o que está validado"): the availability
-// objectives, 24 h/24 and 45 min.
-const APPROVED_NUMBERS = ['24', '45', '99,5', '99,9', '99,95'];
+// objectives (written "99.5%" in English), 24 h/24 and 45 min.
+const APPROVED_NUMBERS = [
+	'24',
+	'45',
+	'99,5',
+	'99,9',
+	'99,95',
+	'99,99',
+	'99.5',
+	'99.9',
+	'99.95',
+	'99.99',
+];
 
 inEachBuild((build) => {
 	for (const language of build.phase.publishedLanguages) {
@@ -218,6 +250,18 @@ inEachBuild((build) => {
 				await link.click();
 				await expect(page).toHaveURL(`${prefix}availability/`);
 				await expect(page.getByRole('heading', { level: 1 })).toHaveText(availability.pageHeading);
+			});
+
+			test(`"${availability.label}": the four levels from the lowest, without the calculator, and no 99 % of the time`, async ({
+				page,
+			}) => {
+				await page.goto(prefix);
+				const section = page.getByRole('region', { name: availability.title });
+				// One list: the conditions and the exclusions are on the availability page.
+				await expect(section.getByRole('list')).toHaveCount(1);
+				await expect(section.getByRole('listitem')).toHaveText(availability.levels);
+				await expect(section.locator('form, input, figure')).toHaveCount(0);
+				expect(await page.getByRole('main').textContent()).not.toMatch(/(?<![\d.,])99\s?%/);
 			});
 
 			test(`"${about.title}": the photo, the name, the Designation, the way of working and LinkedIn`, async ({

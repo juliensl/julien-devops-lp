@@ -462,7 +462,7 @@ export const fr = {
 				},
 			] satisfies [Step, Step, Step, Step, Step],
 		},
-		/** The home section that leads to the availability page. */
+		/** The home section that leads to the availability page; it names the levels of `availability.levels`. */
 		availability: {
 			label: 'Disponibilité & fiabilité',
 			title: 'Une infrastructure fiable, conçue pour durer.',

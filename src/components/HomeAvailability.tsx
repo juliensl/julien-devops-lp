@@ -1,4 +1,5 @@
-import type { Language } from '../config/site';
+import { LEVEL_IDS, LEVELS, objectiveText, type LevelId } from '../config/availability';
+import { HTML_CODES, type Language } from '../config/site';
 import { availabilityPath } from '../lib/paths';
 import { withNonBreakingSpaces } from '../lib/spaces';
 
@@ -11,10 +12,23 @@ interface Props {
 	guarantee: string;
 	/** The link to the availability page, where the levels and the conditions are explained. */
 	link: string;
+	/** The names of the levels, from the availability page. */
+	levels: Record<LevelId, { title: string }>;
 }
 
-/** Availability and reliability: an objective chosen together, and the way to the availability page. */
-export default function HomeAvailability({ language, label, title, text, guarantee, link }: Props) {
+/**
+ * Availability and reliability: an objective chosen together, the four levels in short, and the way to
+ * the availability page, which has the calculator.
+ */
+export default function HomeAvailability({
+	language,
+	label,
+	title,
+	text,
+	guarantee,
+	link,
+	levels,
+}: Props) {
 	return (
 		<section
 			aria-labelledby="availability-title"
@@ -32,6 +46,23 @@ export default function HomeAvailability({ language, label, title, text, guarant
 					{withNonBreakingSpaces(text)}
 				</p>
 			</div>
+
+			<ol className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-4">
+				{LEVEL_IDS.map((id, k) => (
+					<li key={id} data-reveal className="grid content-start gap-3">
+						{/* Together, the four stretches of the ∞ gradient go from purple to green. */}
+						<span
+							aria-hidden="true"
+							className="h-1.5 rounded-full bg-linear-to-r from-element-purple to-element-green bg-size-[400%_100%]"
+							style={{ backgroundPosition: `${(k * 100) / 3}% 0` }}
+						></span>
+						<span className="font-heading text-[clamp(2rem,4vw,3rem)] leading-none text-green tabular-nums">
+							{objectiveText(LEVELS[id], HTML_CODES[language])}
+						</span>{' '}
+						<span className="text-foreground-secondary">{levels[id].title}</span>
+					</li>
+				))}
+			</ol>
 
 			<div data-reveal className="grid justify-items-start gap-5">
 				<p className="max-w-3xl text-foreground-secondary">{withNonBreakingSpaces(guarantee)}</p>

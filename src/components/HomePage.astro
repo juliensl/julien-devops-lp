@@ -56,7 +56,11 @@ const t = dictionaries[language];
 
 		<Steps {...t.homePage.steps} />
 
-		<HomeAvailability language={language} {...t.homePage.availability} />
+		<HomeAvailability
+			language={language}
+			levels={t.availability.levels}
+			{...t.homePage.availability}
+		/>
 
 		<CloudChart language={language} {...t.homePage.cloudChart} />
 

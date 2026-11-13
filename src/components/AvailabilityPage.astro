@@ -9,6 +9,7 @@ import {
 	MONTHS,
 	YEAR,
 	maxDowntime,
+	objectiveText,
 } from '../config/availability';
 import { HTML_CODES, type Language } from '../config/site';
 import { values } from '../config/values';
@@ -27,9 +28,7 @@ const t = dictionaries[language];
 const page = t.availability;
 const { calculator, levels, architecture, commitment, guarantee, conditions } = page;
 
-/** An objective as the page writes it: "99,9 %", or "99.9%" in English. */
-const percent = (objective: number) =>
-	`${new Intl.NumberFormat(HTML_CODES[language]).format(objective)}${language === 'en' ? '' : '\u00a0'}%`;
+const percent = (objective: number) => objectiveText(objective, HTML_CODES[language]);
 /** A number of days as the page writes it: "30 jours". */
 const inDays = (days: number) => `${days}\u00a0${calculator.days}`;
 /** The figures of the first choice. The script rewrites them in place when the choice changes. */
