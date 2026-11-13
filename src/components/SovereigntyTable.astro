@@ -35,13 +35,14 @@ const COLUMNS: ColumnId[] = [
 	'headquarters',
 	'zones',
 	'contract',
+	'parent',
 	'backups',
 	'logs',
 	'certifications',
 ];
 
 /** Each cell's lines, «non communiqué» where no official source states the value. */
-function cells({ headquarters, zones, contract, backups, logs, certifications }: Provider) {
+function cells({ headquarters, zones, contract, parent, backups, logs, certifications }: Provider) {
 	const or = <T,>(value: T | null, text: (value: T) => string) =>
 		value === null ? t.notDisclosed : text(value);
 	return [
@@ -62,12 +63,18 @@ function cells({ headquarters, zones, contract, backups, logs, certifications }:
 					.map(([label, codes]) => labelled(label, countryList(codes)))
 					.concat(zones.value.elsewhere ? [t.elsewhere] : [])
 			: [t.notDisclosed],
-		contract.value
-			? [
-					or(contract.value.entity, (entity) => entity),
-					or(contract.value.law, (law) => t.laws[law]),
-				]
-			: [t.notDisclosed],
+		[
+			...(contract.value
+				? [
+						or(contract.value.entity, (entity) => entity),
+						labelled(
+							t.contract,
+							or(contract.value.law, (law) => t.laws[law]),
+						),
+					]
+				: [t.notDisclosed]),
+			labelled(t.parent, or(parent.value, countryName)),
+		],
 		[
 			labelled(
 				t.backups,

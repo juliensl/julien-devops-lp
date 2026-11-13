@@ -392,7 +392,7 @@ export const fr = {
 				provider: 'Fournisseur',
 				headquarters: 'Pays du siège',
 				zones: "Zones d'hébergement",
-				contract: 'Juridiction du contrat',
+				contract: 'Juridictions',
 				backupsAndLogs: 'Sauvegardes et logs',
 				certifications: "Certifications de l'offre",
 				references: 'Références officielles',
@@ -408,13 +408,17 @@ export const fr = {
 			/** When the provider also has regions outside Europe. */
 			elsewhere: "Aussi hors d'Europe",
 			laws: {
-				CH: 'Droit suisse',
-				DE: 'Droit allemand',
-				FR: 'Droit français',
-				IE: 'Droit irlandais',
-				LU: 'Droit luxembourgeois',
-				'US-CA': 'Droit de la Californie (États-Unis)',
+				CH: 'droit suisse',
+				DE: 'droit allemand',
+				FR: 'droit français',
+				IE: 'droit irlandais',
+				LU: 'droit luxembourgeois',
+				'US-CA': 'droit de la Californie (États-Unis)',
 			} satisfies Record<Law, string>,
+			/** Before the law of the contract. */
+			contract: 'Contrat',
+			/** Before the country of the parent company. */
+			parent: 'Société mère',
 			backups: 'Sauvegardes',
 			logs: 'Logs',
 			placements: {
@@ -431,6 +435,7 @@ export const fr = {
 				headquarters: 'Siège',
 				zones: 'Zones',
 				contract: 'Contrat',
+				parent: 'Société mère',
 				backups: 'Sauvegardes',
 				logs: 'Logs',
 				certifications: 'Certifications',
