@@ -6,29 +6,60 @@ const promise = 'Menos bugs. Um código mais limpo. Um SaaS pronto para crescer.
 
 const blocks: Dictionary['homePage']['services']['blocks'] = [
 	{
-		name: 'Pipeline de CI e auditoria de código',
-		summary: 'Os bugs ficam no pull request.',
-		text: 'Cada alteração passa por testes, lint e análise antes de chegar à produção, com a segurança em destaque: dependências com falhas conhecidas, segredos esquecidos no código e análise do próprio código. O que está a vermelho não passa.',
-		tools: ['SonarQube', 'Trivy'],
+		name: 'Auditoria do código e CI/CD',
+		summary: 'Deteta os problemas antes de chegarem à produção.',
+		text: 'Analiso o repositório e os processos de entrega e, depois, monto uma pipeline adaptada ao teu projeto: qualidade do código, lint, testes automatizados, análise de segurança e controlo das dependências. Os erros são assinalados logo no pull request, antes de se tornarem incidentes nos teus clientes.',
+		tools: [
+			'GitHub Actions',
+			'GitLab CI',
+			'Lint',
+			'Testes unitários',
+			'Testes de integração',
+			'Testes E2E',
+			'SonarQube',
+			'Trivy',
+			'Gitleaks',
+		],
+		toolsAlternative: 'E mais, conforme a stack',
 	},
 	{
-		name: 'Contentorização',
-		summary: 'A aplicação corre igual em todo o lado.',
-		text: 'A aplicação deixa de depender do ambiente onde corre. No portátil de um dev ou em produção, o mesmo comportamento.',
-		tools: ['Docker'],
+		name: 'Limpeza e otimização do código',
+		summary: 'Menos dívida técnica, mais tempo para desenvolver.',
+		text: 'Encarrego-me diretamente das correções na aplicação, do refactoring do código e das otimizações de desempenho identificados como prioritários. Também automatizo uma parte da manutenção repetitiva. O objetivo: tornar a aplicação mais limpa, mais rápida e mais simples de fazer evoluir. O volume da intervenção é definido depois da auditoria: não se trata de uma reformulação ilimitada de todo o código.',
+		tools: [
+			'Refactoring',
+			'Dívida técnica',
+			'Desempenho',
+			'API e consultas',
+			'Dependências',
+			'Manutenção automatizada',
+		],
+		toolsAlternative: 'Conforme a stack',
 	},
 	{
 		name: 'Infraestrutura escalável',
-		summary: 'A infraestrutura acompanha a carga.',
-		text: 'Em dois níveis: serverless de contentores para volumes médios, Kubernetes quando a carga o justifica. Com Infrastructure as Code, a infraestrutura fica descrita em código e pode ser recriada.',
-		tools: ['Kubernetes', 'Terraform'],
+		summary: 'A arquitetura certa para o teu uso, sem complexidade desnecessária.',
+		text: 'Contentorizo a aplicação quando é necessário e escolho o alojamento adequado à sua carga: contentores geridos, serviços serverless ou Kubernetes. A Infrastructure as Code permite descrever, versionar e reproduzir os ambientes. O objetivo é poder evoluir sem sobredimensionar a infraestrutura logo de início.',
+		tools: [
+			'Docker',
+			'Containers as a Service',
+			'Kubernetes',
+			'Terraform',
+			'GCP',
+			'AWS',
+			'Azure',
+			'Scaleway',
+			'OVHcloud',
+			'Infomaniak',
+		],
+		toolsAlternative: 'E outros fornecedores',
 	},
 	{
 		name: 'Observabilidade',
-		summary: 'Vês os problemas antes dos clientes.',
-		text: 'Um painel de saúde em tempo real e um alerta imediato quando há um incidente.',
-		tools: ['Grafana', 'Prometheus'],
-		toolsAlternative: 'ou as ferramentas da tua cloud',
+		summary: 'Deixa de descobrir os incidentes pelos teus clientes.',
+		text: 'Implemento as métricas, registos, painéis e alertas necessários para acompanhar a saúde da aplicação e da sua infraestrutura. Em vez de verificar manualmente se tudo funciona, a tua equipa é avisada assim que surge um problema detetável e tem a informação necessária para intervir.',
+		tools: ['Grafana', 'Prometheus', 'Logs', 'Alertas', 'Monitorização', 'Tracing'],
+		toolsAlternative: 'Ferramentas nativas da cloud',
 	},
 ];
 
@@ -49,9 +80,9 @@ export const pt: Dictionary = {
 	ecology: {
 		link: 'Ecologia',
 		home: {
-			title: 'A infraestrutura também tem pegada.',
-			text: 'Onde a aplicação corre, quanto corre e com que eficiência mudam o impacto ambiental. A página de ecologia deixa-te estimar uma carga conforme o país onde corre, separando dados publicados, hipóteses e cálculos.',
-			link: 'Abrir a página de ecologia',
+			title: 'Uma cloud mais eficiente é também um digital mais responsável.',
+			text: 'A escolha do centro de dados, a arquitetura e a qualidade do código influenciam o consumo de recursos. Compara as soluções, descobre os dados disponíveis e percebe como reduzir as despesas desnecessárias e a pegada da tua aplicação.',
+			link: 'Explorar o impacto ambiental',
 		},
 		page: {
 			title: 'Ecologia e infraestrutura',
@@ -250,6 +281,108 @@ export const pt: Dictionary = {
 			},
 		},
 	},
+	availability: {
+		title: 'Disponibilidade e condições',
+		description:
+			'Compara os níveis de disponibilidade, calcula o teu tempo de indisponibilidade teórico e consulta as condições da garantia de conformidade.',
+		heading: 'Que nível de disponibilidade para o teu SaaS?',
+		intro:
+			'Um objetivo de disponibilidade escolhe-se de acordo com o impacto real de uma interrupção no teu negócio. Quanto mais alto for o objetivo, mais exigentes e dispendiosas se podem tornar a arquitetura, a redundância e a operação. Compara os níveis antes de decidir.',
+		calculator: {
+			title: 'Calcula o teu tempo de indisponibilidade teórico',
+			text: 'Escolhe um objetivo de disponibilidade e descobre o que representa em minutos por mês e em horas por ano. Estes valores são indicativos: um objetivo de arquitetura não garante, por si só, a disponibilidade de toda a aplicação.',
+			objective: 'Objetivo de disponibilidade',
+			month: 'Duração do mês',
+			days: 'dias',
+			result: 'Indisponibilidade máxima teórica',
+			perMonth: 'Por mês',
+			perYear: 'Equivalente anual',
+			about: 'cerca de',
+			formula:
+				'Fórmula, para uma medição 24 h/24: (1 − objetivo / 100) × duração do período em segundos, no mês escolhido ou num ano de 365 dias.',
+		},
+		levels: {
+			essential: {
+				title: 'Disponibilidade essencial',
+				text: 'Para uma aplicação que pode tolerar interrupções ocasionais. Uma infraestrutura simples pode bastar, consoante as dependências e os riscos aceites.',
+			},
+			reinforced: {
+				title: 'Disponibilidade reforçada',
+				text: 'Para reduzir as interrupções e proteger melhor os serviços críticos. A monitorização e a limitação dos pontos únicos de falha passam a ser prioritárias.',
+			},
+			high: {
+				title: 'Alta disponibilidade',
+				text: 'Para serviços em que uma interrupção prolongada tem um impacto importante. Uma redundância adequada, mecanismos de comutação e testes de recuperação podem ser necessários.',
+			},
+			veryHigh: {
+				title: 'Disponibilidade muito elevada',
+				text: 'Para utilizações particularmente sensíveis a interrupções. A arquitetura e os procedimentos de operação devem ser estudados caso a caso.',
+			},
+		},
+		architecture: {
+			title: 'O que o objetivo exige da arquitetura',
+			intro:
+				'Quanto mais alto for o objetivo, mais a arquitetura tem de limitar os pontos únicos de falha e recuperar depressa de uma avaria. As escolhas abaixo podem contribuir para isso, consoante o nível escolhido, mas nenhuma topologia garante, por si só, uma percentagem de disponibilidade.',
+			cards: [
+				{
+					title: 'Redundância',
+					text: 'Várias instâncias da aplicação, para que uma instância avariada não pare todo o serviço. Nos níveis menos exigentes, uma infraestrutura simples pode bastar.',
+				},
+				{
+					title: 'Backups',
+					text: 'Backups regulares, com restauros testados, seja qual for o nível. Permitem recomeçar depois de um incidente, sem impedir a interrupção.',
+				},
+				{
+					title: 'Base de dados',
+					text: 'Muitas vezes, o ponto único de falha mais delicado. Quando o objetivo sobe, uma réplica pronta a assumir o lugar pode tornar-se necessária.',
+				},
+				{
+					title: 'Multi-AZ',
+					text: 'Distribuir os recursos por várias zonas de disponibilidade da mesma região, para que a avaria de uma zona não pare todo o serviço.',
+				},
+				{
+					title: 'Comutação (failover)',
+					text: 'Mecanismos que redirecionam o tráfego para um recurso saudável, e testes de recuperação para verificar que funcionam.',
+				},
+				{
+					title: 'Monitorização',
+					text: 'Alertas para detetar uma interrupção e reagir depressa. Passa a ser prioritária a partir de 99,9 %.',
+				},
+			],
+		},
+		commitment: {
+			title: 'Um objetivo de disponibilidade não é um serviço de piquete.',
+			text: 'Concebo, configuro e verifico a infraestrutura para responder ao nível de disponibilidade escolhido na proposta de intervenção. O fornecedor cloud continua responsável pelos seus próprios compromissos de serviço. Depois da entrega, a monitorização diária e a resposta a incidentes cabem à organização prevista com a tua equipa ou com o teu prestador de operação. Não está incluída uma intervenção humana 24 h/24.',
+		},
+		guarantee: {
+			title: 'Três meses de garantia de conformidade técnica.',
+			text: 'Quando os quatro blocos são realizados no âmbito de uma prestação completa, os defeitos de conceção ou de configuração da infraestrutura que me sejam diretamente imputáveis podem ser comunicados durante os três meses seguintes à entrega. A sua análise e correção são asseguradas de acordo com o âmbito e as modalidades definidos no contrato. Esta garantia não cobre automaticamente os bugs da aplicação, as avarias externas nem as alterações não validadas.',
+		},
+		conditions: {
+			title: 'Condições e limites da garantia de conformidade',
+			intro:
+				'As condições contratuais da proposta de intervenção fazem fé. Os princípios abaixo explicam o funcionamento da garantia e não substituem o contrato assinado.',
+			items: [
+				{
+					title: 'O que está coberto',
+					text: 'Os defeitos de conceção, de parametrização ou de implementação da infraestrutura diretamente ligados aos trabalhos entregues e incluídos no âmbito contratual, comunicados nos três meses seguintes à entrega da prestação completa que cobre os quatro blocos.',
+				},
+				{
+					title: 'O que não está coberto',
+					text: 'As indisponibilidades próprias dos fornecedores cloud ou de serviços de terceiros, exceto quando revelam uma falha de conceção ou de configuração que caiba na minha prestação; os bugs e as evoluções da aplicação fora do âmbito corrigido; as alterações de código, de configuração ou de infraestrutura feitas sem validação e que estejam na origem do mau funcionamento; a utilização fora dos pressupostos de dimensionamento acordados; o incumprimento dos pré-requisitos ou das recomendações críticas documentados; os incidentes devidos a acessos, autorizações ou informações indisponíveis do lado do cliente.',
+				},
+				{
+					title: 'Responsabilidades',
+					text: 'O cliente mantém a responsabilidade pela operação corrente, pela validação das alterações e pela organização da resposta a incidentes, salvo prestação adicional explicitamente prevista. A garantia não inclui serviço de piquete 24 h/24, prazo de reação imediato nem compensação financeira automática.',
+				},
+				{
+					title: 'Como comunicar um defeito',
+					text: 'Durante o período coberto, o cliente envia uma descrição do problema e as informações úteis para o diagnóstico. Quando a não conformidade entra no âmbito da prestação, as modalidades de correção são acordadas de acordo com a sua natureza e o seu impacto.',
+				},
+			],
+		},
+		button: 'Vamos definir o objetivo de disponibilidade adequado ao teu projeto',
+	},
 	homePage: {
 		description: `${promise} Automatizo a qualidade do código, reduzo a dívida técnica e construo uma infraestrutura capaz de acompanhar o teu crescimento.`,
 		hero: {
@@ -289,8 +422,9 @@ export const pt: Dictionary = {
 		},
 		services: {
 			label: 'Serviços',
-			title: 'Quatro camadas da tua infraestrutura.',
-			note: 'Contratas os blocos que quiseres, em qualquer combinação. No máximo 30 dias, a contar do início da Implementação. O bloco 3 precisa de uma aplicação contentorizada, pelo bloco 2 ou pela tua equipa.',
+			title: 'Quatro alavancas para tornar o teu SaaS fiável e fazê-lo crescer.',
+			intro:
+				'Da qualidade do código à monitorização em produção, intervenho nos pontos que travam a tua equipa. Depois de um diagnóstico, definimos juntos o âmbito, as prioridades e a ordem das intervenções. Podes confiar-me uma necessidade específica ou um projeto completo.',
 			blockLabel: 'Bloco',
 			toolsLabel: 'Ferramentas',
 			blocks,
@@ -303,10 +437,12 @@ export const pt: Dictionary = {
 					production: 'produção',
 					blocked: 'bloqueado',
 				},
-				containers: {
-					description: 'O mesmo contentor corre igual no portátil e em produção.',
-					laptop: 'portátil',
-					production: 'produção',
+				cleanup: {
+					description:
+						'Um bug e código duplicado desaparecem: o código fica mais curto e o tempo de resposta desce.',
+					bug: 'bug',
+					duplicate: '×2',
+					responseTime: 'tempo de resposta',
 				},
 				scaling: {
 					description: 'As instâncias aumentam com a carga e voltam a diminuir.',
@@ -490,9 +626,9 @@ export const pt: Dictionary = {
 			},
 		},
 		about: {
-			title: 'Quem é o Julien',
+			title: 'Quem é o Julien?',
 			wayOfWorking:
-				'Trabalho à distância, em português, francês e inglês. Uso tecnologias standard, sem lock-in, e documento tudo para a tua equipa ficar autónoma.',
+				'Trabalho no teu projeto em francês, inglês ou português. Uso tecnologias modernas e comprovadas, limito tanto quanto possível a dependência de um fornecedor e documento o que entrego para que a tua equipa continue autónoma. As minhas soluções adaptam-se às tuas restrições técnicas e de negócio, e não o contrário.',
 			linkedin: 'Ver o meu perfil no LinkedIn',
 		},
 		testimonials: {
@@ -506,15 +642,11 @@ export const pt: Dictionary = {
 			translated: 'Traduzido do francês',
 			malt: 'Ver no Malt',
 		},
-		questions: {
-			label: 'Perguntas',
-			title: 'O essencial, antes da Conversa.',
-			byAudience: 'Perguntas para o teu perfil',
-		},
 		finalCta: {
-			title: 'Nunca perdes a infraestrutura.',
-			text: 'Mesmo que a tua equipa não avance logo com os testes, ficas com uma pipeline limpa, documentada e com os standards do mercado, pronta para quando decidires.',
-			conversation: 'Conversa de 45 min por Google Meet, gratuita e sem compromisso.',
+			title: 'O teu SaaS merece mais do que correções de emergência.',
+			text: 'Já tens um projeto em mente, ou simplesmente perguntas sobre o teu código, a tua infraestrutura ou o teu próximo deploy? Vamos falar disso. Uma primeira conversa chega para identificar as prioridades e ver como te posso ajudar.',
+			button: 'Marcar uma conversa gratuita',
+			conversation: '45 minutos por Google Meet. Sem compromisso.',
 			bookingNotice:
 				'A página de marcação está em francês, mas a Conversa pode ser em inglês ou em português.',
 		},

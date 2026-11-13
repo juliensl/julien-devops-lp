@@ -25,6 +25,14 @@ const ENTRIES: { slug: string; name: Record<Language, string> }[] = [
 			pt: 'Soberania dos dados',
 		},
 	},
+	{
+		slug: 'availability/',
+		name: {
+			fr: 'Disponibilité & conditions',
+			en: 'Disponibilité & conditions',
+			pt: 'Disponibilidade e condições',
+		},
+	},
 ];
 
 /** The submenu's button: the `<summary>` of its `<details>`. */

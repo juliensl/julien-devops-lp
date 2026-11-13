@@ -30,6 +30,11 @@ export function sovereigntyPath(language: Language): string {
 	return `${PREFIXES[language]}sovereignty/`;
 }
 
+/** The availability page in a language. */
+export function availabilityPath(language: Language): string {
+	return `${PREFIXES[language]}availability/`;
+}
+
 /** A legal page in a language: `/pt/legal/` or `/pt/privacy/`. */
 export function legalPath(language: Language, page: LegalPageId): string {
 	return `${PREFIXES[language]}${page}/`;

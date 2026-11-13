@@ -151,16 +151,14 @@ inEachBuild((build) => {
 				await expectEndBesideFinalButton(page);
 			});
 
-			test('when the questions open, it still ends beside the final button, further down', async ({
+			test('when the text grows, as with a larger font size setting, it still ends beside the final button, further down', async ({
 				page,
 			}) => {
 				await page.setViewportSize({ width: 1280, height: 800 });
 				await openWithClock(page, prefix);
-				const questions = page.locator('main details');
-				for (let k = 0; k < (await questions.count()); k++) {
-					await questions.nth(k).locator('summary').click();
-				}
-				await expect(questions.last()).toHaveAttribute('open');
+				const before = await pageHeight(page);
+				await page.evaluate(() => (document.documentElement.style.fontSize = '125%'));
+				expect(await pageHeight(page)).toBeGreaterThan(before);
 				await expectEndBesideFinalButton(page);
 			});
 

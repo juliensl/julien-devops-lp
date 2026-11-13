@@ -20,6 +20,7 @@ interface Testimonial {
 }
 
 /** The authorisations cover every language (#51). The English translations are drafts. */
+// The page shows them in this order, the one Julien chose.
 const TESTIMONIALS: Testimonial[] = [
 	{
 		firstName: 'Thibaud',
@@ -39,32 +40,6 @@ const TESTIMONIALS: Testimonial[] = [
 			pt: {
 				text: [
 					'O Julien foi muito profissional na abordagem. Interveio num âmbito preciso e ajudou a nossa equipa técnica sénior, que já tinha boas noções, mas o DevOps é uma disciplina por direito próprio e é a trabalhar com o Julien que ficamos convencidos disso. Um perfil a recomendar a 100 %.',
-				],
-				approved: true,
-			},
-		},
-	},
-	{
-		firstName: 'Adam',
-		company: 'Venus consulting',
-		role: { fr: 'Expert devops', en: 'DevOps expert', pt: 'Especialista DevOps' },
-		text: [
-			"J'ai fait appel à Julien dans le cadre d'un projet de formation en DevOps, et son intervention a été une totale réussite. Julien s'est montré parfaitement à la hauteur de la mission.",
-			"Grâce à sa double expertise de développeur et de spécialiste DevOps, il a su transmettre des compétences pointues avec beaucoup de pédagogie et de clarté. Son professionnalisme, sa maîtrise technique et sa capacité à s'adapter aux besoins du projet ont été des atouts majeurs. Je recommande vivement Julien à quiconque cherche un expert DevOps fiable, compétent et excellent pédagogue. Un grand merci pour ton travail !",
-		],
-		authorised: { fr: true, en: true, pt: true },
-		translations: {
-			en: {
-				text: [
-					'I brought Julien in for a DevOps training project, and his work was a complete success. Julien proved fully up to the task.',
-					"Thanks to his dual expertise as a developer and a DevOps specialist, he passed on advanced skills with great teaching ability and clarity. His professionalism, his technical mastery and his ability to adapt to the project's needs were major assets. I highly recommend Julien to anyone looking for a reliable, skilled DevOps expert who is an excellent teacher. Many thanks for your work!",
-				],
-				approved: false,
-			},
-			pt: {
-				text: [
-					'Recorri ao Julien para um projeto de formação em DevOps, e a intervenção dele foi um êxito total. O Julien esteve perfeitamente à altura da missão.',
-					'Graças à dupla experiência de programador e de especialista DevOps, soube transmitir competências avançadas com muita pedagogia e clareza. O profissionalismo, o domínio técnico e a capacidade de se adaptar às necessidades do projeto foram trunfos importantes. Recomendo vivamente o Julien a quem procure um especialista DevOps fiável, competente e excelente pedagogo. Muito obrigado pelo teu trabalho!',
 				],
 				approved: true,
 			},
@@ -94,6 +69,32 @@ const TESTIMONIALS: Testimonial[] = [
 					'O Julien ajudou-nos muito nos nossos temas de DevOps, com seriedade, eficácia e muita pedagogia.',
 					'Percebeu logo o nosso contexto, propôs soluções adaptadas e permitiu-nos melhorar a estabilidade e a fiabilidade da nossa plataforma. A comunicação foi sempre simples, clara e agradável.',
 					'É alguém fiável, disponível e muito competente. Recomendamos o Julien sem hesitar e voltaremos a trabalhar com ele com todo o gosto.',
+				],
+				approved: true,
+			},
+		},
+	},
+	{
+		firstName: 'Adam',
+		company: 'Venus consulting',
+		role: { fr: 'Expert devops', en: 'DevOps expert', pt: 'Especialista DevOps' },
+		text: [
+			"J'ai fait appel à Julien dans le cadre d'un projet de formation en DevOps, et son intervention a été une totale réussite. Julien s'est montré parfaitement à la hauteur de la mission.",
+			"Grâce à sa double expertise de développeur et de spécialiste DevOps, il a su transmettre des compétences pointues avec beaucoup de pédagogie et de clarté. Son professionnalisme, sa maîtrise technique et sa capacité à s'adapter aux besoins du projet ont été des atouts majeurs. Je recommande vivement Julien à quiconque cherche un expert DevOps fiable, compétent et excellent pédagogue. Un grand merci pour ton travail !",
+		],
+		authorised: { fr: true, en: true, pt: true },
+		translations: {
+			en: {
+				text: [
+					'I brought Julien in for a DevOps training project, and his work was a complete success. Julien proved fully up to the task.',
+					"Thanks to his dual expertise as a developer and a DevOps specialist, he passed on advanced skills with great teaching ability and clarity. His professionalism, his technical mastery and his ability to adapt to the project's needs were major assets. I highly recommend Julien to anyone looking for a reliable, skilled DevOps expert who is an excellent teacher. Many thanks for your work!",
+				],
+				approved: false,
+			},
+			pt: {
+				text: [
+					'Recorri ao Julien para um projeto de formação em DevOps, e a intervenção dele foi um êxito total. O Julien esteve perfeitamente à altura da missão.',
+					'Graças à dupla experiência de programador e de especialista DevOps, soube transmitir competências avançadas com muita pedagogia e clareza. O profissionalismo, o domínio técnico e a capacidade de se adaptar às necessidades do projeto foram trunfos importantes. Recomendo vivamente o Julien a quem procure um especialista DevOps fiável, competente e excelente pedagogo. Muito obrigado pelo teu trabalho!',
 				],
 				approved: true,
 			},
