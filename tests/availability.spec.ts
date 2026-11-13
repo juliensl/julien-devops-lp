@@ -3,7 +3,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { maxDowntime } from '../src/config/availability.ts';
 import { inEachBuild } from './builds';
-import { LANGUAGES, NAME, type Language } from './expected';
+import { BOOKING_PAGE, LANGUAGES, NAME, type Language } from './expected';
 
 const PATH = 'availability/';
 
@@ -32,6 +32,88 @@ const FRENCH = {
 		formula:
 			'Formule, pour une mesure 24 h/24 : (1 − objectif / 100) × durée de la période en secondes, sur le mois choisi ou sur une année de 365 jours.',
 	},
+	levels: [
+		[
+			'Disponibilité essentielle',
+			'Pour une application qui peut tolérer des interruptions occasionnelles. Une infrastructure simple peut suffire selon les dépendances et les risques acceptés.',
+		],
+		[
+			'Disponibilité renforcée',
+			'Pour réduire les interruptions et mieux sécuriser les services critiques. La supervision et la limitation des points uniques de défaillance deviennent prioritaires.',
+		],
+		[
+			'Haute disponibilité',
+			'Pour des services où une interruption prolongée a un impact important. Une redondance adaptée, des mécanismes de bascule et des tests de reprise peuvent être nécessaires.',
+		],
+		[
+			'Disponibilité très élevée',
+			"Pour des usages particulièrement sensibles aux interruptions. L'architecture et les procédures d'exploitation doivent être étudiées au cas par cas.",
+		],
+	],
+	// Not in Julien's document: written from the levels' texts, for Julien to review.
+	architecture: {
+		title: "Ce que l'objectif demande à l'architecture",
+		intro:
+			"Plus l'objectif est élevé, plus l'architecture doit limiter les points uniques de défaillance et se remettre vite d'une panne. Les choix ci-dessous peuvent y contribuer selon le niveau retenu, mais aucune topologie ne garantit, à elle seule, un pourcentage de disponibilité.",
+		cards: [
+			[
+				'Redondance',
+				"Plusieurs instances de l'application, pour qu'une instance en panne n'arrête pas tout le service. Aux niveaux les moins exigeants, une infrastructure simple peut suffire.",
+			],
+			[
+				'Sauvegardes',
+				"Des sauvegardes régulières, avec des restaurations testées, quel que soit le niveau. Elles permettent de repartir après un incident, sans empêcher l'interruption.",
+			],
+			[
+				'Base de données',
+				"Souvent le point unique de défaillance le plus délicat. Quand l'objectif augmente, une réplique prête à prendre le relais peut devenir nécessaire.",
+			],
+			[
+				'Multi-AZ',
+				"Répartir les ressources sur plusieurs zones de disponibilité d'une même région, pour que la panne d'une zone n'arrête pas tout le service.",
+			],
+			[
+				'Bascule (failover)',
+				"Des mécanismes qui redirigent le trafic vers une ressource saine, et des tests de reprise pour vérifier qu'ils fonctionnent.",
+			],
+			[
+				'Supervision',
+				'Des alertes pour détecter une interruption et réagir vite. Elle devient prioritaire dès 99,9 %.',
+			],
+		],
+	},
+	commitment: [
+		"Un objectif de disponibilité n'est pas une astreinte.",
+		"Je conçois, configure et vérifie l'infrastructure pour répondre au niveau de disponibilité retenu dans la proposition d'intervention. Le fournisseur cloud reste responsable de ses propres engagements de service. Après livraison, la surveillance quotidienne et la réaction aux incidents relèvent de l'organisation prévue avec ton équipe ou ton prestataire d'exploitation. Une intervention humaine 24 h/24 n'est pas incluse.",
+	],
+	guarantee: [
+		'Trois mois de garantie de conformité technique.',
+		"Lorsque les quatre blocs sont réalisés dans le cadre d'une prestation complète, les défauts de conception ou de configuration de l'infrastructure qui me sont directement imputables peuvent être signalés pendant les trois mois suivant la livraison. Leur analyse et leur correction sont prises en charge selon le périmètre et les modalités définis au contrat. Cette garantie ne couvre pas automatiquement les bugs applicatifs, les pannes externes ou les modifications non validées.",
+	],
+	conditions: {
+		title: 'Conditions et limites de la garantie de conformité',
+		intro:
+			"Les conditions contractuelles de la proposition d'intervention font foi. Les principes ci-dessous expliquent le fonctionnement de la garantie et ne remplacent pas le contrat signé.",
+		items: [
+			[
+				'Ce qui est couvert',
+				"Les défauts de conception, de paramétrage ou de déploiement de l'infrastructure directement liés aux travaux livrés et inclus dans le périmètre contractuel, signalés dans les trois mois suivant la livraison de la prestation complète couvrant les quatre blocs.",
+			],
+			[
+				"Ce qui n'est pas couvert",
+				"Les indisponibilités propres aux fournisseurs cloud ou à des services tiers, sauf lorsqu'elles révèlent une faute de conception ou de configuration relevant de ma prestation ; les bugs et évolutions applicatives hors du périmètre corrigé ; les changements de code, de configuration ou d'infrastructure effectués sans validation et à l'origine du dysfonctionnement ; l'utilisation en dehors des hypothèses de dimensionnement convenues ; le non-respect des prérequis ou recommandations critiques documentés ; les incidents dus à des accès, autorisations ou informations indisponibles du côté client.",
+			],
+			[
+				'Responsabilités',
+				"Le client conserve la responsabilité de l'exploitation courante, de la validation des changements et de l'organisation de la réponse aux incidents, sauf prestation supplémentaire explicitement prévue. La garantie n'inclut pas d'astreinte 24 h/24, de délai de réaction immédiat ni de compensation financière automatique.",
+			],
+			[
+				'Comment signaler un défaut',
+				'Pendant la période couverte, le client transmet une description du problème et les informations utiles au diagnostic. Lorsque la non-conformité entre dans le périmètre de la prestation, les modalités de correction sont convenues en fonction de sa nature et de son impact.',
+			],
+		],
+	},
+	button: "Définissons l'objectif de disponibilité adapté à ton projet",
 };
 type Texts = typeof FRENCH;
 const EXPECTED: Record<Language, Texts> = {
@@ -57,6 +139,87 @@ const EXPECTED: Record<Language, Texts> = {
 			formula:
 				'Fórmula, para uma medição 24 h/24: (1 − objetivo / 100) × duração do período em segundos, no mês escolhido ou num ano de 365 dias.',
 		},
+		levels: [
+			[
+				'Disponibilidade essencial',
+				'Para uma aplicação que pode tolerar interrupções ocasionais. Uma infraestrutura simples pode bastar, consoante as dependências e os riscos aceites.',
+			],
+			[
+				'Disponibilidade reforçada',
+				'Para reduzir as interrupções e proteger melhor os serviços críticos. A monitorização e a limitação dos pontos únicos de falha passam a ser prioritárias.',
+			],
+			[
+				'Alta disponibilidade',
+				'Para serviços em que uma interrupção prolongada tem um impacto importante. Uma redundância adequada, mecanismos de comutação e testes de recuperação podem ser necessários.',
+			],
+			[
+				'Disponibilidade muito elevada',
+				'Para utilizações particularmente sensíveis a interrupções. A arquitetura e os procedimentos de operação devem ser estudados caso a caso.',
+			],
+		],
+		architecture: {
+			title: 'O que o objetivo exige da arquitetura',
+			intro:
+				'Quanto mais alto for o objetivo, mais a arquitetura tem de limitar os pontos únicos de falha e recuperar depressa de uma avaria. As escolhas abaixo podem contribuir para isso, consoante o nível escolhido, mas nenhuma topologia garante, por si só, uma percentagem de disponibilidade.',
+			cards: [
+				[
+					'Redundância',
+					'Várias instâncias da aplicação, para que uma instância avariada não pare todo o serviço. Nos níveis menos exigentes, uma infraestrutura simples pode bastar.',
+				],
+				[
+					'Backups',
+					'Backups regulares, com restauros testados, seja qual for o nível. Permitem recomeçar depois de um incidente, sem impedir a interrupção.',
+				],
+				[
+					'Base de dados',
+					'Muitas vezes, o ponto único de falha mais delicado. Quando o objetivo sobe, uma réplica pronta a assumir o lugar pode tornar-se necessária.',
+				],
+				[
+					'Multi-AZ',
+					'Distribuir os recursos por várias zonas de disponibilidade da mesma região, para que a avaria de uma zona não pare todo o serviço.',
+				],
+				[
+					'Comutação (failover)',
+					'Mecanismos que redirecionam o tráfego para um recurso saudável, e testes de recuperação para verificar que funcionam.',
+				],
+				[
+					'Monitorização',
+					'Alertas para detetar uma interrupção e reagir depressa. Passa a ser prioritária a partir de 99,9 %.',
+				],
+			],
+		},
+		commitment: [
+			'Um objetivo de disponibilidade não é um serviço de piquete.',
+			'Concebo, configuro e verifico a infraestrutura para responder ao nível de disponibilidade escolhido na proposta de intervenção. O fornecedor cloud continua responsável pelos seus próprios compromissos de serviço. Depois da entrega, a monitorização diária e a resposta a incidentes cabem à organização prevista com a tua equipa ou com o teu prestador de operação. Não está incluída uma intervenção humana 24 h/24.',
+		],
+		guarantee: [
+			'Três meses de garantia de conformidade técnica.',
+			'Quando os quatro blocos são realizados no âmbito de uma prestação completa, os defeitos de conceção ou de configuração da infraestrutura que me sejam diretamente imputáveis podem ser comunicados durante os três meses seguintes à entrega. A sua análise e correção são asseguradas de acordo com o âmbito e as modalidades definidos no contrato. Esta garantia não cobre automaticamente os bugs da aplicação, as avarias externas nem as alterações não validadas.',
+		],
+		conditions: {
+			title: 'Condições e limites da garantia de conformidade',
+			intro:
+				'As condições contratuais da proposta de intervenção fazem fé. Os princípios abaixo explicam o funcionamento da garantia e não substituem o contrato assinado.',
+			items: [
+				[
+					'O que está coberto',
+					'Os defeitos de conceção, de parametrização ou de implementação da infraestrutura diretamente ligados aos trabalhos entregues e incluídos no âmbito contratual, comunicados nos três meses seguintes à entrega da prestação completa que cobre os quatro blocos.',
+				],
+				[
+					'O que não está coberto',
+					'As indisponibilidades próprias dos fornecedores cloud ou de serviços de terceiros, exceto quando revelam uma falha de conceção ou de configuração que caiba na minha prestação; os bugs e as evoluções da aplicação fora do âmbito corrigido; as alterações de código, de configuração ou de infraestrutura feitas sem validação e que estejam na origem do mau funcionamento; a utilização fora dos pressupostos de dimensionamento acordados; o incumprimento dos pré-requisitos ou das recomendações críticas documentados; os incidentes devidos a acessos, autorizações ou informações indisponíveis do lado do cliente.',
+				],
+				[
+					'Responsabilidades',
+					'O cliente mantém a responsabilidade pela operação corrente, pela validação das alterações e pela organização da resposta a incidentes, salvo prestação adicional explicitamente prevista. A garantia não inclui serviço de piquete 24 h/24, prazo de reação imediato nem compensação financeira automática.',
+				],
+				[
+					'Como comunicar um defeito',
+					'Durante o período coberto, o cliente envia uma descrição do problema e as informações úteis para o diagnóstico. Quando a não conformidade entra no âmbito da prestação, as modalidades de correção são acordadas de acordo com a sua natureza e o seu impacto.',
+				],
+			],
+		},
+		button: 'Vamos definir o objetivo de disponibilidade adequado ao teu projeto',
 	},
 };
 
@@ -162,6 +325,65 @@ inEachBuild((build) => {
 				await expect(result(page)).toContainText(perYear('8 h 45 min 36 s'));
 				await expect(calculator(page)).toContainText(c.formula);
 			});
+		});
+
+		test(`${path}: shows the four levels, each with its objective, its name and its text`, async ({
+			page,
+		}) => {
+			await page.goto(path);
+			const levels = calculator(page).getByRole('listitem');
+			await expect(levels).toHaveCount(4);
+			for (const [k, [name, text]] of t.levels.entries()) {
+				await expect(levels.nth(k).getByRole('heading', { level: 3 })).toHaveText(
+					`${percent(LEVELS[k].objective)} ${name}`,
+				);
+				await expect(levels.nth(k)).toContainText(text);
+			}
+		});
+
+		test(`${path}: explains what the objective asks of the architecture`, async ({ page }) => {
+			await page.goto(path);
+			const section = page.getByRole('region', { name: t.architecture.title });
+			await expect(section).toContainText(t.architecture.intro);
+			const cards = section.getByRole('listitem');
+			await expect(cards).toHaveCount(t.architecture.cards.length);
+			for (const [k, [title, text]] of t.architecture.cards.entries()) {
+				await expect(cards.nth(k).getByRole('heading', { level: 3 })).toHaveText(title);
+				await expect(cards.nth(k)).toContainText(text);
+			}
+		});
+
+		test(`${path}: says an objective is not on-call duty, and what the three-month guarantee covers`, async ({
+			page,
+		}) => {
+			await page.goto(path);
+			for (const [title, text] of [t.commitment, t.guarantee]) {
+				await expect(page.getByRole('region', { name: title })).toContainText(text);
+			}
+		});
+
+		test(`${path}: shows the guarantee's conditions, which the signed contract overrides`, async ({
+			page,
+		}) => {
+			await page.goto(path);
+			const section = page.getByRole('region', { name: t.conditions.title });
+			await expect(section).toContainText(t.conditions.intro);
+			await expect(section.getByRole('heading', { level: 3 })).toHaveText(
+				t.conditions.items.map(([title]) => title),
+			);
+			for (const [, text] of t.conditions.items) await expect(section).toContainText(text);
+		});
+
+		test(`${path}: ends with the button to the booking page`, async ({ page }) => {
+			await page.goto(path);
+			const last = page.getByRole('main').getByRole('link').last();
+			await expect(last).toHaveText(t.button);
+			await expect(last).toHaveAttribute('href', BOOKING_PAGE);
+		});
+
+		test(`${path}: shows no price`, async ({ page }) => {
+			await page.goto(path);
+			expect(await page.getByRole('main').innerText()).not.toMatch(/[€$£]|\b(EUR|USD)\b/);
 		});
 
 		test(`${path}: has its title, its description, its heading and the introduction`, async ({

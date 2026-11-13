@@ -15,6 +15,7 @@ import { values } from '../config/values';
 import { dictionaries } from '../i18n';
 import Base from '../layouts/Base.astro';
 import { withNonBreakingSpaces } from '../lib/spaces';
+import BookingButton from './BookingButton';
 import ScrollReveal from './ScrollReveal.astro';
 
 interface Props {
@@ -24,7 +25,7 @@ interface Props {
 const { language } = Astro.props;
 const t = dictionaries[language];
 const page = t.availability;
-const { calculator } = page;
+const { calculator, levels, architecture, commitment, guarantee, conditions } = page;
 
 /** An objective as the page writes it: "99,9 %", or "99.9%" in English. */
 const percent = (objective: number) =>
@@ -142,7 +143,71 @@ const first = {
 					</p>
 				</div>
 			</div>
+
+			<ul class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+				{LEVEL_IDS.map((id) => (
+					<li data-reveal class="card border-t border-line-strong">
+						<h3>
+							<span class="level">{percent(LEVELS[id])}</span> {levels[id].title}
+						</h3>
+						<p>{withNonBreakingSpaces(levels[id].text)}</p>
+					</li>
+				))}
+			</ul>
 		</section>
+
+		<section aria-labelledby="architecture-title" class="page-width grid gap-4 pt-20">
+			<h2 id="architecture-title" data-reveal class="section-title">
+				{withNonBreakingSpaces(architecture.title)}
+			</h2>
+			<p data-reveal class="max-w-2xl text-foreground-secondary">
+				{withNonBreakingSpaces(architecture.intro)}
+			</p>
+			<ul class="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+				{architecture.cards.map(({ title, text }) => (
+					<li data-reveal class="card border-t-2 border-green">
+						<h3>{title}</h3>
+						<p>{withNonBreakingSpaces(text)}</p>
+					</li>
+				))}
+			</ul>
+		</section>
+
+		<div class="page-width grid gap-x-16 gap-y-14 pt-20 lg:grid-cols-2">
+			<section aria-labelledby="commitment-title" data-reveal class="grid content-start gap-4">
+				<h2 id="commitment-title" class="subsection-title">
+					{withNonBreakingSpaces(commitment.title)}
+				</h2>
+				<p class="text-foreground-secondary">{withNonBreakingSpaces(commitment.text)}</p>
+			</section>
+			<section aria-labelledby="guarantee-title" data-reveal class="grid content-start gap-4">
+				<h2 id="guarantee-title" class="subsection-title">
+					{withNonBreakingSpaces(guarantee.title)}
+				</h2>
+				<p class="text-foreground-secondary">{withNonBreakingSpaces(guarantee.text)}</p>
+			</section>
+		</div>
+
+		<section aria-labelledby="conditions-title" class="page-width grid gap-4 pt-20">
+			<h2 id="conditions-title" data-reveal class="subsection-title">
+				{withNonBreakingSpaces(conditions.title)}
+			</h2>
+			<p data-reveal class="max-w-3xl font-semibold">
+				{withNonBreakingSpaces(conditions.intro)}
+			</p>
+			<div class="mt-4 grid gap-x-12 gap-y-8 md:grid-cols-2">
+				{conditions.items.map(({ title, text }) => (
+					<div data-reveal class="grid content-start gap-2 border-t border-line-strong pt-5">
+						<h3 class="text-xl leading-[1.2]">{withNonBreakingSpaces(title)}</h3>
+						<p class="text-foreground-secondary">{withNonBreakingSpaces(text)}</p>
+					</div>
+				))}
+			</div>
+		</section>
+
+		<div data-reveal class="page-width pt-16">
+			<BookingButton text={page.button} />
+		</div>
 
 		<ScrollReveal />
 	</main>
@@ -194,9 +259,40 @@ const first = {
 		line-height: 1.1;
 	}
 
+	.subsection-title {
+		font-size: clamp(1.6rem, 3vw, 2.1rem);
+		line-height: 1.15;
+	}
+
+	/* The cards: open, with a line on top, as on the ecology page. */
+	.card {
+		display: grid;
+		align-content: start;
+		gap: 0.5rem;
+		padding-top: 1.25rem;
+	}
+	.card h3 {
+		font-size: 1.25rem;
+		line-height: 1.2;
+	}
+	.card p {
+		color: var(--color-foreground-secondary);
+		font-size: 0.9375rem;
+	}
+	/* A level's objective, on its own line above its name. */
+	.level {
+		display: block;
+		margin-bottom: 0.25rem;
+		font-family: var(--font-heading);
+		font-size: 2rem;
+		line-height: 1;
+		color: var(--color-green);
+		font-variant-numeric: tabular-nums;
+	}
+
 	.result {
 		font-family: var(--font-heading);
-		font-size: clamp(1.8rem, 4vw, 2.6rem);
+		font-size: clamp(1.7rem, 3.2vw, 2.2rem);
 		line-height: 1.05;
 		color: var(--color-green);
 		font-variant-numeric: tabular-nums;
