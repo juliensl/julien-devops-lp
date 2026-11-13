@@ -156,6 +156,14 @@ export const pt: Dictionary = {
 		},
 		back: 'Voltar à página principal',
 	},
+	availability: {
+		title: 'Disponibilidade e condições',
+		description:
+			'Compara os níveis de disponibilidade, calcula o teu tempo de indisponibilidade teórico e consulta as condições da garantia de conformidade.',
+		heading: 'Que nível de disponibilidade para o teu SaaS?',
+		intro:
+			'Um objetivo de disponibilidade escolhe-se de acordo com o impacto real de uma interrupção no teu negócio. Quanto mais alto for o objetivo, mais exigentes e dispendiosas se podem tornar a arquitetura, a redundância e a operação. Compara os níveis antes de decidir.',
+	},
 	homePage: {
 		description: `${promise} Automatizo a qualidade do código, reduzo a dívida técnica e construo uma infraestrutura capaz de acompanhar o teu crescimento.`,
 		hero: {

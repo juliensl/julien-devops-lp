@@ -177,6 +177,16 @@ export const fr = {
 		},
 		back: "Retour à la page d'accueil",
 	},
+	/** The availability page (§2 of Julien's document): the levels, the calculator and the guarantee. */
+	availability: {
+		/** In the «Ressources» menu, above the heading and in the browser's title. */
+		title: 'Disponibilité & conditions',
+		description:
+			"Compare les niveaux de disponibilité, calcule ton temps d'indisponibilité théorique et consulte les conditions de la garantie de conformité.",
+		heading: 'Quel niveau de disponibilité pour ton SaaS ?',
+		intro:
+			"Un objectif de disponibilité se choisit selon l'impact réel d'une interruption sur ton activité. Plus l'objectif est élevé, plus l'architecture, la redondance et l'exploitation peuvent devenir exigeantes et coûteuses. Compare les niveaux avant de décider.",
+	},
 	homePage: {
 		description: `${promise} J'automatise la qualité du code, je réduis la dette technique et je construis une infrastructure capable de suivre ta croissance.`,
 		hero: {

@@ -1,0 +1,29 @@
+---
+// The availability page: the four levels, the calculator of the longest downtime each one allows, what
+// they ask of the architecture, and the guarantee with its conditions. It ends with the button.
+import type { Language } from '../config/site';
+import { values } from '../config/values';
+import { dictionaries } from '../i18n';
+import Base from '../layouts/Base.astro';
+import { withNonBreakingSpaces } from '../lib/spaces';
+
+interface Props {
+	language: Language;
+}
+
+const { language } = Astro.props;
+const t = dictionaries[language];
+const page = t.availability;
+---
+
+<Base language={language} title={`${page.title} · ${values.name}`} description={page.description}>
+	<main>
+		<div class="page-width grid gap-5 pt-14 sm:pt-20">
+			<p class="label">{page.title}</p>
+			<h1 class="max-w-[20ch] text-[clamp(2rem,5vw,4.2rem)] leading-[1.05]">
+				{withNonBreakingSpaces(page.heading)}
+			</h1>
+			<p class="max-w-2xl text-lg text-foreground-secondary">{withNonBreakingSpaces(page.intro)}</p>
+		</div>
+	</main>
+</Base>
