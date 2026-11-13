@@ -445,27 +445,27 @@ export const fr: Dictionary = {
 					{
 						question: 'Que fais-tu, exactement ?',
 						answer:
-							"Je livre l'infrastructure DevOps dont un SaaS a besoin pour grandir, en quatre blocs : audit du code et pipeline CI, conteneurisation, infrastructure scalable et observabilité. Tu prends ceux que tu veux, dans la combinaison de ton choix.",
+							"J'interviens sur quatre domaines : audit et CI/CD, nettoyage et optimisation du code, infrastructure scalable et observabilité. L'objectif est de réduire les problèmes récurrents et de permettre à l'application de grandir sur des bases plus solides. Le périmètre de chaque mission est défini après diagnostic.",
 					},
 					{
 						question: 'Combien de temps ça prend ?',
 						answer:
-							"30 jours au maximum, quelle que soit la combinaison de blocs, à compter du début de la Mise en œuvre. Le délai exact figure dans la Proposition d'intervention.",
+							"Cela dépend de l'état du code, des services existants et des travaux prioritaires. Après le diagnostic, je propose un calendrier réaliste, avec des étapes et des livrables précis. Il n'y a pas de promesse artificielle de tout réaliser en 30 jours.",
 					},
 					{
 						question: 'Combien ça coûte ?',
 						answer:
-							"Un prix fixe, que je donne dans la Proposition d'intervention, après le Diagnostic gratuit.",
+							"Le prix est défini à partir du périmètre convenu après un premier diagnostic gratuit. La proposition distingue mes honoraires des éventuels coûts récurrents de cloud et d'outils.",
 					},
 					{
 						question: 'Comment ça commence ?',
 						answer:
-							"Par un Échange de 45 min sur Google Meet. Viennent ensuite le Diagnostic gratuit, la Proposition d'intervention, la Mise en œuvre et la Livraison et passation.",
+							"Nous commençons par un échange gratuit de 45 minutes. Viennent ensuite le diagnostic, la proposition d'intervention, la mise en œuvre avec des points d'avancement réguliers, puis la livraison et la passation à ton équipe.",
 					},
 					{
-						question: 'Je peux prendre seulement certains blocs ?',
+						question: 'Puis-je choisir seulement certains blocs ?',
 						answer:
-							'Oui, dans la combinaison de ton choix. Le bloc 3 demande une application conteneurisée, par le bloc 2 ou par ton équipe.',
+							"Oui, je peux intervenir sur un besoin ciblé. L'ordre et les dépendances techniques sont déterminés après diagnostic. La garantie de conformité technique de trois mois présentée sur ce site concerne uniquement les prestations complètes couvrant les quatre blocs.",
 					},
 				],
 			},
@@ -478,36 +478,37 @@ export const fr: Dictionary = {
 					{
 						question: 'Qui écrit les tests ?',
 						answer:
-							"Ton équipe. Je n'écris pas de tests : je livre le système qui les lance, les mesure et bloque ce qui est rouge.",
+							"Je mets en place et j'améliore l'automatisation des contrôles. Lorsque des tests ou des corrections de code sont nécessaires, nous décidons ensemble qui les réalise et dans quel périmètre. Dans le bloc d'optimisation, je peux écrire ou adapter les tests liés aux modifications que je prends en charge.",
 					},
 					{
-						question: 'Faut-il arrêter le développement ?',
+						question: "Faut-il arrêter le développement pendant l'intervention ?",
 						answer:
-							"Non. Le bloc 1 n'implique ni migration ni risque pour la production. Pour les blocs 2 et 3, le travail avance en parallèle (branches, environnements de test, infrastructure séparée). Certaines modifications demandent une coordination avec les devs, et à la fin de la migration, une courte période sans modification du code peut être nécessaire, convenue avec toi.",
+							"En principe non. Le travail est organisé avec des branches, des environnements adaptés et des validations progressives. Certaines migrations ou modifications critiques peuvent exiger une fenêtre de changement planifiée avec l'équipe.",
 					},
 					{
 						question: 'Avec quelles stacks et quels clouds travailles-tu ?',
 						answer:
-							'CI : GitHub Actions, GitLab CI, Azure DevOps et Google Cloud Build. Cloud : AWS, Google Cloud, Microsoft Azure, OVHcloud, Scaleway et Infomaniak. Le choix dépend des besoins et du budget, et peut inclure un hébergement à moindre impact environnemental.',
+							"J'utilise notamment GitHub Actions, GitLab CI, Terraform, Docker, Kubernetes, Grafana et les services natifs des clouds. Je travaille avec AWS, Google Cloud, Azure, Scaleway, OVHcloud et d'autres fournisseurs selon le projet. Les outils sont choisis en fonction du contexte, pas imposés à l'avance.",
 					},
 					{
 						question: 'De quels accès as-tu besoin ?',
 						answer:
-							"Pour le Diagnostic, un accès en lecture au dépôt. Un accès au cloud (métriques et logs) seulement si le problème touche l'infrastructure, les performances, les coûts ou la disponibilité. Jamais de mots de passe, de clés privées ni de droits d'administrateur. Pour la Mise en œuvre, j'ai besoin d'un accès en écriture au dépôt et d'un compte sur ton cloud avec les droits nécessaires pour créer l'infrastructure des blocs choisis. Tu retires ces accès à la Livraison et passation.",
+							"Pour le diagnostic, des accès en lecture au code et, si nécessaire, aux métriques et à la configuration cloud. Pour l'implémentation, des droits adaptés aux opérations convenues. Je privilégie des accès nominatifs, limités au strict nécessaire et révocables à la fin de la mission. Il n'est pas nécessaire de partager des mots de passe ou des clés privées.",
 					},
 					{
-						question: 'Comment fonctionne la Garantie de disponibilité ?',
+						question: 'Que couvre la garantie de trois mois ?',
 						answer:
-							"En 30 jours, je livre l'infrastructure. Pendant les 3 mois suivants, elle est disponible au moins 99 % du temps chaque mois. Sinon, je continue à travailler sans facturer jusqu'à y arriver. La Garantie s'applique avec les blocs 3 et 4, et demande un test écrit pour chaque bug corrigé, aucun dev qui passe outre un test au rouge, un accès en lecture au dépôt et un interlocuteur technique qui répond sous 48 h.",
+							"Pour une prestation complète couvrant les quatre blocs, elle concerne les défauts de conception ou de configuration de l'infrastructure qui me sont imputables, selon les conditions contractuelles. L'objectif de disponibilité est défini avec le client. Il ne s'agit ni d'une garantie de zéro bug applicatif, ni d'une astreinte 24 h/24.",
 					},
 					{
 						question: "Quels outils utilises-tu pour l'observabilité ?",
-						answer: 'Des outils standard, comme Grafana et Prometheus, ou ceux de ton cloud.',
+						answer:
+							"Selon le contexte, Grafana, Prometheus, des solutions de logs et de tracing, ou les outils de supervision natifs du fournisseur cloud. Le but est de disposer d'indicateurs utiles et d'alertes exploitables, plutôt que de multiplier les dashboards.",
 					},
 					{
 						question: 'Comment travaillons-nous ensemble ?',
 						answer:
-							'À distance, sur Google Meet. Je parle avec le CTO et avec les devs, surtout avec le CTO.',
+							"J'échange directement avec les personnes concernées : CTO, tech lead, développeurs et responsable du projet. Nous organisons des points d'avancement réguliers, généralement chaque semaine, et nous documentons les décisions importantes.",
 					},
 				],
 			},
@@ -517,34 +518,34 @@ export const fr: Dictionary = {
 				description: 'Risques, coûts, continuité, prévisibilité et impact sur le business.',
 				questions: [
 					{
-						question: 'Combien ça va coûter, et quand est-ce que je le saurai ?',
+						question: "Quand connaîtrai-je le budget de l'intervention ?",
 						answer:
-							"Un prix fixe, que je donne dans la Proposition d'intervention. La Proposition arrive après le Diagnostic gratuit, qui prend 2 à 3 jours ouvrés à partir du moment où j'ai les accès, ou 3 à 5 si le cloud est inclus.",
+							'Après le diagnostic gratuit, tu reçois une proposition précisant les travaux, le calendrier et le prix de mon intervention. Les éventuels coûts mensuels des fournisseurs sont présentés séparément.',
 					},
 					{
-						question: "Et les coûts de l'infrastructure ?",
+						question: 'Combien coûtera le cloud ensuite ?',
 						answer:
-							"En plus du prix fixe, l'infrastructure et les outils ont leur propre coût mensuel, que tu paies directement aux fournisseurs, sur tes comptes. Le service suppose un budget de 100 à 500 € par mois pour ces coûts.",
+							"Le coût dépend de l'architecture, du trafic, des données, de la région et du niveau de disponibilité recherché. Je présente une estimation argumentée avant les décisions structurantes, avec les hypothèses et les principaux postes de dépenses.",
 					},
 					{
-						question: 'Allons-nous dépendre de toi ?',
+						question: 'Mon entreprise va-t-elle dépendre de toi ?',
 						answer:
-							"Non. J'utilise uniquement des technologies standard et je documente tout. Tu changes de prestataire quand tu veux et tu ne perds jamais l'infrastructure.",
+							"Mon objectif est l'inverse : je privilégie des technologies documentées, une infrastructure décrite comme du code et une passation claire. Les dépendances propres au fournisseur choisi sont expliquées dès la conception.",
 					},
 					{
-						question: 'Quels risques pour la production ?',
+						question: 'Y a-t-il un risque pour la production ?',
 						answer:
-							"Le bloc 1 ne touche pas à la production. Pour les blocs 2 et 3, l'objectif est d'éviter les interruptions ; si la migration touche des bases de données ou des services critiques, une courte interruption, planifiée à l'avance, est possible. Il y a toujours un plan pour revenir à la version précédente.",
+							"Toute intervention présente des risques, mais ils sont évalués avant l'exécution. Nous préparons les tests, les sauvegardes et, lorsque c'est pertinent, un plan de retour arrière. Les changements sensibles sont coordonnés avec ton équipe.",
 					},
 					{
 						question: 'Quel retour sur investissement puis-je attendre ?',
 						answer:
-							"Moins de temps à corriger des problèmes. Plus de temps pour développer le produit. J'aide les équipes SaaS à automatiser les tests et les livraisons, à détecter les régressions plus tôt et à rendre l'infrastructure plus fiable, pour qu'elles puissent grandir avec plus de confiance.",
+							'Moins de temps perdu sur les incidents et les tâches répétitives, un code plus maintenable et des déploiements plus fiables. Les gains exacts dépendent de la situation de départ ; le diagnostic sert aussi à identifier les améliorations à plus forte valeur.',
 					},
 					{
-						question: 'Dans quelles langues et quels pays travailles-tu ?',
+						question: 'Dans quelles langues travailles-tu ?',
 						answer:
-							"Avec des clients de n'importe quel pays, à distance, en portugais, en français ou en anglais.",
+							"Je peux intervenir en français, en anglais et en portugais, selon les besoins de l'équipe et du projet.",
 					},
 				],
 			},
@@ -555,29 +556,29 @@ export const fr: Dictionary = {
 					'Les devs et tech leads qui vont travailler avec la pipeline et la nouvelle infrastructure.',
 				questions: [
 					{
-						question: "Qu'est-ce qui change au quotidien pour l'équipe ?",
+						question: "Qu'est-ce qui change au quotidien ?",
 						answer:
-							"L'objectif est de réduire le temps perdu en tâches manuelles et en problèmes récurrents, de faciliter la détection des régressions et de rendre les livraisons plus fiables. L'équipe bénéficie de processus plus clairs, d'une meilleure visibilité sur l'infrastructure et de plus de temps pour se concentrer sur le développement du produit. Les résultats dépendent du contexte et de l'état initial de chaque projet.",
+							"Des contrôles automatisés plus utiles, moins de tâches manuelles, une meilleure visibilité sur les problèmes et un code progressivement plus simple à maintenir. Les modifications de workflow sont préparées avec l'équipe, pas imposées sans discussion.",
 					},
 					{
-						question: 'Qui maintient la pipeline ensuite ?',
+						question: 'Qui maintient les pipelines après ton départ ?',
 						answer:
-							'Ton équipe. La documentation technique et la passation à la fin la rendent autonome.',
+							'Ton équipe conserve les outils, les configurations et la documentation. Je prévois une passation pour que leur fonctionnement soit compris et que les évolutions puissent être réalisées en autonomie.',
 					},
 					{
-						question: 'Avec qui parles-tu au quotidien ?',
+						question: 'Avec qui communiques-tu pendant la mission ?',
 						answer:
-							"Avec le CTO et avec les devs, surtout avec le CTO, sur Google Meet. Il n'y a pas de point d'avancement régulier.",
+							'Avec les interlocuteurs techniques et métier utiles au projet. Nous prévoyons un point de suivi régulier, normalement hebdomadaire, et des échanges complémentaires lorsque des décisions ou des validations sont nécessaires.',
 					},
 					{
-						question: 'Pouvons-nous continuer à coder pendant la migration ?',
+						question: 'Peut-on continuer à développer pendant les changements ?',
 						answer:
-							"Oui. Le travail avance en parallèle, sur des branches, des environnements de test et une infrastructure séparée. À la fin, une courte période sans modification du code peut être nécessaire, convenue avec l'équipe.",
+							"Oui, l'objectif est de préserver le rythme de développement. Les modifications sont préparées et testées en parallèle lorsque c'est possible. Une fenêtre de stabilisation ou de migration peut être convenue pour les changements sensibles.",
 					},
 					{
 						question: 'Quels outils allons-nous utiliser ?',
 						answer:
-							'Bloc 1 : SonarQube et Trivy. Bloc 2 : Docker. Bloc 3 : Kubernetes et Terraform. Bloc 4 : Grafana et Prometheus, ou les outils de ton cloud.',
+							"Il n'y a pas de stack imposée. Selon le projet : pipelines CI/CD, analyse de code, outils de refactoring et de performance, Docker, services de conteneurs managés, Kubernetes, Terraform, Grafana, Prometheus ou équivalents. Je privilégie les outils pertinents pour l'équipe et l'existant.",
 					},
 				],
 			},
