@@ -186,6 +186,24 @@ export const fr = {
 		heading: 'Quel niveau de disponibilité pour ton SaaS ?',
 		intro:
 			"Un objectif de disponibilité se choisit selon l'impact réel d'une interruption sur ton activité. Plus l'objectif est élevé, plus l'architecture, la redondance et l'exploitation peuvent devenir exigeantes et coûteuses. Compare les niveaux avant de décider.",
+		calculator: {
+			title: "Calcule ton temps d'indisponibilité théorique",
+			text: "Choisis un objectif de disponibilité et découvre ce qu'il représente en minutes par mois et en heures par an. Ces valeurs sont indicatives : un objectif d'architecture ne garantit pas, à lui seul, la disponibilité de toute l'application.",
+			/** The name of the choice of level, and of the chosen level in the result. */
+			objective: 'Objectif de disponibilité',
+			/** The name of the choice of 28, 30 or 31 days. */
+			month: 'Durée du mois',
+			/** After a number of days: "30 jours". */
+			days: 'jours',
+			/** The result's title, above the month's and the year's downtime. */
+			result: 'Indisponibilité maximale théorique',
+			perMonth: 'Par mois',
+			perYear: 'Équivalent annuel',
+			/** Before a downtime rounded to the second, in place of "≈", which the font lacks. */
+			about: 'environ',
+			formula:
+				'Formule, pour une mesure 24 h/24 : (1 − objectif / 100) × durée de la période en secondes, sur le mois choisi ou sur une année de 365 jours.',
+		},
 	},
 	homePage: {
 		description: `${promise} J'automatise la qualité du code, je réduis la dette technique et je construis une infrastructure capable de suivre ta croissance.`,

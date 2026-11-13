@@ -1,11 +1,21 @@
 ---
 // The availability page: the four levels, the calculator of the longest downtime each one allows, what
 // they ask of the architecture, and the guarantee with its conditions. It ends with the button.
-import type { Language } from '../config/site';
+import {
+	FIRST_LEVEL,
+	FIRST_MONTH,
+	LEVEL_IDS,
+	LEVELS,
+	MONTHS,
+	YEAR,
+	maxDowntime,
+} from '../config/availability';
+import { HTML_CODES, type Language } from '../config/site';
 import { values } from '../config/values';
 import { dictionaries } from '../i18n';
 import Base from '../layouts/Base.astro';
 import { withNonBreakingSpaces } from '../lib/spaces';
+import ScrollReveal from './ScrollReveal.astro';
 
 interface Props {
 	language: Language;
@@ -14,6 +24,20 @@ interface Props {
 const { language } = Astro.props;
 const t = dictionaries[language];
 const page = t.availability;
+const { calculator } = page;
+
+/** An objective as the page writes it: "99,9 %", or "99.9%" in English. */
+const percent = (objective: number) =>
+	`${new Intl.NumberFormat(HTML_CODES[language]).format(objective)}${language === 'en' ? '' : '\u00a0'}%`;
+/** A number of days as the page writes it: "30 jours". */
+const inDays = (days: number) => `${days}\u00a0${calculator.days}`;
+/** The figures of the first choice. The script rewrites them in place when the choice changes. */
+const first = {
+	objective: percent(LEVELS[FIRST_LEVEL]),
+	days: inDays(FIRST_MONTH),
+	month: maxDowntime(LEVELS[FIRST_LEVEL], FIRST_MONTH, calculator.about),
+	year: maxDowntime(LEVELS[FIRST_LEVEL], YEAR, calculator.about),
+};
 ---
 
 <Base language={language} title={`${page.title} · ${values.name}`} description={page.description}>
@@ -25,5 +49,193 @@ const page = t.availability;
 			</h1>
 			<p class="max-w-2xl text-lg text-foreground-secondary">{withNonBreakingSpaces(page.intro)}</p>
 		</div>
+
+		<section
+			aria-labelledby="calculator-title"
+			data-calculator
+			data-about={calculator.about}
+			class="page-width grid gap-10 pt-20"
+		>
+			<div data-reveal class="grid gap-4">
+				<h2 id="calculator-title" class="section-title">
+					{withNonBreakingSpaces(calculator.title)}
+				</h2>
+				<p class="max-w-2xl text-foreground-secondary">{withNonBreakingSpaces(calculator.text)}</p>
+			</div>
+
+			<div class="grid gap-x-12 gap-y-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
+				{/* Without JS a choice would change nothing: CSS hides them, and the page shows the first one. */}
+				<form
+					data-reveal
+					class="grid content-start gap-8 border-t border-line-strong pt-6 noscript:hidden"
+				>
+					<fieldset>
+						<legend class="mb-3">{calculator.objective}</legend>
+						<div class="flex flex-wrap gap-2">
+							{LEVEL_IDS.map((id) => (
+								<label class="chip">
+									<input
+										type="radio"
+										name="objective"
+										value={LEVELS[id]}
+										checked={id === FIRST_LEVEL}
+									/>
+									<span>{percent(LEVELS[id])}</span>
+								</label>
+							))}
+						</div>
+					</fieldset>
+					<fieldset>
+						<legend class="mb-3">{calculator.month}</legend>
+						<div class="flex flex-wrap gap-2">
+							{MONTHS.map((days) => (
+								<label class="chip">
+									<input type="radio" name="days" value={days} checked={days === FIRST_MONTH} />
+									<span>{inDays(days)}</span>
+								</label>
+							))}
+						</div>
+					</fieldset>
+				</form>
+
+				<div data-reveal class="grid content-start gap-6 border-l-2 border-green pl-6">
+					<div role="group" aria-labelledby="result-title" class="grid gap-6">
+						<h3 id="result-title" class="text-xl">
+							{calculator.result}
+						</h3>
+						<p class="grid justify-items-start gap-1">
+							<span class="text-sm text-foreground-secondary">{calculator.objective}</span>{' '}
+							<span data-figure="objective" class="text-2xl font-semibold text-green tabular-nums">
+								{first.objective}
+							</span>
+						</p>
+						<div class="grid gap-6 sm:grid-cols-2">
+							<p class="grid justify-items-start gap-1.5">
+								<span class="text-sm text-foreground-secondary">
+									{calculator.perMonth} (<span data-figure="days">{first.days}</span>)
+								</span>{' '}
+								<span class="result" data-figure="month">
+									{first.month}
+								</span>
+							</p>
+							<p class="grid justify-items-start gap-1.5">
+								<span class="text-sm text-foreground-secondary">
+									{calculator.perYear} ({inDays(YEAR)})
+								</span>{' '}
+								<span class="result" data-figure="year">
+									{first.year}
+								</span>
+							</p>
+						</div>
+					</div>
+
+					{/* What screen readers hear once the choice has changed. */}
+					<p role="status" class="sr-only">
+						{calculator.objective}, <span data-figure="objective">{first.objective}</span>.{' '}
+						{calculator.perMonth} (<span data-figure="days">{first.days}</span>),{' '}
+						<span data-figure="month">{first.month}</span>. {calculator.perYear} ({inDays(YEAR)}),{' '}
+						<span data-figure="year">{first.year}</span>.
+					</p>
+
+					<p class="text-sm text-foreground-secondary">
+						{withNonBreakingSpaces(calculator.formula)}
+					</p>
+				</div>
+			</div>
+		</section>
+
+		<ScrollReveal />
 	</main>
 </Base>
+
+<script>
+	import { maxDowntime, YEAR } from '../config/availability';
+	import { afterLoad } from '../scripts/after-load';
+
+	// A choice rewrites the result at once, and screen readers hear the new one.
+	afterLoad(() => {
+		for (const calculator of document.querySelectorAll<HTMLElement>('[data-calculator]')) {
+			const form = calculator.querySelector('form')!;
+			const about = calculator.dataset.about!;
+
+			/** The figures of the chosen objective and month, as the page writes them. */
+			const figures = (): Record<string, string> => {
+				const objective = form.querySelector<HTMLInputElement>('[name="objective"]:checked')!;
+				const days = form.querySelector<HTMLInputElement>('[name="days"]:checked')!;
+				return {
+					objective: objective.nextElementSibling!.textContent!,
+					days: days.nextElementSibling!.textContent!,
+					month: maxDowntime(Number(objective.value), Number(days.value), about),
+					year: maxDowntime(Number(objective.value), YEAR, about),
+				};
+			};
+
+			/** Writes each figure in its `[data-figure]`, only where it changed: an unchanged status
+			 * says nothing. */
+			const show = () => {
+				const text = figures();
+				for (const element of calculator.querySelectorAll<HTMLElement>('[data-figure]')) {
+					const value = text[element.dataset.figure!];
+					if (element.textContent !== value) element.textContent = value;
+				}
+			};
+
+			form.addEventListener('change', show);
+			form.addEventListener('submit', (event) => event.preventDefault());
+			// The browser may have kept the choices of an earlier visit.
+			show();
+		}
+	});
+</script>
+
+<style>
+	.section-title {
+		font-size: clamp(1.9rem, 3.6vw, 2.6rem);
+		line-height: 1.1;
+	}
+
+	.result {
+		font-family: var(--font-heading);
+		font-size: clamp(1.8rem, 4vw, 2.6rem);
+		line-height: 1.05;
+		color: var(--color-green);
+		font-variant-numeric: tabular-nums;
+	}
+
+	/* The choices: the radio button covers its chip, so the whole chip is the target. */
+	.chip {
+		position: relative;
+		cursor: pointer;
+	}
+	.chip input {
+		position: absolute;
+		inset: 0;
+		margin: 0;
+		opacity: 0;
+		cursor: pointer;
+	}
+	.chip span {
+		display: inline-flex;
+		align-items: center;
+		min-height: 2.75rem;
+		padding: 0 1rem;
+		border: 1px solid var(--color-line-strong);
+		border-radius: 999px;
+		color: var(--color-foreground-secondary);
+		font-variant-numeric: tabular-nums;
+	}
+	.chip:hover span {
+		border-color: var(--color-green);
+		color: var(--color-foreground);
+	}
+	.chip input:checked + span {
+		border-color: var(--color-green);
+		background: var(--color-green);
+		color: var(--color-background);
+		font-weight: 600;
+	}
+	.chip input:focus-visible + span {
+		outline: 2px solid var(--color-green);
+		outline-offset: 3px;
+	}
+</style>

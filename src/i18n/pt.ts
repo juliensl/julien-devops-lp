@@ -163,6 +163,19 @@ export const pt: Dictionary = {
 		heading: 'Que nível de disponibilidade para o teu SaaS?',
 		intro:
 			'Um objetivo de disponibilidade escolhe-se de acordo com o impacto real de uma interrupção no teu negócio. Quanto mais alto for o objetivo, mais exigentes e dispendiosas se podem tornar a arquitetura, a redundância e a operação. Compara os níveis antes de decidir.',
+		calculator: {
+			title: 'Calcula o teu tempo de indisponibilidade teórico',
+			text: 'Escolhe um objetivo de disponibilidade e descobre o que representa em minutos por mês e em horas por ano. Estes valores são indicativos: um objetivo de arquitetura não garante, por si só, a disponibilidade de toda a aplicação.',
+			objective: 'Objetivo de disponibilidade',
+			month: 'Duração do mês',
+			days: 'dias',
+			result: 'Indisponibilidade máxima teórica',
+			perMonth: 'Por mês',
+			perYear: 'Equivalente anual',
+			about: 'cerca de',
+			formula:
+				'Fórmula, para uma medição 24 h/24: (1 − objetivo / 100) × duração do período em segundos, no mês escolhido ou num ano de 365 dias.',
+		},
 	},
 	homePage: {
 		description: `${promise} Automatizo a qualidade do código, reduzo a dívida técnica e construo uma infraestrutura capaz de acompanhar o teu crescimento.`,
