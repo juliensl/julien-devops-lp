@@ -1,8 +1,66 @@
-// The cloud provider chart (#66): the CTO picks a scenario and sees, for each of the 6 providers, a
-// bar stacked by criterion and a rating; a click on a bar shows the facts, with their date and source.
+// The «Choisir son cloud» page and its cloud provider chart: the CTO picks a scenario and sees, for each
+// of the 6 providers, a bar stacked by criterion and a rating; a click on a bar shows the facts, with
+// their date and source.
 import { expect, test, type Page } from '@playwright/test';
 import { inEachBuild } from './builds';
-import { LANGUAGES, type Language } from './expected';
+import { BOOKING_PAGE, LANGUAGES, NAME, type Language } from './expected';
+
+/** The page's texts, from Julien's document; English keeps the French ones until it is translated. */
+const FRENCH_PAGE = {
+	name: 'Choisir son cloud',
+	title: 'Quel cloud choisir pour ton entreprise ?',
+	intro:
+		'Le meilleur cloud dépend de ton produit, de ton équipe, de ta croissance, de ton budget et de tes contraintes réglementaires. Compare les options selon ton contexte, plutôt que de choisir un fournisseur uniquement sur sa notoriété.',
+	description:
+		'Le meilleur cloud dépend de ton produit, de ton équipe, de ta croissance, de ton budget et de tes contraintes réglementaires. Compare les fournisseurs selon tes priorités.',
+	end: 'Tu hésites entre plusieurs architectures ?',
+	endText: 'Parlons de ton projet et comparons les options adaptées à tes contraintes.',
+};
+const PAGE: Record<Language, typeof FRENCH_PAGE> = {
+	fr: FRENCH_PAGE,
+	en: FRENCH_PAGE,
+	pt: {
+		name: 'Escolher a cloud',
+		title: 'Que cloud escolher para a tua empresa?',
+		intro:
+			'A melhor cloud depende do teu produto, da tua equipa, do teu crescimento, do teu orçamento e das tuas restrições regulamentares. Compara as opções de acordo com o teu contexto, em vez de escolheres um fornecedor só pela notoriedade.',
+		description:
+			'A melhor cloud depende do teu produto, da tua equipa, do teu crescimento, do teu orçamento e das tuas restrições regulamentares. Compara os fornecedores de acordo com as tuas prioridades.',
+		end: 'Hesitas entre várias arquiteturas?',
+		endText: 'Vamos falar do teu projeto e comparar as opções adequadas às tuas restrições.',
+	},
+};
+
+const pathOf = (language: Language) => `${LANGUAGES[language].prefix}cloud/`;
+
+inEachBuild((build) => {
+	for (const language of build.phase.publishedLanguages) {
+		const path = pathOf(language);
+		const { name, title, intro, description, end, endText } = PAGE[language];
+
+		test(`${path}: the title, the description, the heading and the introduction`, async ({
+			page,
+		}) => {
+			await page.goto(path);
+			await expect(page).toHaveTitle(`${name} · ${NAME}`);
+			await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+				'content',
+				description,
+			);
+			await expect(page.getByRole('heading', { level: 1 })).toHaveText(title);
+			await expect(page.getByText(intro, { exact: true })).toBeVisible();
+		});
+
+		test(`${path}: ends with "${end}" and the button to the booking page`, async ({ page }) => {
+			await page.goto(path);
+			const section = page.getByRole('main').getByRole('region').last();
+			await expect(section.getByRole('heading', { level: 2 })).toHaveText(end);
+			await expect(section.getByText(endText, { exact: true })).toBeVisible();
+			const button = section.getByRole('link', { name: LANGUAGES[language].button, exact: true });
+			await expect(button).toHaveAttribute('href', BOOKING_PAGE);
+		});
+	}
+});
 
 /** In alphabetical order (#54). */
 const PROVIDERS = ['AWS', 'Google Cloud', 'Infomaniak', 'Microsoft Azure', 'OVHcloud', 'Scaleway'];

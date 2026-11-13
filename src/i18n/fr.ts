@@ -53,6 +53,23 @@ export const fr = {
 		pause: "Mettre l'animation en pause",
 		resume: "Reprendre l'animation",
 	},
+	/** The «Choisir son cloud» page: Julien's introduction, the cloud provider chart and the button. */
+	cloud: {
+		/** The page's entry in the «Ressources» submenu. */
+		link: 'Choisir son cloud',
+		page: {
+			title: 'Quel cloud choisir pour ton entreprise ?',
+			description:
+				'Le meilleur cloud dépend de ton produit, de ton équipe, de ta croissance, de ton budget et de tes contraintes réglementaires. Compare les fournisseurs selon tes priorités.',
+			intro:
+				'Le meilleur cloud dépend de ton produit, de ton équipe, de ta croissance, de ton budget et de tes contraintes réglementaires. Compare les options selon ton contexte, plutôt que de choisir un fournisseur uniquement sur sa notoriété.',
+			/** The end of the page, beside the button. */
+			cta: {
+				title: 'Tu hésites entre plusieurs architectures ?',
+				text: 'Parlons de ton projet et comparons les options adaptées à tes contraintes.',
+			},
+		},
+	},
 	/** The ecology page, and the links that lead to it. The texts of #54 are as validated there; the
 	 * others come from prototype v3. */
 	ecology: {

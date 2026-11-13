@@ -17,6 +17,20 @@ export const en: Dictionary = {
 		pause: 'Pause animation',
 		resume: 'Resume animation',
 	},
+	cloud: {
+		link: 'Choisir son cloud',
+		page: {
+			title: 'Quel cloud choisir pour ton entreprise ?',
+			description:
+				'Le meilleur cloud dépend de ton produit, de ton équipe, de ta croissance, de ton budget et de tes contraintes réglementaires. Compare les fournisseurs selon tes priorités.',
+			intro:
+				'Le meilleur cloud dépend de ton produit, de ton équipe, de ta croissance, de ton budget et de tes contraintes réglementaires. Compare les options selon ton contexte, plutôt que de choisir un fournisseur uniquement sur sa notoriété.',
+			cta: {
+				title: 'Tu hésites entre plusieurs architectures ?',
+				text: 'Parlons de ton projet et comparons les options adaptées à tes contraintes.',
+			},
+		},
+	},
 	ecology: {
 		link: 'Ecology',
 		home: {

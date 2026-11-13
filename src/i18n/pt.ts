@@ -46,6 +46,20 @@ export const pt: Dictionary = {
 		pause: 'Pausar animação',
 		resume: 'Retomar animação',
 	},
+	cloud: {
+		link: 'Escolher a cloud',
+		page: {
+			title: 'Que cloud escolher para a tua empresa?',
+			description:
+				'A melhor cloud depende do teu produto, da tua equipa, do teu crescimento, do teu orçamento e das tuas restrições regulamentares. Compara os fornecedores de acordo com as tuas prioridades.',
+			intro:
+				'A melhor cloud depende do teu produto, da tua equipa, do teu crescimento, do teu orçamento e das tuas restrições regulamentares. Compara as opções de acordo com o teu contexto, em vez de escolheres um fornecedor só pela notoriedade.',
+			cta: {
+				title: 'Hesitas entre várias arquiteturas?',
+				text: 'Vamos falar do teu projeto e comparar as opções adequadas às tuas restrições.',
+			},
+		},
+	},
 	ecology: {
 		link: 'Ecologia',
 		home: {
