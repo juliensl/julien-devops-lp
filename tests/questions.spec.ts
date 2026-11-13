@@ -1,5 +1,5 @@
 // «Os teus desafios» (#70): the page with the 23 questions by audience, with its filter, search and
-// index, the header submenu that leads to each audience, and the 5 general questions on the home page.
+// index, and the header submenu that leads to each audience. The home page has no questions.
 import { expect, test, type Page } from '@playwright/test';
 import { inEachBuild } from './builds';
 import { BOOKING_PAGE, LANGUAGES, NAME, type Language } from './expected';
@@ -138,8 +138,6 @@ const EXPECTED: Record<
 		notFound: string;
 		/** The line under «notFound», before the button. */
 		notFoundText: string;
-		/** The title of the home page's Questions section. */
-		homeTitle: string;
 	}
 > = {
 	pt: {
@@ -161,7 +159,6 @@ const EXPECTED: Record<
 		all: 'Ver todas as perguntas',
 		notFound: 'Não encontras a tua resposta?',
 		notFoundText: 'Marca uma conversa gratuita e vamos falar do teu contexto.',
-		homeTitle: 'O essencial, antes da Conversa.',
 	},
 	fr: {
 		menu: 'Tes défis',
@@ -188,7 +185,6 @@ const EXPECTED: Record<
 		all: 'Voir toutes les questions',
 		notFound: 'Tu ne trouves pas ta réponse ?',
 		notFoundText: 'Réserve un échange gratuit et parlons de ton contexte.',
-		homeTitle: "L'essentiel, avant l'Échange.",
 	},
 	en: {
 		menu: 'Your challenges',
@@ -209,7 +205,6 @@ const EXPECTED: Record<
 		all: 'See all questions',
 		notFound: 'Tu ne trouves pas ta réponse ?',
 		notFoundText: 'Réserve un échange gratuit et parlons de ton contexte.',
-		homeTitle: 'The essentials, before the Conversation.',
 	},
 };
 
@@ -229,19 +224,8 @@ const answerTo = (question: string) =>
 inEachBuild((build) => {
 	for (const language of build.phase.publishedLanguages) {
 		const path = questionsPath(language);
-		const {
-			menu,
-			title,
-			intro,
-			audiences,
-			filter,
-			questions,
-			index,
-			all,
-			notFound,
-			notFoundText,
-			homeTitle,
-		} = EXPECTED[language];
+		const { menu, title, intro, audiences, filter, questions, index, all, notFound, notFoundText } =
+			EXPECTED[language];
 		const home = LANGUAGES[language].prefix;
 
 		test.describe(path, () => {
@@ -473,58 +457,15 @@ inEachBuild((build) => {
 			});
 		});
 
-		test.describe(`${home}: the Questions section`, () => {
-			test.use({ javaScriptEnabled: false });
-
-			test('has the 5 general questions in <details>, which open without JS', async ({ page }) => {
-				await page.goto(home);
-				const section = page.getByRole('region', { name: homeTitle });
-				const summaries = section.locator('details > summary');
-				await expect(summaries).toHaveCount(COUNTS.general);
-				for (const summary of await summaries.all()) {
-					const answer = summary.locator('xpath=following-sibling::*').first();
-					await expect(answer).toBeHidden();
-					await summary.click();
-					await expect(answer).toBeVisible();
-				}
-			});
-
-			test("has shortcuts to the other audiences' questions and to all of them", async ({
-				page,
-			}) => {
-				await page.goto(home);
-				const links = page.getByRole('region', { name: homeTitle }).getByRole('link');
-				const hrefs = await links.evaluateAll((elements) =>
-					elements.map((a) => a.getAttribute('href')),
-				);
-				expect(hrefs).toEqual([`${path}#cto`, `${path}#ceo`, `${path}#team`, path]);
-				await expect(links.last()).toHaveAccessibleName(all);
-				await links.nth(1).click();
-				await expect(page).toHaveURL(`${path}#ceo`);
-				await expect(
-					page.getByRole('heading', { name: audiences.ceo, exact: true }),
-				).toBeInViewport();
-			});
+		test(`${home}: the questions are not on the home page`, async ({ page }) => {
+			await page.goto(home);
+			const main = page.getByRole('main');
+			await expect(main.locator('details')).toHaveCount(0);
+			await expect(main.getByRole('link', { name: all, exact: true })).toHaveCount(0);
 		});
 	}
 
 	if (build.phase.publishedLanguages.includes('fr')) {
-		test("/: the Questions section has Julien's general questions, word for word", async ({
-			page,
-		}) => {
-			await page.goto('/');
-			const questions = page
-				.getByRole('region', { name: EXPECTED.fr.homeTitle })
-				.locator('details');
-			await expect(questions.locator('summary')).toHaveText(
-				APPROVED.general.map(([question]) => question),
-			);
-			for (const [i, [, answer]] of APPROVED.general.entries()) {
-				await questions.nth(i).locator('summary').click();
-				await expect(questions.nth(i).getByText(answer, { exact: true })).toBeVisible();
-			}
-		});
-
 		test("/questions/: Julien's questions and answers, word for word", async ({ page }) => {
 			await page.goto(questionsPath('fr'));
 			const main = page.getByRole('main');

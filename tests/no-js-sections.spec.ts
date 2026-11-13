@@ -40,6 +40,18 @@ const FRENCH = {
 			],
 		],
 	},
+	about: {
+		title: 'Qui est Julien ?',
+		wayOfWorking:
+			"J'interviens sur ton projet en français, en anglais ou en portugais. J'utilise des technologies modernes et éprouvées, je limite autant que possible la dépendance à un fournisseur et je documente ce que je livre pour que ton équipe reste autonome. Mes solutions s'adaptent à tes contraintes techniques et métier, pas l'inverse.",
+		linkedin: 'Voir mon profil LinkedIn',
+	},
+	finalCta: {
+		title: 'Ton SaaS mérite mieux que des correctifs en urgence.',
+		text: "Tu as déjà un projet en tête, ou simplement des questions sur ton code, ton infrastructure ou ton prochain déploiement ? Parlons-en. Un premier échange suffit pour identifier les priorités et voir comment je peux t'aider.",
+		button: 'Réserver un échange gratuit',
+		conversation: '45 minutes sur Google Meet. Sans engagement.',
+	},
 };
 
 const EXPECTED = {
@@ -93,14 +105,16 @@ const EXPECTED = {
 			note: 'Nos 3 meses seguintes à entrega.',
 		},
 		about: {
-			title: 'Quem é o Julien',
+			title: 'Quem é o Julien?',
 			wayOfWorking:
-				'Trabalho à distância, em português, francês e inglês. Uso tecnologias standard, sem lock-in, e documento tudo para a tua equipa ficar autónoma.',
+				'Trabalho no teu projeto em francês, inglês ou português. Uso tecnologias modernas e comprovadas, limito tanto quanto possível a dependência de um fornecedor e documento o que entrego para que a tua equipa continue autónoma. As minhas soluções adaptam-se às tuas restrições técnicas e de negócio, e não o contrário.',
 			linkedin: 'Ver o meu perfil no LinkedIn',
 		},
 		finalCta: {
-			title: 'Nunca perdes a infraestrutura.',
-			conversation: 'Conversa de 45 min por Google Meet, gratuita e sem compromisso.',
+			title: 'O teu SaaS merece mais do que correções de emergência.',
+			text: 'Já tens um projeto em mente, ou simplesmente perguntas sobre o teu código, a tua infraestrutura ou o teu próximo deploy? Vamos falar disso. Uma primeira conversa chega para identificar as prioridades e ver como te posso ajudar.',
+			button: 'Marcar uma conversa gratuita',
+			conversation: '45 minutos por Google Meet. Sem compromisso.',
 			bookingNotice:
 				'A página de marcação está em francês, mas a Conversa pode ser em inglês ou em português.',
 		},
@@ -128,17 +142,8 @@ const EXPECTED = {
 			captions: ['en service', 'au plus 1 % hors service'],
 			note: 'Pendant les 3 mois qui suivent la livraison.',
 		},
-		about: {
-			title: 'Qui est Julien',
-			wayOfWorking:
-				"Je travaille à distance, en portugais, en français et en anglais. J'utilise des technologies standard, sans lock-in, et je documente tout pour que ton équipe soit autonome.",
-			linkedin: 'Voir mon profil LinkedIn',
-		},
-		finalCta: {
-			title: "Tu ne perds jamais l'infrastructure.",
-			conversation: 'Échange de 45 min sur Google Meet, gratuit et sans engagement.',
-			bookingNotice: undefined,
-		},
+		about: FRENCH.about,
+		finalCta: { ...FRENCH.finalCta, bookingNotice: undefined },
 	},
 	en: {
 		whoItsFor: FRENCH.whoItsFor,
@@ -160,15 +165,9 @@ const EXPECTED = {
 			captions: ['in service', 'at most 1% out of service'],
 			note: 'For the 3 months after delivery.',
 		},
-		about: {
-			title: 'Who is Julien',
-			wayOfWorking:
-				'I work remotely, in Portuguese, French and English. I use standard technologies, with no lock-in, and document everything so your team can run on its own.',
-			linkedin: 'See my LinkedIn profile',
-		},
+		about: { ...FRENCH.about, linkedin: 'See my LinkedIn profile' },
 		finalCta: {
-			title: 'You never lose the infrastructure.',
-			conversation: '45-min conversation on Google Meet, free and with no commitment.',
+			...FRENCH.finalCta,
 			bookingNotice:
 				'The booking page is in French, but the conversation can be in English or Portuguese.',
 		},
@@ -186,14 +185,13 @@ inEachBuild((build) => {
 		const sections = [whoItsFor, todayAndAfter, guarantee, about, finalCta];
 
 		test.describe(prefix, () => {
-			test(`"${button}" is in the header, in the Hero and in the final CTA, not in "${whoItsFor.title}"`, async ({
+			test(`"${button}" is in the header and in the Hero, not in "${whoItsFor.title}"`, async ({
 				page,
 			}) => {
 				await page.goto(prefix);
 				const places = {
 					header: page.getByRole('banner'),
 					hero: page.getByRole('region', { name: promise }),
-					finalCta: page.getByRole('region', { name: finalCta.title }),
 				};
 				for (const [place, region] of Object.entries(places)) {
 					const bookButton = region.getByRole('link', { name: button, exact: true });
@@ -312,6 +310,19 @@ inEachBuild((build) => {
 				await expect.poll(() => images.get(photoUrl)).toBe('image/avif');
 			});
 
+			test(`the final CTA: "${finalCta.title}", the paragraph and "${finalCta.button}", its only link, to the booking page`, async ({
+				page,
+			}) => {
+				await page.goto(prefix);
+				const section = page.getByRole('region', { name: finalCta.title });
+				await expect(section.getByText(finalCta.text, { exact: true })).toBeVisible();
+				const link = section.getByRole('link');
+				await expect(link).toHaveCount(1);
+				await expect(link).toHaveAccessibleName(finalCta.button);
+				await expect(link).toHaveAttribute('href', BOOKING_PAGE);
+				await expect(link).not.toHaveAttribute('target');
+			});
+
 			test('the sections are where #54 puts them, from "Para quem é", right after the Hero, to the final CTA, at the end', async ({
 				page,
 			}) => {
@@ -376,7 +387,7 @@ inEachBuild((build) => {
 							? `${finalCta.conversation} ${finalCta.bookingNotice}`
 							: finalCta.conversation,
 					);
-					const bookButton = section.getByRole('link', { name: button, exact: true });
+					const bookButton = section.getByRole('link', { name: finalCta.button, exact: true });
 					const { y, height } = (await bookButton.boundingBox())!;
 					expect((await line.boundingBox())!.y).toBeGreaterThanOrEqual(y + height);
 				},

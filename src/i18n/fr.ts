@@ -2,6 +2,7 @@
 // Portuguese and English are typed from this file: a missing text makes `astro check` fail.
 // The texts carry no HTML: links, bold text and non-breaking spaces are added in the components.
 import type { AudienceId } from '../config/audiences';
+import type { LevelId } from '../config/availability';
 import type { CriterionId, ProviderId, Rating, ScenarioId } from '../config/cloud-providers';
 import type { SourceId } from '../config/ecology';
 
@@ -16,7 +17,7 @@ type Block = {
 	summary: string;
 	text: string;
 	tools: string[];
-	/** Said after the tools, when the client's cloud can provide its own. */
+	/** Said after the tools, in plain text: what the list leaves open. */
 	toolsAlternative?: string;
 };
 
@@ -212,9 +213,9 @@ export const fr = {
 		link: 'Écologie',
 		/** The home page's Ecology section. */
 		home: {
-			title: "L'infrastructure aussi a une empreinte.",
-			text: "L'endroit où tourne l'application, sa durée de fonctionnement et son efficacité changent son impact environnemental. La page écologie te permet d'estimer une charge selon le pays où elle tourne, en séparant données publiées, hypothèses et calculs.",
-			link: 'Ouvrir la page écologie',
+			title: "Un cloud plus efficace, c'est aussi un numérique plus responsable.",
+			text: "Le choix du datacenter, l'architecture et la qualité du code influencent la consommation de ressources. Compare les solutions, découvre les données disponibles et comprends comment réduire les dépenses inutiles et l'empreinte de ton application.",
+			link: "Explorer l'impact environnemental",
 		},
 		page: {
 			title: 'Écologie et infrastructure',
@@ -329,6 +330,120 @@ export const fr = {
 		},
 		back: "Retour à la page d'accueil",
 	},
+	/** The availability page (§2 of Julien's document): the levels, the calculator and the guarantee. */
+	availability: {
+		/** In the «Ressources» menu, above the heading and in the browser's title. */
+		title: 'Disponibilité & conditions',
+		description:
+			"Compare les niveaux de disponibilité, calcule ton temps d'indisponibilité théorique et consulte les conditions de la garantie de conformité.",
+		heading: 'Quel niveau de disponibilité pour ton SaaS ?',
+		intro:
+			"Un objectif de disponibilité se choisit selon l'impact réel d'une interruption sur ton activité. Plus l'objectif est élevé, plus l'architecture, la redondance et l'exploitation peuvent devenir exigeantes et coûteuses. Compare les niveaux avant de décider.",
+		calculator: {
+			title: "Calcule ton temps d'indisponibilité théorique",
+			text: "Choisis un objectif de disponibilité et découvre ce qu'il représente en minutes par mois et en heures par an. Ces valeurs sont indicatives : un objectif d'architecture ne garantit pas, à lui seul, la disponibilité de toute l'application.",
+			/** The name of the choice of level, and of the chosen level in the result. */
+			objective: 'Objectif de disponibilité',
+			/** The name of the choice of 28, 30 or 31 days. */
+			month: 'Durée du mois',
+			/** After a number of days: "30 jours". */
+			days: 'jours',
+			/** The result's title, above the month's and the year's downtime. */
+			result: 'Indisponibilité maximale théorique',
+			perMonth: 'Par mois',
+			perYear: 'Équivalent annuel',
+			/** Before a downtime rounded to the second, in place of "≈", which the font lacks. */
+			about: 'environ',
+			formula:
+				'Formule, pour une mesure 24 h/24 : (1 − objectif / 100) × durée de la période en secondes, sur le mois choisi ou sur une année de 365 jours.',
+		},
+		/** Each level's name and text, after its objective (src/config/availability.ts). */
+		levels: {
+			essential: {
+				title: 'Disponibilité essentielle',
+				text: 'Pour une application qui peut tolérer des interruptions occasionnelles. Une infrastructure simple peut suffire selon les dépendances et les risques acceptés.',
+			},
+			reinforced: {
+				title: 'Disponibilité renforcée',
+				text: 'Pour réduire les interruptions et mieux sécuriser les services critiques. La supervision et la limitation des points uniques de défaillance deviennent prioritaires.',
+			},
+			high: {
+				title: 'Haute disponibilité',
+				text: 'Pour des services où une interruption prolongée a un impact important. Une redondance adaptée, des mécanismes de bascule et des tests de reprise peuvent être nécessaires.',
+			},
+			veryHigh: {
+				title: 'Disponibilité très élevée',
+				text: "Pour des usages particulièrement sensibles aux interruptions. L'architecture et les procédures d'exploitation doivent être étudiées au cas par cas.",
+			},
+		} satisfies Record<LevelId, Card>,
+		/** Written from the levels' texts: not in Julien's document. Never says that a topology
+		 * guarantees a percentage. */
+		architecture: {
+			title: "Ce que l'objectif demande à l'architecture",
+			intro:
+				"Plus l'objectif est élevé, plus l'architecture doit limiter les points uniques de défaillance et se remettre vite d'une panne. Les choix ci-dessous peuvent y contribuer selon le niveau retenu, mais aucune topologie ne garantit, à elle seule, un pourcentage de disponibilité.",
+			cards: [
+				{
+					title: 'Redondance',
+					text: "Plusieurs instances de l'application, pour qu'une instance en panne n'arrête pas tout le service. Aux niveaux les moins exigeants, une infrastructure simple peut suffire.",
+				},
+				{
+					title: 'Sauvegardes',
+					text: "Des sauvegardes régulières, avec des restaurations testées, quel que soit le niveau. Elles permettent de repartir après un incident, sans empêcher l'interruption.",
+				},
+				{
+					title: 'Base de données',
+					text: "Souvent le point unique de défaillance le plus délicat. Quand l'objectif augmente, une réplique prête à prendre le relais peut devenir nécessaire.",
+				},
+				{
+					title: 'Multi-AZ',
+					text: "Répartir les ressources sur plusieurs zones de disponibilité d'une même région, pour que la panne d'une zone n'arrête pas tout le service.",
+				},
+				{
+					title: 'Bascule (failover)',
+					text: "Des mécanismes qui redirigent le trafic vers une ressource saine, et des tests de reprise pour vérifier qu'ils fonctionnent.",
+				},
+				{
+					title: 'Supervision',
+					text: 'Des alertes pour détecter une interruption et réagir vite. Elle devient prioritaire dès 99,9 %.',
+				},
+			] satisfies [Card, Card, Card, Card, Card, Card],
+		},
+		commitment: {
+			title: "Un objectif de disponibilité n'est pas une astreinte.",
+			text: "Je conçois, configure et vérifie l'infrastructure pour répondre au niveau de disponibilité retenu dans la proposition d'intervention. Le fournisseur cloud reste responsable de ses propres engagements de service. Après livraison, la surveillance quotidienne et la réaction aux incidents relèvent de l'organisation prévue avec ton équipe ou ton prestataire d'exploitation. Une intervention humaine 24 h/24 n'est pas incluse.",
+		},
+		guarantee: {
+			title: 'Trois mois de garantie de conformité technique.',
+			text: "Lorsque les quatre blocs sont réalisés dans le cadre d'une prestation complète, les défauts de conception ou de configuration de l'infrastructure qui me sont directement imputables peuvent être signalés pendant les trois mois suivant la livraison. Leur analyse et leur correction sont prises en charge selon le périmètre et les modalités définis au contrat. Cette garantie ne couvre pas automatiquement les bugs applicatifs, les pannes externes ou les modifications non validées.",
+		},
+		/** The guarantee's conditions and limits, which the signed contract overrides. */
+		conditions: {
+			title: 'Conditions et limites de la garantie de conformité',
+			intro:
+				"Les conditions contractuelles de la proposition d'intervention font foi. Les principes ci-dessous expliquent le fonctionnement de la garantie et ne remplacent pas le contrat signé.",
+			items: [
+				{
+					title: 'Ce qui est couvert',
+					text: "Les défauts de conception, de paramétrage ou de déploiement de l'infrastructure directement liés aux travaux livrés et inclus dans le périmètre contractuel, signalés dans les trois mois suivant la livraison de la prestation complète couvrant les quatre blocs.",
+				},
+				{
+					title: "Ce qui n'est pas couvert",
+					text: "Les indisponibilités propres aux fournisseurs cloud ou à des services tiers, sauf lorsqu'elles révèlent une faute de conception ou de configuration relevant de ma prestation ; les bugs et évolutions applicatives hors du périmètre corrigé ; les changements de code, de configuration ou d'infrastructure effectués sans validation et à l'origine du dysfonctionnement ; l'utilisation en dehors des hypothèses de dimensionnement convenues ; le non-respect des prérequis ou recommandations critiques documentés ; les incidents dus à des accès, autorisations ou informations indisponibles du côté client.",
+				},
+				{
+					title: 'Responsabilités',
+					text: "Le client conserve la responsabilité de l'exploitation courante, de la validation des changements et de l'organisation de la réponse aux incidents, sauf prestation supplémentaire explicitement prévue. La garantie n'inclut pas d'astreinte 24 h/24, de délai de réaction immédiat ni de compensation financière automatique.",
+				},
+				{
+					title: 'Comment signaler un défaut',
+					text: 'Pendant la période couverte, le client transmet une description du problème et les informations utiles au diagnostic. Lorsque la non-conformité entre dans le périmètre de la prestation, les modalités de correction sont convenues en fonction de sa nature et de son impact.',
+				},
+			] satisfies [Card, Card, Card, Card],
+		},
+		/** The button that ends the page, to the booking page. */
+		button: "Définissons l'objectif de disponibilité adapté à ton projet",
+	},
 	homePage: {
 		description: `${promise} J'automatise la qualité du code, je réduis la dette technique et je construis une infrastructure capable de suivre ta croissance.`,
 		hero: {
@@ -367,41 +482,73 @@ export const fr = {
 				"Tu disposes d'indicateurs et d'alertes pour détecter les incidents au plus tôt.",
 			],
 		},
-		/** The Services: the 4 Blocks, and the note on hiring them in any combination. */
+		/** The Services: the 4 Blocks, after an introduction on how the work is scoped. */
 		services: {
 			label: 'Services',
-			title: 'Quatre couches de ton infrastructure.',
-			note: 'Tu prends les blocs que tu veux, dans la combinaison de ton choix. 30 jours au maximum, à compter du début de la Mise en œuvre. Le bloc 3 demande une application conteneurisée, par le bloc 2 ou par ton équipe.',
+			title: 'Quatre leviers pour fiabiliser et faire grandir ton SaaS.',
+			intro:
+				"De la qualité du code à la supervision en production, j'interviens sur les points qui freinent ton équipe. Après un diagnostic, nous définissons ensemble le périmètre, les priorités et l'ordre des interventions. Tu peux me confier un besoin ciblé ou un projet complet.",
 			/** Before each Block's number: "Bloc 1". */
 			blockLabel: 'Bloc',
 			/** The name of each Block's list of tools, for screen readers. */
 			toolsLabel: 'Outils',
-			/** The 4 Blocks, in the pitch's order. A language with fewer than 4 makes `astro check` fail. */
+			/** The 4 Blocks. A language with fewer than 4 makes `astro check` fail. */
 			blocks: [
 				{
-					name: 'Audit du code et pipeline CI',
-					summary: 'Les bugs sont attrapés à la pull request.',
-					text: "Chaque modification passe par les tests, le lint et l'analyse avant d'arriver en production, avec la sécurité au premier plan : dépendances avec des failles connues, secrets oubliés dans le code et analyse du code lui-même. Ce qui est rouge ne passe pas.",
-					tools: ['SonarQube', 'Trivy'],
+					name: 'Audit du code & CI/CD',
+					summary: "Détecte les problèmes avant qu'ils n'arrivent en production.",
+					text: "J'analyse le dépôt et les processus de livraison, puis je mets en place une pipeline adaptée à ton projet : qualité du code, lint, tests automatisés, analyse de sécurité et contrôles des dépendances. Les erreurs sont signalées dès la pull request, avant de devenir des incidents chez tes clients.",
+					tools: [
+						'GitHub Actions',
+						'GitLab CI',
+						'Lint',
+						'Tests unitaires',
+						"Tests d'intégration",
+						'Tests E2E',
+						'SonarQube',
+						'Trivy',
+						'Gitleaks',
+					],
+					toolsAlternative: 'Et plus selon la stack',
 				},
 				{
-					name: 'Conteneurisation',
-					summary: "L'application tourne de la même façon partout.",
-					text: "L'application devient indépendante de son environnement. Sur le portable d'un dev ou en production, le même comportement.",
-					tools: ['Docker'],
+					name: 'Nettoyage & optimisation du code',
+					summary: 'Moins de dette technique, plus de temps pour développer.',
+					text: "Je prends directement en charge les corrections applicatives, le refactoring du code et les optimisations de performances identifiés comme prioritaires. J'automatise également une partie de la maintenance répétitive. L'objectif : rendre l'application plus propre, plus rapide et plus simple à faire évoluer. Le volume d'intervention est défini après l'audit : il ne s'agit pas d'une refonte illimitée de tout le code.",
+					tools: [
+						'Refactoring',
+						'Dette technique',
+						'Performances',
+						'API & requêtes',
+						'Dépendances',
+						'Maintenance automatisée',
+					],
+					toolsAlternative: 'Selon la stack',
 				},
 				{
 					name: 'Infrastructure scalable',
-					summary: "L'infrastructure suit la charge.",
-					text: "Sur deux niveaux : des conteneurs serverless pour les volumes moyens, Kubernetes quand la charge le justifie. Avec l'Infrastructure as Code, l'infrastructure est décrite sous forme de code et peut être recréée.",
-					tools: ['Kubernetes', 'Terraform'],
+					summary: 'La bonne architecture pour ton usage, pas de complexité inutile.',
+					text: "Je conteneurise l'application lorsque c'est nécessaire et je choisis l'hébergement adapté à sa charge : conteneurs managés, services serverless ou Kubernetes. L'Infrastructure as Code permet de décrire, versionner et reproduire les environnements. L'objectif est de pouvoir évoluer sans surdimensionner l'infrastructure dès le départ.",
+					tools: [
+						'Docker',
+						'Containers as a Service',
+						'Kubernetes',
+						'Terraform',
+						'GCP',
+						'AWS',
+						'Azure',
+						'Scaleway',
+						'OVHcloud',
+						'Infomaniak',
+					],
+					toolsAlternative: 'Et autres fournisseurs',
 				},
 				{
 					name: 'Observabilité',
-					summary: 'Tu vois les problèmes avant tes clients.',
-					text: "Un dashboard de santé en temps réel et une alerte immédiate en cas d'incident.",
-					tools: ['Grafana', 'Prometheus'],
-					toolsAlternative: 'ou les outils de ton cloud',
+					summary: 'Ne découvre plus les incidents par tes clients.',
+					text: "Je mets en place les métriques, journaux, tableaux de bord et alertes nécessaires pour suivre la santé de l'application et de son infrastructure. Au lieu de vérifier manuellement si tout fonctionne, ton équipe est avertie dès qu'un problème détectable apparaît et dispose des informations nécessaires pour intervenir.",
+					tools: ['Grafana', 'Prometheus', 'Logs', 'Alertes', 'Monitoring', 'Tracing'],
+					toolsAlternative: 'Outils natifs du cloud',
 				},
 			] satisfies Blocks as Blocks,
 			/** The words drawn in the Blocks' mini-diagrams, and what each one shows, for screen readers. */
@@ -415,11 +562,13 @@ export const fr = {
 					production: 'production',
 					blocked: 'bloqué',
 				},
-				containers: {
+				cleanup: {
 					description:
-						'Le même conteneur tourne de la même façon sur le portable et en production.',
-					laptop: 'portable',
-					production: 'production',
+						'Un bug et du code en double disparaissent : le code raccourcit et le temps de réponse baisse.',
+					bug: 'bug',
+					/** Beside the lines written twice. */
+					duplicate: '×2',
+					responseTime: 'temps de réponse',
 				},
 				scaling: {
 					description: 'Les instances augmentent avec la charge, puis diminuent.',
@@ -490,9 +639,9 @@ export const fr = {
 			note: 'Pendant les 3 mois qui suivent la livraison.',
 		},
 		about: {
-			title: 'Qui est Julien',
+			title: 'Qui est Julien ?',
 			wayOfWorking:
-				"Je travaille à distance, en portugais, en français et en anglais. J'utilise des technologies standard, sans lock-in, et je documente tout pour que ton équipe soit autonome.",
+				"J'interviens sur ton projet en français, en anglais ou en portugais. J'utilise des technologies modernes et éprouvées, je limite autant que possible la dépendance à un fournisseur et je documente ce que je livre pour que ton équipe reste autonome. Mes solutions s'adaptent à tes contraintes techniques et métier, pas l'inverse.",
 			linkedin: 'Voir mon profil LinkedIn',
 		},
 		/** The Testimonials. Their texts, authors and approvals are in src/config/testimonials.ts. */
@@ -511,23 +660,18 @@ export const fr = {
 			translated: 'Traduit du français',
 			malt: 'Voir sur Malt',
 		},
-		/** The Questions section: its general questions and the Audiences come from `questions`. */
-		questions: {
-			label: 'Questions',
-			title: "L'essentiel, avant l'Échange.",
-			byAudience: 'Questions pour ton profil',
-		},
 		finalCta: {
-			title: "Tu ne perds jamais l'infrastructure.",
-			text: "Même si ton équipe ne se lance pas tout de suite dans les tests, tu gardes une pipeline propre, documentée et aux standards du marché, prête pour le jour où tu décideras d'y aller.",
-			conversation: 'Échange de 45 min sur Google Meet, gratuit et sans engagement.',
+			title: 'Ton SaaS mérite mieux que des correctifs en urgence.',
+			text: "Tu as déjà un projet en tête, ou simplement des questions sur ton code, ton infrastructure ou ton prochain déploiement ? Parlons-en. Un premier échange suffit pour identifier les priorités et voir comment je peux t'aider.",
+			button: 'Réserver un échange gratuit',
+			conversation: '45 minutes sur Google Meet. Sans engagement.',
 			// Not shown while the booking page is in French (values.ts).
 			bookingNotice:
 				"La page de réservation est en français, mais l'Échange peut se faire en anglais ou en portugais.",
 		},
 	},
-	/** «Tes défis»: the questions by audience, on their page, in the header submenu and in the home
-	 * page's Questions section. The 23 answers are Julien's, word for word in French; each
+	/** «Tes défis»: the questions by audience, on their page and in the header submenu.
+	 * The 23 answers are Julien's, word for word in French; each
 	 * audience is typed with its number of questions, so a language with one missing fails `astro check`. */
 	questions: {
 		/** The name of the page and of the header menu that leads to it. */

@@ -21,6 +21,14 @@ const ENTRIES: { slug: string; name: Record<Language, string> }[] = [
 		name: { fr: 'Choisir son cloud', en: 'Choisir son cloud', pt: 'Escolher a cloud' },
 	},
 	{ slug: 'ecology/', name: { fr: 'Écologie', en: 'Ecology', pt: 'Ecologia' } },
+	{
+		slug: 'availability/',
+		name: {
+			fr: 'Disponibilité & conditions',
+			en: 'Disponibilité & conditions',
+			pt: 'Disponibilidade e condições',
+		},
+	},
 ];
 
 /** The submenu's button: the `<summary>` of its `<details>`. */

@@ -149,9 +149,9 @@ export const en: Dictionary = {
 	ecology: {
 		link: 'Ecology',
 		home: {
-			title: 'Infrastructure has a footprint too.',
-			text: 'Where the application runs, how long it runs and how efficiently all change its environmental impact. The ecology page lets you estimate a workload by the country it runs in, keeping published data, assumptions and calculations apart.',
-			link: 'Open the ecology page',
+			title: "Un cloud plus efficace, c'est aussi un numérique plus responsable.",
+			text: "Le choix du datacenter, l'architecture et la qualité du code influencent la consommation de ressources. Compare les solutions, découvre les données disponibles et comprends comment réduire les dépenses inutiles et l'empreinte de ton application.",
+			link: "Explorer l'impact environnemental",
 		},
 		page: {
 			title: 'Ecology and infrastructure',
@@ -256,6 +256,108 @@ export const en: Dictionary = {
 		},
 		back: 'Back to the home page',
 	},
+	availability: {
+		title: 'Disponibilité & conditions',
+		description:
+			"Compare les niveaux de disponibilité, calcule ton temps d'indisponibilité théorique et consulte les conditions de la garantie de conformité.",
+		heading: 'Quel niveau de disponibilité pour ton SaaS ?',
+		intro:
+			"Un objectif de disponibilité se choisit selon l'impact réel d'une interruption sur ton activité. Plus l'objectif est élevé, plus l'architecture, la redondance et l'exploitation peuvent devenir exigeantes et coûteuses. Compare les niveaux avant de décider.",
+		calculator: {
+			title: "Calcule ton temps d'indisponibilité théorique",
+			text: "Choisis un objectif de disponibilité et découvre ce qu'il représente en minutes par mois et en heures par an. Ces valeurs sont indicatives : un objectif d'architecture ne garantit pas, à lui seul, la disponibilité de toute l'application.",
+			objective: 'Objectif de disponibilité',
+			month: 'Durée du mois',
+			days: 'jours',
+			result: 'Indisponibilité maximale théorique',
+			perMonth: 'Par mois',
+			perYear: 'Équivalent annuel',
+			about: 'environ',
+			formula:
+				'Formule, pour une mesure 24 h/24 : (1 − objectif / 100) × durée de la période en secondes, sur le mois choisi ou sur une année de 365 jours.',
+		},
+		levels: {
+			essential: {
+				title: 'Disponibilité essentielle',
+				text: 'Pour une application qui peut tolérer des interruptions occasionnelles. Une infrastructure simple peut suffire selon les dépendances et les risques acceptés.',
+			},
+			reinforced: {
+				title: 'Disponibilité renforcée',
+				text: 'Pour réduire les interruptions et mieux sécuriser les services critiques. La supervision et la limitation des points uniques de défaillance deviennent prioritaires.',
+			},
+			high: {
+				title: 'Haute disponibilité',
+				text: 'Pour des services où une interruption prolongée a un impact important. Une redondance adaptée, des mécanismes de bascule et des tests de reprise peuvent être nécessaires.',
+			},
+			veryHigh: {
+				title: 'Disponibilité très élevée',
+				text: "Pour des usages particulièrement sensibles aux interruptions. L'architecture et les procédures d'exploitation doivent être étudiées au cas par cas.",
+			},
+		},
+		architecture: {
+			title: "Ce que l'objectif demande à l'architecture",
+			intro:
+				"Plus l'objectif est élevé, plus l'architecture doit limiter les points uniques de défaillance et se remettre vite d'une panne. Les choix ci-dessous peuvent y contribuer selon le niveau retenu, mais aucune topologie ne garantit, à elle seule, un pourcentage de disponibilité.",
+			cards: [
+				{
+					title: 'Redondance',
+					text: "Plusieurs instances de l'application, pour qu'une instance en panne n'arrête pas tout le service. Aux niveaux les moins exigeants, une infrastructure simple peut suffire.",
+				},
+				{
+					title: 'Sauvegardes',
+					text: "Des sauvegardes régulières, avec des restaurations testées, quel que soit le niveau. Elles permettent de repartir après un incident, sans empêcher l'interruption.",
+				},
+				{
+					title: 'Base de données',
+					text: "Souvent le point unique de défaillance le plus délicat. Quand l'objectif augmente, une réplique prête à prendre le relais peut devenir nécessaire.",
+				},
+				{
+					title: 'Multi-AZ',
+					text: "Répartir les ressources sur plusieurs zones de disponibilité d'une même région, pour que la panne d'une zone n'arrête pas tout le service.",
+				},
+				{
+					title: 'Bascule (failover)',
+					text: "Des mécanismes qui redirigent le trafic vers une ressource saine, et des tests de reprise pour vérifier qu'ils fonctionnent.",
+				},
+				{
+					title: 'Supervision',
+					text: 'Des alertes pour détecter une interruption et réagir vite. Elle devient prioritaire dès 99,9 %.',
+				},
+			],
+		},
+		commitment: {
+			title: "Un objectif de disponibilité n'est pas une astreinte.",
+			text: "Je conçois, configure et vérifie l'infrastructure pour répondre au niveau de disponibilité retenu dans la proposition d'intervention. Le fournisseur cloud reste responsable de ses propres engagements de service. Après livraison, la surveillance quotidienne et la réaction aux incidents relèvent de l'organisation prévue avec ton équipe ou ton prestataire d'exploitation. Une intervention humaine 24 h/24 n'est pas incluse.",
+		},
+		guarantee: {
+			title: 'Trois mois de garantie de conformité technique.',
+			text: "Lorsque les quatre blocs sont réalisés dans le cadre d'une prestation complète, les défauts de conception ou de configuration de l'infrastructure qui me sont directement imputables peuvent être signalés pendant les trois mois suivant la livraison. Leur analyse et leur correction sont prises en charge selon le périmètre et les modalités définis au contrat. Cette garantie ne couvre pas automatiquement les bugs applicatifs, les pannes externes ou les modifications non validées.",
+		},
+		conditions: {
+			title: 'Conditions et limites de la garantie de conformité',
+			intro:
+				"Les conditions contractuelles de la proposition d'intervention font foi. Les principes ci-dessous expliquent le fonctionnement de la garantie et ne remplacent pas le contrat signé.",
+			items: [
+				{
+					title: 'Ce qui est couvert',
+					text: "Les défauts de conception, de paramétrage ou de déploiement de l'infrastructure directement liés aux travaux livrés et inclus dans le périmètre contractuel, signalés dans les trois mois suivant la livraison de la prestation complète couvrant les quatre blocs.",
+				},
+				{
+					title: "Ce qui n'est pas couvert",
+					text: "Les indisponibilités propres aux fournisseurs cloud ou à des services tiers, sauf lorsqu'elles révèlent une faute de conception ou de configuration relevant de ma prestation ; les bugs et évolutions applicatives hors du périmètre corrigé ; les changements de code, de configuration ou d'infrastructure effectués sans validation et à l'origine du dysfonctionnement ; l'utilisation en dehors des hypothèses de dimensionnement convenues ; le non-respect des prérequis ou recommandations critiques documentés ; les incidents dus à des accès, autorisations ou informations indisponibles du côté client.",
+				},
+				{
+					title: 'Responsabilités',
+					text: "Le client conserve la responsabilité de l'exploitation courante, de la validation des changements et de l'organisation de la réponse aux incidents, sauf prestation supplémentaire explicitement prévue. La garantie n'inclut pas d'astreinte 24 h/24, de délai de réaction immédiat ni de compensation financière automatique.",
+				},
+				{
+					title: 'Comment signaler un défaut',
+					text: 'Pendant la période couverte, le client transmet une description du problème et les informations utiles au diagnostic. Lorsque la non-conformité entre dans le périmètre de la prestation, les modalités de correction sont convenues en fonction de sa nature et de son impact.',
+				},
+			],
+		},
+		button: "Définissons l'objectif de disponibilité adapté à ton projet",
+	},
 	homePage: {
 		description: `${promise} J'automatise la qualité du code, je réduis la dette technique et je construis une infrastructure capable de suivre ta croissance.`,
 		hero: {
@@ -295,35 +397,67 @@ export const en: Dictionary = {
 		},
 		services: {
 			label: 'Services',
-			title: 'Four layers of your infrastructure.',
-			note: 'You hire the blocks you want, in any combination. At most 30 days from the start of the Implementation. Block 3 needs a containerised application, from block 2 or from your team.',
+			title: 'Quatre leviers pour fiabiliser et faire grandir ton SaaS.',
+			intro:
+				"De la qualité du code à la supervision en production, j'interviens sur les points qui freinent ton équipe. Après un diagnostic, nous définissons ensemble le périmètre, les priorités et l'ordre des interventions. Tu peux me confier un besoin ciblé ou un projet complet.",
 			blockLabel: 'Block',
 			toolsLabel: 'Tools',
 			blocks: [
 				{
-					name: 'CI pipeline and code audit',
-					summary: 'Bugs stay in the pull request.',
-					text: 'Every change goes through tests, lint and analysis before it reaches production, with security up front: dependencies with known vulnerabilities, secrets left in the code, and analysis of the code itself. Whatever is red does not get through.',
-					tools: ['SonarQube', 'Trivy'],
+					name: 'Audit du code & CI/CD',
+					summary: "Détecte les problèmes avant qu'ils n'arrivent en production.",
+					text: "J'analyse le dépôt et les processus de livraison, puis je mets en place une pipeline adaptée à ton projet : qualité du code, lint, tests automatisés, analyse de sécurité et contrôles des dépendances. Les erreurs sont signalées dès la pull request, avant de devenir des incidents chez tes clients.",
+					tools: [
+						'GitHub Actions',
+						'GitLab CI',
+						'Lint',
+						'Tests unitaires',
+						"Tests d'intégration",
+						'Tests E2E',
+						'SonarQube',
+						'Trivy',
+						'Gitleaks',
+					],
+					toolsAlternative: 'Et plus selon la stack',
 				},
 				{
-					name: 'Containerisation',
-					summary: 'The application runs the same everywhere.',
-					text: "The application no longer depends on the environment it runs in. On a developer's laptop or in production, it behaves the same.",
-					tools: ['Docker'],
+					name: 'Nettoyage & optimisation du code',
+					summary: 'Moins de dette technique, plus de temps pour développer.',
+					text: "Je prends directement en charge les corrections applicatives, le refactoring du code et les optimisations de performances identifiés comme prioritaires. J'automatise également une partie de la maintenance répétitive. L'objectif : rendre l'application plus propre, plus rapide et plus simple à faire évoluer. Le volume d'intervention est défini après l'audit : il ne s'agit pas d'une refonte illimitée de tout le code.",
+					tools: [
+						'Refactoring',
+						'Dette technique',
+						'Performances',
+						'API & requêtes',
+						'Dépendances',
+						'Maintenance automatisée',
+					],
+					toolsAlternative: 'Selon la stack',
 				},
 				{
-					name: 'Scalable infrastructure',
-					summary: 'The infrastructure keeps up with the load.',
-					text: 'At two levels: serverless containers for medium volumes, Kubernetes when the load justifies it. With Infrastructure as Code, the infrastructure is described in code and can be recreated.',
-					tools: ['Kubernetes', 'Terraform'],
+					name: 'Infrastructure scalable',
+					summary: 'La bonne architecture pour ton usage, pas de complexité inutile.',
+					text: "Je conteneurise l'application lorsque c'est nécessaire et je choisis l'hébergement adapté à sa charge : conteneurs managés, services serverless ou Kubernetes. L'Infrastructure as Code permet de décrire, versionner et reproduire les environnements. L'objectif est de pouvoir évoluer sans surdimensionner l'infrastructure dès le départ.",
+					tools: [
+						'Docker',
+						'Containers as a Service',
+						'Kubernetes',
+						'Terraform',
+						'GCP',
+						'AWS',
+						'Azure',
+						'Scaleway',
+						'OVHcloud',
+						'Infomaniak',
+					],
+					toolsAlternative: 'Et autres fournisseurs',
 				},
 				{
-					name: 'Observability',
-					summary: 'You see problems before your customers do.',
-					text: 'A real-time health dashboard and an immediate alert when there is an incident.',
-					tools: ['Grafana', 'Prometheus'],
-					toolsAlternative: "or your cloud's own tools",
+					name: 'Observabilité',
+					summary: 'Ne découvre plus les incidents par tes clients.',
+					text: "Je mets en place les métriques, journaux, tableaux de bord et alertes nécessaires pour suivre la santé de l'application et de son infrastructure. Au lieu de vérifier manuellement si tout fonctionne, ton équipe est avertie dès qu'un problème détectable apparaît et dispose des informations nécessaires pour intervenir.",
+					tools: ['Grafana', 'Prometheus', 'Logs', 'Alertes', 'Monitoring', 'Tracing'],
+					toolsAlternative: 'Outils natifs du cloud',
 				},
 			],
 			diagrams: {
@@ -335,10 +469,12 @@ export const en: Dictionary = {
 					production: 'production',
 					blocked: 'blocked',
 				},
-				containers: {
-					description: 'The same container runs the same way on the laptop and in production.',
-					laptop: 'laptop',
-					production: 'production',
+				cleanup: {
+					description:
+						'Un bug et du code en double disparaissent : le code raccourcit et le temps de réponse baisse.',
+					bug: 'bug',
+					duplicate: '×2',
+					responseTime: 'temps de réponse',
 				},
 				scaling: {
 					description: 'The instances increase with the load, then decrease again.',
@@ -404,9 +540,9 @@ export const en: Dictionary = {
 			note: 'For the 3 months after delivery.',
 		},
 		about: {
-			title: 'Who is Julien',
+			title: 'Qui est Julien ?',
 			wayOfWorking:
-				'I work remotely, in Portuguese, French and English. I use standard technologies, with no lock-in, and document everything so your team can run on its own.',
+				"J'interviens sur ton projet en français, en anglais ou en portugais. J'utilise des technologies modernes et éprouvées, je limite autant que possible la dépendance à un fournisseur et je documente ce que je livre pour que ton équipe reste autonome. Mes solutions s'adaptent à tes contraintes techniques et métier, pas l'inverse.",
 			linkedin: 'See my LinkedIn profile',
 		},
 		testimonials: {
@@ -420,15 +556,11 @@ export const en: Dictionary = {
 			translated: 'Translated from French',
 			malt: 'View on Malt',
 		},
-		questions: {
-			label: 'Questions',
-			title: 'The essentials, before the Conversation.',
-			byAudience: 'Questions for your role',
-		},
 		finalCta: {
-			title: 'You never lose the infrastructure.',
-			text: "Even if your team doesn't get to the tests right away, you keep a clean, documented pipeline built to market standards, ready for when you decide to go ahead.",
-			conversation: '45-min conversation on Google Meet, free and with no commitment.',
+			title: 'Ton SaaS mérite mieux que des correctifs en urgence.',
+			text: "Tu as déjà un projet en tête, ou simplement des questions sur ton code, ton infrastructure ou ton prochain déploiement ? Parlons-en. Un premier échange suffit pour identifier les priorités et voir comment je peux t'aider.",
+			button: 'Réserver un échange gratuit',
+			conversation: '45 minutes sur Google Meet. Sans engagement.',
 			bookingNotice:
 				'The booking page is in French, but the conversation can be in English or Portuguese.',
 		},
