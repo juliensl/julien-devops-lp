@@ -6,7 +6,7 @@
 import { PROVIDERS, boundaryCases } from '../src/config/cloud-providers.ts';
 import { pt } from '../src/i18n/pt.ts';
 
-const { scenarios, ratings } = pt.homePage.cloudChart;
+const { scenarios, ratings } = pt.cloud.chart;
 const decimal = new Intl.NumberFormat('pt-PT', {
 	minimumFractionDigits: 2,
 	maximumFractionDigits: 2,

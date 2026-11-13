@@ -38,15 +38,16 @@ export const CRITERIA: { id: CriterionId; opinion?: true }[] = [
 	{ id: 'costs', opinion: true },
 ];
 
+/** In the order of Julien's document. */
 export const SCENARIOS: { id: ScenarioId; weights: Partial<Record<CriterionId, number>> }[] = [
 	{ id: 'beforeLaunch', weights: { paas: 3, containers: 2, costs: 2 } },
 	{ id: 'growth', weights: { kubernetes: 2, containers: 2, euRegions: 1, costs: 1 } },
-	{ id: 'dataSovereignty', weights: { euRegions: 3, europeanHeadquarters: 2, secNumCloud: 2 } },
 	{ id: 'variableLoad', weights: { containers: 3, kubernetes: 2 } },
 	{ id: 'costControl', weights: { costs: 3, paas: 1, containers: 1 } },
+	{ id: 'dataSovereignty', weights: { euRegions: 3, europeanHeadquarters: 2, secNumCloud: 2 } },
 ];
 
-/** The scenario the chart opens on: the profile the service is for (#54, «Para quem é»). */
+/** The scenario the chart opens on. */
 export const FIRST_SCENARIO: ScenarioId = 'growth';
 
 /** 1 yes · 0.5 in part · 0 no. */
@@ -67,6 +68,9 @@ export interface Fact {
 
 const RESEARCH_45 = '2026-10-16';
 const RESEARCH_46 = '2026-10-19';
+
+/** The day the facts were last checked, as YYYY-MM-DD: the page shows it below the chart. */
+export const VERIFIED = RESEARCH_45;
 const source = (url: string, read = RESEARCH_45): Source => ({ url, read });
 
 // The ANSSI's lists: the catalogue of qualified offers, and the offers being qualified.

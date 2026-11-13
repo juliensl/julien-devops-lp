@@ -67,26 +67,33 @@ const PROVIDERS = ['AWS', 'Google Cloud', 'Infomaniak', 'Microsoft Azure', 'OVHc
 
 type Rating = 'consider' | 'possible' | 'unsuitable';
 
-// #54's table «Resultado com os factos de hoje», provider by provider, in alphabetical order.
+// Each scenario's ratings with the facts checked on 16/10/2026, provider by provider, in alphabetical
+// order. The scenarios are in the order of Julien's document.
 const RESULTS: { ratings: Rating[] }[] = [
 	// Before launch
 	{ ratings: ['consider', 'consider', 'consider', 'consider', 'unsuitable', 'possible'] },
 	// Growing SaaS
 	{ ratings: ['consider', 'consider', 'possible', 'consider', 'possible', 'consider'] },
-	// Data sovereignty
-	{ ratings: ['possible', 'possible', 'unsuitable', 'possible', 'consider', 'consider'] },
 	// Highly variable load
 	{ ratings: ['consider', 'consider', 'consider', 'consider', 'possible', 'consider'] },
-	// Costs under control
+	// Cost control
 	{ ratings: ['consider', 'consider', 'possible', 'consider', 'unsuitable', 'possible'] },
+	// Data sovereignty
+	{ ratings: ['possible', 'possible', 'unsuitable', 'possible', 'consider', 'consider'] },
 ];
 
-// The names come from the spec (#54), and the French name of the data sovereignty scenario from #46. The other
-// French and English texts are translations the intern reviews before the Commercial launch (#75).
+const FRENCH_LEGEND =
+	'Les résultats sont des repères pour préparer une décision, pas un classement universel. Les critères et leur importance peuvent varier selon le projet. Les données sont datées et les évaluations de pertinence sont indicatives.';
+
+// The chart's texts. English shows the French ones of Julien's document until it is translated.
 const EXPECTED: Record<
 	Language,
 	{
 		title: string;
+		instruction: string;
+		legend: string;
+		/** The day the facts were checked, as the page writes it. */
+		verified: string;
 		scenarios: string[];
 		ratings: Record<Rating, string>;
 		hint: string;
@@ -96,18 +103,23 @@ const EXPECTED: Record<
 		 * the value and what else the line says (the product, a note). */
 		azure: [string, string, string][];
 		opinion: string;
-		/** The date the Azure sources of research #45 were read, as the page writes it. */
+		/** The date the Azure sources were read, as the page writes it. */
 		read: string;
 	}
 > = {
 	pt: {
-		title: 'Que cloud para que empresa?',
+		title: 'Compara os fornecedores de acordo com as tuas prioridades',
+		instruction:
+			'Escolhe um cenário para ver os pontos fortes, os limites e as fontes oficiais de cada fornecedor.',
+		legend:
+			'Os resultados são pontos de referência para preparar uma decisão, não uma classificação universal. Os critérios e a sua importância podem variar conforme o projeto. Os dados têm data e as avaliações de adequação são indicativas.',
+		verified: 'Factos verificados a 16/10/2026.',
 		scenarios: [
 			'Antes do lançamento',
 			'SaaS em crescimento',
-			'Soberania dos dados',
 			'Carga muito variável',
-			'Custos sob controlo',
+			'Controlo dos custos',
+			'Soberania dos dados',
 		],
 		ratings: { consider: 'A considerar', possible: 'Possível', unsuitable: 'Pouco indicado' },
 		hint: 'Clica numa barra para ver os factos.',
@@ -126,13 +138,17 @@ const EXPECTED: Record<
 		read: '16/10/2026',
 	},
 	fr: {
-		title: 'Quel cloud pour quelle entreprise ?',
+		title: 'Compare les fournisseurs selon tes priorités',
+		instruction:
+			'Choisis un scénario pour voir les points forts, les limites et les sources officielles de chaque fournisseur.',
+		legend: FRENCH_LEGEND,
+		verified: 'Faits vérifiés le 16 oct. 2026.',
 		scenarios: [
 			'Avant le lancement',
 			'SaaS en croissance',
-			'Souveraineté des données',
 			'Charge très variable',
-			'Coûts maîtrisés',
+			'Maîtrise des coûts',
+			'Souveraineté des données',
 		],
 		ratings: { consider: 'À considérer', possible: 'Possible', unsuitable: 'Peu indiqué' },
 		hint: 'Clique sur une barre pour voir les faits.',
@@ -151,13 +167,17 @@ const EXPECTED: Record<
 		read: '16 oct. 2026',
 	},
 	en: {
-		title: 'Which cloud for which company?',
+		title: 'Compare les fournisseurs selon tes priorités',
+		instruction:
+			'Choisis un scénario pour voir les points forts, les limites et les sources officielles de chaque fournisseur.',
+		legend: FRENCH_LEGEND,
+		verified: 'Faits vérifiés le Oct 16, 2026.',
 		scenarios: [
 			'Before launch',
 			'Growing SaaS',
-			'Data sovereignty',
 			'Highly variable load',
-			'Costs under control',
+			'Maîtrise des coûts',
+			'Data sovereignty',
 		],
 		ratings: { consider: 'Worth considering', possible: 'Possible', unsuitable: 'Less suited' },
 		hint: 'Click a bar to see the facts.',
@@ -207,16 +227,33 @@ function summary(language: Language, k: number) {
 	return [`${scenarios[k]}.`, ...groups].join(' ');
 }
 
-const SOVEREIGNTY = 2;
+const COST_CONTROL = 3;
+const SOVEREIGNTY = 4;
 
 inEachBuild((build) => {
 	for (const language of build.phase.publishedLanguages) {
-		const { prefix } = LANGUAGES[language];
+		const path = pathOf(language);
 		const expected = EXPECTED[language];
 
-		test.describe(prefix, () => {
+		test.describe(path, () => {
+			test('the chart has its title, its instruction, the legend and the day the facts were checked', async ({
+				page,
+			}) => {
+				await page.goto(path);
+				await expect(section(page, language).getByRole('heading', { level: 2 })).toHaveText(
+					expected.title,
+				);
+				await expect(
+					section(page, language).getByText(expected.instruction, { exact: true }),
+				).toBeVisible();
+				await expect(
+					section(page, language).getByText(expected.legend, { exact: true }),
+				).toBeVisible();
+				await expect(section(page, language)).toContainText(expected.verified);
+			});
+
 			test('the 6 providers are in alphabetical order', async ({ page }) => {
-				await page.goto(prefix);
+				await page.goto(path);
 				await expect(bars(page, language)).toHaveCount(PROVIDERS.length);
 				for (const [k, provider] of PROVIDERS.entries()) {
 					const bar = bars(page, language).nth(k);
@@ -225,8 +262,8 @@ inEachBuild((build) => {
 				}
 			});
 
-			test("in each scenario, each provider's rating is the one in #54", async ({ page }) => {
-				await page.goto(prefix);
+			test("in each scenario, each provider's rating is the expected one", async ({ page }) => {
+				await page.goto(path);
 				for (const [k, { ratings }] of RESULTS.entries()) {
 					await scenario(page, language, k).check();
 					for (const [p, provider] of PROVIDERS.entries()) {
@@ -241,7 +278,7 @@ inEachBuild((build) => {
 			});
 
 			test('the detail opens with no provider chosen', async ({ page }) => {
-				await page.goto(prefix);
+				await page.goto(path);
 				await expect(hint(page, language)).toBeVisible();
 				for (const bar of await bars(page, language).all()) {
 					await expect(bar).toHaveAttribute('aria-pressed', 'false');
@@ -251,7 +288,7 @@ inEachBuild((build) => {
 			test("a click on a bar shows the scenario's criteria, each with its value, product or note, source and date", async ({
 				page,
 			}) => {
-				await page.goto(prefix);
+				await page.goto(path);
 				const bar = bars(page, language).nth(PROVIDERS.indexOf('Microsoft Azure'));
 				await bar.click();
 				await expect(bar).toHaveAttribute('aria-pressed', 'true');
@@ -274,7 +311,7 @@ inEachBuild((build) => {
 			test("the cost criterion is marked as Julien's opinion, the facts are not", async ({
 				page,
 			}) => {
-				await page.goto(prefix);
+				await page.goto(path);
 				await bars(page, language).nth(PROVIDERS.indexOf('Microsoft Azure')).click();
 				const facts = detail(page, language, 'Microsoft Azure').getByRole('listitem');
 				for (const k of [0, 1, 2]) await expect(facts.nth(k)).not.toContainText(expected.opinion);
@@ -284,7 +321,7 @@ inEachBuild((build) => {
 			test('the chosen provider stays chosen in another scenario, and a second click unchooses it', async ({
 				page,
 			}) => {
-				await page.goto(prefix);
+				await page.goto(path);
 				const azure = PROVIDERS.indexOf('Microsoft Azure');
 				await bars(page, language).nth(azure).click();
 				await scenario(page, language, SOVEREIGNTY).check();
@@ -302,8 +339,8 @@ inEachBuild((build) => {
 			test('with the keyboard: the arrows change the scenario, Enter and Space press a bar', async ({
 				page,
 			}) => {
-				await page.goto(prefix);
-				await scenario(page, language, 1).focus();
+				await page.goto(path);
+				await scenario(page, language, COST_CONTROL).focus();
 				await page.keyboard.press('ArrowRight');
 				await expect(scenario(page, language, SOVEREIGNTY)).toBeChecked();
 				await expect(bars(page, language).first()).toHaveAccessibleName(
@@ -319,7 +356,7 @@ inEachBuild((build) => {
 			});
 
 			test('screen readers hear the new result when the scenario changes', async ({ page }) => {
-				await page.goto(prefix);
+				await page.goto(path);
 				for (const k of [SOVEREIGNTY, 0]) {
 					await scenario(page, language, k).check();
 					await expect(section(page, language).getByRole('status')).toHaveText(
@@ -332,7 +369,7 @@ inEachBuild((build) => {
 				page,
 			}) => {
 				await page.setViewportSize({ width: 320, height: 640 });
-				await page.goto(prefix);
+				await page.goto(path);
 				await bars(page, language).nth(PROVIDERS.indexOf('Google Cloud')).click();
 				await expect(detail(page, language, 'Google Cloud')).toBeVisible();
 				const overflow = await page.evaluate(
@@ -345,7 +382,7 @@ inEachBuild((build) => {
 				test.use({ javaScriptEnabled: false });
 
 				test('the scenarios still change the ratings', async ({ page }) => {
-					await page.goto(prefix);
+					await page.goto(path);
 					await scenario(page, language, SOVEREIGNTY).check();
 					for (const [p, provider] of PROVIDERS.entries()) {
 						const rating = expected.ratings[RESULTS[SOVEREIGNTY]!.ratings[p]!];

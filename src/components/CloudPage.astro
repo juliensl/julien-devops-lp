@@ -6,6 +6,7 @@ import { dictionaries } from '../i18n';
 import Base from '../layouts/Base.astro';
 import { withNonBreakingSpaces } from '../lib/spaces';
 import BookingButton from './BookingButton';
+import CloudChart from './CloudChart.astro';
 import ScrollReveal from './ScrollReveal.astro';
 
 interface Props {
@@ -14,7 +15,7 @@ interface Props {
 
 const { language } = Astro.props;
 const t = dictionaries[language];
-const { link, page } = t.cloud;
+const { link, page, chart } = t.cloud;
 ---
 
 <Base language={language} title={`${link} · ${values.name}`} description={page.description}>
@@ -26,6 +27,8 @@ const { link, page } = t.cloud;
 			</h1>
 			<p class="max-w-2xl text-lg text-foreground-secondary">{withNonBreakingSpaces(page.intro)}</p>
 		</div>
+
+		<CloudChart language={language} {...chart} />
 
 		<section aria-labelledby="cloud-cta-title" class="page-width pt-20">
 			<div
