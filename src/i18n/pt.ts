@@ -174,30 +174,22 @@ export const pt: Dictionary = {
 			button: 'Vamos falar do teu projeto',
 		},
 		todayAndAfter: {
-			title: 'Hoje, e depois.',
+			title: 'Hoje… e depois.',
 			todayTitle: 'Hoje',
 			today: [
-				{
-					title: 'Uma funcionalidade parte outra.',
-					text: 'A regressão passou a ser normal, e é o cliente que a descobre.',
-				},
-				{ title: 'Os devs fazem suporte.', text: 'Respondem a tickets em vez de programar.' },
-				{
-					title: 'Os testes fazem-se à mão.',
-					text: 'Dias inteiros, por quem não tem essa função.',
-				},
-				{
-					title: 'Ninguém sabe se aguenta.',
-					text: 'Funciona com os clientes de hoje. Com muitos mais, ninguém sabe dizer.',
-				},
+				'Uma nova funcionalidade parte outra, e os clientes descobrem as regressões.',
+				'Os teus programadores passam demasiado tempo com bugs, correções e suporte.',
+				'O código obsoleto acumula-se, as dependências envelhecem e o desempenho degrada-se.',
+				'Os testes e os deploys ainda dependem de verificações manuais.',
+				'Falta-te visibilidade sobre o estado real da tua aplicação e sobre a sua capacidade de suportar mais carga.',
 			],
 			afterTitle: 'Depois',
 			after: [
-				'Os bugs são apanhados no pull request, não pelo cliente.',
-				'Os devs recuperam os dias que passavam em suporte.',
-				'A equipa cresce sem medo de que um júnior parta a produção.',
-				'Acrescentas funcionalidades sem partir outras.',
-				'A infraestrutura acompanha a carga, e vês os problemas antes dos clientes.',
+				'As regressões são detetadas mais cedo graças às verificações automáticas.',
+				'As correções e as otimizações prioritárias tornam o teu código mais fácil de manter.',
+				'Uma parte da manutenção repetitiva é automatizada, para libertar tempo de desenvolvimento.',
+				'Os deploys são mais previsíveis e a infraestrutura adapta-se à carga prevista.',
+				'Tens indicadores e alertas para detetar os incidentes o mais cedo possível.',
 			],
 		},
 		services: {

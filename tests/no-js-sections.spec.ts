@@ -20,6 +20,26 @@ const FRENCH = {
 		],
 		button: 'Parlons de ton projet',
 	},
+	todayAndAfter: {
+		title: "Aujourd'hui… et après.",
+		lists: ["Aujourd'hui", 'Après'],
+		items: [
+			[
+				'Une nouvelle fonctionnalité en casse une autre, et les clients découvrent les régressions.',
+				'Tes développeurs passent trop de temps sur les bugs, les correctifs et le support.',
+				"Le code obsolète s'accumule, les dépendances vieillissent et les performances se dégradent.",
+				'Les tests et les déploiements reposent encore sur des vérifications manuelles.',
+				"Tu manques de visibilité sur l'état réel de ton application et sur sa capacité à monter en charge.",
+			],
+			[
+				'Les régressions sont détectées plus tôt grâce aux contrôles automatisés.',
+				'Les corrections et les optimisations prioritaires rendent ton code plus maintenable.',
+				'Une partie de la maintenance répétitive est automatisée, pour libérer du temps de développement.',
+				"Les déploiements sont plus prévisibles et l'infrastructure s'adapte à la charge prévue.",
+				"Tu disposes d'indicateurs et d'alertes pour détecter les incidents au plus tôt.",
+			],
+		],
+	},
 };
 
 const EXPECTED = {
@@ -36,8 +56,24 @@ const EXPECTED = {
 			button: 'Vamos falar do teu projeto',
 		},
 		todayAndAfter: {
-			title: 'Hoje, e depois.',
+			title: 'Hoje… e depois.',
 			lists: ['Hoje', 'Depois'],
+			items: [
+				[
+					'Uma nova funcionalidade parte outra, e os clientes descobrem as regressões.',
+					'Os teus programadores passam demasiado tempo com bugs, correções e suporte.',
+					'O código obsoleto acumula-se, as dependências envelhecem e o desempenho degrada-se.',
+					'Os testes e os deploys ainda dependem de verificações manuais.',
+					'Falta-te visibilidade sobre o estado real da tua aplicação e sobre a sua capacidade de suportar mais carga.',
+				],
+				[
+					'As regressões são detetadas mais cedo graças às verificações automáticas.',
+					'As correções e as otimizações prioritárias tornam o teu código mais fácil de manter.',
+					'Uma parte da manutenção repetitiva é automatizada, para libertar tempo de desenvolvimento.',
+					'Os deploys são mais previsíveis e a infraestrutura adapta-se à carga prevista.',
+					'Tens indicadores e alertas para detetar os incidentes o mais cedo possível.',
+				],
+			],
 		},
 		guarantee: {
 			title: 'Disponível pelo menos 99 % do tempo, em cada mês.',
@@ -71,10 +107,7 @@ const EXPECTED = {
 	},
 	fr: {
 		whoItsFor: FRENCH.whoItsFor,
-		todayAndAfter: {
-			title: "Aujourd'hui, et après.",
-			lists: ["Aujourd'hui", 'Après'],
-		},
+		todayAndAfter: FRENCH.todayAndAfter,
 		guarantee: {
 			title: 'Disponible au moins 99 % du temps, chaque mois.',
 			text: "En 30 jours, je livre l'infrastructure. Pendant les 3 mois suivants, elle est disponible au moins 99 % du temps chaque mois. Sinon, je continue à travailler sans facturer jusqu'à y arriver.",
@@ -109,10 +142,7 @@ const EXPECTED = {
 	},
 	en: {
 		whoItsFor: FRENCH.whoItsFor,
-		todayAndAfter: {
-			title: 'Today, and after.',
-			lists: ['Today', 'After'],
-		},
+		todayAndAfter: FRENCH.todayAndAfter,
 		guarantee: {
 			title: 'Available at least 99% of the time, every month.',
 			text: "In 30 days, I deliver the infrastructure. For the next 3 months, it is available at least 99% of the time every month. If it isn't, I keep working without billing until it is.",
@@ -195,16 +225,17 @@ inEachBuild((build) => {
 				expect((await link.boundingBox())!.y).toBeGreaterThanOrEqual(list.y + list.height);
 			});
 
-			test(`"${todayAndAfter.title}": only what the CTO lives with and the change, with no numbers`, async ({
+			test(`"${todayAndAfter.title}": five sentences on each side, with no titles and no numbers`, async ({
 				page,
 			}) => {
 				await page.goto(prefix);
 				const section = page.getByRole('region', { name: todayAndAfter.title });
 				await expect(section.getByRole('list')).toHaveCount(todayAndAfter.lists.length);
-				for (const list of todayAndAfter.lists) {
+				for (const [k, list] of todayAndAfter.lists.entries()) {
 					const items = section.getByRole('list', { name: list }).getByRole('listitem');
-					await expect(items.first(), list).toBeVisible();
+					await expect(items, list).toHaveText(todayAndAfter.items[k]);
 				}
+				await expect(section.locator('strong, b')).toHaveCount(0);
 				expect(await section.textContent()).not.toMatch(/\d/);
 			});
 

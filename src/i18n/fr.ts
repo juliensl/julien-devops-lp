@@ -195,33 +195,22 @@ export const fr = {
 			button: 'Parlons de ton projet',
 		},
 		todayAndAfter: {
-			title: "Aujourd'hui, et après.",
+			title: "Aujourd'hui… et après.",
 			todayTitle: "Aujourd'hui",
 			today: [
-				{
-					title: 'Une fonctionnalité en casse une autre.',
-					text: "La régression est devenue normale, et c'est le client qui la découvre.",
-				},
-				{
-					title: 'Tes devs font du support.',
-					text: 'Ils répondent à des tickets au lieu de coder.',
-				},
-				{
-					title: 'Les tests se font à la main.',
-					text: "Des journées entières, par quelqu'un dont ce n'est pas le métier.",
-				},
-				{
-					title: 'Personne ne sait si ça tient.',
-					text: "Ça tourne avec les clients d'aujourd'hui. Avec beaucoup plus, personne ne sait le dire.",
-				},
+				'Une nouvelle fonctionnalité en casse une autre, et les clients découvrent les régressions.',
+				'Tes développeurs passent trop de temps sur les bugs, les correctifs et le support.',
+				"Le code obsolète s'accumule, les dépendances vieillissent et les performances se dégradent.",
+				'Les tests et les déploiements reposent encore sur des vérifications manuelles.',
+				"Tu manques de visibilité sur l'état réel de ton application et sur sa capacité à monter en charge.",
 			],
 			afterTitle: 'Après',
 			after: [
-				'Les bugs sont attrapés à la pull request, pas par ton client.',
-				"Tes devs récupèrent les journées qu'ils passaient en support.",
-				"Ton équipe grandit sans craindre qu'un junior casse la prod.",
-				"Tu ajoutes des fonctionnalités sans en casser d'autres.",
-				"L'infrastructure suit la charge, et tu vois les problèmes avant tes clients.",
+				'Les régressions sont détectées plus tôt grâce aux contrôles automatisés.',
+				'Les corrections et les optimisations prioritaires rendent ton code plus maintenable.',
+				'Une partie de la maintenance répétitive est automatisée, pour libérer du temps de développement.',
+				"Les déploiements sont plus prévisibles et l'infrastructure s'adapte à la charge prévue.",
+				"Tu disposes d'indicateurs et d'alertes pour détecter les incidents au plus tôt.",
 			],
 		},
 		/** The Services: the 4 Blocks, and the note on hiring them in any combination. */

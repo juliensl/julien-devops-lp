@@ -145,30 +145,22 @@ export const en: Dictionary = {
 			button: 'Parlons de ton projet',
 		},
 		todayAndAfter: {
-			title: 'Today, and after.',
-			todayTitle: 'Today',
+			title: "Aujourd'hui… et après.",
+			todayTitle: "Aujourd'hui",
 			today: [
-				{
-					title: 'One feature breaks another.',
-					text: "Regressions have become normal, and it's your customers who find them.",
-				},
-				{ title: 'Your devs do support.', text: 'They answer tickets instead of coding.' },
-				{
-					title: 'Testing is done by hand.',
-					text: "Whole days of it, by people for whom it isn't the job.",
-				},
-				{
-					title: 'Nobody knows if it will hold.',
-					text: "It works with today's customers. With many more, nobody can say.",
-				},
+				'Une nouvelle fonctionnalité en casse une autre, et les clients découvrent les régressions.',
+				'Tes développeurs passent trop de temps sur les bugs, les correctifs et le support.',
+				"Le code obsolète s'accumule, les dépendances vieillissent et les performances se dégradent.",
+				'Les tests et les déploiements reposent encore sur des vérifications manuelles.',
+				"Tu manques de visibilité sur l'état réel de ton application et sur sa capacité à monter en charge.",
 			],
-			afterTitle: 'After',
+			afterTitle: 'Après',
 			after: [
-				'Bugs get caught in the pull request, not by your customers.',
-				'Your devs get back the days they spent on support.',
-				'Your team grows without fear of a junior breaking production.',
-				'You add features without breaking others.',
-				'The infrastructure keeps up with the load, and you see problems before your customers do.',
+				'Les régressions sont détectées plus tôt grâce aux contrôles automatisés.',
+				'Les corrections et les optimisations prioritaires rendent ton code plus maintenable.',
+				'Une partie de la maintenance répétitive est automatisée, pour libérer du temps de développement.',
+				"Les déploiements sont plus prévisibles et l'infrastructure s'adapte à la charge prévue.",
+				"Tu disposes d'indicateurs et d'alertes pour détecter les incidents au plus tôt.",
 			],
 		},
 		services: {
