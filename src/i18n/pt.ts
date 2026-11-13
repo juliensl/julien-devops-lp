@@ -386,9 +386,9 @@ export const pt: Dictionary = {
 			},
 		},
 		about: {
-			title: 'Quem é o Julien',
+			title: 'Quem é o Julien?',
 			wayOfWorking:
-				'Trabalho à distância, em português, francês e inglês. Uso tecnologias standard, sem lock-in, e documento tudo para a tua equipa ficar autónoma.',
+				'Trabalho no teu projeto em francês, inglês ou português. Uso tecnologias modernas e comprovadas, limito tanto quanto possível a dependência de um fornecedor e documento o que entrego para que a tua equipa continue autónoma. As minhas soluções adaptam-se às tuas restrições técnicas e de negócio, e não o contrário.',
 			linkedin: 'Ver o meu perfil no LinkedIn',
 		},
 		testimonials: {

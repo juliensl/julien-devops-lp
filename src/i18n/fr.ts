@@ -460,9 +460,9 @@ export const fr = {
 			} satisfies Record<ProviderId, string>,
 		},
 		about: {
-			title: 'Qui est Julien',
+			title: 'Qui est Julien ?',
 			wayOfWorking:
-				"Je travaille à distance, en portugais, en français et en anglais. J'utilise des technologies standard, sans lock-in, et je documente tout pour que ton équipe soit autonome.",
+				"J'interviens sur ton projet en français, en anglais ou en portugais. J'utilise des technologies modernes et éprouvées, je limite autant que possible la dépendance à un fournisseur et je documente ce que je livre pour que ton équipe reste autonome. Mes solutions s'adaptent à tes contraintes techniques et métier, pas l'inverse.",
 			linkedin: 'Voir mon profil LinkedIn',
 		},
 		/** The Testimonials. Their texts, authors and approvals are in src/config/testimonials.ts. */

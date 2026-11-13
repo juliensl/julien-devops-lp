@@ -378,9 +378,9 @@ export const en: Dictionary = {
 			},
 		},
 		about: {
-			title: 'Who is Julien',
+			title: 'Qui est Julien ?',
 			wayOfWorking:
-				'I work remotely, in Portuguese, French and English. I use standard technologies, with no lock-in, and document everything so your team can run on its own.',
+				"J'interviens sur ton projet en français, en anglais ou en portugais. J'utilise des technologies modernes et éprouvées, je limite autant que possible la dépendance à un fournisseur et je documente ce que je livre pour que ton équipe reste autonome. Mes solutions s'adaptent à tes contraintes techniques et métier, pas l'inverse.",
 			linkedin: 'See my LinkedIn profile',
 		},
 		testimonials: {

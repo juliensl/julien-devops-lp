@@ -40,6 +40,12 @@ const FRENCH = {
 			],
 		],
 	},
+	about: {
+		title: 'Qui est Julien ?',
+		wayOfWorking:
+			"J'interviens sur ton projet en français, en anglais ou en portugais. J'utilise des technologies modernes et éprouvées, je limite autant que possible la dépendance à un fournisseur et je documente ce que je livre pour que ton équipe reste autonome. Mes solutions s'adaptent à tes contraintes techniques et métier, pas l'inverse.",
+		linkedin: 'Voir mon profil LinkedIn',
+	},
 };
 
 const EXPECTED = {
@@ -93,9 +99,9 @@ const EXPECTED = {
 			note: 'Nos 3 meses seguintes à entrega.',
 		},
 		about: {
-			title: 'Quem é o Julien',
+			title: 'Quem é o Julien?',
 			wayOfWorking:
-				'Trabalho à distância, em português, francês e inglês. Uso tecnologias standard, sem lock-in, e documento tudo para a tua equipa ficar autónoma.',
+				'Trabalho no teu projeto em francês, inglês ou português. Uso tecnologias modernas e comprovadas, limito tanto quanto possível a dependência de um fornecedor e documento o que entrego para que a tua equipa continue autónoma. As minhas soluções adaptam-se às tuas restrições técnicas e de negócio, e não o contrário.',
 			linkedin: 'Ver o meu perfil no LinkedIn',
 		},
 		finalCta: {
@@ -128,12 +134,7 @@ const EXPECTED = {
 			captions: ['en service', 'au plus 1 % hors service'],
 			note: 'Pendant les 3 mois qui suivent la livraison.',
 		},
-		about: {
-			title: 'Qui est Julien',
-			wayOfWorking:
-				"Je travaille à distance, en portugais, en français et en anglais. J'utilise des technologies standard, sans lock-in, et je documente tout pour que ton équipe soit autonome.",
-			linkedin: 'Voir mon profil LinkedIn',
-		},
+		about: FRENCH.about,
 		finalCta: {
 			title: "Tu ne perds jamais l'infrastructure.",
 			conversation: 'Échange de 45 min sur Google Meet, gratuit et sans engagement.',
@@ -160,12 +161,7 @@ const EXPECTED = {
 			captions: ['in service', 'at most 1% out of service'],
 			note: 'For the 3 months after delivery.',
 		},
-		about: {
-			title: 'Who is Julien',
-			wayOfWorking:
-				'I work remotely, in Portuguese, French and English. I use standard technologies, with no lock-in, and document everything so your team can run on its own.',
-			linkedin: 'See my LinkedIn profile',
-		},
+		about: { ...FRENCH.about, linkedin: 'See my LinkedIn profile' },
 		finalCta: {
 			title: 'You never lose the infrastructure.',
 			conversation: '45-min conversation on Google Meet, free and with no commitment.',
