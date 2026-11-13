@@ -12,8 +12,7 @@
 	import { afterLoad } from '../scripts/after-load';
 	import { createBranch } from '../scripts/branch';
 	import { glow } from '../scripts/glow';
-
-	type Point = [x: number, y: number, z: number];
+	import { curve, greenShare, nearness, projected, strayed, type Point } from '../scripts/infinity';
 
 	interface Particle {
 		/** Where it starts on the curve, in radians. */
@@ -140,39 +139,20 @@
 				if (narrow && i % 3 === 2) continue;
 				const { at, radius, phase, speed, size } = particles[i];
 				const t = at + flow * speed;
-				const [x, y, z] = curve(t);
-				const ahead = curve(t + 0.002);
-				// The tangent, and two normals to move the point off the curve.
-				const length = Math.hypot(ahead[0] - x, ahead[1] - y, ahead[2] - z) || 1;
-				const [tx, ty, tz] = [
-					(ahead[0] - x) / length,
-					(ahead[1] - y) / length,
-					(ahead[2] - z) / length,
-				];
-				const flat = Math.hypot(tx, ty) || 1;
-				const [nx, ny] = [-ty / flat, tx / flat];
-				const angle = phase + flow * 0.6;
-				const along = Math.cos(angle) * radius;
-				const across = Math.sin(angle) * radius;
 				const {
 					x: px,
 					y: py,
 					depth,
 					perspective,
-				} = project([
-					x + along * nx - across * tz * ny,
-					y + along * ny + across * tz * nx,
-					z + across * (tx * ny - ty * nx),
-				]);
-				const nearness = Math.min(Math.max(0.3 + (depth + 1.2) * 0.32, 0.2), 1);
+				} = project(strayed(t, radius, phase + flow * 0.6));
 				const radiusOnScreen = baseSize * size * perspective;
-				const greenShare = Math.min(Math.max((x + 0.12) / 0.24, 0), 1);
+				const greenPart = greenShare(t);
 				for (const [sprite, share] of [
-					[purple, 1 - greenShare],
-					[green, greenShare],
+					[purple, 1 - greenPart],
+					[green, greenPart],
 				] as const) {
 					if (share < 0.02) continue;
-					context.globalAlpha = nearness * share;
+					context.globalAlpha = nearness(depth) * share;
 					context.drawImage(
 						sprite,
 						px - radiusOnScreen,
@@ -235,23 +215,5 @@
 		resize.observe(canvas);
 		resize.observe(box);
 		resize.observe(main);
-	}
-
-	/** A lemniscate of Bernoulli with depth: its two loops cross at different heights. */
-	function curve(t: number): Point {
-		const sin = Math.sin(t);
-		const cos = Math.cos(t);
-		const d = 1 + sin * sin;
-		return [cos / d, (sin * cos) / d, 0.3 * sin];
-	}
-
-	/** Turns a point around the vertical axis, then the horizontal one, with perspective. */
-	function projected([x, y, z]: Point, pitch: number, yaw: number) {
-		const turnedX = x * Math.cos(yaw) + z * Math.sin(yaw);
-		const turnedZ = -x * Math.sin(yaw) + z * Math.cos(yaw);
-		const tiltedY = y * Math.cos(pitch) - turnedZ * Math.sin(pitch);
-		const depth = y * Math.sin(pitch) + turnedZ * Math.cos(pitch);
-		const perspective = 3 / (3 - depth);
-		return { x: turnedX * perspective, y: tiltedY * perspective, depth, perspective };
 	}
 </script>

@@ -20,17 +20,18 @@ const { link, home } = dictionaries[language].ecology;
 	class="page-width grid gap-x-16 gap-y-8 py-[clamp(5rem,10vw,8rem)] lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:items-center"
 >
 	<div class="grid justify-items-start gap-5">
-		<p class="label flex items-center gap-2">
+		<p data-reveal class="label flex items-center gap-2">
 			<Leaf size={16} /> {link}
 		</p>
-		<h2 id="ecology-title" class="text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">
+		<h2 id="ecology-title" data-reveal class="text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">
 			{withNonBreakingSpaces(home.title)}
 		</h2>
-		<p class="max-w-[46rem] text-[1.0625rem] text-foreground-secondary">
+		<p data-reveal class="max-w-[46rem] text-[1.0625rem] text-foreground-secondary">
 			{withNonBreakingSpaces(home.text)}
 		</p>
 		<a
 			href={ecologyPath(language)}
+			data-reveal
 			class="inline-flex min-h-11 items-center gap-2 font-semibold text-green underline-offset-3 hover:underline"
 		>
 			<Leaf size={18} />
@@ -38,5 +39,8 @@ const { link, home } = dictionaries[language].ecology;
 		</a>
 	</div>
 
-	<FlowingLeaf class="max-w-80 justify-self-center" />
+	{/* The leaf takes no other attributes, so its wrapper is what fades in. */}
+	<div data-reveal class="w-full max-w-80 justify-self-center noscript:hidden">
+		<FlowingLeaf />
+	</div>
 </section>

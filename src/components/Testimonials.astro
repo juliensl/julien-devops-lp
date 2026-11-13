@@ -35,13 +35,13 @@ const arrowClass =
 		data-carousel={isCarousel ? '' : undefined}
 		class="page-width grid gap-8 py-[clamp(5rem,10vw,8rem)]"
 	>
-		<h2 id="testimonials-title" class="label font-body">
+		<h2 id="testimonials-title" data-reveal class="label font-body">
 			{title}
 		</h2>
 
 		{/* Hidden until the script runs: without JS, the strip slides on its own. */}
 		{isCarousel && (
-			<div hidden data-controls class="flex items-center gap-3">
+			<div hidden data-controls data-reveal class="flex items-center gap-3">
 				<button type="button" aria-label={previous} data-previous class={arrowClass}>
 					←
 				</button>
@@ -71,6 +71,7 @@ const arrowClass =
 		    Testimonial through its Malt link, which slides it into view. */}
 		<div
 			data-strip
+			data-reveal
 			role={isCarousel ? 'group' : undefined}
 			aria-label={isCarousel ? strip : undefined}
 			class="grid snap-x snap-mandatory auto-cols-[100%] grid-flow-col items-start gap-4 overflow-x-auto overscroll-x-contain"

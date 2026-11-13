@@ -13,6 +13,13 @@ updates:
     directory: /
     schedule:
       interval: monthly
+    ignore:
+      # astro check does not support TypeScript 7.
+      - dependency-name: typescript
+        update-types: ['version-update:semver-major']
+      # Follows the Node major in .nvmrc: raise both together.
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
     groups:
       npm:
         patterns: ['*']

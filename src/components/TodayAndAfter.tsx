@@ -20,7 +20,7 @@ export default function TodayAndAfter({ title, todayTitle, today, afterTitle, af
 			aria-labelledby="today-title"
 			className="page-width grid gap-12 py-[clamp(5rem,11vw,9rem)]"
 		>
-			<h2 id="today-title" className="text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">
+			<h2 id="today-title" data-reveal className="text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">
 				{title}
 			</h2>
 			<div className="grid gap-x-20 gap-y-14 lg:grid-cols-2">
@@ -61,7 +61,7 @@ function List({
 	children: ReactNode;
 }) {
 	return (
-		<div className="grid content-start gap-4">
+		<div data-reveal className="grid content-start gap-4">
 			<h3 id={id} className={`label font-body ${titleClass}`}>
 				{title}
 			</h3>

@@ -18,7 +18,7 @@ const { title, steps } = Astro.props;
 >
 	<div data-stage>
 		<div class="page-width grid gap-12 py-[clamp(5rem,11vw,9rem)]">
-			<h2 id="steps-title" class="text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">
+			<h2 id="steps-title" data-reveal class="text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">
 				{title}
 			</h2>
 			{/* On mobile, one Step per row, with the number on the left. From 961 px, five
@@ -50,28 +50,39 @@ const { title, steps } = Astro.props;
 <script>
 	import { afterLoad } from '../scripts/after-load';
 	import { DESKTOP } from '../scripts/desktop';
+	import { GROWTH_LINE } from '../scripts/growth-line';
 
 	afterLoad(() => {
 		const desktop = matchMedia(DESKTOP);
+		const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 
 		for (const section of document.querySelectorAll<HTMLElement>('[data-steps]')) {
 			const stage = section.querySelector<HTMLElement>('[data-stage]')!;
 			const steps = [...section.querySelectorAll<HTMLElement>('[data-step]')];
+			const numbers = steps.map((step) => step.querySelector<HTMLElement>('[data-number]')!);
 			let pendingFrame = 0;
 
-			// With the section pinned, the progress goes from 0 (the stage pins) to 1 (it unpins). Each Step has
-			// its own slice of the progress and reaches its middle at (k + 0.5) / 5: the number lights up.
-			// The branch reaches each Step's node at that same progress. With the section unpinned (mobile,
-			// reduced motion, short screen), the numbers are always lit.
-			const lightUp = () => {
+			// Each Step shows once the branch reaches its node, and hides again when the branch shrinks back.
+			// Pinned, the progress goes from 0 (the stage pins) to 1 (it unpins); each Step has its own slice
+			// of it, and the branch reaches its node at the slice's middle, (k + 0.5) / 5. Unpinned, the node
+			// is by its number, and the branch's tip follows the growth line. With reduced motion, the branch
+			// is whole: every Step shows.
+			const showReached = () => {
 				pendingFrame = 0;
-				if (!section.hasAttribute('data-pinned')) return;
-				const { top, height } = section.getBoundingClientRect();
-				const stageTop = parseFloat(getComputedStyle(stage).top);
-				const progress = (stageTop - top) / (height - stage.offsetHeight);
-				for (const [k, step] of steps.entries()) {
-					step.toggleAttribute('data-reached', progress >= (k + 0.5) / steps.length);
+				let reached: boolean[];
+				if (section.hasAttribute('data-pinned')) {
+					const { top, height } = section.getBoundingClientRect();
+					const stageTop = parseFloat(getComputedStyle(stage).top);
+					const progress = (stageTop - top) / (height - stage.offsetHeight);
+					reached = steps.map((_, k) => progress >= (k + 0.5) / steps.length);
+				} else {
+					const line = innerHeight * GROWTH_LINE;
+					reached = numbers.map((number) => {
+						const { top, height } = number.getBoundingClientRect();
+						return reducedMotion.matches || top + height / 2 < line;
+					});
 				}
+				for (const [k, step] of steps.entries()) step.toggleAttribute('data-pending', !reached[k]);
 			};
 
 			// When pinned, the Steps must fit in the stage, below the header; on a short screen or when
@@ -80,12 +91,13 @@ const { title, steps } = Astro.props;
 				section.toggleAttribute('data-pinned', desktop.matches);
 				const content = stage.firstElementChild as HTMLElement;
 				if (content.offsetHeight > stage.clientHeight) section.removeAttribute('data-pinned');
-				lightUp();
+				showReached();
 			};
 
 			desktop.addEventListener('change', pin);
+			reducedMotion.addEventListener('change', pin);
 			addEventListener('resize', pin);
-			addEventListener('scroll', () => (pendingFrame ||= requestAnimationFrame(lightUp)), {
+			addEventListener('scroll', () => (pendingFrame ||= requestAnimationFrame(showReached)), {
 				passive: true,
 			});
 			pin();
@@ -111,13 +123,8 @@ const { title, steps } = Astro.props;
 		padding-block: 0;
 	}
 
-	/* Pinned, each number stays dimmed until its Step is reached. The `line-strong` gray has
-	   3.5:1 on the background, enough for a number this size (WCAG 1.4.3, large text). */
-	[data-pinned] [data-number] {
-		color: var(--color-line-strong);
-		transition: color 0.35s ease;
-	}
-	[data-pinned] [data-reached] [data-number] {
-		color: var(--color-green);
+	/* A Step fades in as the branch reaches it, and out as the branch shrinks back. */
+	[data-step] {
+		transition: opacity 0.6s ease;
 	}
 </style>

@@ -30,13 +30,24 @@ export default function FinalCta({
 			aria-labelledby="final-cta-title"
 			className="page-width grid min-h-[70svh] content-center justify-items-start gap-6 py-[clamp(5rem,11vw,9rem)]"
 		>
-			<h2 id="final-cta-title" className="text-[clamp(2.6rem,6.5vw,5rem)] leading-[1.06]">
+			<h2
+				id="final-cta-title"
+				data-reveal
+				className="text-[clamp(2.6rem,6.5vw,5rem)] leading-[1.06]"
+			>
 				{withNonBreakingSpaces(title)}
 			</h2>
-			<p className="max-w-2xl text-lg text-foreground-secondary">{withNonBreakingSpaces(text)}</p>
-			{/* The section's only link: the branch (#73) ends with 3 leaves next to it. */}
-			<BookingButton text={buttonText} />
-			<p className="max-w-2xl text-sm text-foreground-secondary">{withNonBreakingSpaces(line)}</p>
+			<p data-reveal className="max-w-2xl text-lg text-foreground-secondary">
+				{withNonBreakingSpaces(text)}
+			</p>
+			{/* The section's only link: the branch (#73) ends with 3 leaves next to it. The button takes
+			    no other attributes, so its wrapper is what fades in. */}
+			<div data-reveal className="flex">
+				<BookingButton text={buttonText} />
+			</div>
+			<p data-reveal className="max-w-2xl text-sm text-foreground-secondary">
+				{withNonBreakingSpaces(line)}
+			</p>
 		</section>
 	);
 }
