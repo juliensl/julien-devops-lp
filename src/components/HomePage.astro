@@ -10,8 +10,8 @@ import AboutJulien from './AboutJulien.astro';
 import CloudChart from './CloudChart.astro';
 import DottedInfinity from './DottedInfinity.astro';
 import FinalCta from './FinalCta';
-import Guarantee from './Guarantee';
 import Hero from './Hero';
+import HomeAvailability from './HomeAvailability';
 import HomeEcology from './HomeEcology.astro';
 import PauseButton from './PauseButton.astro';
 import ScrollReveal from './ScrollReveal.astro';
@@ -56,7 +56,7 @@ const t = dictionaries[language];
 
 		<Steps {...t.homePage.steps} />
 
-		<Guarantee {...t.homePage.guarantee} />
+		<HomeAvailability language={language} {...t.homePage.availability} />
 
 		<CloudChart language={language} {...t.homePage.cloudChart} />
 

@@ -392,26 +392,13 @@ export const pt: Dictionary = {
 				},
 			],
 		},
-		guarantee: {
-			label: 'A Garantia',
-			title: 'Disponível pelo menos 99 % do tempo, em cada mês.',
-			text: 'Em 30 dias, entrego a infraestrutura. Nos 3 meses seguintes, ela está disponível pelo menos 99 % do tempo em cada mês. Se não estiver, continuo a trabalhar sem faturar até chegar lá.',
-			appliesWhen:
-				'Aplica-se quando contratas a Infraestrutura escalável e a Observabilidade (e a Contentorização, se a aplicação ainda não estiver contentorizada).',
-			conditionsTitle: 'Condições',
-			conditions: [
-				'Um teste escrito para cada bug corrigido.',
-				'Nenhum dev passa à frente de um teste a vermelho.',
-				'Acesso de leitura ao repositório.',
-				'Uma pessoa técnica que responde em 48 h.',
-			],
-			exclusionsTitle: 'Exclusões',
-			exclusions: ['Falhas do fornecedor cloud.', 'Alterações que não passaram pela pipeline.'],
-			number: '99 %',
-			belowNumber: 'do tempo, em cada mês',
-			inService: 'com serviço',
-			outOfService: 'no máximo 1 % sem serviço',
-			note: 'Nos 3 meses seguintes à entrega.',
+		availability: {
+			label: 'Disponibilidade e fiabilidade',
+			title: 'Uma infraestrutura fiável, concebida para durar.',
+			text: 'Consoante as necessidades do teu SaaS, concebo e testo uma infraestrutura que visa um objetivo de disponibilidade definido em conjunto: 99,5 %, 99,9 %, 99,95 % ou mais, quando a arquitetura o justifica. O nível certo depende do teu negócio, dos serviços utilizados e do teu orçamento.',
+			guarantee:
+				'Para uma intervenção completa que cubra os quatro blocos, proponho uma garantia de conformidade técnica de três meses após a entrega: se for detetado um defeito de conceção ou de configuração que caiba na minha intervenção, asseguro a sua correção nas condições acordadas no contrato. Não se trata de um serviço de piquete 24 h/24 nem de uma garantia de ausência de avarias da aplicação.',
+			link: 'Perceber os níveis de disponibilidade e consultar as condições',
 		},
 		cloudChart: {
 			label: 'Fornecedores cloud',

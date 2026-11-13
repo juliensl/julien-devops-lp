@@ -257,8 +257,8 @@ inEachBuild((build) => {
 				page,
 			}) => {
 				await page.goto(prefix);
-				// The Guarantee, far from the ∞: only the branch is on screen.
-				await page.locator('[data-section="guarantee"]').scrollIntoViewIfNeeded();
+				// Availability and reliability, far from the ∞: only the branch is on screen.
+				await page.locator('[data-section="availability"]').scrollIntoViewIfNeeded();
 				await expect.poll(() => isMoving(page), { message: 'before the pause' }).toBe(true);
 				await pauseButton(page, pause).click();
 				await expect.poll(() => isMoving(page), { message: 'paused', timeout: 10_000 }).toBe(false);
@@ -279,7 +279,7 @@ inEachBuild((build) => {
 					.toBeGreaterThan(0);
 				expect(await isMoving(page)).toBe(false);
 				await expect(pauseButton(page, pause)).toBeHidden();
-				await page.locator('[data-section="guarantee"]').scrollIntoViewIfNeeded();
+				await page.locator('[data-section="availability"]').scrollIntoViewIfNeeded();
 				await expect
 					.poll(async () => (await look(page)).count, { message: 'already down the page' })
 					.toBeGreaterThan(0);

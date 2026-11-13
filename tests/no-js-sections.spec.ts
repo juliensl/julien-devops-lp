@@ -1,5 +1,5 @@
-// The home page sections that need no JavaScript (#63): "Para quem é", "Hoje, e depois", the
-// Guarantee, "Quem é o Julien" and the final CTA.
+// The home page sections that need no JavaScript (#63): "Para quem é", "Hoje, e depois",
+// "Disponibilidade e fiabilidade", "Quem é o Julien" and the final CTA.
 import { expect, test } from '@playwright/test';
 import { inEachBuild } from './builds';
 import { LANGUAGES, LINKEDIN, NAME, BOOKING_PAGE, type Language } from './expected';
@@ -39,6 +39,16 @@ const FRENCH = {
 				"Tu disposes d'indicateurs et d'alertes pour détecter les incidents au plus tôt.",
 			],
 		],
+	},
+	availability: {
+		label: 'Disponibilité & fiabilité',
+		title: 'Une infrastructure fiable, conçue pour durer.',
+		text: "Selon les besoins de ton SaaS, je conçois et teste une infrastructure visant un objectif de disponibilité défini ensemble : 99,5 %, 99,9 %, 99,95 % ou davantage lorsque l'architecture le justifie. Le bon niveau dépend de ton activité, des services utilisés et de ton budget.",
+		guarantee:
+			"Pour une intervention complète couvrant les quatre blocs, je propose une garantie de conformité technique de trois mois après la livraison : si un défaut de conception ou de configuration relevant de mon intervention est constaté, je prends en charge sa correction dans les conditions convenues au contrat. Il ne s'agit pas d'une astreinte 24 h/24 ni d'une garantie d'absence de panne applicative.",
+		link: 'Comprendre les niveaux de disponibilité et consulter les conditions',
+		/** The heading of the page the link leads to. */
+		pageHeading: 'Quel niveau de disponibilité pour ton SaaS ?',
 	},
 	about: {
 		title: 'Qui est Julien ?',
@@ -87,22 +97,14 @@ const EXPECTED = {
 				],
 			],
 		},
-		guarantee: {
-			title: 'Disponível pelo menos 99 % do tempo, em cada mês.',
-			text: 'Em 30 dias, entrego a infraestrutura. Nos 3 meses seguintes, ela está disponível pelo menos 99 % do tempo em cada mês. Se não estiver, continuo a trabalhar sem faturar até chegar lá.',
-			appliesWhen:
-				'Aplica-se quando contratas a Infraestrutura escalável e a Observabilidade (e a Contentorização, se a aplicação ainda não estiver contentorizada).',
-			lists: ['Condições', 'Exclusões'],
-			conditions: [
-				'Um teste escrito para cada bug corrigido.',
-				'Nenhum dev passa à frente de um teste a vermelho.',
-				'Acesso de leitura ao repositório.',
-				'Uma pessoa técnica que responde em 48 h.',
-			],
-			exclusions: ['Falhas do fornecedor cloud.', 'Alterações que não passaram pela pipeline.'],
-			number: '99 %',
-			captions: ['com serviço', 'no máximo 1 % sem serviço'],
-			note: 'Nos 3 meses seguintes à entrega.',
+		availability: {
+			label: 'Disponibilidade e fiabilidade',
+			title: 'Uma infraestrutura fiável, concebida para durar.',
+			text: 'Consoante as necessidades do teu SaaS, concebo e testo uma infraestrutura que visa um objetivo de disponibilidade definido em conjunto: 99,5 %, 99,9 %, 99,95 % ou mais, quando a arquitetura o justifica. O nível certo depende do teu negócio, dos serviços utilizados e do teu orçamento.',
+			guarantee:
+				'Para uma intervenção completa que cubra os quatro blocos, proponho uma garantia de conformidade técnica de três meses após a entrega: se for detetado um defeito de conceção ou de configuração que caiba na minha intervenção, asseguro a sua correção nas condições acordadas no contrato. Não se trata de um serviço de piquete 24 h/24 nem de uma garantia de ausência de avarias da aplicação.',
+			link: 'Perceber os níveis de disponibilidade e consultar as condições',
+			pageHeading: 'Que nível de disponibilidade para o teu SaaS?',
 		},
 		about: {
 			title: 'Quem é o Julien?',
@@ -122,49 +124,14 @@ const EXPECTED = {
 	fr: {
 		whoItsFor: FRENCH.whoItsFor,
 		todayAndAfter: FRENCH.todayAndAfter,
-		guarantee: {
-			title: 'Disponible au moins 99 % du temps, chaque mois.',
-			text: "En 30 jours, je livre l'infrastructure. Pendant les 3 mois suivants, elle est disponible au moins 99 % du temps chaque mois. Sinon, je continue à travailler sans facturer jusqu'à y arriver.",
-			appliesWhen:
-				"La Garantie s'applique quand tu prends l'Infrastructure scalable et l'Observabilité (et la Conteneurisation, si l'application n'est pas encore conteneurisée).",
-			lists: ['Conditions', 'Exclusions'],
-			conditions: [
-				'Un test écrit pour chaque bug corrigé.',
-				'Aucun dev ne passe outre un test au rouge.',
-				'Un accès en lecture au dépôt.',
-				'Un interlocuteur technique qui répond sous 48 h.',
-			],
-			exclusions: [
-				'Les pannes du fournisseur cloud.',
-				'Les modifications qui ne sont pas passées par la pipeline.',
-			],
-			number: '99 %',
-			captions: ['en service', 'au plus 1 % hors service'],
-			note: 'Pendant les 3 mois qui suivent la livraison.',
-		},
+		availability: FRENCH.availability,
 		about: FRENCH.about,
 		finalCta: { ...FRENCH.finalCta, bookingNotice: undefined },
 	},
 	en: {
 		whoItsFor: FRENCH.whoItsFor,
 		todayAndAfter: FRENCH.todayAndAfter,
-		guarantee: {
-			title: 'Available at least 99% of the time, every month.',
-			text: "In 30 days, I deliver the infrastructure. For the next 3 months, it is available at least 99% of the time every month. If it isn't, I keep working without billing until it is.",
-			appliesWhen:
-				"Applies when you take Scalable infrastructure and Observability (and Containerisation, if the application isn't containerised yet).",
-			lists: ['Conditions', 'Exclusions'],
-			conditions: [
-				'A test written for every bug fixed.',
-				'No dev pushes past a failing test.',
-				'Read access to the repository.',
-				'A technical contact who replies within 48 h.',
-			],
-			exclusions: ['Cloud provider outages.', "Changes that didn't go through the pipeline."],
-			number: '99%',
-			captions: ['in service', 'at most 1% out of service'],
-			note: 'For the 3 months after delivery.',
-		},
+		availability: FRENCH.availability,
 		about: { ...FRENCH.about, linkedin: 'See my LinkedIn profile' },
 		finalCta: {
 			...FRENCH.finalCta,
@@ -174,15 +141,15 @@ const EXPECTED = {
 	},
 } satisfies Record<Language, unknown>;
 
-// The numbers Julien approved (#54, "Só se publica o que está validado"): 30 days, 99 % (and the
-// remaining 1 %), 100 to 500 €/month, 5 to 20 people, 3 devs, 45 min, 48 h, 3 months and the Block numbers.
-const APPROVED_NUMBERS = ['1', '2', '3', '4', '5', '20', '30', '45', '48', '99', '100', '500'];
+// The numbers in Julien's texts (#54, "Só se publica o que está validado"): the availability
+// objectives, 24 h/24 and 45 min.
+const APPROVED_NUMBERS = ['24', '45', '99,5', '99,9', '99,95'];
 
 inEachBuild((build) => {
 	for (const language of build.phase.publishedLanguages) {
 		const { prefix, promise, designation, button } = LANGUAGES[language];
-		const { whoItsFor, todayAndAfter, guarantee, about, finalCta } = EXPECTED[language];
-		const sections = [whoItsFor, todayAndAfter, guarantee, about, finalCta];
+		const { whoItsFor, todayAndAfter, availability, about, finalCta } = EXPECTED[language];
+		const sections = [whoItsFor, todayAndAfter, availability, about, finalCta];
 
 		test.describe(prefix, () => {
 			test(`"${button}" is in the header and in the Hero, not in "${whoItsFor.title}"`, async ({
@@ -237,48 +204,20 @@ inEachBuild((build) => {
 				expect(await section.textContent()).not.toMatch(/\d/);
 			});
 
-			test('the Guarantee: the commitment, when it applies, the 4 conditions and the 2 exclusions', async ({
+			test(`"${availability.label}": the title, the two paragraphs and the link to the availability page in the same language`, async ({
 				page,
 			}) => {
 				await page.goto(prefix);
-				const section = page.getByRole('region', { name: guarantee.title });
-				for (const sentence of [guarantee.text, guarantee.appliesWhen]) {
-					await expect(section.getByText(sentence, { exact: true })).toBeVisible();
+				const section = page.getByRole('region', { name: availability.title });
+				for (const text of [availability.label, availability.text, availability.guarantee]) {
+					await expect(section.getByText(text, { exact: true })).toBeVisible();
 				}
-				const [conditions, exclusions] = guarantee.lists.map((name) =>
-					section.getByRole('list', { name }).getByRole('listitem'),
-				);
-				await expect(conditions).toHaveText(guarantee.conditions);
-				await expect(exclusions).toHaveText(guarantee.exclusions);
-			});
-
-			test('the Guarantee shows the 99 % large and a section-wide bar where only 1 % changes colour', async ({
-				page,
-			}) => {
-				await page.goto(prefix);
-				const section = page.getByRole('region', { name: guarantee.title });
-				const figure = section.getByRole('figure');
-				const percentage = figure.getByText(guarantee.number, { exact: true });
-				await expect(percentage).toBeVisible();
-				const fontSize = await percentage.evaluate((e) => parseFloat(getComputedStyle(e).fontSize));
-				expect(fontSize).toBeGreaterThanOrEqual(80);
-				for (const text of guarantee.captions) {
-					await expect(figure.getByText(text, { exact: true })).toBeVisible();
-				}
-				await expect(figure).toHaveAccessibleName(guarantee.note);
-
-				// The bar is decorative: the captions say the same in text, and it is only measured by its shape.
-				// It runs from the edge of the title to that of the exclusions, the full width of the content.
-				const bar = (await figure.locator('[aria-hidden="true"]').boundingBox())!;
-				const heading = (await section.getByRole('heading', { level: 2 }).boundingBox())!;
-				const exclusions = section.getByRole('list', { name: guarantee.lists[1] });
-				const { x, width } = (await exclusions.boundingBox())!;
-				expect(bar.x).toBeCloseTo(heading.x, 0);
-				expect(bar.x + bar.width).toBeCloseTo(x + width, 0);
-				const barWidth = bar.width;
-				const tip = (await figure.locator('[aria-hidden="true"] > *').last().boundingBox())!;
-				expect(tip.width / barWidth).toBeGreaterThan(0.005);
-				expect(tip.width / barWidth).toBeLessThan(0.02);
+				const link = section.getByRole('link');
+				await expect(link).toHaveCount(1);
+				await expect(link).toHaveAccessibleName(availability.link);
+				await link.click();
+				await expect(page).toHaveURL(`${prefix}availability/`);
+				await expect(page.getByRole('heading', { level: 1 })).toHaveText(availability.pageHeading);
 			});
 
 			test(`"${about.title}": the photo, the name, the Designation, the way of working and LinkedIn`, async ({
@@ -348,16 +287,11 @@ inEachBuild((build) => {
 			test.describe('without JavaScript', () => {
 				test.use({ javaScriptEnabled: false });
 
-				test('the five sections appear in full, with the Guarantee bar full', async ({ page }) => {
+				test('the five sections appear in full', async ({ page }) => {
 					await page.goto(prefix);
 					for (const { title } of sections) {
 						await expect(page.getByRole('region', { name: title })).toBeVisible();
 					}
-					const figure = page.getByRole('region', { name: guarantee.title }).getByRole('figure');
-					await expect(figure.getByText(guarantee.number, { exact: true })).toBeVisible();
-					const bar = figure.locator('[aria-hidden="true"]');
-					const inService = (await bar.locator(':scope > *').first().boundingBox())!;
-					expect(inService.width / (await bar.boundingBox())!.width).toBeGreaterThan(0.95);
 				});
 			});
 
