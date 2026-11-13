@@ -1,8 +1,4 @@
-// The data sovereignty page's table: what official sources say about the standard public cloud of some
-// providers. Each value has its sources (URL and the day each was read) and its aggregation level. A
-// `null` value is one no official source states: the page shows «non communiqué». It is not a ranking:
-// the providers are in alphabetical order. The words of each value are in the dictionaries.
-// No imports, so that `node` can load it.
+// The data sovereignty page's facts and official sources. No imports, so that `node` can load it.
 
 export type ProviderId =
 	| 'aws'

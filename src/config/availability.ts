@@ -25,11 +25,7 @@ export function objectiveText(objective: number, locale: string): string {
 	return `${new Intl.NumberFormat(locale).format(objective)}${space}%`;
 }
 
-/**
- * The longest downtime an objective (in %) allows over `days`, measured 24 h a day:
- * (1 − objective / 100) × the period in seconds. Written as the page shows it, to the nearest second
- * ("43 min 12 s"), after `about` when the exact value has a fraction of a second.
- */
+/** The longest downtime an objective (in %) allows over `days`, written as "43 min 12 s". */
 export function maxDowntime(objective: number, days: number, about: string): string {
 	const exact = ((100 - objective) / 100) * days * SECONDS_PER_DAY;
 	const total = Math.round(exact);
