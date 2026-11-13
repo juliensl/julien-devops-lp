@@ -394,11 +394,6 @@ export const en: Dictionary = {
 			translated: 'Translated from French',
 			malt: 'View on Malt',
 		},
-		questions: {
-			label: 'Questions',
-			title: 'The essentials, before the Conversation.',
-			byAudience: 'Questions for your role',
-		},
 		finalCta: {
 			title: 'Ton SaaS mérite mieux que des correctifs en urgence.',
 			text: "Tu as déjà un projet en tête, ou simplement des questions sur ton code, ton infrastructure ou ton prochain déploiement ? Parlons-en. Un premier échange suffit pour identifier les priorités et voir comment je peux t'aider.",

@@ -481,12 +481,6 @@ export const fr = {
 			translated: 'Traduit du français',
 			malt: 'Voir sur Malt',
 		},
-		/** The Questions section: its general questions and the Audiences come from `questions`. */
-		questions: {
-			label: 'Questions',
-			title: "L'essentiel, avant l'Échange.",
-			byAudience: 'Questions pour ton profil',
-		},
 		finalCta: {
 			title: 'Ton SaaS mérite mieux que des correctifs en urgence.',
 			text: "Tu as déjà un projet en tête, ou simplement des questions sur ton code, ton infrastructure ou ton prochain déploiement ? Parlons-en. Un premier échange suffit pour identifier les priorités et voir comment je peux t'aider.",
@@ -497,8 +491,8 @@ export const fr = {
 				"La page de réservation est en français, mais l'Échange peut se faire en anglais ou en portugais.",
 		},
 	},
-	/** «Tes défis»: the questions by audience, on their page, in the header submenu and in the home
-	 * page's Questions section. The 23 answers are Julien's, word for word in French; each
+	/** «Tes défis»: the questions by audience, on their page and in the header submenu.
+	 * The 23 answers are Julien's, word for word in French; each
 	 * audience is typed with its number of questions, so a language with one missing fails `astro check`. */
 	questions: {
 		/** The name of the page and of the header menu that leads to it. */

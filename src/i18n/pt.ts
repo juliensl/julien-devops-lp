@@ -402,11 +402,6 @@ export const pt: Dictionary = {
 			translated: 'Traduzido do francês',
 			malt: 'Ver no Malt',
 		},
-		questions: {
-			label: 'Perguntas',
-			title: 'O essencial, antes da Conversa.',
-			byAudience: 'Perguntas para o teu perfil',
-		},
 		finalCta: {
 			title: 'O teu SaaS merece mais do que correções de emergência.',
 			text: 'Já tens um projeto em mente, ou simplesmente perguntas sobre o teu código, a tua infraestrutura ou o teu próximo deploy? Vamos falar disso. Uma primeira conversa chega para identificar as prioridades e ver como te posso ajudar.',

@@ -13,7 +13,6 @@ import FinalCta from './FinalCta';
 import Guarantee from './Guarantee';
 import Hero from './Hero';
 import HomeEcology from './HomeEcology.astro';
-import HomeQuestions from './HomeQuestions.astro';
 import PauseButton from './PauseButton.astro';
 import ScrollReveal from './ScrollReveal.astro';
 import Services from './Services.astro';
@@ -66,8 +65,6 @@ const t = dictionaries[language];
 		<Testimonials language={language} {...t.homePage.testimonials} />
 
 		<HomeEcology language={language} />
-
-		<HomeQuestions language={language} questions={t.questions} {...t.homePage.questions} />
 
 		<FinalCta language={language} {...t.homePage.finalCta} />
 
