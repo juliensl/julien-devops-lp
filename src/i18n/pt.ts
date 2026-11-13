@@ -150,7 +150,7 @@ export const pt: Dictionary = {
 				aws: {
 					paas: 'O App Runner fechou a novos clientes a 30/04/2026.',
 					europeanHeadquarters:
-						'Sede em Seattle, EUA. Na Europa, anuncia a AWS European Sovereign Cloud, com uma região na Alemanha.',
+						'Sede em Seattle, EUA. Na Europa, a AWS European Sovereign Cloud está disponível desde janeiro de 2026, com uma região na Alemanha.',
 					secNumCloud: 'Não está no catálogo SecNumCloud da ANSSI.',
 					euRegions: '6 regiões na UE.',
 					costs:

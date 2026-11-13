@@ -143,7 +143,7 @@ export const fr = {
 				aws: {
 					paas: 'App Runner est fermé aux nouveaux clients depuis le 30/04/2026.',
 					europeanHeadquarters:
-						"Siège à Seattle, États-Unis. En Europe, AWS annonce l'AWS European Sovereign Cloud, avec une région en Allemagne.",
+						"Siège à Seattle, États-Unis. En Europe, l'AWS European Sovereign Cloud est disponible depuis janvier 2026, avec une région en Allemagne.",
 					secNumCloud: "Absent du catalogue SecNumCloud de l'ANSSI.",
 					euRegions: "6 régions dans l'UE.",
 					costs:

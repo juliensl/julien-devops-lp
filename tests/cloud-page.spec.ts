@@ -105,6 +105,8 @@ const EXPECTED: Record<
 		opinion: string;
 		/** The date the Azure sources were read, as the page writes it. */
 		read: string;
+		/** AWS's note on its European offer, in the data sovereignty scenario. */
+		awsInEurope: string;
 	}
 > = {
 	pt: {
@@ -136,6 +138,8 @@ const EXPECTED: Record<
 		],
 		opinion: 'opinião do Julien',
 		read: '13/11/2026',
+		awsInEurope:
+			'Na Europa, a AWS European Sovereign Cloud está disponível desde janeiro de 2026, com uma região na Alemanha.',
 	},
 	fr: {
 		title: 'Compare les fournisseurs selon tes priorités',
@@ -165,6 +169,8 @@ const EXPECTED: Record<
 		],
 		opinion: 'avis de Julien',
 		read: '13 nov. 2026',
+		awsInEurope:
+			"En Europe, l'AWS European Sovereign Cloud est disponible depuis janvier 2026, avec une région en Allemagne.",
 	},
 	en: {
 		title: 'Compare les fournisseurs selon tes priorités',
@@ -190,6 +196,8 @@ const EXPECTED: Record<
 		],
 		opinion: "Julien's opinion",
 		read: 'Nov 13, 2026',
+		awsInEurope:
+			"En Europe, l'AWS European Sovereign Cloud est disponible depuis janvier 2026, avec une région en Allemagne.",
 	},
 };
 
@@ -306,6 +314,23 @@ inEachBuild((build) => {
 					await expect(source).toHaveAccessibleName(/microsoft\.com$/);
 				}
 				await expect(facts.first()).toContainText(expected.read);
+			});
+
+			test("AWS's European Sovereign Cloud is available, as AWS's announcement says", async ({
+				page,
+			}) => {
+				await page.goto(path);
+				await scenario(page, language, SOVEREIGNTY).check();
+				await bars(page, language).nth(PROVIDERS.indexOf('AWS')).click();
+				const fact = detail(page, language, 'AWS')
+					.getByRole('listitem')
+					.filter({ hasText: expected.awsInEurope });
+				await expect(fact).toHaveCount(1);
+				await expect(
+					fact.locator(
+						'a[href="https://aws.amazon.com/blogs/aws/opening-the-aws-european-sovereign-cloud/"]',
+					),
+				).toHaveAccessibleName('aws.amazon.com');
 			});
 
 			test("the cost criterion is marked as Julien's opinion, the facts are not", async ({

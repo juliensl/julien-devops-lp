@@ -110,7 +110,7 @@ export const FACTS: Record<ProviderId, Record<CriterionId, Fact>> = {
 				source(
 					'https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/amzn-20251231.htm',
 				),
-				source('https://docs.aws.eu/esc/latest/userguide/introduction.html'),
+				source('https://aws.amazon.com/blogs/aws/opening-the-aws-european-sovereign-cloud/'),
 				source('https://docs.aws.eu/general/latest/gr/endpoints.html'),
 			],
 		},
