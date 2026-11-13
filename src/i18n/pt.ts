@@ -49,9 +49,9 @@ export const pt: Dictionary = {
 	ecology: {
 		link: 'Ecologia',
 		home: {
-			title: 'A infraestrutura também tem pegada.',
-			text: 'Onde a aplicação corre, quanto corre e com que eficiência mudam o impacto ambiental. A página de ecologia deixa-te estimar uma carga conforme o país onde corre, separando dados publicados, hipóteses e cálculos.',
-			link: 'Abrir a página de ecologia',
+			title: 'Uma cloud mais eficiente é também um digital mais responsável.',
+			text: 'A escolha do centro de dados, a arquitetura e a qualidade do código influenciam o consumo de recursos. Compara as soluções, descobre os dados disponíveis e percebe como reduzir as despesas desnecessárias e a pegada da tua aplicação.',
+			link: 'Explorar o impacto ambiental',
 		},
 		page: {
 			title: 'Ecologia e infraestrutura',

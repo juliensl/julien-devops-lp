@@ -20,9 +20,9 @@ export const en: Dictionary = {
 	ecology: {
 		link: 'Ecology',
 		home: {
-			title: 'Infrastructure has a footprint too.',
-			text: 'Where the application runs, how long it runs and how efficiently all change its environmental impact. The ecology page lets you estimate a workload by the country it runs in, keeping published data, assumptions and calculations apart.',
-			link: 'Open the ecology page',
+			title: "Un cloud plus efficace, c'est aussi un numérique plus responsable.",
+			text: "Le choix du datacenter, l'architecture et la qualité du code influencent la consommation de ressources. Compare les solutions, découvre les données disponibles et comprends comment réduire les dépenses inutiles et l'empreinte de ton application.",
+			link: "Explorer l'impact environnemental",
 		},
 		page: {
 			title: 'Ecology and infrastructure',

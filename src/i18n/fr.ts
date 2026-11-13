@@ -60,9 +60,9 @@ export const fr = {
 		link: 'Écologie',
 		/** The home page's Ecology section. */
 		home: {
-			title: "L'infrastructure aussi a une empreinte.",
-			text: "L'endroit où tourne l'application, sa durée de fonctionnement et son efficacité changent son impact environnemental. La page écologie te permet d'estimer une charge selon le pays où elle tourne, en séparant données publiées, hypothèses et calculs.",
-			link: 'Ouvrir la page écologie',
+			title: "Un cloud plus efficace, c'est aussi un numérique plus responsable.",
+			text: "Le choix du datacenter, l'architecture et la qualité du code influencent la consommation de ressources. Compare les solutions, découvre les données disponibles et comprends comment réduire les dépenses inutiles et l'empreinte de ton application.",
+			link: "Explorer l'impact environnemental",
 		},
 		page: {
 			title: 'Écologie et infrastructure',
