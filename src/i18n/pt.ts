@@ -17,36 +17,67 @@ type Block = {
 	summary: string;
 	text: string;
 	tools: string[];
-	/** Said after the tools, when the client's cloud can provide its own. */
+	/** Said after the tools, in plain text: what the list leaves open. */
 	toolsAlternative?: string;
 };
 
-/** The 4 Blocks, in the pitch's order. A language with fewer than 4 makes `astro check` fail. */
+/** The 4 Blocks. A language with fewer than 4 makes `astro check` fail. */
 const blocks: [Block, Block, Block, Block] = [
 	{
-		name: 'Pipeline de CI e auditoria de código',
-		summary: 'Os bugs ficam no pull request.',
-		text: 'Cada alteração passa por testes, lint e análise antes de chegar à produção, com a segurança em destaque: dependências com falhas conhecidas, segredos esquecidos no código e análise do próprio código. O que está a vermelho não passa.',
-		tools: ['SonarQube', 'Trivy'],
+		name: 'Auditoria do código e CI/CD',
+		summary: 'Deteta os problemas antes de chegarem à produção.',
+		text: 'Analiso o repositório e os processos de entrega e, depois, monto uma pipeline adaptada ao teu projeto: qualidade do código, lint, testes automatizados, análise de segurança e controlo das dependências. Os erros são assinalados logo no pull request, antes de se tornarem incidentes nos teus clientes.',
+		tools: [
+			'GitHub Actions',
+			'GitLab CI',
+			'Lint',
+			'Testes unitários',
+			'Testes de integração',
+			'Testes E2E',
+			'SonarQube',
+			'Trivy',
+			'Gitleaks',
+		],
+		toolsAlternative: 'E mais, conforme a stack',
 	},
 	{
-		name: 'Contentorização',
-		summary: 'A aplicação corre igual em todo o lado.',
-		text: 'A aplicação deixa de depender do ambiente onde corre. No portátil de um dev ou em produção, o mesmo comportamento.',
-		tools: ['Docker'],
+		name: 'Limpeza e otimização do código',
+		summary: 'Menos dívida técnica, mais tempo para desenvolver.',
+		text: 'Encarrego-me diretamente das correções na aplicação, do refactoring do código e das otimizações de desempenho identificados como prioritários. Também automatizo uma parte da manutenção repetitiva. O objetivo: tornar a aplicação mais limpa, mais rápida e mais simples de fazer evoluir. O volume da intervenção é definido depois da auditoria: não se trata de uma reformulação ilimitada de todo o código.',
+		tools: [
+			'Refactoring',
+			'Dívida técnica',
+			'Desempenho',
+			'API e consultas',
+			'Dependências',
+			'Manutenção automatizada',
+		],
+		toolsAlternative: 'Conforme a stack',
 	},
 	{
 		name: 'Infraestrutura escalável',
-		summary: 'A infraestrutura acompanha a carga.',
-		text: 'Em dois níveis: serverless de contentores para volumes médios, Kubernetes quando a carga o justifica. Com Infrastructure as Code, a infraestrutura fica descrita em código e pode ser recriada.',
-		tools: ['Kubernetes', 'Terraform'],
+		summary: 'A arquitetura certa para o teu uso, sem complexidade desnecessária.',
+		text: 'Contentorizo a aplicação quando é necessário e escolho o alojamento adequado à sua carga: contentores geridos, serviços serverless ou Kubernetes. A Infrastructure as Code permite descrever, versionar e reproduzir os ambientes. O objetivo é poder evoluir sem sobredimensionar a infraestrutura logo de início.',
+		tools: [
+			'Docker',
+			'Containers as a Service',
+			'Kubernetes',
+			'Terraform',
+			'GCP',
+			'AWS',
+			'Azure',
+			'Scaleway',
+			'OVHcloud',
+			'Infomaniak',
+		],
+		toolsAlternative: 'E outros fornecedores',
 	},
 	{
 		name: 'Observabilidade',
-		summary: 'Vês os problemas antes dos clientes.',
-		text: 'Um painel de saúde em tempo real e um alerta imediato quando há um incidente.',
-		tools: ['Grafana', 'Prometheus'],
-		toolsAlternative: 'ou as ferramentas da tua cloud',
+		summary: 'Deixa de descobrir os incidentes pelos teus clientes.',
+		text: 'Implemento as métricas, registos, painéis e alertas necessários para acompanhar a saúde da aplicação e da sua infraestrutura. Em vez de verificar manualmente se tudo funciona, a tua equipa é avisada assim que surge um problema detetável e tem a informação necessária para intervir.',
+		tools: ['Grafana', 'Prometheus', 'Logs', 'Alertas', 'Monitorização', 'Tracing'],
+		toolsAlternative: 'Ferramentas nativas da cloud',
 	},
 ];
 
@@ -248,11 +279,12 @@ export const pt = {
 				'A infraestrutura acompanha a carga, e vês os problemas antes dos clientes.',
 			],
 		},
-		/** The Services: the 4 Blocks, and the note on hiring them in any combination. */
+		/** The Services: the 4 Blocks, after an introduction on how the work is scoped. */
 		services: {
 			label: 'Serviços',
-			title: 'Quatro camadas da tua infraestrutura.',
-			note: 'Contratas os blocos que quiseres, em qualquer combinação. No máximo 30 dias, a contar do início da Implementação. O bloco 3 precisa de uma aplicação contentorizada, pelo bloco 2 ou pela tua equipa.',
+			title: 'Quatro alavancas para tornar o teu SaaS fiável e fazê-lo crescer.',
+			intro:
+				'Da qualidade do código à monitorização em produção, intervenho nos pontos que travam a tua equipa. Depois de um diagnóstico, definimos juntos o âmbito, as prioridades e a ordem das intervenções. Podes confiar-me uma necessidade específica ou um projeto completo.',
 			/** Before each Block's number: "Bloco 1". */
 			blockLabel: 'Bloco',
 			/** The name of each Block's list of tools, for screen readers. */
