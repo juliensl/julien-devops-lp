@@ -366,6 +366,13 @@ function runningAnimations(page: Page, language: Language) {
 const diagram = (page: Page, language: Language, k: number) =>
 	cards(page, language).nth(k).getByRole('img');
 
+/** What block 2's mini-diagram shows, for screen readers. */
+const CLEANUP_DIAGRAM: Record<Language, string> = {
+	fr: 'Un bug et du code en double disparaissent : le code raccourcit et le temps de réponse baisse.',
+	en: 'Un bug et du code en double disparaissent : le code raccourcit et le temps de réponse baisse.',
+	pt: 'Um bug e código duplicado desaparecem: o código fica mais curto e o tempo de resposta desce.',
+};
+
 /** The 4 mini-diagrams, in order. */
 const diagrams = (page: Page, language: Language) =>
 	[0, 1, 2, 3].map((k) => diagram(page, language, k));
@@ -511,25 +518,32 @@ inEachBuild((build) => {
 				});
 			}
 
-			test(`${DESKTOP.label}, the mini-diagrams move, and the pause button stops them`, async ({
-				page,
-			}) => {
-				const { pause, resume } = LANGUAGES[language];
-				await openPage(page, prefix, DESKTOP);
-				await scrollToCard(page, language, 0);
-				expect(await isMoving(diagram(page, language, 0)), 'before the pause').toBe(true);
-
-				await page.getByRole('button', { name: pause, exact: true }).click();
-				await expect
-					.poll(() => isMoving(diagram(page, language, 0)), {
-						message: 'paused',
-						timeout: 10_000,
-					})
-					.toBe(false);
-
-				await page.getByRole('button', { name: resume, exact: true }).click();
-				expect(await isMoving(diagram(page, language, 0)), 'after resuming').toBe(true);
+			test('the mini-diagram of block 2 shows the code being cleaned', async ({ page }) => {
+				await page.goto(prefix);
+				await expect(diagram(page, language, 1)).toHaveAccessibleName(CLEANUP_DIAGRAM[language]);
 			});
+
+			for (const k of [0, 1]) {
+				test(`${DESKTOP.label}, the mini-diagram of block ${k + 1} moves, and the pause button stops it`, async ({
+					page,
+				}) => {
+					const { pause, resume } = LANGUAGES[language];
+					await openPage(page, prefix, DESKTOP);
+					await scrollToCard(page, language, k);
+					expect(await isMoving(diagram(page, language, k)), 'before the pause').toBe(true);
+
+					await page.getByRole('button', { name: pause, exact: true }).click();
+					await expect
+						.poll(() => isMoving(diagram(page, language, k)), {
+							message: 'paused',
+							timeout: 10_000,
+						})
+						.toBe(false);
+
+					await page.getByRole('button', { name: resume, exact: true }).click();
+					expect(await isMoving(diagram(page, language, k)), 'after resuming').toBe(true);
+				});
+			}
 
 			test('paused before reaching the section, the mini-diagrams stay still when they come into view', async ({
 				page,

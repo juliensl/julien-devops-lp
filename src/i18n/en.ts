@@ -238,10 +238,12 @@ export const en: Dictionary = {
 					production: 'production',
 					blocked: 'blocked',
 				},
-				containers: {
-					description: 'The same container runs the same way on the laptop and in production.',
-					laptop: 'laptop',
-					production: 'production',
+				cleanup: {
+					description:
+						'Un bug et du code en double disparaissent : le code raccourcit et le temps de réponse baisse.',
+					bug: 'bug',
+					duplicate: '×2',
+					responseTime: 'temps de réponse',
 				},
 				scaling: {
 					description: 'The instances increase with the load, then decrease again.',

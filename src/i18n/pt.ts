@@ -241,10 +241,12 @@ export const pt: Dictionary = {
 					production: 'produção',
 					blocked: 'bloqueado',
 				},
-				containers: {
-					description: 'O mesmo contentor corre igual no portátil e em produção.',
-					laptop: 'portátil',
-					production: 'produção',
+				cleanup: {
+					description:
+						'Um bug e código duplicado desaparecem: o código fica mais curto e o tempo de resposta desce.',
+					bug: 'bug',
+					duplicate: '×2',
+					responseTime: 'tempo de resposta',
 				},
 				scaling: {
 					description: 'As instâncias aumentam com a carga e voltam a diminuir.',

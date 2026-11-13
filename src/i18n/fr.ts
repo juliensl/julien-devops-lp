@@ -295,11 +295,13 @@ export const fr = {
 					production: 'production',
 					blocked: 'bloqué',
 				},
-				containers: {
+				cleanup: {
 					description:
-						'Le même conteneur tourne de la même façon sur le portable et en production.',
-					laptop: 'portable',
-					production: 'production',
+						'Un bug et du code en double disparaissent : le code raccourcit et le temps de réponse baisse.',
+					bug: 'bug',
+					/** Beside the lines written twice. */
+					duplicate: '×2',
+					responseTime: 'temps de réponse',
 				},
 				scaling: {
 					description: 'Les instances augmentent avec la charge, puis diminuent.',
