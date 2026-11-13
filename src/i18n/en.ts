@@ -612,26 +612,13 @@ export const en: Dictionary = {
 				},
 			],
 		},
-		guarantee: {
-			label: 'The Guarantee',
-			title: 'Available at least 99% of the time, every month.',
-			text: "In 30 days, I deliver the infrastructure. For the next 3 months, it is available at least 99% of the time every month. If it isn't, I keep working without billing until it is.",
-			appliesWhen:
-				"Applies when you take Scalable infrastructure and Observability (and Containerisation, if the application isn't containerised yet).",
-			conditionsTitle: 'Conditions',
-			conditions: [
-				'A test written for every bug fixed.',
-				'No dev pushes past a failing test.',
-				'Read access to the repository.',
-				'A technical contact who replies within 48 h.',
-			],
-			exclusionsTitle: 'Exclusions',
-			exclusions: ['Cloud provider outages.', "Changes that didn't go through the pipeline."],
-			number: '99%',
-			belowNumber: 'of the time, every month',
-			inService: 'in service',
-			outOfService: 'at most 1% out of service',
-			note: 'For the 3 months after delivery.',
+		availability: {
+			label: 'Disponibilité & fiabilité',
+			title: 'Une infrastructure fiable, conçue pour durer.',
+			text: "Selon les besoins de ton SaaS, je conçois et teste une infrastructure visant un objectif de disponibilité défini ensemble : 99,5 %, 99,9 %, 99,95 % ou davantage lorsque l'architecture le justifie. Le bon niveau dépend de ton activité, des services utilisés et de ton budget.",
+			guarantee:
+				"Pour une intervention complète couvrant les quatre blocs, je propose une garantie de conformité technique de trois mois après la livraison : si un défaut de conception ou de configuration relevant de mon intervention est constaté, je prends en charge sa correction dans les conditions convenues au contrat. Il ne s'agit pas d'une astreinte 24 h/24 ni d'une garantie d'absence de panne applicative.",
+			link: 'Comprendre les niveaux de disponibilité et consulter les conditions',
 		},
 		about: {
 			title: 'Qui est Julien ?',

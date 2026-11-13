@@ -19,6 +19,12 @@ export const YEAR = 365;
 
 const SECONDS_PER_DAY = 86_400;
 
+/** An objective as the pages write it: "99,9 %" in French and Portuguese, "99.9%" in English. */
+export function objectiveText(objective: number, locale: string): string {
+	const space = locale.startsWith('en') ? '' : ' ';
+	return `${new Intl.NumberFormat(locale).format(objective)}${space}%`;
+}
+
 /**
  * The longest downtime an objective (in %) allows over `days`, measured 24 h a day:
  * (1 − objective / 100) × the period in seconds. Written as the page shows it, to the nearest second

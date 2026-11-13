@@ -286,7 +286,7 @@ export function createBranch(main: HTMLElement, style: Style) {
 				continue;
 			}
 
-			if (section.dataset.section === 'guarantee') {
+			if (section.dataset.section === 'availability') {
 				pair(down(first.y + 12));
 				continue;
 			}

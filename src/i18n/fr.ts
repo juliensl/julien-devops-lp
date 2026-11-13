@@ -722,29 +722,15 @@ export const fr = {
 				},
 			] satisfies [Step, Step, Step, Step, Step],
 		},
-		guarantee: {
-			label: 'La Garantie',
-			title: 'Disponible au moins 99 % du temps, chaque mois.',
-			text: "En 30 jours, je livre l'infrastructure. Pendant les 3 mois suivants, elle est disponible au moins 99 % du temps chaque mois. Sinon, je continue à travailler sans facturer jusqu'à y arriver.",
-			appliesWhen:
-				"La Garantie s'applique quand tu prends l'Infrastructure scalable et l'Observabilité (et la Conteneurisation, si l'application n'est pas encore conteneurisée).",
-			conditionsTitle: 'Conditions',
-			conditions: [
-				'Un test écrit pour chaque bug corrigé.',
-				'Aucun dev ne passe outre un test au rouge.',
-				'Un accès en lecture au dépôt.',
-				'Un interlocuteur technique qui répond sous 48 h.',
-			],
-			exclusionsTitle: 'Exclusions',
-			exclusions: [
-				'Les pannes du fournisseur cloud.',
-				'Les modifications qui ne sont pas passées par la pipeline.',
-			],
-			number: '99 %',
-			belowNumber: 'du temps, chaque mois',
-			inService: 'en service',
-			outOfService: 'au plus 1 % hors service',
-			note: 'Pendant les 3 mois qui suivent la livraison.',
+		/** The home section that leads to the availability page; it names the levels of `availability.levels`. */
+		availability: {
+			label: 'Disponibilité & fiabilité',
+			title: 'Une infrastructure fiable, conçue pour durer.',
+			text: "Selon les besoins de ton SaaS, je conçois et teste une infrastructure visant un objectif de disponibilité défini ensemble : 99,5 %, 99,9 %, 99,95 % ou davantage lorsque l'architecture le justifie. Le bon niveau dépend de ton activité, des services utilisés et de ton budget.",
+			/** The three-month guarantee, only with the four Blocks. */
+			guarantee:
+				"Pour une intervention complète couvrant les quatre blocs, je propose une garantie de conformité technique de trois mois après la livraison : si un défaut de conception ou de configuration relevant de mon intervention est constaté, je prends en charge sa correction dans les conditions convenues au contrat. Il ne s'agit pas d'une astreinte 24 h/24 ni d'une garantie d'absence de panne applicative.",
+			link: 'Comprendre les niveaux de disponibilité et consulter les conditions',
 		},
 		about: {
 			title: 'Qui est Julien ?',
