@@ -40,6 +40,8 @@ export const pt: Dictionary = {
 		logoTarget: 'página principal',
 		languages: 'Língua',
 		menu: 'Menu',
+		/** The submenu of the pages that help a CTO decide. */
+		resources: 'Recursos',
 	},
 	animation: {
 		pause: 'Pausar animação',

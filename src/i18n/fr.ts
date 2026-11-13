@@ -45,6 +45,7 @@ export const fr = {
 		languages: 'Langue',
 		/** The button that opens the menu on mobile. */
 		menu: 'Menu',
+		resources: 'Ressources',
 	},
 	/** The fixed button that pauses the automatic animations: its name says what a click does. */
 	animation: {
