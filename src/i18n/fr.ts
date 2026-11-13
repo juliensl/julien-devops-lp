@@ -5,8 +5,7 @@ import type { AudienceId } from '../config/audiences';
 import type { CriterionId, ProviderId, Rating, ScenarioId } from '../config/cloud-providers';
 import type { SourceId } from '../config/ecology';
 
-const promise =
-	"En 30 jours, je te livre l'infrastructure devOps nécessaire pour que tu puisses scaler ton SaaS.";
+const promise = 'Moins de bugs. Un code plus propre. Un SaaS prêt à grandir.';
 
 type Step = { name: string; sentence: string };
 
@@ -36,7 +35,7 @@ type Audience = {
 };
 
 export const fr = {
-	designation: 'Consultant DevOps freelance pour SaaS',
+	designation: 'Consultant DevOps',
 	promise,
 	bookButton: 'Réserver un échange',
 	header: {
@@ -177,11 +176,11 @@ export const fr = {
 		back: "Retour à la page d'accueil",
 	},
 	homePage: {
-		description: `${promise} Pour les CTO de SaaS en croissance.`,
+		description: `${promise} J'automatise la qualité du code, je réduis la dette technique et je construis une infrastructure capable de suivre ta croissance.`,
 		hero: {
 			support:
-				'Les bugs sont attrapés à la pull request, pas par ton client. Et tes devs se remettent à coder au lieu de faire du support.',
-			note: 'Échange de 45 min sur Google Meet, gratuit.',
+				"J'automatise la qualité du code, je réduis la dette technique et je construis une infrastructure capable de suivre ta croissance. Tes développeurs passent moins de temps à corriger les problèmes, et plus de temps à faire évoluer ton produit.",
+			note: '45 min sur Google Meet. Gratuit et sans engagement.',
 		},
 		whoItsFor: {
 			title: 'Pour qui',

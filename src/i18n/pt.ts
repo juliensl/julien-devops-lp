@@ -2,8 +2,7 @@
 // The texts carry no HTML: links, bold text and non-breaking spaces are added in the components.
 import type { Dictionary } from './fr';
 
-const promise =
-	'Em 30 dias, entrego-te a infraestrutura DevOps de que precisas para escalar o teu SaaS.';
+const promise = 'Menos bugs. Um código mais limpo. Um SaaS pronto para crescer.';
 
 const blocks: Dictionary['homePage']['services']['blocks'] = [
 	{
@@ -34,7 +33,7 @@ const blocks: Dictionary['homePage']['services']['blocks'] = [
 ];
 
 export const pt: Dictionary = {
-	designation: 'Consultor DevOps freelance para SaaS',
+	designation: 'Consultor DevOps',
 	promise,
 	bookButton: 'Marcar uma conversa',
 	header: {
@@ -157,11 +156,11 @@ export const pt: Dictionary = {
 		back: 'Voltar à página principal',
 	},
 	homePage: {
-		description: `${promise} Para CTO de SaaS em crescimento.`,
+		description: `${promise} Automatizo a qualidade do código, reduzo a dívida técnica e construo uma infraestrutura capaz de acompanhar o teu crescimento.`,
 		hero: {
 			support:
-				'Os bugs são apanhados no pull request, não pelo teu cliente. E os teus devs voltam a programar em vez de fazer suporte.',
-			note: 'Conversa de 45 min por Google Meet, gratuita.',
+				'Automatizo a qualidade do código, reduzo a dívida técnica e construo uma infraestrutura capaz de acompanhar o teu crescimento. Os teus programadores passam menos tempo a corrigir problemas, e mais tempo a fazer evoluir o teu produto.',
+			note: '45 min por Google Meet. Gratuita e sem compromisso.',
 		},
 		whoItsFor: {
 			title: 'Para quem é',

@@ -1,11 +1,10 @@
 // Typed from French, the Reference language. A text still in French waits for its translation.
-// The Designation is the one Julien approved.
 import type { Dictionary } from './fr';
 
-const promise = 'In 30 days, I deliver the DevOps infrastructure you need to scale your SaaS.';
+const promise = 'Moins de bugs. Un code plus propre. Un SaaS prêt à grandir.';
 
 export const en: Dictionary = {
-	designation: 'Freelance DevOps consultant for SaaS',
+	designation: 'Consultant DevOps',
 	promise,
 	bookButton: 'Book a conversation',
 	header: {
@@ -128,11 +127,11 @@ export const en: Dictionary = {
 		back: 'Back to the home page',
 	},
 	homePage: {
-		description: `${promise} For CTOs of growing SaaS companies.`,
+		description: `${promise} J'automatise la qualité du code, je réduis la dette technique et je construis une infrastructure capable de suivre ta croissance.`,
 		hero: {
 			support:
-				'Bugs get caught in the pull request, not by your customers. And your devs get back to coding instead of doing support.',
-			note: '45-min conversation on Google Meet, free of charge.',
+				"J'automatise la qualité du code, je réduis la dette technique et je construis une infrastructure capable de suivre ta croissance. Tes développeurs passent moins de temps à corriger les problèmes, et plus de temps à faire évoluer ton produit.",
+			note: '45 min sur Google Meet. Gratuit et sans engagement.',
 		},
 		whoItsFor: {
 			title: "Who it's for",
