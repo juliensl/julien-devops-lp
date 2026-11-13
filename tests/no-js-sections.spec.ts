@@ -176,8 +176,8 @@ const EXPECTED = {
 } satisfies Record<Language, unknown>;
 
 // The numbers Julien approved (#54, "Só se publica o que está validado"): 30 days, 99 % (and the
-// remaining 1 %), 100 to 500 €/month, 5 to 20 people, 3 devs, 45 min, 48 h, 3 months and the Block numbers.
-const APPROVED_NUMBERS = ['1', '2', '3', '4', '5', '20', '30', '45', '48', '99', '100', '500'];
+// remaining 1 %), 100 to 500 €/month, 3 devs, 45 min, 48 h, 3 months and the Block numbers.
+const APPROVED_NUMBERS = ['1', '2', '3', '4', '5', '30', '45', '48', '99', '100', '500'];
 
 inEachBuild((build) => {
 	for (const language of build.phase.publishedLanguages) {
