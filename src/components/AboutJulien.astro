@@ -8,6 +8,7 @@ import photo from '../../data/IMG_2030.png';
 import { values } from '../config/values';
 import { withNonBreakingSpaces } from '../lib/spaces';
 import LinkedInLogo from './LinkedInLogo.astro';
+import LogoName from './LogoName.astro';
 
 interface Props {
 	title: string;
@@ -19,7 +20,6 @@ interface Props {
 }
 
 const { title, designation, wayOfWorking, linkedin } = Astro.props;
-const [first, last] = values.name.split(' ');
 ---
 
 <section
@@ -44,11 +44,7 @@ const [first, last] = values.name.split(' ');
 			{withNonBreakingSpaces(title)}
 		</h2>
 		<div data-reveal class="grid gap-4">
-			{/* Written like the name in the logo. */}
-			<p class="flex flex-col gap-[0.25em] text-[clamp(2.1rem,4.4vw,3.4rem)] leading-none tracking-[0.22em] uppercase">
-				<span class="font-semibold text-foreground">{first}</span>{' '}
-				<span class="text-purple">{last}</span>
-			</p>
+			<LogoName class="gap-[0.25em] text-[clamp(2.1rem,4.4vw,3.4rem)]" />
 			<p class="text-lg text-purple">{designation}</p>
 		</div>
 		<p data-reveal class="max-w-2xl font-heading text-[clamp(1.4rem,2.6vw,2rem)] leading-snug">

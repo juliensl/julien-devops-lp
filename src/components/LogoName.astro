@@ -1,0 +1,17 @@
+---
+// Julien's name as the logo writes it; the caller sets its size and the gap between the lines.
+import type { HTMLAttributes } from 'astro/types';
+import { values } from '../config/values';
+
+type Props = HTMLAttributes<'span'>;
+
+const { class: className, ...attributes } = Astro.props;
+const [first, last] = values.name.split(' ');
+---
+
+<span
+	class:list={['flex flex-col leading-none tracking-[0.22em] uppercase', className]}
+	{...attributes}
+>
+	<span class="font-semibold text-foreground">{first}</span> <span class="text-purple">{last}</span>
+</span>

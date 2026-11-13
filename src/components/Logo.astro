@@ -3,8 +3,8 @@
 // reduced motion it is already formed. A link around it takes its accessible name from the hidden text.
 import { values } from '../config/values';
 import { HEIGHT, PEN_SIZE, WIDTH, dots, lines } from '../scripts/logo-infinity';
+import LogoName from './LogoName.astro';
 
-const [first, last] = values.name.split(' ');
 const [purpleLine, greenLine] = lines(Math.PI * 2);
 // Each point in purple, green or both, as much of each as its place on the ∞ gives.
 const circles = dots().flatMap(({ green, brightness, ...dot }) =>
@@ -69,13 +69,7 @@ const GLOWS = [
 	</svg>
 
 	{/* Below lg the header has no room for the name: only the ∞. */}
-	<span
-		aria-hidden="true"
-		class="flex flex-col gap-1 text-[0.9375rem] leading-none tracking-[0.22em] uppercase max-lg:hidden"
-	>
-		<span class="font-semibold text-foreground">{first}</span>
-		<span class="text-purple">{last}</span>
-	</span>
+	<LogoName aria-hidden="true" class="gap-1 text-[0.9375rem] max-lg:hidden" />
 	<span class="sr-only">{values.name}</span>
 </span>
 
