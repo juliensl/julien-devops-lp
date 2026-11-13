@@ -495,7 +495,7 @@ export const pt = {
 		},
 	},
 	/** «Os teus desafios»: the questions by audience, on their page, in the header submenu and in the home
-	 * page's Questions section. The 23 answers are the ones Julien approved (#54), word for word; each
+	 * page's Questions section. The 23 answers are Julien's, word for word in French; each
 	 * audience is typed with its number of questions, so a language with one missing fails `astro check`. */
 	questions: {
 		/** The name of the page and of the header menu that leads to it. */
@@ -512,27 +512,27 @@ export const pt = {
 					{
 						question: 'O que fazes, exatamente?',
 						answer:
-							'Entrego a infraestrutura DevOps de que um SaaS precisa para crescer, em quatro blocos: pipeline de CI e auditoria de código, contentorização, infraestrutura escalável e observabilidade. Contratas os que quiseres, em qualquer combinação.',
+							'Intervenho em quatro áreas: auditoria e CI/CD, limpeza e otimização do código, infraestrutura escalável e observabilidade. O objetivo é reduzir os problemas recorrentes e permitir que a aplicação cresça sobre bases mais sólidas. O âmbito de cada missão é definido depois do diagnóstico.',
 					},
 					{
 						question: 'Quanto tempo demora?',
 						answer:
-							'No máximo 30 dias, para qualquer combinação de blocos, a contar do início da Implementação. O prazo exato vem na Proposta de intervenção.',
+							'Depende do estado do código, dos serviços existentes e dos trabalhos prioritários. Depois do diagnóstico, proponho um calendário realista, com etapas e entregáveis precisos. Não há promessa artificial de fazer tudo em 30 dias.',
 					},
 					{
 						question: 'Quanto custa?',
 						answer:
-							'Um preço fixo, que dou na Proposta de intervenção, depois do Diagnóstico gratuito.',
+							'O preço é definido a partir do âmbito acordado depois de um primeiro diagnóstico gratuito. A proposta distingue os meus honorários dos eventuais custos recorrentes de cloud e de ferramentas.',
 					},
 					{
 						question: 'Como começa?',
 						answer:
-							'Com uma Conversa de 45 min por Google Meet. Depois vêm o Diagnóstico gratuito, a Proposta de intervenção, a Implementação e a Entrega e transferência.',
+							'Começamos com uma conversa gratuita de 45 minutos. Seguem-se o diagnóstico, a proposta de intervenção, a implementação com pontos de situação regulares e, depois, a entrega e a transferência para a tua equipa.',
 					},
 					{
-						question: 'Posso contratar só alguns blocos?',
+						question: 'Posso escolher só alguns blocos?',
 						answer:
-							'Sim, em qualquer combinação. O bloco 3 precisa de uma aplicação contentorizada, pelo bloco 2 ou pela tua equipa.',
+							'Sim, posso intervir numa necessidade específica. A ordem e as dependências técnicas são definidas depois do diagnóstico. A garantia de conformidade técnica de três meses apresentada neste site diz respeito apenas às prestações completas que cobrem os quatro blocos.',
 					},
 				] satisfies [Question, Question, Question, Question, Question],
 			},
@@ -545,36 +545,37 @@ export const pt = {
 					{
 						question: 'Quem escreve os testes?',
 						answer:
-							'A tua equipa. Eu não escrevo testes: entrego o sistema que os corre, os mede e bloqueia o que está a vermelho.',
+							'Implemento e melhoro a automatização das verificações. Quando são precisos testes ou correções de código, decidimos juntos quem os faz e em que âmbito. No bloco de otimização, posso escrever ou adaptar os testes ligados às alterações de que me encarrego.',
 					},
 					{
-						question: 'É preciso parar o desenvolvimento?',
+						question: 'É preciso parar o desenvolvimento durante a intervenção?',
 						answer:
-							'Não. No bloco 1 não há migração nem risco para a produção. Nos blocos 2 e 3 o trabalho corre em paralelo (ramos, ambientes de teste, infraestrutura separada). Algumas alterações pedem coordenação com os devs, e no fim da migração pode ser preciso um curto período sem alterações ao código, combinado contigo.',
+							'Em princípio, não. O trabalho é organizado com ramos, ambientes adequados e validações progressivas. Algumas migrações ou alterações críticas podem exigir uma janela de alterações planeada com a equipa.',
 					},
 					{
-						question: 'Com que stack e clouds trabalhas?',
+						question: 'Com que stacks e que clouds trabalhas?',
 						answer:
-							'CI: GitHub Actions, GitLab CI, Azure DevOps e Google Cloud Build. Cloud: AWS, Google Cloud, Microsoft Azure, OVHcloud, Scaleway e Infomaniak. A escolha depende das necessidades e do orçamento, e pode incluir um alojamento com menor impacto ambiental.',
+							'Uso nomeadamente GitHub Actions, GitLab CI, Terraform, Docker, Kubernetes, Grafana e os serviços nativos das clouds. Trabalho com AWS, Google Cloud, Azure, Scaleway, OVHcloud e outros fornecedores, consoante o projeto. As ferramentas são escolhidas em função do contexto, não impostas à partida.',
 					},
 					{
 						question: 'De que acessos precisas?',
 						answer:
-							'No Diagnóstico, acesso de leitura ao repositório. À cloud (métricas e logs) só se o problema for de infraestrutura, desempenho, custos ou disponibilidade. Nunca passwords, chaves privadas nem permissões de administrador. Na Implementação, preciso de acesso de escrita ao repositório e de uma conta na tua cloud com as permissões necessárias para criar a infraestrutura dos blocos contratados. Retiras esses acessos na Entrega e transferência.',
+							'Para o diagnóstico, acessos de leitura ao código e, se necessário, às métricas e à configuração da cloud. Para a implementação, permissões adequadas às operações acordadas. Privilegio acessos nominativos, limitados ao estritamente necessário e revogáveis no fim da missão. Não é preciso partilhar palavras-passe nem chaves privadas.',
 					},
 					{
-						question: 'Como funciona a Garantia de disponibilidade?',
+						question: 'O que cobre a garantia de três meses?',
 						answer:
-							'Em 30 dias, entrego a infraestrutura. Nos 3 meses seguintes, ela está disponível pelo menos 99 % do tempo em cada mês. Se não estiver, continuo a trabalhar sem faturar até chegar lá. Aplica-se com os blocos 3 e 4, e pede um teste escrito para cada bug corrigido, nenhum dev a passar à frente de um teste a vermelho, acesso de leitura ao repositório e uma pessoa técnica que responde em 48 h.',
+							'Numa prestação completa que cubra os quatro blocos, diz respeito aos defeitos de conceção ou de configuração da infraestrutura que me sejam imputáveis, de acordo com as condições contratuais. O objetivo de disponibilidade é definido com o cliente. Não se trata de uma garantia de zero bugs na aplicação, nem de um serviço de piquete 24 h/24.',
 					},
 					{
-						question: 'Que ferramentas usas na observabilidade?',
-						answer: 'Ferramentas standard, como Grafana e Prometheus, ou as da tua cloud.',
+						question: 'Que ferramentas usas para a observabilidade?',
+						answer:
+							'Consoante o contexto, Grafana, Prometheus, soluções de logs e de tracing, ou as ferramentas de monitorização nativas do fornecedor de cloud. O objetivo é dispor de indicadores úteis e de alertas acionáveis, em vez de multiplicar os dashboards.',
 					},
 					{
 						question: 'Como trabalhamos juntos?',
 						answer:
-							'À distância, por Google Meet. Falo com o CTO e com os devs, sobretudo com o CTO.',
+							'Falo diretamente com as pessoas envolvidas: CTO, tech lead, programadores e responsável pelo projeto. Organizamos pontos de situação regulares, geralmente todas as semanas, e documentamos as decisões importantes.',
 					},
 				] satisfies [Question, Question, Question, Question, Question, Question, Question],
 			},
@@ -584,33 +585,34 @@ export const pt = {
 				description: 'Riscos, custos, continuidade, previsibilidade e impacto no negócio.',
 				questions: [
 					{
-						question: 'Quanto vai custar, e quando fico a saber?',
+						question: 'Quando fico a saber o orçamento da intervenção?',
 						answer:
-							'Um preço fixo, que dou na Proposta de intervenção. A Proposta vem depois do Diagnóstico gratuito, que demora 2 a 3 dias úteis a partir do momento em que tenho os acessos, ou 3 a 5 se incluir a cloud.',
+							'Depois do diagnóstico gratuito, recebes uma proposta que especifica os trabalhos, o calendário e o preço da minha intervenção. Os eventuais custos mensais dos fornecedores são apresentados à parte.',
 					},
 					{
-						question: 'E os custos da infraestrutura?',
+						question: 'Quanto vai custar a cloud depois?',
 						answer:
-							'Além do preço fixo, a infraestrutura e as ferramentas têm um custo mensal próprio, que pagas diretamente aos fornecedores, nas tuas contas. O serviço pressupõe um orçamento de 100 a 500 € por mês para estes custos.',
+							'O custo depende da arquitetura, do tráfego, dos dados, da região e do nível de disponibilidade pretendido. Apresento uma estimativa fundamentada antes das decisões estruturantes, com os pressupostos e as principais rubricas de despesa.',
 					},
 					{
-						question: 'Ficamos dependentes de ti?',
+						question: 'A minha empresa vai ficar dependente de ti?',
 						answer:
-							'Não. Uso só tecnologias standard e deixo tudo documentado. Mudas de prestador quando quiseres e nunca perdes a infraestrutura.',
+							'O meu objetivo é o contrário: privilegio tecnologias documentadas, uma infraestrutura descrita como código e uma transferência clara. As dependências próprias do fornecedor escolhido são explicadas desde a conceção.',
 					},
 					{
-						question: 'Que riscos há para a produção?',
+						question: 'Há algum risco para a produção?',
 						answer:
-							'O bloco 1 não toca na produção. Nos blocos 2 e 3, o objetivo é evitar paragens; se a migração mexer em bases de dados ou serviços críticos, pode haver uma paragem curta, marcada antes. Há sempre um plano para voltar à versão anterior.',
+							'Qualquer intervenção apresenta riscos, mas são avaliados antes da execução. Preparamos os testes, as cópias de segurança e, quando é pertinente, um plano para voltar atrás. As alterações sensíveis são coordenadas com a tua equipa.',
 					},
 					{
-						question: 'Que retorno posso esperar?',
+						question: 'Que retorno do investimento posso esperar?',
 						answer:
-							'Menos tempo a corrigir problemas. Mais tempo a desenvolver o produto. Ajudo equipas SaaS a automatizar testes e entregas, detetar regressões mais cedo e melhorar a fiabilidade da infraestrutura, para que possam crescer com mais confiança.',
+							'Menos tempo perdido com incidentes e tarefas repetitivas, um código mais fácil de manter e deploys mais fiáveis. Os ganhos exatos dependem da situação de partida; o diagnóstico serve também para identificar as melhorias de maior valor.',
 					},
 					{
-						question: 'Em que línguas e países trabalhas?',
-						answer: 'Com clientes de qualquer país, à distância, em português, francês ou inglês.',
+						question: 'Em que línguas trabalhas?',
+						answer:
+							'Posso intervir em francês, em inglês e em português, consoante as necessidades da equipa e do projeto.',
 					},
 				] satisfies [Question, Question, Question, Question, Question, Question],
 			},
@@ -620,39 +622,39 @@ export const pt = {
 				description: 'Devs e tech leads que vão trabalhar com a pipeline e a nova infraestrutura.',
 				questions: [
 					{
-						question: 'O que muda no dia a dia da equipa?',
+						question: 'O que muda no dia a dia?',
 						answer:
-							'O objetivo é reduzir o tempo perdido em tarefas manuais e problemas recorrentes, facilitar a deteção de regressões e tornar as entregas mais fiáveis. A equipa ganha processos mais claros, maior visibilidade sobre a infraestrutura e mais tempo para se concentrar no desenvolvimento do produto. Os resultados dependem do contexto e do estado inicial de cada projeto.',
+							'Verificações automáticas mais úteis, menos tarefas manuais, melhor visibilidade sobre os problemas e um código progressivamente mais simples de manter. As alterações ao workflow são preparadas com a equipa, não impostas sem discussão.',
 					},
 					{
-						question: 'Quem mantém a pipeline depois?',
+						question: 'Quem mantém as pipelines depois de saíres?',
 						answer:
-							'A tua equipa. A documentação técnica e a transferência no fim deixam-vos autónomos.',
+							'A tua equipa fica com as ferramentas, as configurações e a documentação. Prevejo uma transferência para que o seu funcionamento seja compreendido e as evoluções possam ser feitas com autonomia.',
 					},
 					{
-						question: 'Com quem falas no dia a dia?',
+						question: 'Com quem comunicas durante a missão?',
 						answer:
-							'Com o CTO e com os devs, sobretudo com o CTO, por Google Meet. Não há ponto de situação regular.',
+							'Com os interlocutores técnicos e de negócio úteis ao projeto. Prevemos um ponto de acompanhamento regular, normalmente semanal, e contactos complementares quando são precisas decisões ou validações.',
 					},
 					{
-						question: 'Continuamos a programar durante a migração?',
+						question: 'Podemos continuar a desenvolver durante as alterações?',
 						answer:
-							'Sim. O trabalho corre em paralelo, em ramos, ambientes de teste e infraestrutura separada. No fim pode ser preciso um curto período sem alterações ao código, combinado convosco.',
+							'Sim, o objetivo é preservar o ritmo de desenvolvimento. As alterações são preparadas e testadas em paralelo, sempre que possível. Pode ser acordada uma janela de estabilização ou de migração para as alterações sensíveis.',
 					},
 					{
 						question: 'Que ferramentas vamos usar?',
 						answer:
-							'Bloco 1: SonarQube e Trivy. Bloco 2: Docker. Bloco 3: Kubernetes e Terraform. Bloco 4: Grafana e Prometheus, ou as ferramentas da vossa cloud.',
+							'Não há uma stack imposta. Consoante o projeto: pipelines de CI/CD, análise de código, ferramentas de refactoring e de desempenho, Docker, serviços de contentores geridos, Kubernetes, Terraform, Grafana, Prometheus ou equivalentes. Privilegio as ferramentas relevantes para a equipa e para o que já existe.',
 					},
 				] satisfies [Question, Question, Question, Question, Question],
 			},
 		} satisfies Record<AudienceId, Audience>,
 		page: {
 			description:
-				'Perguntas e respostas para CTO, CEO e equipas técnicas de SaaS: prazos, custos, acessos, riscos e ferramentas.',
-			title: 'Respostas para cada perfil.',
+				'Perguntas e respostas para CEO, CTO e programadores: o código, a infraestrutura, os custos e a nossa forma de trabalhar.',
+			title: 'Respostas concretas, de acordo com a tua função.',
 			intro:
-				'Escolhe o teu perfil ou pesquisa uma palavra. Se a tua pergunta não estiver aqui, faz-ma na Conversa.',
+				'És CEO, CTO, programador ou levas o projeto sozinho? Encontra as respostas às perguntas mais frequentes sobre o código, a infraestrutura, os custos e a nossa forma de trabalhar. E, se a tua pergunta não estiver aqui, vamos falar disso.',
 			/** The name of the filter by audience, for screen readers. */
 			filter: 'Filtrar por perfil',
 			/** The filter's first choice: every audience. */
@@ -663,7 +665,9 @@ export const pt = {
 			noResults: 'Nenhuma pergunta com essas palavras.',
 			/** The name of the index of audiences, for screen readers. */
 			index: 'Perfis',
-			notFound: 'Não encontras a tua pergunta?',
+			notFound: 'Não encontras a tua resposta?',
+			/** Under «notFound», before the button. */
+			notFoundText: 'Marca uma conversa gratuita e vamos falar do teu contexto.',
 		},
 	},
 };
