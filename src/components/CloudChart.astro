@@ -12,6 +12,7 @@ import {
 	PROVIDERS,
 	RATINGS,
 	SCENARIOS,
+	VERIFIED,
 	criteriaOf,
 	rating,
 	score,
@@ -20,11 +21,12 @@ import {
 	type ScenarioId,
 	type Value,
 } from '../config/cloud-providers';
-import { HTML_CODES, type Language } from '../config/site';
-import type { Dictionary } from '../i18n/pt';
+import type { Language } from '../config/site';
+import type { Dictionary } from '../i18n/fr';
+import { dayText } from '../lib/dates';
 import { withNonBreakingSpaces } from '../lib/spaces';
 
-type Props = Dictionary['homePage']['cloudChart'] & { language: Language };
+type Props = Dictionary['cloud']['chart'] & { language: Language };
 
 const { language, ...t } = Astro.props;
 
@@ -42,10 +44,6 @@ const labelled = (label: string, text: string) =>
 	withNonBreakingSpaces(`${label}${t.colon} ${text}`);
 /** A source's link text: the site it is on. */
 const hostnameOf = (url: string) => new URL(url).hostname.replace(/^www\./, '');
-const dateFormat = new Intl.DateTimeFormat(HTML_CODES[language], {
-	dateStyle: 'medium',
-	timeZone: 'UTC',
-});
 
 // One color per segment, from the heaviest criterion at the bottom.
 const segmentColor = (k: number) => `var(--segment-${k + 1})`;
@@ -63,15 +61,14 @@ function summary(scenario: ScenarioId) {
 <section
 	aria-labelledby="cloud-chart-title"
 	data-cloud-chart
-	class="page-width grid gap-10 py-[clamp(5rem,11vw,9rem)]"
+	class="page-width grid gap-10 pt-[clamp(4rem,9vw,7rem)]"
 >
 	<div class="grid gap-x-16 gap-y-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-end">
 		<div data-reveal class="grid gap-4">
-			<p class="label">{t.label}</p>
 			<h2 id="cloud-chart-title" class="text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">
 				{withNonBreakingSpaces(t.title)}
 			</h2>
-			<p class="max-w-[36rem] text-foreground-secondary">{withNonBreakingSpaces(t.intro)}</p>
+			<p class="max-w-[36rem] text-foreground-secondary">{withNonBreakingSpaces(t.instruction)}</p>
 		</div>
 		<fieldset data-reveal class="flex flex-wrap gap-2 lg:justify-end">
 			<legend class="sr-only">{t.scenariosLabel}</legend>
@@ -182,9 +179,7 @@ function summary(scenario: ScenarioId) {
 														<>
 															{s > 0 && '; '}
 															<a href={url}>{hostnameOf(url)}</a>,{' '}
-															{withNonBreakingSpaces(
-																`${t.read} ${dateFormat.format(new Date(read))}`,
-															)}
+															{withNonBreakingSpaces(`${t.read} ${dayText(read, language)}`)}
 														</>
 													))}
 												</span>
@@ -200,9 +195,10 @@ function summary(scenario: ScenarioId) {
 		);
 	})}
 
-	<p data-reveal class="text-sm text-foreground-secondary">
-		{withNonBreakingSpaces(t.footnote)}
-	</p>
+	<div data-reveal class="grid max-w-3xl gap-2 text-sm text-foreground-secondary">
+		<p>{withNonBreakingSpaces(t.legend)}</p>
+		<p>{withNonBreakingSpaces(`${t.footnote} ${t.verified} ${dayText(VERIFIED, language)}.`)}</p>
+	</div>
 </section>
 
 <script>
@@ -242,8 +238,8 @@ function summary(scenario: ScenarioId) {
 
 <style>
 	[data-cloud-chart] {
-		/* The segments, from the heaviest criterion: the green and purple of the identity, then the gold
-		   of the Guarantee and a muted purple, as in prototype v3. Gold and muted purple are not in #54's
+		/* The segments, from the heaviest criterion: the green and purple of the identity, then a gold
+		   and a muted purple, as in prototype v3. Gold and muted purple are not in #54's
 		   color table: to be confirmed at the First review (#74). */
 		--segment-1: var(--color-green);
 		--segment-2: var(--color-purple);

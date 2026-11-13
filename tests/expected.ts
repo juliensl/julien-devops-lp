@@ -1,6 +1,6 @@
-// The expected values, taken from the spec (#54) and not from the code.
-// The button in French and English, the Promise in English and the pause button names in French and
-// English are translations the intern reviews before the Commercial launch (#75).
+// The expected values, taken from the specs (#54, #129) and not from the code.
+// The button and the pause button names in English are translations the intern reviews before the
+// Commercial launch (#75); until then, the English Designation and Promise are the French ones.
 
 export const SITE = 'https://devops.julienlaffont.com';
 export const BOOKING_PAGE = 'https://calendly.com/contact-julienlaffont/appel-cadrage';
@@ -16,9 +16,8 @@ export const LANGUAGES = {
 		name: 'Français',
 		prefix: '/',
 		htmlCode: 'fr',
-		designation: 'Consultant DevOps freelance pour SaaS',
-		promise:
-			"En 30 jours, je te livre l'infrastructure devOps nécessaire pour que tu puisses scaler ton SaaS.",
+		designation: 'Consultant DevOps',
+		promise: 'Moins de bugs. Un code plus propre. Un SaaS prêt à grandir.',
 		button: 'Réserver un échange',
 		pause: "Mettre l'animation en pause",
 		resume: "Reprendre l'animation",
@@ -28,8 +27,8 @@ export const LANGUAGES = {
 		name: 'English',
 		prefix: '/en/',
 		htmlCode: 'en',
-		designation: 'Freelance DevOps consultant for SaaS',
-		promise: 'In 30 days, I deliver the DevOps infrastructure you need to scale your SaaS.',
+		designation: 'Consultant DevOps',
+		promise: 'Moins de bugs. Un code plus propre. Un SaaS prêt à grandir.',
 		button: 'Book a conversation',
 		pause: 'Pause animation',
 		resume: 'Resume animation',
@@ -39,9 +38,8 @@ export const LANGUAGES = {
 		name: 'Português',
 		prefix: '/pt/',
 		htmlCode: 'pt-PT',
-		designation: 'Consultor DevOps freelance para SaaS',
-		promise:
-			'Em 30 dias, entrego-te a infraestrutura DevOps de que precisas para escalar o teu SaaS.',
+		designation: 'Consultor DevOps',
+		promise: 'Menos bugs. Um código mais limpo. Um SaaS pronto para crescer.',
 		button: 'Marcar uma conversa',
 		// The pause button: its name says what a click does, as in the approved prototype.
 		pause: 'Pausar animação',

@@ -572,8 +572,12 @@ inEachBuild((build) => {
 					await page.setViewportSize({ width: 359, height: 700 });
 					await expect(headerLink(page)).toHaveCount(0);
 					await page.getByRole('banner').locator('summary').filter({ visible: true }).click();
-					await expect(headerLink(page)).toBeVisible();
-					await expect(headerLink(page)).toHaveAttribute('href', target);
+					// In the menu, the leaf link and the resources' entry.
+					await expect(headerLink(page)).toHaveCount(2);
+					for (const link of await headerLink(page).all()) {
+						await expect(link).toBeVisible();
+						await expect(link).toHaveAttribute('href', target);
+					}
 				});
 			}
 
@@ -587,23 +591,21 @@ inEachBuild((build) => {
 	}
 });
 
-// The home page's Ecology section: a short text and the link (#54); the texts are prototype v3's.
+// The home page's Ecology section: a short text and the link. The texts are Julien's, in French;
+// English keeps them until it is translated.
+const FRENCH_HOME = {
+	title: "Un cloud plus efficace, c'est aussi un numérique plus responsable.",
+	text: "Le choix du datacenter, l'architecture et la qualité du code influencent la consommation de ressources. Compare les solutions, découvre les données disponibles et comprends comment réduire les dépenses inutiles et l'empreinte de ton application.",
+	link: "Explorer l'impact environnemental",
+};
 const HOME: Record<Language, { title: string; text: string; link: string }> = {
 	pt: {
-		title: 'A infraestrutura também tem pegada.',
-		text: 'Onde a aplicação corre, quanto corre e com que eficiência mudam o impacto ambiental. A página de ecologia deixa-te estimar uma carga conforme o país onde corre, separando dados publicados, hipóteses e cálculos.',
-		link: 'Abrir a página de ecologia',
+		title: 'Uma cloud mais eficiente é também um digital mais responsável.',
+		text: 'A escolha do centro de dados, a arquitetura e a qualidade do código influenciam o consumo de recursos. Compara as soluções, descobre os dados disponíveis e percebe como reduzir as despesas desnecessárias e a pegada da tua aplicação.',
+		link: 'Explorar o impacto ambiental',
 	},
-	fr: {
-		title: "L'infrastructure aussi a une empreinte.",
-		text: "L'endroit où tourne l'application, sa durée de fonctionnement et son efficacité changent son impact environnemental. La page écologie te permet d'estimer une charge selon le pays où elle tourne, en séparant données publiées, hypothèses et calculs.",
-		link: 'Ouvrir la page écologie',
-	},
-	en: {
-		title: 'Infrastructure has a footprint too.',
-		text: 'Where the application runs, how long it runs and how efficiently all change its environmental impact. The ecology page lets you estimate a workload by the country it runs in, keeping published data, assumptions and calculations apart.',
-		link: 'Open the ecology page',
-	},
+	fr: FRENCH_HOME,
+	en: FRENCH_HOME,
 };
 
 inEachBuild((build) => {

@@ -1,7 +1,5 @@
-// The cloud provider chart (#66): the facts, the weights and the reading formula of #54
-// («Gráfico de fornecedores cloud»). The facts come from research #45, read on 16/10/2026, and the
-// cost tools from research #46, read on 19/10/2026. The weights, the thresholds and the cost criterion
-// are Julien's opinion, validated on 19/10/2026 (#46).
+// The cloud provider chart: the facts, the weights and the reading formula. Each fact has its sources
+// and the day they were read; the weights, the thresholds and the cost criterion are Julien's opinion.
 // Only what is the same in every language lives here: the names of criteria and scenarios, the notes
 // and the labels are in the dictionaries. No imports, so that `node` can run it from a script.
 
@@ -38,15 +36,16 @@ export const CRITERIA: { id: CriterionId; opinion?: true }[] = [
 	{ id: 'costs', opinion: true },
 ];
 
+/** In the order the chart shows them. */
 export const SCENARIOS: { id: ScenarioId; weights: Partial<Record<CriterionId, number>> }[] = [
 	{ id: 'beforeLaunch', weights: { paas: 3, containers: 2, costs: 2 } },
 	{ id: 'growth', weights: { kubernetes: 2, containers: 2, euRegions: 1, costs: 1 } },
-	{ id: 'dataSovereignty', weights: { euRegions: 3, europeanHeadquarters: 2, secNumCloud: 2 } },
 	{ id: 'variableLoad', weights: { containers: 3, kubernetes: 2 } },
 	{ id: 'costControl', weights: { costs: 3, paas: 1, containers: 1 } },
+	{ id: 'dataSovereignty', weights: { euRegions: 3, europeanHeadquarters: 2, secNumCloud: 2 } },
 ];
 
-/** The scenario the chart opens on: the profile the service is for (#54, «Para quem é»). */
+/** The scenario the chart opens on. */
 export const FIRST_SCENARIO: ScenarioId = 'growth';
 
 /** 1 yes · 0.5 in part · 0 no. */
@@ -65,37 +64,44 @@ export interface Fact {
 	sources: Source[];
 }
 
-const RESEARCH_45 = '2026-10-16';
-const RESEARCH_46 = '2026-10-19';
-const source = (url: string, read = RESEARCH_45): Source => ({ url, read });
+/** The day the facts were checked, as YYYY-MM-DD: the page shows it below the chart. */
+export const VERIFIED = '2026-11-13';
+const source = (url: string, read = VERIFIED): Source => ({ url, read });
 
 // The ANSSI's lists: the catalogue of qualified offers, and the offers being qualified.
 const SECNUMCLOUD_CATALOGUE = source(
 	'https://messervices.cyber.gouv.fr/visas/catalogue-produits-services-profils-de-protection-sites-certifies-qualifies-agrees-anssi.pdf',
 );
+// The page blocks automated reading: what was read is its Internet Archive copy of that day.
 const SECNUMCLOUD_IN_QUALIFICATION = source(
 	'https://cyber.gouv.fr/offre-de-service/solutions-certifiees-et-qualifiees/services-de-securite-evalue/solutions-en-cours-de-qualification/prestataires-secnumcloud/',
+	'2026-11-02',
 );
 
-/** Each provider's value on each criterion, with #54's values. */
+/** Each provider's value on each criterion. A service counts only if its documentation describes it. */
 export const FACTS: Record<ProviderId, Record<CriterionId, Fact>> = {
 	aws: {
 		kubernetes: {
 			value: 1,
 			product: 'Amazon EKS',
-			sources: [source('https://aws.amazon.com/eks/')],
+			sources: [source('https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html')],
 		},
 		containers: {
 			value: 1,
 			product: 'AWS Fargate',
-			sources: [source('https://aws.amazon.com/fargate/')],
+			sources: [
+				source('https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html'),
+				source(
+					'https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-auto-scaling.html',
+				),
+			],
 		},
 		paas: {
 			value: 1,
 			product: 'AWS Elastic Beanstalk',
 			sources: [
-				source('https://aws.amazon.com/elasticbeanstalk/'),
-				source('https://docs.aws.amazon.com/apprunner/latest/dg/what-is-apprunner.html'),
+				source('https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/Welcome.html'),
+				source('https://docs.aws.amazon.com/apprunner/latest/relnotes/welcome.html'),
 			],
 		},
 		europeanHeadquarters: {
@@ -105,6 +111,7 @@ export const FACTS: Record<ProviderId, Record<CriterionId, Fact>> = {
 					'https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/amzn-20251231.htm',
 				),
 				source('https://aws.amazon.com/blogs/aws/opening-the-aws-european-sovereign-cloud/'),
+				source('https://docs.aws.eu/general/latest/gr/endpoints.html'),
 			],
 		},
 		secNumCloud: { value: 0, sources: [SECNUMCLOUD_CATALOGUE] },
@@ -118,18 +125,15 @@ export const FACTS: Record<ProviderId, Record<CriterionId, Fact>> = {
 			value: 1,
 			product: 'AWS Cost Explorer, AWS Budgets',
 			sources: [
+				source('https://docs.aws.amazon.com/cost-management/latest/userguide/ce-what-is.html'),
+				source('https://docs.aws.amazon.com/cost-management/latest/userguide/ce-filtering.html'),
 				source(
-					'https://docs.aws.amazon.com/cost-management/latest/userguide/ce-what-is.html',
-					RESEARCH_46,
+					'https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html',
 				),
 				source(
-					'https://docs.aws.amazon.com/cost-management/latest/userguide/ce-filtering.html',
-					RESEARCH_46,
+					'https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-controls.html',
 				),
-				source('https://aws.amazon.com/aws-cost-management/aws-budgets/'),
-				// Research #45 read the outbound traffic in the price list's JSON; this page says the same
-				// 100 GB/month for free, in a form people can read.
-				source('https://aws.amazon.com/ec2/pricing/on-demand/', '2026-10-29'),
+				source('https://aws.amazon.com/ec2/pricing/on-demand/'),
 			],
 		},
 	},
@@ -137,17 +141,25 @@ export const FACTS: Record<ProviderId, Record<CriterionId, Fact>> = {
 		kubernetes: {
 			value: 1,
 			product: 'Google Kubernetes Engine (GKE)',
-			sources: [source('https://cloud.google.com/kubernetes-engine')],
+			sources: [
+				source(
+					'https://docs.cloud.google.com/kubernetes-engine/docs/concepts/kubernetes-engine-overview',
+				),
+			],
 		},
 		containers: {
 			value: 1,
 			product: 'Cloud Run',
-			sources: [source('https://cloud.google.com/run')],
+			sources: [source('https://docs.cloud.google.com/run/docs/overview/what-is-cloud-run')],
 		},
 		paas: {
 			value: 1,
 			product: 'Cloud Run, App Engine',
-			sources: [source('https://cloud.google.com/run/docs/deploying-source-code')],
+			sources: [
+				source('https://docs.cloud.google.com/run/docs/deploying-source-code'),
+				source('https://docs.cloud.google.com/run/docs/continuous-deployment'),
+				source('https://docs.cloud.google.com/appengine/docs/an-overview-of-app-engine'),
+			],
 		},
 		europeanHeadquarters: {
 			value: 0,
@@ -163,14 +175,14 @@ export const FACTS: Record<ProviderId, Record<CriterionId, Fact>> = {
 		},
 		euRegions: {
 			value: 1,
-			sources: [source('https://cloud.google.com/compute/docs/regions-zones')],
+			sources: [source('https://docs.cloud.google.com/compute/docs/regions-zones')],
 		},
 		costs: {
 			value: 1,
 			product: 'Cloud Billing Reports, Budgets',
 			sources: [
-				source('https://docs.cloud.google.com/billing/docs/how-to/reports', RESEARCH_46),
-				source('https://cloud.google.com/billing/docs/how-to/budgets-spend-caps'),
+				source('https://docs.cloud.google.com/billing/docs/how-to/reports'),
+				source('https://docs.cloud.google.com/billing/docs/how-to/budgets-spend-caps'),
 				source('https://cloud.google.com/vpc/network-pricing'),
 			],
 		},
@@ -179,20 +191,25 @@ export const FACTS: Record<ProviderId, Record<CriterionId, Fact>> = {
 		kubernetes: {
 			value: 1,
 			product: 'Kubernetes Service',
-			sources: [source('https://www.infomaniak.com/en/hosting/public-cloud/kubernetes')],
+			sources: [source('https://docs.infomaniak.cloud/kaas/')],
 		},
 		containers: {
 			value: 0.5,
 			product: 'Jelastic Cloud',
 			sources: [
 				source('https://www.infomaniak.com/en/hosting/dedicated-and-cloud-servers/jelastic-cloud'),
+				source(
+					'https://www.infomaniak.com/en/support/faq/2255/understanding-jelastic-cloud-billing',
+				),
 			],
 		},
 		paas: {
 			value: 1,
 			product: 'Jelastic Cloud',
 			sources: [
-				source('https://www.infomaniak.com/en/hosting/dedicated-and-cloud-servers/jelastic-cloud'),
+				source(
+					'https://www.infomaniak.com/en/support/faq/2258/install-an-application-on-jelastic-cloud',
+				),
 			],
 		},
 		europeanHeadquarters: {
@@ -204,13 +221,14 @@ export const FACTS: Record<ProviderId, Record<CriterionId, Fact>> = {
 			value: 0,
 			sources: [
 				source('https://docs.infomaniak.cloud/getting_started/first_project/connect_project/'),
+				source('https://www.infomaniak.com/en/support/faq/2601/getting-started-guide-public-cloud'),
 			],
 		},
 		costs: {
 			value: 0.5,
 			sources: [
-				source('https://docs.infomaniak.cloud/metering/billing/', RESEARCH_46),
-				source('https://docs.infomaniak.cloud/quotas/', RESEARCH_46),
+				source('https://docs.infomaniak.cloud/metering/billing/'),
+				source('https://docs.infomaniak.cloud/quotas/'),
 				source('https://www.infomaniak.com/en/hosting/public-cloud/prices'),
 			],
 		},
@@ -236,7 +254,7 @@ export const FACTS: Record<ProviderId, Record<CriterionId, Fact>> = {
 			sources: [
 				source('https://news.microsoft.com/facts-about-microsoft/'),
 				source(
-					'https://learn.microsoft.com/en-us/azure/azure-sovereign-clouds/microsoft-sovereign-cloud',
+					'https://learn.microsoft.com/en-us/azure/azure-sovereign-clouds/partner/overview-national-partner-clouds',
 				),
 			],
 		},
@@ -251,11 +269,9 @@ export const FACTS: Record<ProviderId, Record<CriterionId, Fact>> = {
 			sources: [
 				source(
 					'https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/quick-acm-cost-analysis',
-					RESEARCH_46,
 				),
 				source(
 					'https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/group-filter',
-					RESEARCH_46,
 				),
 				source(
 					'https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/tutorial-acm-create-budgets',
@@ -268,7 +284,11 @@ export const FACTS: Record<ProviderId, Record<CriterionId, Fact>> = {
 		kubernetes: {
 			value: 1,
 			product: 'Managed Kubernetes Service',
-			sources: [source('https://www.ovhcloud.com/en/public-cloud/kubernetes/')],
+			sources: [
+				source(
+					'https://docs.ovhcloud.com/en/guides/public-cloud/containers-orchestration/managed-kubernetes/create-cluster',
+				),
+			],
 		},
 		containers: {
 			value: 0,
@@ -276,6 +296,8 @@ export const FACTS: Record<ProviderId, Record<CriterionId, Fact>> = {
 		},
 		paas: {
 			value: 0,
+			// Only OVHcloud's community forum announced the end of Web PaaS; its documentation no longer
+			// mentions it.
 			sources: [source('https://community.ovhcloud.com/t/end-of-life-eol-web-paas/3526')],
 		},
 		europeanHeadquarters: {
@@ -290,10 +312,7 @@ export const FACTS: Record<ProviderId, Record<CriterionId, Fact>> = {
 		costs: {
 			value: 0.5,
 			sources: [
-				source(
-					'https://docs.ovhcloud.com/fr/guides/public-cloud/cross-functional/analyze-billing',
-					RESEARCH_46,
-				),
+				source('https://docs.ovhcloud.com/fr/guides/public-cloud/cross-functional/analyze-billing'),
 				source('https://www.ovhcloud.com/en-ie/public-cloud/project-management/'),
 				source('https://www.ovhcloud.com/en-ie/public-cloud/prices/'),
 			],
@@ -303,12 +322,12 @@ export const FACTS: Record<ProviderId, Record<CriterionId, Fact>> = {
 		kubernetes: {
 			value: 1,
 			product: 'Kubernetes Kapsule',
-			sources: [source('https://www.scaleway.com/en/kubernetes-kapsule/')],
+			sources: [source('https://www.scaleway.com/en/docs/kubernetes/concepts/')],
 		},
 		containers: {
 			value: 1,
 			product: 'Serverless Containers',
-			sources: [source('https://www.scaleway.com/en/serverless-containers/')],
+			sources: [source('https://www.scaleway.com/en/docs/serverless-containers/concepts/')],
 		},
 		paas: {
 			value: 0,
@@ -331,11 +350,8 @@ export const FACTS: Record<ProviderId, Record<CriterionId, Fact>> = {
 			value: 0.5,
 			product: 'Cost Manager, Billing Alerts',
 			sources: [
-				source(
-					'https://www.scaleway.com/en/docs/billing/how-to/use-the-cost-manager/',
-					RESEARCH_46,
-				),
-				source('https://www.scaleway.com/en/docs/billing/how-to/use-billing-alerts/', RESEARCH_46),
+				source('https://www.scaleway.com/en/docs/billing/how-to/use-the-cost-manager/'),
+				source('https://www.scaleway.com/en/docs/billing/how-to/use-billing-alerts/'),
 				source('https://www.scaleway.com/en/pricing/virtual-instances/'),
 			],
 		},

@@ -33,18 +33,18 @@ const EXPECTED: Record<
 				],
 			},
 			{
-				caption: 'Adam · Expert devops · Venus consulting',
-				paragraphs: [
-					"J'ai fait appel à Julien dans le cadre d'un projet de formation en DevOps, et son intervention a été une totale réussite. Julien s'est montré parfaitement à la hauteur de la mission.",
-					"Grâce à sa double expertise de développeur et de spécialiste DevOps, il a su transmettre des compétences pointues avec beaucoup de pédagogie et de clarté. Son professionnalisme, sa maîtrise technique et sa capacité à s'adapter aux besoins du projet ont été des atouts majeurs. Je recommande vivement Julien à quiconque cherche un expert DevOps fiable, compétent et excellent pédagogue. Un grand merci pour ton travail !",
-				],
-			},
-			{
 				caption: 'Guillaume · Lead développeur · DADOUN PERE ET FILS',
 				paragraphs: [
 					'Julien nous a beaucoup aidés sur nos sujets DevOps avec sérieux, efficacité et beaucoup de pédagogie.',
 					'Il a tout de suite compris notre contexte, proposé des solutions adaptées, et nous a permis d’améliorer la stabilité et la fiabilité de notre plateforme. Les échanges ont toujours été simples, clairs et agréables.',
 					'C’est quelqu’un de fiable, disponible et très compétent. Nous recommandons Julien sans hésitation, et retravaillerons avec lui avec plaisir.',
+				],
+			},
+			{
+				caption: 'Adam · Expert devops · Venus consulting',
+				paragraphs: [
+					"J'ai fait appel à Julien dans le cadre d'un projet de formation en DevOps, et son intervention a été une totale réussite. Julien s'est montré parfaitement à la hauteur de la mission.",
+					"Grâce à sa double expertise de développeur et de spécialiste DevOps, il a su transmettre des compétences pointues avec beaucoup de pédagogie et de clarté. Son professionnalisme, sa maîtrise technique et sa capacité à s'adapter aux besoins du projet ont été des atouts majeurs. Je recommande vivement Julien à quiconque cherche un expert DevOps fiable, compétent et excellent pédagogue. Un grand merci pour ton travail !",
 				],
 			},
 		],
@@ -67,18 +67,18 @@ const EXPECTED: Record<
 				],
 			},
 			{
-				caption: 'Adam · Especialista DevOps · Venus consulting',
-				paragraphs: [
-					'Recorri ao Julien para um projeto de formação em DevOps, e a intervenção dele foi um êxito total. O Julien esteve perfeitamente à altura da missão.',
-					'Graças à dupla experiência de programador e de especialista DevOps, soube transmitir competências avançadas com muita pedagogia e clareza. O profissionalismo, o domínio técnico e a capacidade de se adaptar às necessidades do projeto foram trunfos importantes. Recomendo vivamente o Julien a quem procure um especialista DevOps fiável, competente e excelente pedagogo. Muito obrigado pelo teu trabalho!',
-				],
-			},
-			{
 				caption: 'Guillaume · Programador principal · DADOUN PERE ET FILS',
 				paragraphs: [
 					'O Julien ajudou-nos muito nos nossos temas de DevOps, com seriedade, eficácia e muita pedagogia.',
 					'Percebeu logo o nosso contexto, propôs soluções adaptadas e permitiu-nos melhorar a estabilidade e a fiabilidade da nossa plataforma. A comunicação foi sempre simples, clara e agradável.',
 					'É alguém fiável, disponível e muito competente. Recomendamos o Julien sem hesitar e voltaremos a trabalhar com ele com todo o gosto.',
+				],
+			},
+			{
+				caption: 'Adam · Especialista DevOps · Venus consulting',
+				paragraphs: [
+					'Recorri ao Julien para um projeto de formação em DevOps, e a intervenção dele foi um êxito total. O Julien esteve perfeitamente à altura da missão.',
+					'Graças à dupla experiência de programador e de especialista DevOps, soube transmitir competências avançadas com muita pedagogia e clareza. O profissionalismo, o domínio técnico e a capacidade de se adaptar às necessidades do projeto foram trunfos importantes. Recomendo vivamente o Julien a quem procure um especialista DevOps fiável, competente e excelente pedagogo. Muito obrigado pelo teu trabalho!',
 				],
 			},
 		],
@@ -113,7 +113,7 @@ inEachBuild((build) => {
 			continue;
 		}
 
-		test(`${prefix}: the Testimonials that can show it, each with its author, full text and Malt link`, async ({
+		test(`${prefix}: the Testimonials that can show it, in Julien's order, each with its author, full text and Malt link`, async ({
 			page,
 		}) => {
 			await page.goto(prefix);
@@ -176,8 +176,8 @@ inEachBuild((build) => {
 		}
 
 		// The time each Testimonial stays: its words at about 200 per minute, at least 8 s (#54).
-		// Counted by hand in #51's texts: 52, 98 and 69 words.
-		const READING_SECONDS = [15.6, 29.4, 20.7];
+		// Counted by hand in #51's texts: 52, 69 and 98 words.
+		const READING_SECONDS = [15.6, 20.7, 29.4];
 
 		/**
 		 * Freezes the page's clock, so the test moves time on itself: the Testimonials then pass in a

@@ -286,7 +286,7 @@ export function createBranch(main: HTMLElement, style: Style) {
 				continue;
 			}
 
-			if (section.dataset.section === 'guarantee') {
+			if (section.dataset.section === 'availability') {
 				pair(down(first.y + 12));
 				continue;
 			}
@@ -299,7 +299,8 @@ export function createBranch(main: HTMLElement, style: Style) {
 				const radius = photo.width / 2 + 16;
 				const centreX = photo.x + photo.width / 2;
 				const centreY = photo.y + photo.width / 2;
-				// Down the margin first, so as not to drift towards the text above.
+				// Back to the left margin above the section, then down it, so as not to drift towards the text above.
+				if (offMargin()) across(at.y, left);
 				down(centreY - radius);
 				down(centreY, centreX - radius);
 				const arch = last();

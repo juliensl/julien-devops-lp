@@ -151,16 +151,14 @@ inEachBuild((build) => {
 				await expectEndBesideFinalButton(page);
 			});
 
-			test('when the questions open, it still ends beside the final button, further down', async ({
+			test('when the text grows, as with a larger font size setting, it still ends beside the final button, further down', async ({
 				page,
 			}) => {
 				await page.setViewportSize({ width: 1280, height: 800 });
 				await openWithClock(page, prefix);
-				const questions = page.locator('main details');
-				for (let k = 0; k < (await questions.count()); k++) {
-					await questions.nth(k).locator('summary').click();
-				}
-				await expect(questions.last()).toHaveAttribute('open');
+				const before = await pageHeight(page);
+				await page.evaluate(() => (document.documentElement.style.fontSize = '125%'));
+				expect(await pageHeight(page)).toBeGreaterThan(before);
 				await expectEndBesideFinalButton(page);
 			});
 
@@ -259,8 +257,8 @@ inEachBuild((build) => {
 				page,
 			}) => {
 				await page.goto(prefix);
-				// The Guarantee, far from the ∞: only the branch is on screen.
-				await page.locator('[data-section="guarantee"]').scrollIntoViewIfNeeded();
+				// Availability and reliability, far from the ∞: only the branch is on screen.
+				await page.locator('[data-section="availability"]').scrollIntoViewIfNeeded();
 				await expect.poll(() => isMoving(page), { message: 'before the pause' }).toBe(true);
 				await pauseButton(page, pause).click();
 				await expect.poll(() => isMoving(page), { message: 'paused', timeout: 10_000 }).toBe(false);
@@ -281,11 +279,11 @@ inEachBuild((build) => {
 					.toBeGreaterThan(0);
 				expect(await isMoving(page)).toBe(false);
 				await expect(pauseButton(page, pause)).toBeHidden();
-				const guarantee = await page
-					.locator('[data-section="guarantee"]')
+				const availability = await page
+					.locator('[data-section="availability"]')
 					.evaluate((section) => section.getBoundingClientRect().top + scrollY);
 				// Right after a scroll the canvas still shows the old frame: scrollPage waits for it to follow.
-				await scrollPage(page, guarantee);
+				await scrollPage(page, availability);
 				expect((await look(page)).count, 'already down the page').toBeGreaterThan(0);
 				expect(await isMoving(page)).toBe(false);
 			});

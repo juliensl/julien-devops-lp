@@ -1,22 +1,23 @@
 ---
 // The sticky header of every page: the logo, «Os teus desafios» with its submenu of audiences,
-// 🍃 Ecology, the language switcher, LinkedIn and the button.
-// On mobile, the audiences, the languages and LinkedIn move into a `<details>` menu, which opens without JS; the
-// button and the leaf always stay visible, the leaf without its word. Below 360 px, Ecology only lives
-// in the menu.
+// Resources with its submenu of pages, 🍃 Ecology, the language switcher, LinkedIn and the button.
+// Below 1024 px, the audiences, the pages, the languages and LinkedIn move into a `<details>` menu,
+// which opens without JS; the button and the leaf always stay visible, the leaf without its word on
+// phones. Below 360 px, Ecology only lives in the menu.
 // On a page with no equivalents in other languages (the 404), the header keeps only the logo and the button,
 // and the logo leads to the home page of the first published language.
-// The parts that arrive with the pages they lead to have their place marked with the ticket.
 import { PHASE, PREFIXES, type Language } from '../config/site';
 import { values } from '../config/values';
 import { dictionaries } from '../i18n';
 import { ecologyPath } from '../lib/paths';
+import { withNonBreakingSpaces } from '../lib/spaces';
 import AudienceLinks from './AudienceLinks.astro';
 import BookingButton from './BookingButton';
 import LanguageSwitcher from './LanguageSwitcher.astro';
 import Leaf from './Leaf.astro';
 import LinkedInLogo from './LinkedInLogo.astro';
 import Logo from './Logo.astro';
+import ResourceLinks from './ResourceLinks.astro';
 
 interface Props {
 	language: Language;
@@ -40,9 +41,9 @@ const onEcology = Astro.url.pathname === ecology ? 'page' : undefined;
 			<span class="sr-only">, {t.header.logoTarget}</span>
 		</a>
 
-		<div class="ml-auto flex items-center gap-4">
+		<div class="ml-auto flex items-center gap-2 xl:gap-4">
 			{!noEquivalents && (
-				<nav aria-label={t.questions.menu} class="max-md:hidden">
+				<nav aria-label={t.questions.menu} class="max-lg:hidden">
 					<details data-menu class="group relative">
 						<summary class="inline-flex min-h-11 cursor-pointer list-none items-center gap-1.5 rounded-lg px-3 text-[0.9375rem] text-foreground-secondary transition-colors group-open:bg-surface group-open:text-foreground hover:bg-surface hover:text-foreground [&::-webkit-details-marker]:hidden">
 							{t.questions.menu}
@@ -71,6 +72,34 @@ const onEcology = Astro.url.pathname === ecology ? 'page' : undefined;
 			)}
 
 			{!noEquivalents && (
+				<nav aria-label={t.header.resources} class="max-lg:hidden">
+					<details data-menu class="group relative">
+						<summary class="inline-flex min-h-11 cursor-pointer list-none items-center gap-1.5 rounded-lg px-3 text-[0.9375rem] text-foreground-secondary transition-colors group-open:bg-surface group-open:text-foreground hover:bg-surface hover:text-foreground [&::-webkit-details-marker]:hidden">
+							{withNonBreakingSpaces(t.header.resources)}
+							<svg
+								width="12"
+								height="12"
+								viewBox="0 0 12 12"
+								aria-hidden="true"
+								class="transition-transform group-open:rotate-180"
+							>
+								<path
+									d="M2.5 4.5 6 8l3.5-3.5"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1.6"
+								></path>
+							</svg>
+						</summary>
+						<ResourceLinks
+							language={language}
+							class="absolute top-[calc(100%+0.5rem)] right-0 grid w-max gap-0.5 rounded-xl border border-line bg-surface p-2 shadow-[0_18px_40px_rgb(0_0_0/0.45)]"
+						/>
+					</details>
+				</nav>
+			)}
+
+			{!noEquivalents && (
 				<a
 					href={ecology}
 					aria-current={onEcology}
@@ -82,13 +111,13 @@ const onEcology = Astro.url.pathname === ecology ? 'page' : undefined;
 			)}
 
 			{!noEquivalents && (
-				<LanguageSwitcher language={language} label={t.header.languages} class="max-md:hidden" />
+				<LanguageSwitcher language={language} label={t.header.languages} class="max-lg:hidden" />
 			)}
 
 			{!noEquivalents && (
 				<a
 					href={values.linkedin}
-					class="inline-flex size-11 items-center justify-center rounded-md text-foreground-secondary transition-colors hover:text-foreground max-md:hidden"
+					class="inline-flex size-11 items-center justify-center rounded-md text-foreground-secondary transition-colors hover:text-foreground max-lg:hidden"
 				>
 					<LinkedInLogo />
 					<span class="sr-only">LinkedIn</span>
@@ -99,7 +128,7 @@ const onEcology = Astro.url.pathname === ecology ? 'page' : undefined;
 		<BookingButton text={t.bookButton} compact />
 
 		{!noEquivalents && (
-			<details data-menu class="relative md:hidden">
+			<details data-menu class="relative lg:hidden">
 				<summary class="flex size-11 cursor-pointer list-none items-center justify-center rounded-[10px] border border-line-strong text-foreground [&::-webkit-details-marker]:hidden">
 					<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
 						<path
@@ -120,6 +149,16 @@ const onEcology = Astro.url.pathname === ecology ? 'page' : undefined;
 							{t.questions.menu}
 						</p>
 						<AudienceLinks language={language} class="mt-1 grid" />
+					</nav>
+
+					<nav aria-labelledby="menu-resources">
+						<p
+							id="menu-resources"
+							class="px-2 text-[0.6875rem] tracking-[0.12em] text-foreground-secondary uppercase"
+						>
+							{withNonBreakingSpaces(t.header.resources)}
+						</p>
+						<ResourceLinks language={language} class="mt-1 grid" />
 					</nav>
 
 					<a

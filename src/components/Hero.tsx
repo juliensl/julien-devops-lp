@@ -1,3 +1,4 @@
+import { withNonBreakingSpaces } from '../lib/spaces';
 import BookingButton from './BookingButton';
 
 interface Props {
@@ -24,10 +25,12 @@ export default function Hero({ designation, promise, support, buttonText, note }
 				>
 					{promise}
 				</h1>
-				<p className="mt-6 max-w-2xl text-lg text-foreground-secondary">{support}</p>
+				<p className="mt-6 max-w-2xl text-lg text-foreground-secondary">
+					{withNonBreakingSpaces(support)}
+				</p>
 				<div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
 					<BookingButton text={buttonText} />
-					<p className="text-sm text-foreground-secondary">{note}</p>
+					<p className="text-sm text-foreground-secondary">{withNonBreakingSpaces(note)}</p>
 				</div>
 			</div>
 			{/* DottedInfinity draws the ∞ in this box; without JS there is nothing to draw, so no space. */}

@@ -1,0 +1,63 @@
+---
+// The data sovereignty page: Julien's five sections, the table of providers and the note on Switzerland
+// in the third one, the note on the CLOUD Act in the fourth, and the booking button at the end.
+import type { Language } from '../config/site';
+import { values } from '../config/values';
+import { dictionaries } from '../i18n';
+import Base from '../layouts/Base.astro';
+import { withNonBreakingSpaces } from '../lib/spaces';
+import BookingButton from './BookingButton';
+import SovereigntyNote from './SovereigntyNote.astro';
+import SovereigntyTable from './SovereigntyTable.astro';
+
+interface Props {
+	language: Language;
+}
+
+const { language } = Astro.props;
+const page = dictionaries[language].sovereignty;
+// The places of the sections that hold the table of providers and the note on the CLOUD Act.
+const TABLE_SECTION = 2;
+const CLOUD_ACT_SECTION = 3;
+const last = page.sections.length - 1;
+---
+
+<Base language={language} title={`${page.link} · ${values.name}`} description={page.description}>
+	<main class="page-width grid grid-cols-[minmax(0,1fr)] gap-20 pt-14 sm:pt-20">
+		<div class="grid gap-5">
+			<p class="label">{page.link}</p>
+			<h1 class="max-w-[22ch] text-[clamp(2.25rem,5vw,4rem)] leading-[1.05]">
+				{withNonBreakingSpaces(page.title)}
+			</h1>
+			<p class="max-w-2xl text-lg text-foreground-secondary">{withNonBreakingSpaces(page.intro)}</p>
+		</div>
+
+		{page.sections.map(({ title, text }, k) => (
+			<section
+				aria-labelledby={`sovereignty-${k + 1}`}
+				class="grid grid-cols-[minmax(0,1fr)] gap-x-16 gap-y-4 border-t border-line-strong pt-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)]"
+			>
+				<h2 id={`sovereignty-${k + 1}`} class="text-[clamp(1.6rem,3vw,2.2rem)] leading-[1.15]">
+					{withNonBreakingSpaces(title)}
+				</h2>
+				<div class="grid content-start gap-6">
+					<p class="text-foreground-secondary">{withNonBreakingSpaces(text)}</p>
+					{k === CLOUD_ACT_SECTION && <SovereigntyNote language={language} note="cloudAct" />}
+					{k === last && (
+						<div>
+							<BookingButton text={page.cta} />
+						</div>
+					)}
+				</div>
+				{k === TABLE_SECTION && (
+					<div class="mt-4 grid gap-6 lg:col-span-2">
+						<SovereigntyTable language={language} />
+						<div class="max-w-3xl">
+							<SovereigntyNote language={language} note="switzerland" />
+						</div>
+					</div>
+				)}
+			</section>
+		))}
+	</main>
+</Base>

@@ -3,7 +3,7 @@
 // It animates only once the page has loaded, only while in view, and stops with the pause button.
 // Until it first starts, with reduced motion and without JS, it stays still on a frame that shows
 // the result.
-import type { Dictionary } from '../i18n/pt';
+import type { Dictionary } from '../i18n/fr';
 
 interface Props {
 	/** The Block, from 1 to 4. */
@@ -13,8 +13,8 @@ interface Props {
 }
 
 const { block, words } = Astro.props;
-const { pipeline, containers, scaling, monitoring } = words;
-const description = [pipeline, containers, scaling, monitoring][block - 1]!.description;
+const { pipeline, cleanup, scaling, monitoring } = words;
+const description = [pipeline, cleanup, scaling, monitoring][block - 1]!.description;
 ---
 
 {/* The margin on each side of the viewBox leaves room for the longer words in French and English. */}
@@ -49,22 +49,35 @@ const description = [pipeline, containers, scaling, monitoring][block - 1]!.desc
 		)}
 		{block === 2 && (
 			<g>
-				<rect x="10" y="14" width="88" height="66" rx="10" class="frame" />
-				<rect x="142" y="14" width="88" height="66" rx="10" class="frame" />
-				<rect x="34" y="34" width="40" height="28" rx="6" class="app" />
-				<line x1="42" y1="44" x2="66" y2="44" class="stripe" />
-				<line x1="42" y1="52" x2="58" y2="52" class="stripe" />
-				<g class="travels">
-					<rect x="34" y="34" width="40" height="28" rx="6" class="app" />
-					<line x1="42" y1="44" x2="66" y2="44" class="stripe" />
-					<line x1="42" y1="52" x2="58" y2="52" class="stripe" />
+				<rect x="4" y="10" width="132" height="62" rx="8" class="code" />
+				<g class="loops">
+					<line x1="16" y1="22" x2="84" y2="22" class="line" />
+					<line x1="28" y1="32" x2="92" y2="32" class="line" />
+					<g class="bug">
+						<line x1="28" y1="42" x2="72" y2="42" class="line" />
+						<path d="M80 39l6 6m0-6-6 6" class="cross" />
+						<text x="102" y="45.5" class="bug-text">
+							{cleanup.bug}
+						</text>
+					</g>
+					<g class="rises">
+						<line x1="28" y1="42" x2="96" y2="42" class="line" />
+						<line x1="40" y1="52" x2="80" y2="52" class="line" />
+					</g>
+					<g class="twice">
+						<line x1="28" y1="72" x2="96" y2="72" class="line" />
+						<line x1="40" y1="82" x2="80" y2="82" class="line" />
+						<path d="M102 68h4v18h-4" class="brace" />
+						<text x="119" y="80.5" class="twice-text">
+							{cleanup.duplicate}
+						</text>
+					</g>
+					<line x1="16" y1="62" x2="56" y2="62" class="line rises-twice" />
+					<line x1="157" y1="42" x2="233" y2="42" class="response" />
 				</g>
-				<path d="M104 47h30m-6-5 6 5-6 5" class="arrow" />
-				<text x="54" y="98">
-					{containers.laptop}
-				</text>
-				<text x="186" y="98">
-					{containers.production}
+				<rect x="150" y="35" width="90" height="14" rx="7" class="frame" />
+				<text x="195" y="64">
+					{cleanup.responseTime}
 				</text>
 			</g>
 		)}
@@ -194,33 +207,59 @@ const description = [pipeline, containers, scaling, monitoring][block - 1]!.desc
 		fill: var(--red-text);
 	}
 
-	/* Block 2: the same container goes from the laptop to production. Still, it has arrived. */
+	/* Block 2: in the code, the bug goes, then the lines written twice; the code gets shorter and the
+	   response time drops. Still, the code is clean and the response time short. */
 	.frame {
 		fill: none;
 		stroke: var(--color-line-strong);
 		stroke-width: 1.2;
 		stroke-dasharray: 3 3;
 	}
-	/* Not `.container`: Tailwind has a utility of that name. */
-	.app {
+	.code {
 		fill: var(--color-surface-2);
-		stroke: var(--color-purple);
-		stroke-width: 1.5;
+		stroke: var(--color-line-strong);
+		stroke-width: 1.2;
+		vector-effect: non-scaling-stroke;
+		transform-box: fill-box;
+		transform-origin: top;
 	}
-	.stripe {
+	.line {
 		stroke: var(--color-foreground-secondary);
-		stroke-width: 2;
+		stroke-width: 3;
 		stroke-linecap: round;
 	}
-	.arrow {
+	.bug,
+	.twice {
+		opacity: 0;
+	}
+	.bug .line,
+	.cross {
+		stroke: var(--red);
+	}
+	.cross {
 		fill: none;
-		stroke: var(--color-green);
 		stroke-width: 1.6;
 		stroke-linecap: round;
-		stroke-linejoin: round;
 	}
-	.travels {
-		transform: translateX(132px);
+	.bug-text {
+		fill: var(--red-text);
+	}
+	.twice .line,
+	.brace {
+		stroke: var(--color-purple);
+	}
+	.brace {
+		fill: none;
+		stroke-width: 1.2;
+	}
+	.twice-text {
+		fill: var(--color-purple);
+	}
+	.response {
+		stroke: var(--color-green);
+		stroke-width: 8;
+		stroke-linecap: round;
+		stroke-dasharray: 20 200;
 	}
 
 	/* Block 3: the instances follow the load. Still, at the peak, they are all on. */
@@ -260,8 +299,26 @@ const description = [pipeline, containers, scaling, monitoring][block - 1]!.desc
 		[data-started] .appears {
 			animation: appears 4s ease 2s infinite backwards var(--play);
 		}
-		[data-started] .travels {
-			animation: travels 4s ease-in-out infinite var(--play);
+		[data-started] .loops {
+			animation: loops 5s linear infinite var(--play);
+		}
+		[data-started] .bug {
+			animation: bug 5s ease-in-out infinite var(--play);
+		}
+		[data-started] .rises {
+			animation: rises 5s ease-in-out infinite var(--play);
+		}
+		[data-started] .twice {
+			animation: twice 5s ease-in-out infinite var(--play);
+		}
+		[data-started] .rises-twice {
+			animation: rises-twice 5s ease-in-out infinite var(--play);
+		}
+		[data-started] .code {
+			animation: shrinks 5s ease-in-out infinite var(--play);
+		}
+		[data-started] .response {
+			animation: drops 5s ease-in-out infinite var(--play);
 		}
 		[data-started] .load {
 			animation: load 5s linear infinite var(--play);
@@ -358,23 +415,96 @@ const description = [pipeline, containers, scaling, monitoring][block - 1]!.desc
 			opacity: 1;
 		}
 	}
-	@keyframes travels {
+	/* The code fades out at the end of each loop, while its block grows back for the next one. */
+	@keyframes loops {
+		0%,
+		94%,
+		100% {
+			opacity: 0;
+		}
+		6%,
+		88% {
+			opacity: 1;
+		}
+	}
+	@keyframes bug {
 		0%,
 		15% {
-			transform: translateX(0);
-			opacity: 0;
-		}
-		25% {
 			opacity: 1;
 		}
-		60%,
-		90% {
-			transform: translateX(132px);
-			opacity: 1;
-		}
+		25%,
 		100% {
-			transform: translateX(132px);
 			opacity: 0;
+		}
+	}
+	/* Each line below a removed one moves up into its place, 10 units per line. */
+	@keyframes rises {
+		0%,
+		25% {
+			transform: translateY(10px);
+		}
+		35%,
+		100% {
+			transform: translateY(0);
+		}
+	}
+	@keyframes twice {
+		0%,
+		25% {
+			transform: translateY(0);
+			opacity: 1;
+		}
+		35%,
+		45% {
+			transform: translateY(-10px);
+			opacity: 1;
+		}
+		55%,
+		100% {
+			transform: translateY(-10px);
+			opacity: 0;
+		}
+	}
+	@keyframes rises-twice {
+		0%,
+		25% {
+			transform: translateY(30px);
+		}
+		35%,
+		55% {
+			transform: translateY(20px);
+		}
+		65%,
+		100% {
+			transform: translateY(0);
+		}
+	}
+	/* The block holds 8 lines, then 7, then 5: 92, 82 and 62 units high. */
+	@keyframes shrinks {
+		0%,
+		25%,
+		100% {
+			transform: scaleY(1.4839);
+		}
+		35%,
+		55% {
+			transform: scaleY(1.3226);
+		}
+		65%,
+		94% {
+			transform: scaleY(1);
+		}
+	}
+	@keyframes drops {
+		0%,
+		60% {
+			stroke-dasharray: 76 200;
+			stroke: var(--red);
+		}
+		75%,
+		100% {
+			stroke-dasharray: 20 200;
+			stroke: var(--color-green);
 		}
 	}
 	@keyframes load {

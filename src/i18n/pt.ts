@@ -1,341 +1,99 @@
-// The texts in Portuguese, the Reference language.
-// French and English are typed from this file: a missing text makes `astro check` fail.
+// Translated from French, the Reference language: same meaning, no added promises.
 // The texts carry no HTML: links, bold text and non-breaking spaces are added in the components.
-import type { AudienceId } from '../config/audiences';
-import type { CriterionId, ProviderId, Rating, ScenarioId } from '../config/cloud-providers';
-import type { SourceId } from '../config/ecology';
+import type { Dictionary } from './fr';
 
-const promise =
-	'Em 30 dias, entrego-te a infraestrutura DevOps de que precisas para escalar o teu SaaS.';
+const promise = 'Menos bugs. Um código mais limpo. Um SaaS pronto para crescer.';
 
-type Step = { name: string; sentence: string };
-
-type Card = { title: string; text: string };
-
-type Block = {
-	name: string;
-	summary: string;
-	text: string;
-	tools: string[];
-	/** Said after the tools, when the client's cloud can provide its own. */
-	toolsAlternative?: string;
-};
-
-/** The 4 Blocks, in the pitch's order. A language with fewer than 4 makes `astro check` fail. */
-const blocks: [Block, Block, Block, Block] = [
+const blocks: Dictionary['homePage']['services']['blocks'] = [
 	{
-		name: 'Pipeline de CI e auditoria de código',
-		summary: 'Os bugs ficam no pull request.',
-		text: 'Cada alteração passa por testes, lint e análise antes de chegar à produção, com a segurança em destaque: dependências com falhas conhecidas, segredos esquecidos no código e análise do próprio código. O que está a vermelho não passa.',
-		tools: ['SonarQube', 'Trivy'],
+		name: 'Auditoria do código e CI/CD',
+		summary: 'Deteta os problemas antes de chegarem à produção.',
+		text: 'Analiso o repositório e os processos de entrega e, depois, monto uma pipeline adaptada ao teu projeto: qualidade do código, lint, testes automatizados, análise de segurança e controlo das dependências. Os erros são assinalados logo no pull request, antes de se tornarem incidentes nos teus clientes.',
+		tools: [
+			'GitHub Actions',
+			'GitLab CI',
+			'Lint',
+			'Testes unitários',
+			'Testes de integração',
+			'Testes E2E',
+			'SonarQube',
+			'Trivy',
+			'Gitleaks',
+		],
+		toolsAlternative: 'E mais, conforme a stack',
 	},
 	{
-		name: 'Contentorização',
-		summary: 'A aplicação corre igual em todo o lado.',
-		text: 'A aplicação deixa de depender do ambiente onde corre. No portátil de um dev ou em produção, o mesmo comportamento.',
-		tools: ['Docker'],
+		name: 'Limpeza e otimização do código',
+		summary: 'Menos dívida técnica, mais tempo para desenvolver.',
+		text: 'Encarrego-me diretamente das correções na aplicação, do refactoring do código e das otimizações de desempenho identificados como prioritários. Também automatizo uma parte da manutenção repetitiva. O objetivo: tornar a aplicação mais limpa, mais rápida e mais simples de fazer evoluir. O volume da intervenção é definido depois da auditoria: não se trata de uma reformulação ilimitada de todo o código.',
+		tools: [
+			'Refactoring',
+			'Dívida técnica',
+			'Desempenho',
+			'API e consultas',
+			'Dependências',
+			'Manutenção automatizada',
+		],
+		toolsAlternative: 'Conforme a stack',
 	},
 	{
 		name: 'Infraestrutura escalável',
-		summary: 'A infraestrutura acompanha a carga.',
-		text: 'Em dois níveis: serverless de contentores para volumes médios, Kubernetes quando a carga o justifica. Com Infrastructure as Code, a infraestrutura fica descrita em código e pode ser recriada.',
-		tools: ['Kubernetes', 'Terraform'],
+		summary: 'A arquitetura certa para o teu uso, sem complexidade desnecessária.',
+		text: 'Contentorizo a aplicação quando é necessário e escolho o alojamento adequado à sua carga: contentores geridos, serviços serverless ou Kubernetes. A Infrastructure as Code permite descrever, versionar e reproduzir os ambientes. O objetivo é poder evoluir sem sobredimensionar a infraestrutura logo de início.',
+		tools: [
+			'Docker',
+			'Containers as a Service',
+			'Kubernetes',
+			'Terraform',
+			'GCP',
+			'AWS',
+			'Azure',
+			'Scaleway',
+			'OVHcloud',
+			'Infomaniak',
+		],
+		toolsAlternative: 'E outros fornecedores',
 	},
 	{
 		name: 'Observabilidade',
-		summary: 'Vês os problemas antes dos clientes.',
-		text: 'Um painel de saúde em tempo real e um alerta imediato quando há um incidente.',
-		tools: ['Grafana', 'Prometheus'],
-		toolsAlternative: 'ou as ferramentas da tua cloud',
+		summary: 'Deixa de descobrir os incidentes pelos teus clientes.',
+		text: 'Implemento as métricas, registos, painéis e alertas necessários para acompanhar a saúde da aplicação e da sua infraestrutura. Em vez de verificar manualmente se tudo funciona, a tua equipa é avisada assim que surge um problema detetável e tem a informação necessária para intervir.',
+		tools: ['Grafana', 'Prometheus', 'Logs', 'Alertas', 'Monitorização', 'Tracing'],
+		toolsAlternative: 'Ferramentas nativas da cloud',
 	},
 ];
 
-type Question = { question: string; answer: string };
-
-type Audience = {
-	/** The audience's heading on the questions page, and its link in the header submenu. */
-	name: string;
-	/** In the filter. */
-	short: string;
-	description: string;
-	questions: Question[];
-};
-
-export const pt = {
-	designation: 'Consultor DevOps freelance para SaaS',
+export const pt: Dictionary = {
+	designation: 'Consultor DevOps',
 	promise,
 	bookButton: 'Marcar uma conversa',
 	header: {
-		/** Appended to the name in the logo, which links to the home page. */
 		logoTarget: 'página principal',
-		/** The name of the language switcher, for screen readers. */
 		languages: 'Língua',
-		/** The button that opens the menu on mobile. */
 		menu: 'Menu',
+		resources: 'Recursos',
 	},
-	/** The fixed button that pauses the automatic animations: its name says what a click does. */
 	animation: {
 		pause: 'Pausar animação',
 		resume: 'Retomar animação',
 	},
-	/** The ecology page, and the links that lead to it. The texts of #54 are as validated there; the
-	 * others come from prototype v3. */
-	ecology: {
-		/** The links to the page, with the leaf, in the header and the footer. */
-		link: 'Ecologia',
-		/** The home page's Ecology section. */
-		home: {
-			title: 'A infraestrutura também tem pegada.',
-			text: 'Onde a aplicação corre, quanto corre e com que eficiência mudam o impacto ambiental. A página de ecologia deixa-te estimar uma carga conforme o país onde corre, separando dados publicados, hipóteses e cálculos.',
-			link: 'Abrir a página de ecologia',
-		},
+	cloud: {
+		link: 'Escolher a cloud',
 		page: {
-			title: 'Ecologia e infraestrutura',
+			title: 'Que cloud escolher para a tua empresa?',
 			description:
-				'Estima a energia e as emissões de uma carga conforme o país onde corre, com o cálculo completo, o método, as fontes e os limites.',
-			heading: 'As escolhas de infraestrutura também têm consequências ambientais.',
+				'A melhor cloud depende do teu produto, da tua equipa, do teu crescimento, do teu orçamento e das tuas restrições regulamentares. Compara os fornecedores de acordo com as tuas prioridades.',
 			intro:
-				'Onde a aplicação corre, quanto tempo corre e com que eficiência mudam a energia que consome e as emissões da eletricidade que usa. Aqui estimas uma carga, conforme o país onde corre, com o método e as fontes à vista.',
-			/** The badge on each value: what each of the three means. */
-			legend: {
-				label: 'Como ler os dados desta página',
-				published: 'valor de uma base de dados ou de um estudo públicos, com ano e fonte',
-				assumption: 'pressuposto do cálculo, que podes mudar',
-				calculated: 'resultado dos dois anteriores',
+				'A melhor cloud depende do teu produto, da tua equipa, do teu crescimento, do teu orçamento e das tuas restrições regulamentares. Compara as opções de acordo com o teu contexto, em vez de escolheres um fornecedor só pela notoriedade.',
+			cta: {
+				title: 'Hesitas entre várias arquiteturas?',
+				text: 'Vamos falar do teu projeto e comparar as opções adequadas às tuas restrições.',
 			},
 		},
-		/** The only three badges (#54). */
-		badges: { published: 'Publicado', assumption: 'Hipótese', calculated: 'Calculado' },
-		estimator: {
-			label: 'Estimar uma carga',
-			title: 'A mesma aplicação, em sítios diferentes.',
-			intro:
-				'Escolhe o país, a carga e a eficiência do centro de dados. O cálculo segue o método aberto do Cloud Carbon Footprint: energia dos processadores × eficiência do centro de dados × intensidade carbónica da eletricidade.',
-			fields: {
-				country: 'País onde corre a infraestrutura',
-				vcpu: 'Processadores virtuais (vCPU)',
-				utilisation: 'Utilização média',
-				hoursPerDay: 'Horas por dia',
-				pue: 'Eficiência do centro de dados (PUE)',
-			},
-			/** Below the two fields whose first value comes from a source. */
-			hints: {
-				utilisation: '50 % é o valor do CCF quando não se conhece a utilização',
-				pue: '1,52 é a média do setor em 2026 (Uptime Institute); o fornecedor pode indicar o do centro que usas',
-			},
-			/** The name of the two results, for screen readers. */
-			result: 'Resultado',
-			calculation: 'O cálculo',
-			comparison: 'A mesma carga em cada país',
-			/** After each number of the calculation. */
-			units: {
-				vcpu: 'vCPU',
-				wattsPerVcpu: 'W por vCPU',
-				perDay: 'por dia',
-				daysPerMonth: 'dias por mês',
-				kwhPerMonth: 'kWh por mês',
-				kgPerMonth: 'kg CO2e por mês',
-			},
-			/** Where the watts per vCPU come from. */
-			wattsSource: 'Cloud Carbon Footprint, processador desconhecido',
-			/** The kind of intensity, after the country and Ember's year. */
-			lifeCycle: 'ciclo de vida',
-			/** After the emissions result: the method's name, in English in every language (#54). */
-			locationBased: 'location-based',
-		},
-		method: {
-			label: 'Como se calcula',
-			title: 'Um só método, explicado.',
-			cards: [
-				{
-					title: 'Location-based',
-					text: 'Usa a média anual da eletricidade produzida no país. Não conta contratos de energia renovável: isso seria o método market-based, que aqui não aparece porque precisa de dados contratuais que não temos.',
-				},
-				{
-					title: 'Ciclo de vida',
-					text: 'A intensidade da Ember inclui as emissões a montante (construção das centrais, extração e transporte do combustível). Por isso é mais alta do que contar só as emissões diretas da queima. Os dois tipos nunca se misturam nesta página.',
-				},
-				{
-					title: 'Só os processadores',
-					text: 'O estimador conta a energia dos vCPU e a eficiência do centro de dados. Memória, armazenamento, rede e fabrico dos servidores ficam de fora, por isso o valor real é maior.',
-				},
-			] satisfies [Card, Card, Card],
-		},
-		/** What infrastructure can change: the title and the 4 cards validated in #54. */
-		levers: {
-			label: 'O que a infraestrutura pode mudar',
-			title: 'Mais eficiência, mais visibilidade.',
-			cards: [
-				{
-					title: 'Ajustar os recursos à carga',
-					text: 'Com a infraestrutura escalável (bloco 3), os recursos acompanham a carga da aplicação.',
-				},
-				{
-					title: 'Ver o que se consome',
-					text: 'A observabilidade (bloco 4) dá visibilidade sobre a utilização dos recursos e os custos.',
-				},
-				{
-					title: 'Escolher com informação',
-					text: 'A intensidade carbónica da eletricidade muda de país para país, e o estimador mostra quanto.',
-				},
-				{
-					title: 'Alojamento com menor impacto ambiental',
-					text: 'Quando as necessidades e o orçamento o permitem, é uma das opções que proponho.',
-				},
-			] satisfies [Card, Card, Card, Card],
-		},
-		sources: {
-			title: 'Fontes e limites',
-			names: {
-				ember: 'Ember, produção de eletricidade anual por país (intensidade carbónica, 2025)',
-				cloudCarbonFootprint: 'Cloud Carbon Footprint, metodologia',
-				uptimeInstitute: 'Uptime Institute, PUE médio do setor (inquérito de 2026)',
-				research: 'Pesquisa própria sobre os dados ambientais dos fornecedores cloud (16/10/2026)',
-			} satisfies Record<SourceId, string>,
-			limits: [
-				'Estimativa ilustrativa, não uma medição da tua infraestrutura.',
-				'Os watts por vCPU são os do Cloud Carbon Footprint para um processador desconhecido; o servidor real pode consumir mais ou menos.',
-				'A intensidade é uma média anual do país; a hora do dia muda o valor real.',
-				'O PUE de 1,52 é a média por centro de dados; ponderada pela capacidade, é 1,36. Os centros grandes, como os da cloud, costumam ter valores mais baixos.',
-			],
-		},
-		back: 'Voltar à página principal',
-	},
-	homePage: {
-		description: `${promise} Para CTO de SaaS em crescimento.`,
-		hero: {
-			support:
-				'Os bugs são apanhados no pull request, não pelo teu cliente. E os teus devs voltam a programar em vez de fazer suporte.',
-			note: 'Conversa de 45 min por Google Meet, gratuita.',
-		},
-		whoItsFor: {
-			title: 'Para quem é',
-			profile: [
-				'Um SaaS web ou mobile, já lançado.',
-				'A passar de dezenas ou centenas para milhares de utilizadores recorrentes.',
-				'Uma equipa de normalmente 5 a 20 pessoas, com pelo menos 3 devs.',
-			],
-			/** Below the first statement: `link` is the part of `text` that leads to the booking page. */
-			notLaunchedYet: {
-				text: 'O teu SaaS ainda não foi lançado? Podes marcar a Conversa na mesma.',
-				link: 'marcar a Conversa',
-			},
-		},
-		todayAndAfter: {
-			title: 'Hoje, e depois.',
-			todayTitle: 'Hoje',
-			today: [
-				{
-					title: 'Uma funcionalidade parte outra.',
-					text: 'A regressão passou a ser normal, e é o cliente que a descobre.',
-				},
-				{ title: 'Os devs fazem suporte.', text: 'Respondem a tickets em vez de programar.' },
-				{
-					title: 'Os testes fazem-se à mão.',
-					text: 'Dias inteiros, por quem não tem essa função.',
-				},
-				{
-					title: 'Ninguém sabe se aguenta.',
-					text: 'Funciona com os clientes de hoje. Com muitos mais, ninguém sabe dizer.',
-				},
-			],
-			afterTitle: 'Depois',
-			after: [
-				'Os bugs são apanhados no pull request, não pelo cliente.',
-				'Os devs recuperam os dias que passavam em suporte.',
-				'A equipa cresce sem medo de que um júnior parta a produção.',
-				'Acrescentas funcionalidades sem partir outras.',
-				'A infraestrutura acompanha a carga, e vês os problemas antes dos clientes.',
-			],
-		},
-		/** The Services: the 4 Blocks, and the note on hiring them in any combination. */
-		services: {
-			label: 'Serviços',
-			title: 'Quatro camadas da tua infraestrutura.',
-			note: 'Contratas os blocos que quiseres, em qualquer combinação. No máximo 30 dias, a contar do início da Implementação. O bloco 3 precisa de uma aplicação contentorizada, pelo bloco 2 ou pela tua equipa.',
-			/** Before each Block's number: "Bloco 1". */
-			blockLabel: 'Bloco',
-			/** The name of each Block's list of tools, for screen readers. */
-			toolsLabel: 'Ferramentas',
-			blocks,
-			/** The words drawn in the Blocks' mini-diagrams, and what each one shows, for screen readers. */
-			diagrams: {
-				pipeline: {
-					description: 'Uma alteração com falha de segurança fica bloqueada antes da produção.',
-					commit: 'commit',
-					tests: 'testes',
-					security: 'segurança',
-					production: 'produção',
-					blocked: 'bloqueado',
-				},
-				containers: {
-					description: 'O mesmo contentor corre igual no portátil e em produção.',
-					laptop: 'portátil',
-					production: 'produção',
-				},
-				scaling: {
-					description: 'As instâncias aumentam com a carga e voltam a diminuir.',
-					load: 'carga',
-					instances: 'instâncias',
-				},
-				monitoring: {
-					description: 'Uma anomalia no sinal gera um alerta imediato.',
-					dashboard: 'painel de saúde',
-					alert: 'alerta',
-				},
-			},
-		},
-		/** The 5 Steps, in glossary order, each with one sentence. A language with fewer than 5
-		 * makes `astro check` fail. */
-		steps: {
-			title: 'Cinco etapas, sempre pela mesma ordem.',
-			steps: [
-				{ name: 'Conversa', sentence: '45 min por Google Meet, gratuita.' },
-				{
-					name: 'Diagnóstico',
-					sentence:
-						'Gratuito. 2 a 3 dias úteis depois de receber os acessos, ou 3 a 5 se incluir a cloud.',
-				},
-				{
-					name: 'Proposta de intervenção',
-					sentence: 'Que blocos, em que prazo e por que preço fixo.',
-				},
-				{ name: 'Implementação', sentence: 'No máximo 30 dias de calendário.' },
-				{
-					name: 'Entrega e transferência',
-					sentence: 'Documentação e transferência para a equipa ficar autónoma.',
-				},
-			] satisfies [Step, Step, Step, Step, Step],
-		},
-		guarantee: {
-			label: 'A Garantia',
-			title: 'Disponível pelo menos 99 % do tempo, em cada mês.',
-			text: 'Em 30 dias, entrego a infraestrutura. Nos 3 meses seguintes, ela está disponível pelo menos 99 % do tempo em cada mês. Se não estiver, continuo a trabalhar sem faturar até chegar lá.',
-			appliesWhen:
-				'Aplica-se quando contratas a Infraestrutura escalável e a Observabilidade (e a Contentorização, se a aplicação ainda não estiver contentorizada).',
-			conditionsTitle: 'Condições',
-			conditions: [
-				'Um teste escrito para cada bug corrigido.',
-				'Nenhum dev passa à frente de um teste a vermelho.',
-				'Acesso de leitura ao repositório.',
-				'Uma pessoa técnica que responde em 48 h.',
-			],
-			exclusionsTitle: 'Exclusões',
-			exclusions: ['Falhas do fornecedor cloud.', 'Alterações que não passaram pela pipeline.'],
-			number: '99 %',
-			belowNumber: 'do tempo, em cada mês',
-			inService: 'com serviço',
-			outOfService: 'no máximo 1 % sem serviço',
-			note: 'Nos 3 meses seguintes à entrega.',
-		},
-		/** The cloud provider chart. The names of the scenarios and criteria are #54's; the facts
-		 * behind each note are in src/config/cloud-providers.ts, with their sources. */
-		cloudChart: {
-			label: 'Fornecedores cloud',
-			title: 'Que cloud para que empresa?',
-			intro:
-				'Escolhe um cenário. Cada barra mostra que critérios desse cenário o fornecedor cumpre. É uma orientação para a Conversa, não uma classificação: não há um fornecedor ideal para todas as empresas.',
-			/** The name of the group of scenarios, for screen readers. */
+		chart: {
+			title: 'Compara os fornecedores de acordo com as tuas prioridades',
+			instruction:
+				'Escolhe um cenário para ver os pontos fortes, os limites e as fontes oficiais de cada fornecedor.',
 			scenariosLabel: 'Cenário de empresa',
 			scenarios: {
 				beforeLaunch: {
@@ -356,10 +114,10 @@ export const pt = {
 					description: 'Picos fortes e períodos calmos.',
 				},
 				costControl: {
-					name: 'Custos sob controlo',
+					name: 'Controlo dos custos',
 					description: 'Ver e controlar os custos de infraestrutura à medida que o SaaS cresce.',
 				},
-			} satisfies Record<ScenarioId, { name: string; description: string }>,
+			},
 			criteria: {
 				kubernetes: 'Kubernetes gerido',
 				containers: 'Contentores com escala automática',
@@ -368,35 +126,31 @@ export const pt = {
 				secNumCloud: 'Oferta SecNumCloud',
 				euRegions: 'Regiões na UE',
 				costs: 'Visibilidade e controlo dos custos',
-			} satisfies Record<CriterionId, string>,
-			/** Before a criterion's weight in the scenario: "peso 3". */
+			},
 			weight: 'peso',
-			/** Marks the criterion that is Julien's opinion, not a fact. */
 			opinion: 'opinião do Julien',
 			ratings: {
 				consider: 'A considerar',
 				possible: 'Possível',
 				unsuitable: 'Pouco indicado',
-			} satisfies Record<Rating, string>,
-			/** A provider's value on a criterion: 1, ½ or 0. */
+			},
 			values: { yes: 'Sim', partly: 'Em parte', no: 'Não' },
 			hint: 'Clica numa barra para ver os factos.',
-			/** After a label, before what it introduces: French puts a space before it. */
 			colon: ':',
-			/** Before the date each source was read. */
 			read: 'lida a',
 			source: 'Fonte',
 			sources: 'Fontes',
-			/** The note on outbound traffic, in the cost criterion. */
 			outboundTraffic: 'Tráfego de saída',
+			legend:
+				'Os resultados são pontos de referência para preparar uma decisão, não uma classificação universal. Os critérios e a sua importância podem variar conforme o projeto. Os dados têm data e as avaliações de adequação são indicativas.',
 			footnote:
 				'Os factos vêm das páginas oficiais dos fornecedores e da ANSSI. Os pesos de cada cenário e o critério «Visibilidade e controlo dos custos» são opinião do Julien.',
-			/** What each fact says, in words. No legal claims (#54). */
+			verified: 'Factos verificados a',
 			notes: {
 				aws: {
 					paas: 'O App Runner fechou a novos clientes a 30/04/2026.',
 					europeanHeadquarters:
-						'Sede em Seattle, EUA. Na Europa, anuncia a AWS European Sovereign Cloud, com uma região na Alemanha.',
+						'Sede em Seattle, EUA. Na Europa, a AWS European Sovereign Cloud está disponível desde janeiro de 2026, com uma região na Alemanha.',
 					secNumCloud: 'Não está no catálogo SecNumCloud da ANSSI.',
 					euRegions: '6 regiões na UE.',
 					costs:
@@ -446,8 +200,7 @@ export const pt = {
 					costs:
 						'Custos por projeto e por produto. Etiquetas e previsão não encontradas. Os alertas só avisam.',
 				},
-			} satisfies Record<ProviderId, Partial<Record<CriterionId, string>>>,
-			/** Outbound traffic to the internet, from Europe. */
+			},
 			outbound: {
 				aws: 'pago depois de 100 GB/mês.',
 				googleCloud: 'pago desde o primeiro GB (Premium Tier).',
@@ -455,51 +208,458 @@ export const pt = {
 				azure: 'pago depois de 100 GB/mês.',
 				ovhcloud: 'incluído nas instâncias.',
 				scaleway: 'incluído nas instâncias.',
-			} satisfies Record<ProviderId, string>,
+			},
+		},
+	},
+	ecology: {
+		link: 'Ecologia',
+		home: {
+			title: 'Uma cloud mais eficiente é também um digital mais responsável.',
+			text: 'A escolha do centro de dados, a arquitetura e a qualidade do código influenciam o consumo de recursos. Compara as soluções, descobre os dados disponíveis e percebe como reduzir as despesas desnecessárias e a pegada da tua aplicação.',
+			link: 'Explorar o impacto ambiental',
+		},
+		page: {
+			title: 'Ecologia e infraestrutura',
+			description:
+				'Estima a energia e as emissões de uma carga conforme o país onde corre, com o cálculo completo, o método, as fontes e os limites.',
+			heading: 'As escolhas de infraestrutura também têm consequências ambientais.',
+			intro:
+				'Onde a aplicação corre, quanto tempo corre e com que eficiência mudam a energia que consome e as emissões da eletricidade que usa. Aqui estimas uma carga, conforme o país onde corre, com o método e as fontes à vista.',
+			legend: {
+				label: 'Como ler os dados desta página',
+				published: 'valor de uma base de dados ou de um estudo públicos, com ano e fonte',
+				assumption: 'pressuposto do cálculo, que podes mudar',
+				calculated: 'resultado dos dois anteriores',
+			},
+		},
+		badges: { published: 'Publicado', assumption: 'Hipótese', calculated: 'Calculado' },
+		estimator: {
+			label: 'Estimar uma carga',
+			title: 'A mesma aplicação, em sítios diferentes.',
+			intro:
+				'Escolhe o país, a carga e a eficiência do centro de dados. O cálculo segue o método aberto do Cloud Carbon Footprint: energia dos processadores × eficiência do centro de dados × intensidade carbónica da eletricidade.',
+			fields: {
+				country: 'País onde corre a infraestrutura',
+				vcpu: 'Processadores virtuais (vCPU)',
+				utilisation: 'Utilização média',
+				hoursPerDay: 'Horas por dia',
+				pue: 'Eficiência do centro de dados (PUE)',
+			},
+			hints: {
+				utilisation: '50 % é o valor do CCF quando não se conhece a utilização',
+				pue: '1,52 é a média do setor em 2026 (Uptime Institute); o fornecedor pode indicar o do centro que usas',
+			},
+			result: 'Resultado',
+			calculation: 'O cálculo',
+			comparison: 'A mesma carga em cada país',
+			units: {
+				vcpu: 'vCPU',
+				wattsPerVcpu: 'W por vCPU',
+				perDay: 'por dia',
+				daysPerMonth: 'dias por mês',
+				kwhPerMonth: 'kWh por mês',
+				kgPerMonth: 'kg CO2e por mês',
+			},
+			wattsSource: 'Cloud Carbon Footprint, processador desconhecido',
+			lifeCycle: 'ciclo de vida',
+			locationBased: 'location-based',
+		},
+		method: {
+			label: 'Como se calcula',
+			title: 'Um só método, explicado.',
+			cards: [
+				{
+					title: 'Location-based',
+					text: 'Usa a média anual da eletricidade produzida no país. Não conta contratos de energia renovável: isso seria o método market-based, que aqui não aparece porque precisa de dados contratuais que não temos.',
+				},
+				{
+					title: 'Ciclo de vida',
+					text: 'A intensidade da Ember inclui as emissões a montante (construção das centrais, extração e transporte do combustível). Por isso é mais alta do que contar só as emissões diretas da queima. Os dois tipos nunca se misturam nesta página.',
+				},
+				{
+					title: 'Só os processadores',
+					text: 'O estimador conta a energia dos vCPU e a eficiência do centro de dados. Memória, armazenamento, rede e fabrico dos servidores ficam de fora, por isso o valor real é maior.',
+				},
+			],
+		},
+		levers: {
+			label: 'O que a infraestrutura pode mudar',
+			title: 'Mais eficiência, mais visibilidade.',
+			cards: [
+				{
+					title: 'Ajustar os recursos à carga',
+					text: 'Com a infraestrutura escalável (bloco 3), os recursos acompanham a carga da aplicação.',
+				},
+				{
+					title: 'Ver o que se consome',
+					text: 'A observabilidade (bloco 4) dá visibilidade sobre a utilização dos recursos e os custos.',
+				},
+				{
+					title: 'Escolher com informação',
+					text: 'A intensidade carbónica da eletricidade muda de país para país, e o estimador mostra quanto.',
+				},
+				{
+					title: 'Alojamento com menor impacto ambiental',
+					text: 'Quando as necessidades e o orçamento o permitem, é uma das opções que proponho.',
+				},
+			],
+		},
+		sources: {
+			title: 'Fontes e limites',
+			names: {
+				ember: 'Ember, produção de eletricidade anual por país (intensidade carbónica, 2025)',
+				cloudCarbonFootprint: 'Cloud Carbon Footprint, metodologia',
+				uptimeInstitute: 'Uptime Institute, PUE médio do setor (inquérito de 2026)',
+				research: 'Pesquisa própria sobre os dados ambientais dos fornecedores cloud (16/10/2026)',
+			},
+			limits: [
+				'Estimativa ilustrativa, não uma medição da tua infraestrutura.',
+				'Os watts por vCPU são os do Cloud Carbon Footprint para um processador desconhecido; o servidor real pode consumir mais ou menos.',
+				'A intensidade é uma média anual do país; a hora do dia muda o valor real.',
+				'O PUE de 1,52 é a média por centro de dados; ponderada pela capacidade, é 1,36. Os centros grandes, como os da cloud, costumam ter valores mais baixos.',
+			],
+		},
+		back: 'Voltar à página principal',
+	},
+	sovereignty: {
+		link: 'Soberania dos dados',
+		description:
+			'Alojar uma aplicação na Europa não basta para perceber por onde circulam os dados. A soberania constrói-se com escolhas técnicas, contratuais e organizacionais.',
+		title: 'Os teus dados estão mesmo sob o teu controlo?',
+		intro:
+			'Alojar uma aplicação na Europa não basta, por si só, para perceber por onde circulam os dados nem que prestadores lhes podem aceder. A soberania constrói-se com escolhas técnicas, contratuais e organizacionais.',
+		sections: [
+			{
+				title: 'Alojamento europeu: um primeiro passo, não uma resposta completa.',
+				text: 'A localização dos servidores conta, mas também é preciso olhar para a empresa que fornece o serviço, os subcontratantes, as cópias de segurança, a supervisão, os acessos de administração e os serviços externos usados pela aplicação.',
+			},
+			{
+				title: 'Os dados não ficam forçosamente onde corre o teu servidor.',
+				text: 'Uma ferramenta de análise, um sistema de logs, uma CDN, um serviço de autenticação, uma solução de e-mail ou uma API de inteligência artificial pode tratar alguns dados fora do teu alojamento principal. Mapear estes fluxos permite detetar as transferências e as dependências que facilmente se esquecem.',
+			},
+			{
+				title: 'Fornecedor francês, europeu ou internacional: que diferenças?',
+				text: 'A boa escolha depende das tuas obrigações, das funcionalidades necessárias e das garantias contratuais oferecidas. Um fornecedor europeu não oferece automaticamente todas as garantias esperadas, e uma região europeia de um fornecedor internacional não resolve, por si só, todas as questões jurídicas.',
+			},
+			{
+				title: 'Regulamentação, contratos e proteções técnicas.',
+				text: 'RGPD, transferências internacionais, regras de jurisdição, cifragem e controlo dos acessos devem ser analisados em conjunto. O CLOUD Act norte-americano pode contar na análise de alguns fornecedores, mas a sua existência não significa que todos os dados alojados nessas empresas sejam livremente acessíveis. As exigências setoriais, como o SecNumCloud quando se aplicam, devem ser verificadas nos referenciais oficiais.',
+			},
+			{
+				title: 'Uma arquitetura adaptada às tuas restrições de soberania.',
+				text: 'Ajudo-te a identificar as dependências técnicas, a comparar as opções de alojamento e a integrar na arquitetura as restrições de localização, de segurança e de reversibilidade. Para as conclusões jurídicas e regulamentares, a análise deve ser validada pelos especialistas competentes.',
+			},
+		],
+		cta: 'Vamos falar da soberania da tua infraestrutura',
+		switzerland: {
+			text: 'A Suíça não pertence à União Europeia. A Comissão Europeia reconhece, no entanto, que assegura um nível de proteção adequado dos dados pessoais: podem ser transferidos dados pessoais da UE para lá sem garantias adicionais. Isto não substitui o resto da análise: contrato, subcontratantes, acessos.',
+			sources: {
+				euMembers: 'União Europeia, os 27 países membros',
+				notMember: 'Confederação Suíça (DFAE), acordos bilaterais',
+				adequacy: 'Comissão Europeia, decisões de adequação',
+				decision: 'Decisão 2000/518/CE',
+			},
+		},
+		cloudAct: {
+			text: 'O CLOUD Act e o Patriot Act não são sinónimos. O Patriot Act é uma lei antiterrorista norte-americana de 2001. O CLOUD Act, adotado em 2018, prevê que um fornecedor sujeito ao direito norte-americano deve comunicar, mediante pedido legal das autoridades norte-americanas, os dados que tem em sua posse ou sob o seu controlo, estejam guardados nos Estados Unidos ou noutro país. Uma empresa não norte-americana também pode estar sujeita, se tiver ligações suficientes aos Estados Unidos: isso avalia-se caso a caso.',
+			sources: {
+				statute: '18 U.S.C. § 2713 (CLOUD Act)',
+				whitePaper: 'Departamento de Justiça dos Estados Unidos, livro branco sobre o CLOUD Act',
+				patriotAct: 'Public Law 107-56 (USA PATRIOT Act)',
+			},
+		},
+		sources: 'Fontes',
+		table: {
+			caption:
+				'O que dizem as fontes oficiais sobre a cloud pública padrão de alguns fornecedores, por ordem alfabética. Não é uma classificação: verifica cada ponto para a tua oferta e o teu contrato.',
+			columns: {
+				provider: 'Fornecedor',
+				headquarters: 'País da sede',
+				zones: 'Zonas de alojamento',
+				contract: 'Jurisdições',
+				backupsAndLogs: 'Cópias de segurança e logs',
+				certifications: 'Certificações da oferta',
+				references: 'Referências oficiais',
+			},
+			colon: ':',
+			notDisclosed: 'não divulgado',
+			group: 'Grupo',
+			eu: 'UE',
+			outsideEu: 'Fora da UE',
+			elsewhere: 'Também fora da Europa',
+			laws: {
+				CH: 'direito suíço',
+				DE: 'direito alemão',
+				FR: 'direito francês',
+				IE: 'direito irlandês',
+				LU: 'direito luxemburguês',
+				'US-CA': 'direito da Califórnia (Estados Unidos)',
+			},
+			contract: 'Contrato',
+			parent: 'Sociedade-mãe',
+			backups: 'Cópias de segurança',
+			logs: 'Logs',
+			placements: {
+				chosenRegion: 'na região escolhida (noutro sítio só se o configurares)',
+				chosenCountry: 'no país escolhido',
+				inEu: 'na UE se a localização escolhida lá estiver, por vezes noutro local',
+				otherRegionByDefault: 'por omissão, também noutra região (configurável)',
+				partlyElsewhere: 'uma parte pode estar fora da localização escolhida',
+			},
+			read: 'Consultadas a',
+			references: {
+				headquarters: 'Sede',
+				zones: 'Zonas',
+				contract: 'Contrato',
+				parent: 'Sociedade-mãe',
+				backups: 'Cópias de segurança',
+				logs: 'Logs',
+				certifications: 'Certificações',
+			},
+		},
+	},
+	availability: {
+		link: 'Disponibilidade e condições',
+		description:
+			'Compara os níveis de disponibilidade, calcula o teu tempo de indisponibilidade teórico e consulta as condições da garantia de conformidade.',
+		heading: 'Que nível de disponibilidade para o teu SaaS?',
+		intro:
+			'Um objetivo de disponibilidade escolhe-se de acordo com o impacto real de uma interrupção no teu negócio. Quanto mais alto for o objetivo, mais exigentes e dispendiosas se podem tornar a arquitetura, a redundância e a operação. Compara os níveis antes de decidir.',
+		calculator: {
+			title: 'Calcula o teu tempo de indisponibilidade teórico',
+			text: 'Escolhe um objetivo de disponibilidade e descobre o que representa em minutos por mês e em horas por ano. Estes valores são indicativos: um objetivo de arquitetura não garante, por si só, a disponibilidade de toda a aplicação.',
+			objective: 'Objetivo de disponibilidade',
+			month: 'Duração do mês',
+			days: 'dias',
+			result: 'Indisponibilidade máxima teórica',
+			perMonth: 'Por mês',
+			perYear: 'Equivalente anual',
+			about: 'cerca de',
+			formula:
+				'Fórmula, para uma medição 24 h/24: (1 − objetivo / 100) × duração do período em segundos, no mês escolhido ou num ano de 365 dias.',
+		},
+		levels: {
+			essential: {
+				title: 'Disponibilidade essencial',
+				text: 'Para uma aplicação que pode tolerar interrupções ocasionais. Uma infraestrutura simples pode bastar, consoante as dependências e os riscos aceites.',
+			},
+			reinforced: {
+				title: 'Disponibilidade reforçada',
+				text: 'Para reduzir as interrupções e proteger melhor os serviços críticos. A monitorização e a limitação dos pontos únicos de falha passam a ser prioritárias.',
+			},
+			high: {
+				title: 'Alta disponibilidade',
+				text: 'Para serviços em que uma interrupção prolongada tem um impacto importante. Uma redundância adequada, mecanismos de comutação e testes de recuperação podem ser necessários.',
+			},
+			veryHigh: {
+				title: 'Disponibilidade muito elevada',
+				text: 'Para utilizações particularmente sensíveis a interrupções. A arquitetura e os procedimentos de operação devem ser estudados caso a caso.',
+			},
+		},
+		architecture: {
+			title: 'O que o objetivo exige da arquitetura',
+			intro:
+				'Quanto mais alto for o objetivo, mais a arquitetura tem de limitar os pontos únicos de falha e recuperar depressa de uma avaria. As escolhas abaixo podem contribuir para isso, consoante o nível escolhido, mas nenhuma topologia garante, por si só, uma percentagem de disponibilidade.',
+			cards: [
+				{
+					title: 'Redundância',
+					text: 'Várias instâncias da aplicação, para que uma instância avariada não pare todo o serviço. Nos níveis menos exigentes, uma infraestrutura simples pode bastar.',
+				},
+				{
+					title: 'Backups',
+					text: 'Backups regulares, com restauros testados, seja qual for o nível. Permitem recomeçar depois de um incidente, sem impedir a interrupção.',
+				},
+				{
+					title: 'Base de dados',
+					text: 'Muitas vezes, o ponto único de falha mais delicado. Quando o objetivo sobe, uma réplica pronta a assumir o lugar pode tornar-se necessária.',
+				},
+				{
+					title: 'Multi-AZ',
+					text: 'Distribuir os recursos por várias zonas de disponibilidade da mesma região, para que a avaria de uma zona não pare todo o serviço.',
+				},
+				{
+					title: 'Comutação (failover)',
+					text: 'Mecanismos que redirecionam o tráfego para um recurso saudável, e testes de recuperação para verificar que funcionam.',
+				},
+				{
+					title: 'Monitorização',
+					text: 'Alertas para detetar uma interrupção e reagir depressa. Passa a ser prioritária a partir de 99,9 %.',
+				},
+			],
+		},
+		commitment: {
+			title: 'Um objetivo de disponibilidade não é um serviço de piquete.',
+			text: 'Concebo, configuro e verifico a infraestrutura para responder ao nível de disponibilidade escolhido na proposta de intervenção. O fornecedor cloud continua responsável pelos seus próprios compromissos de serviço. Depois da entrega, a monitorização diária e a resposta a incidentes cabem à organização prevista com a tua equipa ou com o teu prestador de operação. Não está incluída uma intervenção humana 24 h/24.',
+		},
+		guarantee: {
+			title: 'Três meses de garantia de conformidade técnica.',
+			text: 'Quando os quatro blocos são realizados no âmbito de uma prestação completa, os defeitos de conceção ou de configuração da infraestrutura que me sejam diretamente imputáveis podem ser comunicados durante os três meses seguintes à entrega. A sua análise e correção são asseguradas de acordo com o âmbito e as modalidades definidos no contrato. Esta garantia não cobre automaticamente os bugs da aplicação, as avarias externas nem as alterações não validadas.',
+		},
+		conditions: {
+			title: 'Condições e limites da garantia de conformidade',
+			intro:
+				'As condições contratuais da proposta de intervenção fazem fé. Os princípios abaixo explicam o funcionamento da garantia e não substituem o contrato assinado.',
+			items: [
+				{
+					title: 'O que está coberto',
+					text: 'Os defeitos de conceção, de parametrização ou de implementação da infraestrutura diretamente ligados aos trabalhos entregues e incluídos no âmbito contratual, comunicados nos três meses seguintes à entrega da prestação completa que cobre os quatro blocos.',
+				},
+				{
+					title: 'O que não está coberto',
+					text: 'As indisponibilidades próprias dos fornecedores cloud ou de serviços de terceiros, exceto quando revelam uma falha de conceção ou de configuração que caiba na minha prestação; os bugs e as evoluções da aplicação fora do âmbito corrigido; as alterações de código, de configuração ou de infraestrutura feitas sem validação e que estejam na origem do mau funcionamento; a utilização fora dos pressupostos de dimensionamento acordados; o incumprimento dos pré-requisitos ou das recomendações críticas documentados; os incidentes devidos a acessos, autorizações ou informações indisponíveis do lado do cliente.',
+				},
+				{
+					title: 'Responsabilidades',
+					text: 'O cliente mantém a responsabilidade pela operação corrente, pela validação das alterações e pela organização da resposta a incidentes, salvo prestação adicional explicitamente prevista. A garantia não inclui serviço de piquete 24 h/24, prazo de reação imediato nem compensação financeira automática.',
+				},
+				{
+					title: 'Como comunicar um defeito',
+					text: 'Durante o período coberto, o cliente envia uma descrição do problema e as informações úteis para o diagnóstico. Quando a não conformidade entra no âmbito da prestação, as modalidades de correção são acordadas de acordo com a sua natureza e o seu impacto.',
+				},
+			],
+		},
+		button: 'Vamos definir o objetivo de disponibilidade adequado ao teu projeto',
+	},
+	homePage: {
+		description: `${promise} Automatizo a qualidade do código, reduzo a dívida técnica e construo uma infraestrutura capaz de acompanhar o teu crescimento.`,
+		hero: {
+			support:
+				'Automatizo a qualidade do código, reduzo a dívida técnica e construo uma infraestrutura capaz de acompanhar o teu crescimento. Os teus programadores passam menos tempo a corrigir problemas, e mais tempo a fazer evoluir o teu produto.',
+			note: '45 min por Google Meet. Gratuita e sem compromisso.',
+		},
+		whoItsFor: {
+			title: 'Para quem é?',
+			intro:
+				'Desenvolves um SaaS ou uma aplicação web, sozinho ou com uma equipa? Adapto-me à tua fase de desenvolvimento, à tua organização e às tuas restrições técnicas.',
+			situations: [
+				'Estás a preparar um lançamento e queres começar com bases sólidas.',
+				'O teu produto já está online e os bugs ou a manutenção atrasam as novidades.',
+				'Prevês um aumento de carga e queres evitar surpresas desagradáveis.',
+			],
+			button: 'Vamos falar do teu projeto',
+		},
+		todayAndAfter: {
+			title: 'Hoje… e depois.',
+			todayTitle: 'Hoje',
+			today: [
+				'Uma nova funcionalidade parte outra, e os clientes descobrem as regressões.',
+				'Os teus programadores passam demasiado tempo com bugs, correções e suporte.',
+				'O código obsoleto acumula-se, as dependências envelhecem e o desempenho degrada-se.',
+				'Os testes e os deploys ainda dependem de verificações manuais.',
+				'Falta-te visibilidade sobre o estado real da tua aplicação e sobre a sua capacidade de suportar mais carga.',
+			],
+			afterTitle: 'Depois',
+			after: [
+				'As regressões são detetadas mais cedo graças às verificações automáticas.',
+				'As correções e as otimizações prioritárias tornam o teu código mais fácil de manter.',
+				'Uma parte da manutenção repetitiva é automatizada, para libertar tempo de desenvolvimento.',
+				'Os deploys são mais previsíveis e a infraestrutura adapta-se à carga prevista.',
+				'Tens indicadores e alertas para detetar os incidentes o mais cedo possível.',
+			],
+		},
+		services: {
+			label: 'Serviços',
+			title: 'Quatro alavancas para tornar o teu SaaS fiável e fazê-lo crescer.',
+			intro:
+				'Da qualidade do código à monitorização em produção, intervenho nos pontos que travam a tua equipa. Depois de um diagnóstico, definimos juntos o âmbito, as prioridades e a ordem das intervenções. Podes confiar-me uma necessidade específica ou um projeto completo.',
+			blockLabel: 'Bloco',
+			toolsLabel: 'Áreas e ferramentas',
+			blocks,
+			diagrams: {
+				pipeline: {
+					description: 'Uma alteração com falha de segurança fica bloqueada antes da produção.',
+					commit: 'commit',
+					tests: 'testes',
+					security: 'segurança',
+					production: 'produção',
+					blocked: 'bloqueado',
+				},
+				cleanup: {
+					description:
+						'Um bug e código duplicado desaparecem: o código fica mais curto e o tempo de resposta desce.',
+					bug: 'bug',
+					duplicate: '×2',
+					responseTime: 'tempo de resposta',
+				},
+				scaling: {
+					description: 'As instâncias aumentam com a carga e voltam a diminuir.',
+					load: 'carga',
+					instances: 'instâncias',
+				},
+				monitoring: {
+					description: 'Uma anomalia no sinal gera um alerta imediato.',
+					dashboard: 'painel de saúde',
+					alert: 'alerta',
+				},
+			},
+		},
+		steps: {
+			title: 'Cinco etapas para avançar com tranquilidade.',
+			steps: [
+				{
+					name: 'Conversa inicial',
+					sentence:
+						'45 minutos por Google Meet para perceber o teu produto, as tuas prioridades e as tuas restrições. Gratuita, sem compromisso.',
+				},
+				{
+					name: 'Diagnóstico',
+					sentence:
+						'Um primeiro levantamento gratuito do teu código e, se for preciso, da tua infraestrutura. Resposta em 3 a 5 dias úteis depois de receber os acessos necessários.',
+				},
+				{
+					name: 'Proposta de intervenção',
+					sentence:
+						'Um âmbito preciso, prioridades, um calendário e um preço acordados antes de começar.',
+				},
+				{
+					name: 'Implementação',
+					sentence:
+						'Trabalho com a tua equipa, limitando as perturbações no desenvolvimento. Um ponto de situação regular, em princípio todas as semanas, permite acompanhar as ações e as decisões.',
+				},
+				{
+					name: 'Entrega e transferência',
+					sentence:
+						'Documentação, verificações finais e transferência de conhecimento para que a tua equipa fique autónoma.',
+				},
+			],
+		},
+		availability: {
+			label: 'Disponibilidade e fiabilidade',
+			title: 'Uma infraestrutura fiável, concebida para durar.',
+			text: 'Consoante as necessidades do teu SaaS, concebo e testo uma infraestrutura que visa um objetivo de disponibilidade definido em conjunto: 99,5 %, 99,9 %, 99,95 % ou mais, quando a arquitetura o justifica. O nível certo depende do teu negócio, dos serviços utilizados e do teu orçamento.',
+			guarantee:
+				'Para uma intervenção completa que cubra os quatro blocos, proponho uma garantia de conformidade técnica de três meses após a entrega: se for detetado um defeito de conceção ou de configuração que caiba na minha intervenção, asseguro a sua correção nas condições acordadas no contrato. Não se trata de um serviço de piquete 24 h/24 nem de uma garantia de ausência de avarias da aplicação.',
+			link: 'Perceber os níveis de disponibilidade e consultar as condições',
 		},
 		about: {
-			title: 'Quem é o Julien',
+			title: 'Quem é o Julien?',
 			wayOfWorking:
-				'Trabalho à distância, em português, francês e inglês. Uso tecnologias standard, sem lock-in, e documento tudo para a tua equipa ficar autónoma.',
+				'Trabalho no teu projeto em francês, inglês ou português. Uso tecnologias modernas e comprovadas, limito tanto quanto possível a dependência de um fornecedor e documento o que entrego para que a tua equipa continue autónoma. As minhas soluções adaptam-se às tuas restrições técnicas e de negócio, e não o contrário.',
 			linkedin: 'Ver o meu perfil no LinkedIn',
 		},
-		/** The Testimonials. Their texts, authors and approvals are in src/config/testimonials.ts. */
 		testimonials: {
 			title: 'O que dizem os clientes',
-			/** What screen readers call the carousel and each Testimonial in it. */
 			carousel: 'carrossel',
 			slide: 'testemunho',
-			/** Between the two numbers of «1 de 3». */
 			of: 'de',
 			previous: 'Testemunho anterior',
 			next: 'Testemunho seguinte',
-			/** The strip of Testimonials, which slides sideways. */
 			strip: 'Testemunhos: desliza para ver os outros',
 			translated: 'Traduzido do francês',
 			malt: 'Ver no Malt',
 		},
-		/** The Questions section: its general questions and the Audiences come from `questions`. */
-		questions: {
-			label: 'Perguntas',
-			title: 'O essencial, antes da Conversa.',
-			byAudience: 'Perguntas para o teu perfil',
-		},
 		finalCta: {
-			title: 'Nunca perdes a infraestrutura.',
-			text: 'Mesmo que a tua equipa não avance logo com os testes, ficas com uma pipeline limpa, documentada e com os standards do mercado, pronta para quando decidires.',
-			conversation: 'Conversa de 45 min por Google Meet, gratuita e sem compromisso.',
+			title: 'O teu SaaS merece mais do que correções de emergência.',
+			text: 'Já tens um projeto em mente, ou simplesmente perguntas sobre o teu código, a tua infraestrutura ou o teu próximo deploy? Vamos falar disso. Uma primeira conversa chega para identificar as prioridades e ver como te posso ajudar.',
+			button: 'Marcar uma conversa gratuita',
+			conversation: '45 minutos por Google Meet. Sem compromisso.',
 			bookingNotice:
 				'A página de marcação está em francês, mas a Conversa pode ser em inglês ou em português.',
 		},
 	},
-	/** «Os teus desafios»: the questions by audience, on their page, in the header submenu and in the home
-	 * page's Questions section. The 23 answers are the ones Julien approved (#54), word for word; each
-	 * audience is typed with its number of questions, so a language with one missing fails `astro check`. */
 	questions: {
-		/** The name of the page and of the header menu that leads to it. */
 		menu: 'Os teus desafios',
 		all: 'Ver todas as perguntas',
-		/** After a number of questions: «7 perguntas». The language's plural rules pick the form. */
 		count: { one: 'pergunta', other: 'perguntas' },
 		audiences: {
 			general: {
@@ -510,29 +670,29 @@ export const pt = {
 					{
 						question: 'O que fazes, exatamente?',
 						answer:
-							'Entrego a infraestrutura DevOps de que um SaaS precisa para crescer, em quatro blocos: pipeline de CI e auditoria de código, contentorização, infraestrutura escalável e observabilidade. Contratas os que quiseres, em qualquer combinação.',
+							'Intervenho em quatro áreas: auditoria e CI/CD, limpeza e otimização do código, infraestrutura escalável e observabilidade. O objetivo é reduzir os problemas recorrentes e permitir que a aplicação cresça sobre bases mais sólidas. O âmbito de cada missão é definido depois do diagnóstico.',
 					},
 					{
 						question: 'Quanto tempo demora?',
 						answer:
-							'No máximo 30 dias, para qualquer combinação de blocos, a contar do início da Implementação. O prazo exato vem na Proposta de intervenção.',
+							'Depende do estado do código, dos serviços existentes e dos trabalhos prioritários. Depois do diagnóstico, proponho um calendário realista, com etapas e entregáveis precisos. Não há promessa artificial de fazer tudo em 30 dias.',
 					},
 					{
 						question: 'Quanto custa?',
 						answer:
-							'Um preço fixo, que dou na Proposta de intervenção, depois do Diagnóstico gratuito.',
+							'O preço é definido a partir do âmbito acordado depois de um primeiro diagnóstico gratuito. A proposta distingue os meus honorários dos eventuais custos recorrentes de cloud e de ferramentas.',
 					},
 					{
 						question: 'Como começa?',
 						answer:
-							'Com uma Conversa de 45 min por Google Meet. Depois vêm o Diagnóstico gratuito, a Proposta de intervenção, a Implementação e a Entrega e transferência.',
+							'Começamos com uma conversa gratuita de 45 minutos. Seguem-se o diagnóstico, a proposta de intervenção, a implementação com pontos de situação regulares e, depois, a entrega e a transferência para a tua equipa.',
 					},
 					{
-						question: 'Posso contratar só alguns blocos?',
+						question: 'Posso escolher só alguns blocos?',
 						answer:
-							'Sim, em qualquer combinação. O bloco 3 precisa de uma aplicação contentorizada, pelo bloco 2 ou pela tua equipa.',
+							'Sim, posso intervir numa necessidade específica. A ordem e as dependências técnicas são definidas depois do diagnóstico. A garantia de conformidade técnica de três meses apresentada neste site diz respeito apenas às prestações completas que cobrem os quatro blocos.',
 					},
-				] satisfies [Question, Question, Question, Question, Question],
+				],
 			},
 			cto: {
 				name: 'Para CTO',
@@ -543,38 +703,39 @@ export const pt = {
 					{
 						question: 'Quem escreve os testes?',
 						answer:
-							'A tua equipa. Eu não escrevo testes: entrego o sistema que os corre, os mede e bloqueia o que está a vermelho.',
+							'Implemento e melhoro a automatização das verificações. Quando são precisos testes ou correções de código, decidimos juntos quem os faz e em que âmbito. No bloco de otimização, posso escrever ou adaptar os testes ligados às alterações de que me encarrego.',
 					},
 					{
-						question: 'É preciso parar o desenvolvimento?',
+						question: 'É preciso parar o desenvolvimento durante a intervenção?',
 						answer:
-							'Não. No bloco 1 não há migração nem risco para a produção. Nos blocos 2 e 3 o trabalho corre em paralelo (ramos, ambientes de teste, infraestrutura separada). Algumas alterações pedem coordenação com os devs, e no fim da migração pode ser preciso um curto período sem alterações ao código, combinado contigo.',
+							'Em princípio, não. O trabalho é organizado com ramos, ambientes adequados e validações progressivas. Algumas migrações ou alterações críticas podem exigir uma janela de alterações planeada com a equipa.',
 					},
 					{
-						question: 'Com que stack e clouds trabalhas?',
+						question: 'Com que stacks e que clouds trabalhas?',
 						answer:
-							'CI: GitHub Actions, GitLab CI, Azure DevOps e Google Cloud Build. Cloud: AWS, Google Cloud, Microsoft Azure, OVHcloud, Scaleway e Infomaniak. A escolha depende das necessidades e do orçamento, e pode incluir um alojamento com menor impacto ambiental.',
+							'Uso nomeadamente GitHub Actions, GitLab CI, Terraform, Docker, Kubernetes, Grafana e os serviços nativos das clouds. Trabalho com AWS, Google Cloud, Azure, Scaleway, OVHcloud e outros fornecedores, consoante o projeto. As ferramentas são escolhidas em função do contexto, não impostas à partida.',
 					},
 					{
 						question: 'De que acessos precisas?',
 						answer:
-							'No Diagnóstico, acesso de leitura ao repositório. À cloud (métricas e logs) só se o problema for de infraestrutura, desempenho, custos ou disponibilidade. Nunca passwords, chaves privadas nem permissões de administrador. Na Implementação, preciso de acesso de escrita ao repositório e de uma conta na tua cloud com as permissões necessárias para criar a infraestrutura dos blocos contratados. Retiras esses acessos na Entrega e transferência.',
+							'Para o diagnóstico, acessos de leitura ao código e, se necessário, às métricas e à configuração da cloud. Para a implementação, permissões adequadas às operações acordadas. Privilegio acessos nominativos, limitados ao estritamente necessário e revogáveis no fim da missão. Não é preciso partilhar palavras-passe nem chaves privadas.',
 					},
 					{
-						question: 'Como funciona a Garantia de disponibilidade?',
+						question: 'O que cobre a garantia de três meses?',
 						answer:
-							'Em 30 dias, entrego a infraestrutura. Nos 3 meses seguintes, ela está disponível pelo menos 99 % do tempo em cada mês. Se não estiver, continuo a trabalhar sem faturar até chegar lá. Aplica-se com os blocos 3 e 4, e pede um teste escrito para cada bug corrigido, nenhum dev a passar à frente de um teste a vermelho, acesso de leitura ao repositório e uma pessoa técnica que responde em 48 h.',
+							'Numa prestação completa que cubra os quatro blocos, diz respeito aos defeitos de conceção ou de configuração da infraestrutura que me sejam imputáveis, de acordo com as condições contratuais. O objetivo de disponibilidade é definido com o cliente. Não se trata de uma garantia de zero bugs na aplicação, nem de um serviço de piquete 24 h/24.',
 					},
 					{
-						question: 'Que ferramentas usas na observabilidade?',
-						answer: 'Ferramentas standard, como Grafana e Prometheus, ou as da tua cloud.',
+						question: 'Que ferramentas usas para a observabilidade?',
+						answer:
+							'Consoante o contexto, Grafana, Prometheus, soluções de logs e de tracing, ou as ferramentas de monitorização nativas do fornecedor de cloud. O objetivo é dispor de indicadores úteis e de alertas acionáveis, em vez de multiplicar os dashboards.',
 					},
 					{
 						question: 'Como trabalhamos juntos?',
 						answer:
-							'À distância, por Google Meet. Falo com o CTO e com os devs, sobretudo com o CTO.',
+							'Falo diretamente com as pessoas envolvidas: CTO, tech lead, programadores e responsável pelo projeto. Organizamos pontos de situação regulares, geralmente todas as semanas, e documentamos as decisões importantes.',
 					},
-				] satisfies [Question, Question, Question, Question, Question, Question, Question],
+				],
 			},
 			ceo: {
 				name: 'Para CEO',
@@ -582,35 +743,36 @@ export const pt = {
 				description: 'Riscos, custos, continuidade, previsibilidade e impacto no negócio.',
 				questions: [
 					{
-						question: 'Quanto vai custar, e quando fico a saber?',
+						question: 'Quando fico a saber o orçamento da intervenção?',
 						answer:
-							'Um preço fixo, que dou na Proposta de intervenção. A Proposta vem depois do Diagnóstico gratuito, que demora 2 a 3 dias úteis a partir do momento em que tenho os acessos, ou 3 a 5 se incluir a cloud.',
+							'Depois do diagnóstico gratuito, recebes uma proposta que especifica os trabalhos, o calendário e o preço da minha intervenção. Os eventuais custos mensais dos fornecedores são apresentados à parte.',
 					},
 					{
-						question: 'E os custos da infraestrutura?',
+						question: 'Quanto vai custar a cloud depois?',
 						answer:
-							'Além do preço fixo, a infraestrutura e as ferramentas têm um custo mensal próprio, que pagas diretamente aos fornecedores, nas tuas contas. O serviço pressupõe um orçamento de 100 a 500 € por mês para estes custos.',
+							'O custo depende da arquitetura, do tráfego, dos dados, da região e do nível de disponibilidade pretendido. Apresento uma estimativa fundamentada antes das decisões estruturantes, com os pressupostos e as principais rubricas de despesa.',
 					},
 					{
-						question: 'Ficamos dependentes de ti?',
+						question: 'A minha empresa vai ficar dependente de ti?',
 						answer:
-							'Não. Uso só tecnologias standard e deixo tudo documentado. Mudas de prestador quando quiseres e nunca perdes a infraestrutura.',
+							'O meu objetivo é o contrário: privilegio tecnologias documentadas, uma infraestrutura descrita como código e uma transferência clara. As dependências próprias do fornecedor escolhido são explicadas desde a conceção.',
 					},
 					{
-						question: 'Que riscos há para a produção?',
+						question: 'Há algum risco para a produção?',
 						answer:
-							'O bloco 1 não toca na produção. Nos blocos 2 e 3, o objetivo é evitar paragens; se a migração mexer em bases de dados ou serviços críticos, pode haver uma paragem curta, marcada antes. Há sempre um plano para voltar à versão anterior.',
+							'Qualquer intervenção apresenta riscos, mas são avaliados antes da execução. Preparamos os testes, as cópias de segurança e, quando é pertinente, um plano para voltar atrás. As alterações sensíveis são coordenadas com a tua equipa.',
 					},
 					{
-						question: 'Que retorno posso esperar?',
+						question: 'Que retorno do investimento posso esperar?',
 						answer:
-							'Menos tempo a corrigir problemas. Mais tempo a desenvolver o produto. Ajudo equipas SaaS a automatizar testes e entregas, detetar regressões mais cedo e melhorar a fiabilidade da infraestrutura, para que possam crescer com mais confiança.',
+							'Menos tempo perdido com incidentes e tarefas repetitivas, um código mais fácil de manter e deploys mais fiáveis. Os ganhos exatos dependem da situação de partida; o diagnóstico serve também para identificar as melhorias de maior valor.',
 					},
 					{
-						question: 'Em que línguas e países trabalhas?',
-						answer: 'Com clientes de qualquer país, à distância, em português, francês ou inglês.',
+						question: 'Em que línguas trabalhas?',
+						answer:
+							'Posso intervir em francês, em inglês e em português, consoante as necessidades da equipa e do projeto.',
 					},
-				] satisfies [Question, Question, Question, Question, Question, Question],
+				],
 			},
 			team: {
 				name: 'Para a equipa técnica',
@@ -618,52 +780,47 @@ export const pt = {
 				description: 'Devs e tech leads que vão trabalhar com a pipeline e a nova infraestrutura.',
 				questions: [
 					{
-						question: 'O que muda no dia a dia da equipa?',
+						question: 'O que muda no dia a dia?',
 						answer:
-							'O objetivo é reduzir o tempo perdido em tarefas manuais e problemas recorrentes, facilitar a deteção de regressões e tornar as entregas mais fiáveis. A equipa ganha processos mais claros, maior visibilidade sobre a infraestrutura e mais tempo para se concentrar no desenvolvimento do produto. Os resultados dependem do contexto e do estado inicial de cada projeto.',
+							'Verificações automáticas mais úteis, menos tarefas manuais, melhor visibilidade sobre os problemas e um código progressivamente mais simples de manter. As alterações ao workflow são preparadas com a equipa, não impostas sem discussão.',
 					},
 					{
-						question: 'Quem mantém a pipeline depois?',
+						question: 'Quem mantém as pipelines depois de saíres?',
 						answer:
-							'A tua equipa. A documentação técnica e a transferência no fim deixam-vos autónomos.',
+							'A tua equipa fica com as ferramentas, as configurações e a documentação. Prevejo uma transferência para que o seu funcionamento seja compreendido e as evoluções possam ser feitas com autonomia.',
 					},
 					{
-						question: 'Com quem falas no dia a dia?',
+						question: 'Com quem comunicas durante a missão?',
 						answer:
-							'Com o CTO e com os devs, sobretudo com o CTO, por Google Meet. Não há ponto de situação regular.',
+							'Com os interlocutores técnicos e de negócio úteis ao projeto. Prevemos um ponto de acompanhamento regular, normalmente semanal, e contactos complementares quando são precisas decisões ou validações.',
 					},
 					{
-						question: 'Continuamos a programar durante a migração?',
+						question: 'Podemos continuar a desenvolver durante as alterações?',
 						answer:
-							'Sim. O trabalho corre em paralelo, em ramos, ambientes de teste e infraestrutura separada. No fim pode ser preciso um curto período sem alterações ao código, combinado convosco.',
+							'Sim, o objetivo é preservar o ritmo de desenvolvimento. As alterações são preparadas e testadas em paralelo, sempre que possível. Pode ser acordada uma janela de estabilização ou de migração para as alterações sensíveis.',
 					},
 					{
 						question: 'Que ferramentas vamos usar?',
 						answer:
-							'Bloco 1: SonarQube e Trivy. Bloco 2: Docker. Bloco 3: Kubernetes e Terraform. Bloco 4: Grafana e Prometheus, ou as ferramentas da vossa cloud.',
+							'Não há uma stack imposta. Consoante o projeto: pipelines de CI/CD, análise de código, ferramentas de refactoring e de desempenho, Docker, serviços de contentores geridos, Kubernetes, Terraform, Grafana, Prometheus ou equivalentes. Privilegio as ferramentas relevantes para a equipa e para o que já existe.',
 					},
-				] satisfies [Question, Question, Question, Question, Question],
+				],
 			},
-		} satisfies Record<AudienceId, Audience>,
+		},
 		page: {
 			description:
-				'Perguntas e respostas para CTO, CEO e equipas técnicas de SaaS: prazos, custos, acessos, riscos e ferramentas.',
-			title: 'Respostas para cada perfil.',
+				'Perguntas e respostas para CEO, CTO e programadores: o código, a infraestrutura, os custos e a nossa forma de trabalhar.',
+			title: 'Respostas concretas, de acordo com a tua função.',
 			intro:
-				'Escolhe o teu perfil ou pesquisa uma palavra. Se a tua pergunta não estiver aqui, faz-ma na Conversa.',
-			/** The name of the filter by audience, for screen readers. */
+				'És CEO, CTO, programador ou levas o projeto sozinho? Encontra as respostas às perguntas mais frequentes sobre o código, a infraestrutura, os custos e a nossa forma de trabalhar. E, se a tua pergunta não estiver aqui, vamos falar disso.',
 			filter: 'Filtrar por perfil',
-			/** The filter's first choice: every audience. */
 			everyone: 'Todas',
-			/** The name of the search field, for screen readers. */
 			search: 'Pesquisar nas perguntas',
 			searchPlaceholder: 'Pesquisar: testes, custos, acessos…',
 			noResults: 'Nenhuma pergunta com essas palavras.',
-			/** The name of the index of audiences, for screen readers. */
 			index: 'Perfis',
-			notFound: 'Não encontras a tua pergunta?',
+			notFound: 'Não encontras a tua resposta?',
+			notFoundText: 'Marca uma conversa gratuita e vamos falar do teu contexto.',
 		},
 	},
 };
-
-export type Dictionary = typeof pt;
