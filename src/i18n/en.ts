@@ -20,9 +20,9 @@ export const en: Dictionary = {
 	ecology: {
 		link: 'Ecology',
 		home: {
-			title: 'Infrastructure has a footprint too.',
-			text: 'Where the application runs, how long it runs and how efficiently all change its environmental impact. The ecology page lets you estimate a workload by the country it runs in, keeping published data, assumptions and calculations apart.',
-			link: 'Open the ecology page',
+			title: "Un cloud plus efficace, c'est aussi un numérique plus responsable.",
+			text: "Le choix du datacenter, l'architecture et la qualité du code influencent la consommation de ressources. Compare les solutions, découvre les données disponibles et comprends comment réduire les dépenses inutiles et l'empreinte de ton application.",
+			link: "Explorer l'impact environnemental",
 		},
 		page: {
 			title: 'Ecology and infrastructure',
@@ -524,9 +524,9 @@ export const en: Dictionary = {
 			},
 		},
 		about: {
-			title: 'Who is Julien',
+			title: 'Qui est Julien ?',
 			wayOfWorking:
-				'I work remotely, in Portuguese, French and English. I use standard technologies, with no lock-in, and document everything so your team can run on its own.',
+				"J'interviens sur ton projet en français, en anglais ou en portugais. J'utilise des technologies modernes et éprouvées, je limite autant que possible la dépendance à un fournisseur et je documente ce que je livre pour que ton équipe reste autonome. Mes solutions s'adaptent à tes contraintes techniques et métier, pas l'inverse.",
 			linkedin: 'See my LinkedIn profile',
 		},
 		testimonials: {
@@ -540,15 +540,11 @@ export const en: Dictionary = {
 			translated: 'Translated from French',
 			malt: 'View on Malt',
 		},
-		questions: {
-			label: 'Questions',
-			title: 'The essentials, before the Conversation.',
-			byAudience: 'Questions for your role',
-		},
 		finalCta: {
-			title: 'You never lose the infrastructure.',
-			text: "Even if your team doesn't get to the tests right away, you keep a clean, documented pipeline built to market standards, ready for when you decide to go ahead.",
-			conversation: '45-min conversation on Google Meet, free and with no commitment.',
+			title: 'Ton SaaS mérite mieux que des correctifs en urgence.',
+			text: "Tu as déjà un projet en tête, ou simplement des questions sur ton code, ton infrastructure ou ton prochain déploiement ? Parlons-en. Un premier échange suffit pour identifier les priorités et voir comment je peux t'aider.",
+			button: 'Réserver un échange gratuit',
+			conversation: '45 minutes sur Google Meet. Sans engagement.',
 			bookingNotice:
 				'The booking page is in French, but the conversation can be in English or Portuguese.',
 		},

@@ -33,7 +33,7 @@ With Node 24 (`nvm use` reads `.nvmrc`):
 - `src/config/site.ts`: the domain and what each phase publishes (the published languages and `noindex`).
 - `src/config/values.ts`: the shared values (booking page, LinkedIn…). The build fails if one is missing.
 - `src/content/legal/<language>/`: the Legal information (`legal.md`) and the Privacy policy (`privacy.md`), in Markdown. The shared values go in as placeholders, such as `{email}` or `{legal.siret}`: an unknown one fails the build, and a `null` value (the VAT number until it is active) removes its line. The build also fails when a published language lacks one of the two pages.
-- `src/config/audiences.ts`: the four Audiences of «Os teus desafios». Their ids are the anchors of the questions page (`/pt/questions/#cto`), which the header submenu and the home page link to.
+- `src/config/audiences.ts`: the four Audiences of «Os teus desafios». Their ids are the anchors of the questions page (`/pt/questions/#cto`), which the header submenu links to.
 - `src/config/testimonials.ts`: the Testimonials, with each author's written authorisation per language and the approval of each translation. A Testimonial only shows in a language its author authorised and, in English and Portuguese, whose translation the author approved. With none, the section disappears.
 - `src/i18n/`: the texts, one file per language. French is the Reference language; Portuguese and English are typed from it.
 - `src/localized-pages/<language>/`: one thin page file per page and per language. Only the pages of published languages are generated. Pages without a language stay in `src/pages/`. A new page only shows up in `npm run dev` after a restart.

@@ -12,13 +12,14 @@ import LinkedInLogo from './LinkedInLogo.astro';
 interface Props {
 	title: string;
 	designation: string;
-	/** Where and how he works: remotely, the languages, standard technologies and everything documented. */
+	/** How he works: the languages, proven technologies, few vendor ties and what he delivers documented. */
 	wayOfWorking: string;
 	/** The text of the link to his LinkedIn profile. */
 	linkedin: string;
 }
 
 const { title, designation, wayOfWorking, linkedin } = Astro.props;
+const [first, last] = values.name.split(' ');
 ---
 
 <section
@@ -40,10 +41,14 @@ const { title, designation, wayOfWorking, linkedin } = Astro.props;
 	/>
 	<div class="grid gap-6">
 		<h2 id="about-title" data-reveal class="label font-body">
-			{title}
+			{withNonBreakingSpaces(title)}
 		</h2>
-		<div data-reveal class="grid gap-2">
-			<p class="font-heading text-[clamp(2.1rem,4.4vw,3.4rem)] leading-[1.06]">{values.name}</p>
+		<div data-reveal class="grid gap-4">
+			{/* Written like the name in the logo. */}
+			<p class="flex flex-col gap-[0.25em] text-[clamp(2.1rem,4.4vw,3.4rem)] leading-none tracking-[0.22em] uppercase">
+				<span class="font-semibold text-foreground">{first}</span>{' '}
+				<span class="text-purple">{last}</span>
+			</p>
 			<p class="text-lg text-purple">{designation}</p>
 		</div>
 		<p data-reveal class="max-w-2xl font-heading text-[clamp(1.4rem,2.6vw,2rem)] leading-snug">

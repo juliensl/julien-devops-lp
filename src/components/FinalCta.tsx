@@ -7,19 +7,20 @@ interface Props {
 	language: Language;
 	title: string;
 	text: string;
-	buttonText: string;
-	/** Below the button: 45 min, Google Meet, free and with no commitment. */
+	/** The text of the booking button. */
+	button: string;
+	/** Below the button: 45 minutes on Google Meet, with no commitment. */
 	conversation: string;
 	/** Only in the languages other than the booking page's: the booking is in another language. */
 	bookingNotice: string;
 }
 
-/** The end of the page: "You never lose the infrastructure." and the button, so the CTO decides right there. */
+/** The end of the page: an invitation to talk about the project, and the button, so the CTO books right there. */
 export default function FinalCta({
 	language,
 	title,
 	text,
-	buttonText,
+	button,
 	conversation,
 	bookingNotice,
 }: Props) {
@@ -43,7 +44,7 @@ export default function FinalCta({
 			{/* The section's only link: the branch (#73) ends with 3 leaves next to it. The button takes
 			    no other attributes, so its wrapper is what fades in. */}
 			<div data-reveal className="flex">
-				<BookingButton text={buttonText} />
+				<BookingButton text={button} />
 			</div>
 			<p data-reveal className="max-w-2xl text-sm text-foreground-secondary">
 				{withNonBreakingSpaces(line)}

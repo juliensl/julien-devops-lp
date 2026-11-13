@@ -61,9 +61,9 @@ export const fr = {
 		link: 'Écologie',
 		/** The home page's Ecology section. */
 		home: {
-			title: "L'infrastructure aussi a une empreinte.",
-			text: "L'endroit où tourne l'application, sa durée de fonctionnement et son efficacité changent son impact environnemental. La page écologie te permet d'estimer une charge selon le pays où elle tourne, en séparant données publiées, hypothèses et calculs.",
-			link: 'Ouvrir la page écologie',
+			title: "Un cloud plus efficace, c'est aussi un numérique plus responsable.",
+			text: "Le choix du datacenter, l'architecture et la qualité du code influencent la consommation de ressources. Compare les solutions, découvre les données disponibles et comprends comment réduire les dépenses inutiles et l'empreinte de ton application.",
+			link: "Explorer l'impact environnemental",
 		},
 		page: {
 			title: 'Écologie et infrastructure',
@@ -619,9 +619,9 @@ export const fr = {
 			} satisfies Record<ProviderId, string>,
 		},
 		about: {
-			title: 'Qui est Julien',
+			title: 'Qui est Julien ?',
 			wayOfWorking:
-				"Je travaille à distance, en portugais, en français et en anglais. J'utilise des technologies standard, sans lock-in, et je documente tout pour que ton équipe soit autonome.",
+				"J'interviens sur ton projet en français, en anglais ou en portugais. J'utilise des technologies modernes et éprouvées, je limite autant que possible la dépendance à un fournisseur et je documente ce que je livre pour que ton équipe reste autonome. Mes solutions s'adaptent à tes contraintes techniques et métier, pas l'inverse.",
 			linkedin: 'Voir mon profil LinkedIn',
 		},
 		/** The Testimonials. Their texts, authors and approvals are in src/config/testimonials.ts. */
@@ -640,23 +640,18 @@ export const fr = {
 			translated: 'Traduit du français',
 			malt: 'Voir sur Malt',
 		},
-		/** The Questions section: its general questions and the Audiences come from `questions`. */
-		questions: {
-			label: 'Questions',
-			title: "L'essentiel, avant l'Échange.",
-			byAudience: 'Questions pour ton profil',
-		},
 		finalCta: {
-			title: "Tu ne perds jamais l'infrastructure.",
-			text: "Même si ton équipe ne se lance pas tout de suite dans les tests, tu gardes une pipeline propre, documentée et aux standards du marché, prête pour le jour où tu décideras d'y aller.",
-			conversation: 'Échange de 45 min sur Google Meet, gratuit et sans engagement.',
+			title: 'Ton SaaS mérite mieux que des correctifs en urgence.',
+			text: "Tu as déjà un projet en tête, ou simplement des questions sur ton code, ton infrastructure ou ton prochain déploiement ? Parlons-en. Un premier échange suffit pour identifier les priorités et voir comment je peux t'aider.",
+			button: 'Réserver un échange gratuit',
+			conversation: '45 minutes sur Google Meet. Sans engagement.',
 			// Not shown while the booking page is in French (values.ts).
 			bookingNotice:
 				"La page de réservation est en français, mais l'Échange peut se faire en anglais ou en portugais.",
 		},
 	},
-	/** «Tes défis»: the questions by audience, on their page, in the header submenu and in the home
-	 * page's Questions section. The 23 answers are Julien's, word for word in French; each
+	/** «Tes défis»: the questions by audience, on their page and in the header submenu.
+	 * The 23 answers are Julien's, word for word in French; each
 	 * audience is typed with its number of questions, so a language with one missing fails `astro check`. */
 	questions: {
 		/** The name of the page and of the header menu that leads to it. */

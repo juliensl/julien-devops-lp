@@ -80,9 +80,9 @@ export const pt: Dictionary = {
 	ecology: {
 		link: 'Ecologia',
 		home: {
-			title: 'A infraestrutura também tem pegada.',
-			text: 'Onde a aplicação corre, quanto corre e com que eficiência mudam o impacto ambiental. A página de ecologia deixa-te estimar uma carga conforme o país onde corre, separando dados publicados, hipóteses e cálculos.',
-			link: 'Abrir a página de ecologia',
+			title: 'Uma cloud mais eficiente é também um digital mais responsável.',
+			text: 'A escolha do centro de dados, a arquitetura e a qualidade do código influenciam o consumo de recursos. Compara as soluções, descobre os dados disponíveis e percebe como reduzir as despesas desnecessárias e a pegada da tua aplicação.',
+			link: 'Explorar o impacto ambiental',
 		},
 		page: {
 			title: 'Ecologia e infraestrutura',
@@ -532,9 +532,9 @@ export const pt: Dictionary = {
 			},
 		},
 		about: {
-			title: 'Quem é o Julien',
+			title: 'Quem é o Julien?',
 			wayOfWorking:
-				'Trabalho à distância, em português, francês e inglês. Uso tecnologias standard, sem lock-in, e documento tudo para a tua equipa ficar autónoma.',
+				'Trabalho no teu projeto em francês, inglês ou português. Uso tecnologias modernas e comprovadas, limito tanto quanto possível a dependência de um fornecedor e documento o que entrego para que a tua equipa continue autónoma. As minhas soluções adaptam-se às tuas restrições técnicas e de negócio, e não o contrário.',
 			linkedin: 'Ver o meu perfil no LinkedIn',
 		},
 		testimonials: {
@@ -548,15 +548,11 @@ export const pt: Dictionary = {
 			translated: 'Traduzido do francês',
 			malt: 'Ver no Malt',
 		},
-		questions: {
-			label: 'Perguntas',
-			title: 'O essencial, antes da Conversa.',
-			byAudience: 'Perguntas para o teu perfil',
-		},
 		finalCta: {
-			title: 'Nunca perdes a infraestrutura.',
-			text: 'Mesmo que a tua equipa não avance logo com os testes, ficas com uma pipeline limpa, documentada e com os standards do mercado, pronta para quando decidires.',
-			conversation: 'Conversa de 45 min por Google Meet, gratuita e sem compromisso.',
+			title: 'O teu SaaS merece mais do que correções de emergência.',
+			text: 'Já tens um projeto em mente, ou simplesmente perguntas sobre o teu código, a tua infraestrutura ou o teu próximo deploy? Vamos falar disso. Uma primeira conversa chega para identificar as prioridades e ver como te posso ajudar.',
+			button: 'Marcar uma conversa gratuita',
+			conversation: '45 minutos por Google Meet. Sem compromisso.',
 			bookingNotice:
 				'A página de marcação está em francês, mas a Conversa pode ser em inglês ou em português.',
 		},
