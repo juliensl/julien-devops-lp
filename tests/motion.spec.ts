@@ -258,6 +258,10 @@ inEachBuild((build) => {
 			page,
 		}) => {
 			await page.goto(path);
+			// The logo's pen traces its ∞ in under 5 s, which needs no pause button (WCAG 2.2.2).
+			await expect(page.locator('[data-logo-infinity]')).toHaveAttribute('data-state', 'formed', {
+				timeout: 10_000,
+			});
 			expect(await isMoving(page)).toBe(false);
 			for (const { pause } of Object.values(LANGUAGES)) {
 				await expect(pauseButton(page, pause)).toHaveCount(0);

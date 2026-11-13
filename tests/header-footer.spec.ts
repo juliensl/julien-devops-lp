@@ -66,20 +66,21 @@ inEachBuild((build) => {
 			test('the logo shows only the ∞ below 1024 px, and the ∞ with the name from 1024 px', async ({
 				page,
 			}) => {
-				// The whole image is 1697×400; the ∞ is its left 9/4.
-				for (const [width, ratio] of [
-					[320, 9 / 4],
-					[1023, 9 / 4],
-					[1024, 1697 / 400],
-				]) {
+				const header = page.getByRole('banner');
+				const infinity = header.locator('[data-logo-infinity]');
+				const words = NAME.split(' ').map((word) => header.getByText(new RegExp(`^${word}$`, 'i')));
+				for (const [width, withName] of [
+					[320, false],
+					[1023, false],
+					[1024, true],
+				] as const) {
 					await page.setViewportSize({ width, height: 700 });
 					await page.goto(path);
-					const image = page.getByRole('banner').getByRole('img', { name: NAME });
-					await expect
-						.poll(() => image.evaluate((i: HTMLImageElement) => i.naturalWidth))
-						.toBeGreaterThan(0);
-					const box = (await image.boundingBox())!;
-					expect(box.width / box.height, `at ${width} px`).toBeCloseTo(ratio, 1);
+					await expect(infinity, `at ${width} px`).toBeVisible();
+					for (const word of words) {
+						if (withName) await expect(word, `at ${width} px`).toBeVisible();
+						else await expect(word, `at ${width} px`).toBeHidden();
+					}
 				}
 			});
 
