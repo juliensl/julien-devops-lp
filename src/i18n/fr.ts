@@ -4,6 +4,7 @@
 import type { AudienceId } from '../config/audiences';
 import type { CriterionId, ProviderId, Rating, ScenarioId } from '../config/cloud-providers';
 import type { SourceId } from '../config/ecology';
+import type { ColumnId, Law, NOTE_SOURCES, Placement } from '../config/sovereignty';
 
 const promise = 'Moins de bugs. Un code plus propre. Un SaaS prêt à grandir.';
 
@@ -210,6 +211,79 @@ export const fr = {
 		] satisfies [Card, Card, Card, Card, Card],
 		/** The booking button at the end of the page. */
 		cta: 'Parlons de la souveraineté de ton infrastructure',
+		/** Under the table: Switzerland and the European Union. Legal content, reviewed before release. */
+		switzerland: {
+			text: "La Suisse ne fait pas partie de l'Union européenne. La Commission européenne reconnaît toutefois qu'elle assure un niveau de protection adéquat des données personnelles : des données personnelles peuvent y être transférées depuis l'UE sans garantie supplémentaire. Cela ne remplace pas le reste de l'analyse : contrat, sous-traitants, accès.",
+			sources: {
+				euMembers: 'Union européenne, les 27 pays membres',
+				notMember: 'Confédération suisse (DFAE), accords bilatéraux',
+				adequacy: "Commission européenne, décisions d'adéquation",
+				decision: 'Décision 2000/518/CE',
+			} satisfies Record<keyof typeof NOTE_SOURCES.switzerland, string>,
+		},
+		/** In the fourth section: the CLOUD Act and the Patriot Act. Legal content, reviewed before release. */
+		cloudAct: {
+			text: "Le CLOUD Act et le Patriot Act ne sont pas synonymes. Le Patriot Act est une loi antiterroriste américaine de 2001. Le CLOUD Act, adopté en 2018, prévoit qu'un fournisseur soumis au droit américain doit communiquer, sur demande légale des autorités américaines, les données qu'il a en sa possession ou sous son contrôle, qu'elles soient stockées aux États-Unis ou ailleurs. Une entreprise non américaine peut aussi y être soumise si elle a des liens suffisants avec les États-Unis : cela s'apprécie au cas par cas.",
+			sources: {
+				statute: '18 U.S.C. § 2713 (CLOUD Act)',
+				whitePaper: 'Département de la Justice des États-Unis, livre blanc sur le CLOUD Act',
+				patriotAct: 'Public Law 107-56 (USA PATRIOT Act)',
+			} satisfies Record<keyof typeof NOTE_SOURCES.cloudAct, string>,
+		},
+		/** Before the sources of a note. */
+		sources: 'Sources',
+		/** The table of providers, in the third section. */
+		table: {
+			caption:
+				"Ce que disent les sources officielles sur le cloud public standard de quelques fournisseurs, par ordre alphabétique. Ce n'est pas un classement : vérifie chaque point pour ton offre et ton contrat.",
+			columns: {
+				provider: 'Fournisseur',
+				headquarters: 'Pays du siège',
+				zones: "Zones d'hébergement",
+				contract: 'Juridiction du contrat',
+				backupsAndLogs: 'Sauvegardes et logs',
+				certifications: "Certifications de l'offre",
+				references: 'Références officielles',
+			},
+			/** After a label, before what it introduces: French puts a space before it. */
+			colon: ' :',
+			/** A value no official source states. */
+			notDisclosed: 'non communiqué',
+			/** Before the country of the provider's group. */
+			group: 'Groupe',
+			eu: 'UE',
+			outsideEu: 'Hors UE',
+			/** When the provider also has regions outside Europe. */
+			elsewhere: "Aussi hors d'Europe",
+			laws: {
+				CH: 'Droit suisse',
+				DE: 'Droit allemand',
+				FR: 'Droit français',
+				IE: 'Droit irlandais',
+				LU: 'Droit luxembourgeois',
+				'US-CA': 'Droit de la Californie (États-Unis)',
+			} satisfies Record<Law, string>,
+			backups: 'Sauvegardes',
+			logs: 'Logs',
+			placements: {
+				chosenRegion: 'dans la région choisie (ailleurs seulement si tu le configures)',
+				chosenCountry: 'dans le pays choisi',
+				inEu: "dans l'UE si l'emplacement choisi y est, parfois sur un autre site",
+				otherRegionByDefault: 'par défaut, aussi dans une autre région (modifiable)',
+				partlyElsewhere: "une partie peut être hors de l'emplacement choisi",
+			} satisfies Record<Placement, string>,
+			/** Before the days the row's sources were read. */
+			read: 'Consultées le',
+			/** Before each reference: the columns whose values it gives. */
+			references: {
+				headquarters: 'Siège',
+				zones: 'Zones',
+				contract: 'Contrat',
+				backups: 'Sauvegardes',
+				logs: 'Logs',
+				certifications: 'Certifications',
+			} satisfies Record<ColumnId, string>,
+		},
 	},
 	homePage: {
 		description: `${promise} J'automatise la qualité du code, je réduis la dette technique et je construis une infrastructure capable de suivre ta croissance.`,
