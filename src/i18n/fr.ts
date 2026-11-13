@@ -16,7 +16,7 @@ type Block = {
 	summary: string;
 	text: string;
 	tools: string[];
-	/** Said after the tools, when the client's cloud can provide its own. */
+	/** Said after the tools, in plain text: what the list leaves open. */
 	toolsAlternative?: string;
 };
 
@@ -215,41 +215,73 @@ export const fr = {
 				"Tu disposes d'indicateurs et d'alertes pour détecter les incidents au plus tôt.",
 			],
 		},
-		/** The Services: the 4 Blocks, and the note on hiring them in any combination. */
+		/** The Services: the 4 Blocks, after an introduction on how the work is scoped. */
 		services: {
 			label: 'Services',
-			title: 'Quatre couches de ton infrastructure.',
-			note: 'Tu prends les blocs que tu veux, dans la combinaison de ton choix. 30 jours au maximum, à compter du début de la Mise en œuvre. Le bloc 3 demande une application conteneurisée, par le bloc 2 ou par ton équipe.',
+			title: 'Quatre leviers pour fiabiliser et faire grandir ton SaaS.',
+			intro:
+				"De la qualité du code à la supervision en production, j'interviens sur les points qui freinent ton équipe. Après un diagnostic, nous définissons ensemble le périmètre, les priorités et l'ordre des interventions. Tu peux me confier un besoin ciblé ou un projet complet.",
 			/** Before each Block's number: "Bloc 1". */
 			blockLabel: 'Bloc',
 			/** The name of each Block's list of tools, for screen readers. */
 			toolsLabel: 'Outils',
-			/** The 4 Blocks, in the pitch's order. A language with fewer than 4 makes `astro check` fail. */
+			/** The 4 Blocks. A language with fewer than 4 makes `astro check` fail. */
 			blocks: [
 				{
-					name: 'Audit du code et pipeline CI',
-					summary: 'Les bugs sont attrapés à la pull request.',
-					text: "Chaque modification passe par les tests, le lint et l'analyse avant d'arriver en production, avec la sécurité au premier plan : dépendances avec des failles connues, secrets oubliés dans le code et analyse du code lui-même. Ce qui est rouge ne passe pas.",
-					tools: ['SonarQube', 'Trivy'],
+					name: 'Audit du code & CI/CD',
+					summary: "Détecte les problèmes avant qu'ils n'arrivent en production.",
+					text: "J'analyse le dépôt et les processus de livraison, puis je mets en place une pipeline adaptée à ton projet : qualité du code, lint, tests automatisés, analyse de sécurité et contrôles des dépendances. Les erreurs sont signalées dès la pull request, avant de devenir des incidents chez tes clients.",
+					tools: [
+						'GitHub Actions',
+						'GitLab CI',
+						'Lint',
+						'Tests unitaires',
+						"Tests d'intégration",
+						'Tests E2E',
+						'SonarQube',
+						'Trivy',
+						'Gitleaks',
+					],
+					toolsAlternative: 'Et plus selon la stack',
 				},
 				{
-					name: 'Conteneurisation',
-					summary: "L'application tourne de la même façon partout.",
-					text: "L'application devient indépendante de son environnement. Sur le portable d'un dev ou en production, le même comportement.",
-					tools: ['Docker'],
+					name: 'Nettoyage & optimisation du code',
+					summary: 'Moins de dette technique, plus de temps pour développer.',
+					text: "Je prends directement en charge les corrections applicatives, le refactoring du code et les optimisations de performances identifiés comme prioritaires. J'automatise également une partie de la maintenance répétitive. L'objectif : rendre l'application plus propre, plus rapide et plus simple à faire évoluer. Le volume d'intervention est défini après l'audit : il ne s'agit pas d'une refonte illimitée de tout le code.",
+					tools: [
+						'Refactoring',
+						'Dette technique',
+						'Performances',
+						'API & requêtes',
+						'Dépendances',
+						'Maintenance automatisée',
+					],
+					toolsAlternative: 'Selon la stack',
 				},
 				{
 					name: 'Infrastructure scalable',
-					summary: "L'infrastructure suit la charge.",
-					text: "Sur deux niveaux : des conteneurs serverless pour les volumes moyens, Kubernetes quand la charge le justifie. Avec l'Infrastructure as Code, l'infrastructure est décrite sous forme de code et peut être recréée.",
-					tools: ['Kubernetes', 'Terraform'],
+					summary: 'La bonne architecture pour ton usage, pas de complexité inutile.',
+					text: "Je conteneurise l'application lorsque c'est nécessaire et je choisis l'hébergement adapté à sa charge : conteneurs managés, services serverless ou Kubernetes. L'Infrastructure as Code permet de décrire, versionner et reproduire les environnements. L'objectif est de pouvoir évoluer sans surdimensionner l'infrastructure dès le départ.",
+					tools: [
+						'Docker',
+						'Containers as a Service',
+						'Kubernetes',
+						'Terraform',
+						'GCP',
+						'AWS',
+						'Azure',
+						'Scaleway',
+						'OVHcloud',
+						'Infomaniak',
+					],
+					toolsAlternative: 'Et autres fournisseurs',
 				},
 				{
 					name: 'Observabilité',
-					summary: 'Tu vois les problèmes avant tes clients.',
-					text: "Un dashboard de santé en temps réel et une alerte immédiate en cas d'incident.",
-					tools: ['Grafana', 'Prometheus'],
-					toolsAlternative: 'ou les outils de ton cloud',
+					summary: 'Ne découvre plus les incidents par tes clients.',
+					text: "Je mets en place les métriques, journaux, tableaux de bord et alertes nécessaires pour suivre la santé de l'application et de son infrastructure. Au lieu de vérifier manuellement si tout fonctionne, ton équipe est avertie dès qu'un problème détectable apparaît et dispose des informations nécessaires pour intervenir.",
+					tools: ['Grafana', 'Prometheus', 'Logs', 'Alertes', 'Monitoring', 'Tracing'],
+					toolsAlternative: 'Outils natifs du cloud',
 				},
 			] satisfies Blocks as Blocks,
 			/** The words drawn in the Blocks' mini-diagrams, and what each one shows, for screen readers. */
@@ -263,11 +295,13 @@ export const fr = {
 					production: 'production',
 					blocked: 'bloqué',
 				},
-				containers: {
+				cleanup: {
 					description:
-						'Le même conteneur tourne de la même façon sur le portable et en production.',
-					laptop: 'portable',
-					production: 'production',
+						'Un bug et du code en double disparaissent : le code raccourcit et le temps de réponse baisse.',
+					bug: 'bug',
+					/** Beside the lines written twice. */
+					duplicate: '×2',
+					responseTime: 'temps de réponse',
 				},
 				scaling: {
 					description: 'Les instances augmentent avec la charge, puis diminuent.',

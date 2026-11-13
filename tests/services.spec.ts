@@ -1,5 +1,5 @@
-// The Services section (#64): the 4 Blocks, in the pitch's order, each with its mini-diagram, name,
-// summary, text and tools. On desktop, the section stays pinned while the cards pass sideways; on a
+// The Services section (#64): the 4 Blocks, each with its mini-diagram, name, summary, text and
+// tags. On desktop, the section stays pinned while the cards pass sideways; on a
 // phone, the cards are one below the other, and with reduced motion they are in a grid.
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { inEachBuild } from './builds';
@@ -13,15 +13,86 @@ interface Block {
 	tools: string[];
 }
 
-// The Blocks and their tools come from the spec (#54); in Portuguese, the texts are the ones the
-// intern approved for the First review (#74). French is the intern's reviewed translation;
-// English is reviewed before the Commercial launch (#75).
+// The Blocks and their tags: in French, Julien's final text; in Portuguese, its translation. English
+// still holds the French text, until it is translated.
+const FRENCH = {
+	label: 'Services',
+	title: 'Quatre leviers pour fiabiliser et faire grandir ton SaaS.',
+	intro:
+		"De la qualité du code à la supervision en production, j'interviens sur les points qui freinent ton équipe. Après un diagnostic, nous définissons ensemble le périmètre, les priorités et l'ordre des interventions. Tu peux me confier un besoin ciblé ou un projet complet.",
+	blocks: [
+		{
+			name: 'Audit du code & CI/CD',
+			summary: "Détecte les problèmes avant qu'ils n'arrivent en production.",
+			text: "J'analyse le dépôt et les processus de livraison, puis je mets en place une pipeline adaptée à ton projet : qualité du code, lint, tests automatisés, analyse de sécurité et contrôles des dépendances. Les erreurs sont signalées dès la pull request, avant de devenir des incidents chez tes clients.",
+			tools: [
+				'GitHub Actions',
+				'GitLab CI',
+				'Lint',
+				'Tests unitaires',
+				"Tests d'intégration",
+				'Tests E2E',
+				'SonarQube',
+				'Trivy',
+				'Gitleaks',
+				'Et plus selon la stack',
+			],
+		},
+		{
+			name: 'Nettoyage & optimisation du code',
+			summary: 'Moins de dette technique, plus de temps pour développer.',
+			text: "Je prends directement en charge les corrections applicatives, le refactoring du code et les optimisations de performances identifiés comme prioritaires. J'automatise également une partie de la maintenance répétitive. L'objectif : rendre l'application plus propre, plus rapide et plus simple à faire évoluer. Le volume d'intervention est défini après l'audit : il ne s'agit pas d'une refonte illimitée de tout le code.",
+			tools: [
+				'Refactoring',
+				'Dette technique',
+				'Performances',
+				'API & requêtes',
+				'Dépendances',
+				'Maintenance automatisée',
+				'Selon la stack',
+			],
+		},
+		{
+			name: 'Infrastructure scalable',
+			summary: 'La bonne architecture pour ton usage, pas de complexité inutile.',
+			text: "Je conteneurise l'application lorsque c'est nécessaire et je choisis l'hébergement adapté à sa charge : conteneurs managés, services serverless ou Kubernetes. L'Infrastructure as Code permet de décrire, versionner et reproduire les environnements. L'objectif est de pouvoir évoluer sans surdimensionner l'infrastructure dès le départ.",
+			tools: [
+				'Docker',
+				'Containers as a Service',
+				'Kubernetes',
+				'Terraform',
+				'GCP',
+				'AWS',
+				'Azure',
+				'Scaleway',
+				'OVHcloud',
+				'Infomaniak',
+				'Et autres fournisseurs',
+			],
+		},
+		{
+			name: 'Observabilité',
+			summary: 'Ne découvre plus les incidents par tes clients.',
+			text: "Je mets en place les métriques, journaux, tableaux de bord et alertes nécessaires pour suivre la santé de l'application et de son infrastructure. Au lieu de vérifier manuellement si tout fonctionne, ton équipe est avertie dès qu'un problème détectable apparaît et dispose des informations nécessaires pour intervenir.",
+			tools: [
+				'Grafana',
+				'Prometheus',
+				'Logs',
+				'Alertes',
+				'Monitoring',
+				'Tracing',
+				'Outils natifs du cloud',
+			],
+		},
+	],
+};
+
 const EXPECTED: Record<
 	Language,
 	{
 		label: string;
 		title: string;
-		note: string;
+		intro: string;
 		blockLabel: string;
 		toolsLabel: string;
 		blocks: Block[];
@@ -29,103 +100,79 @@ const EXPECTED: Record<
 > = {
 	pt: {
 		label: 'Serviços',
-		title: 'Quatro camadas da tua infraestrutura.',
-		note: 'Contratas os blocos que quiseres, em qualquer combinação. No máximo 30 dias, a contar do início da Implementação. O bloco 3 precisa de uma aplicação contentorizada, pelo bloco 2 ou pela tua equipa.',
+		title: 'Quatro alavancas para tornar o teu SaaS fiável e fazê-lo crescer.',
+		intro:
+			'Da qualidade do código à monitorização em produção, intervenho nos pontos que travam a tua equipa. Depois de um diagnóstico, definimos juntos o âmbito, as prioridades e a ordem das intervenções. Podes confiar-me uma necessidade específica ou um projeto completo.',
 		blockLabel: 'Bloco',
 		toolsLabel: 'Ferramentas',
 		blocks: [
 			{
-				name: 'Pipeline de CI e auditoria de código',
-				summary: 'Os bugs ficam no pull request.',
-				text: 'Cada alteração passa por testes, lint e análise antes de chegar à produção, com a segurança em destaque: dependências com falhas conhecidas, segredos esquecidos no código e análise do próprio código. O que está a vermelho não passa.',
-				tools: ['SonarQube', 'Trivy'],
+				name: 'Auditoria do código e CI/CD',
+				summary: 'Deteta os problemas antes de chegarem à produção.',
+				text: 'Analiso o repositório e os processos de entrega e, depois, monto uma pipeline adaptada ao teu projeto: qualidade do código, lint, testes automatizados, análise de segurança e controlo das dependências. Os erros são assinalados logo no pull request, antes de se tornarem incidentes nos teus clientes.',
+				tools: [
+					'GitHub Actions',
+					'GitLab CI',
+					'Lint',
+					'Testes unitários',
+					'Testes de integração',
+					'Testes E2E',
+					'SonarQube',
+					'Trivy',
+					'Gitleaks',
+					'E mais, conforme a stack',
+				],
 			},
 			{
-				name: 'Contentorização',
-				summary: 'A aplicação corre igual em todo o lado.',
-				text: 'A aplicação deixa de depender do ambiente onde corre. No portátil de um dev ou em produção, o mesmo comportamento.',
-				tools: ['Docker'],
+				name: 'Limpeza e otimização do código',
+				summary: 'Menos dívida técnica, mais tempo para desenvolver.',
+				text: 'Encarrego-me diretamente das correções na aplicação, do refactoring do código e das otimizações de desempenho identificados como prioritários. Também automatizo uma parte da manutenção repetitiva. O objetivo: tornar a aplicação mais limpa, mais rápida e mais simples de fazer evoluir. O volume da intervenção é definido depois da auditoria: não se trata de uma reformulação ilimitada de todo o código.',
+				tools: [
+					'Refactoring',
+					'Dívida técnica',
+					'Desempenho',
+					'API e consultas',
+					'Dependências',
+					'Manutenção automatizada',
+					'Conforme a stack',
+				],
 			},
 			{
 				name: 'Infraestrutura escalável',
-				summary: 'A infraestrutura acompanha a carga.',
-				text: 'Em dois níveis: serverless de contentores para volumes médios, Kubernetes quando a carga o justifica. Com Infrastructure as Code, a infraestrutura fica descrita em código e pode ser recriada.',
-				tools: ['Kubernetes', 'Terraform'],
+				summary: 'A arquitetura certa para o teu uso, sem complexidade desnecessária.',
+				text: 'Contentorizo a aplicação quando é necessário e escolho o alojamento adequado à sua carga: contentores geridos, serviços serverless ou Kubernetes. A Infrastructure as Code permite descrever, versionar e reproduzir os ambientes. O objetivo é poder evoluir sem sobredimensionar a infraestrutura logo de início.',
+				tools: [
+					'Docker',
+					'Containers as a Service',
+					'Kubernetes',
+					'Terraform',
+					'GCP',
+					'AWS',
+					'Azure',
+					'Scaleway',
+					'OVHcloud',
+					'Infomaniak',
+					'E outros fornecedores',
+				],
 			},
 			{
 				name: 'Observabilidade',
-				summary: 'Vês os problemas antes dos clientes.',
-				text: 'Um painel de saúde em tempo real e um alerta imediato quando há um incidente.',
-				tools: ['Grafana', 'Prometheus', 'ou as ferramentas da tua cloud'],
+				summary: 'Deixa de descobrir os incidentes pelos teus clientes.',
+				text: 'Implemento as métricas, registos, painéis e alertas necessários para acompanhar a saúde da aplicação e da sua infraestrutura. Em vez de verificar manualmente se tudo funciona, a tua equipa é avisada assim que surge um problema detetável e tem a informação necessária para intervir.',
+				tools: [
+					'Grafana',
+					'Prometheus',
+					'Logs',
+					'Alertas',
+					'Monitorização',
+					'Tracing',
+					'Ferramentas nativas da cloud',
+				],
 			},
 		],
 	},
-	fr: {
-		label: 'Services',
-		title: 'Quatre couches de ton infrastructure.',
-		note: 'Tu prends les blocs que tu veux, dans la combinaison de ton choix. 30 jours au maximum, à compter du début de la Mise en œuvre. Le bloc 3 demande une application conteneurisée, par le bloc 2 ou par ton équipe.',
-		blockLabel: 'Bloc',
-		toolsLabel: 'Outils',
-		blocks: [
-			{
-				name: 'Audit du code et pipeline CI',
-				summary: 'Les bugs sont attrapés à la pull request.',
-				text: "Chaque modification passe par les tests, le lint et l'analyse avant d'arriver en production, avec la sécurité au premier plan : dépendances avec des failles connues, secrets oubliés dans le code et analyse du code lui-même. Ce qui est rouge ne passe pas.",
-				tools: ['SonarQube', 'Trivy'],
-			},
-			{
-				name: 'Conteneurisation',
-				summary: "L'application tourne de la même façon partout.",
-				text: "L'application devient indépendante de son environnement. Sur le portable d'un dev ou en production, le même comportement.",
-				tools: ['Docker'],
-			},
-			{
-				name: 'Infrastructure scalable',
-				summary: "L'infrastructure suit la charge.",
-				text: "Sur deux niveaux : des conteneurs serverless pour les volumes moyens, Kubernetes quand la charge le justifie. Avec l'Infrastructure as Code, l'infrastructure est décrite sous forme de code et peut être recréée.",
-				tools: ['Kubernetes', 'Terraform'],
-			},
-			{
-				name: 'Observabilité',
-				summary: 'Tu vois les problèmes avant tes clients.',
-				text: "Un dashboard de santé en temps réel et une alerte immédiate en cas d'incident.",
-				tools: ['Grafana', 'Prometheus', 'ou les outils de ton cloud'],
-			},
-		],
-	},
-	en: {
-		label: 'Services',
-		title: 'Four layers of your infrastructure.',
-		note: 'You hire the blocks you want, in any combination. At most 30 days from the start of the Implementation. Block 3 needs a containerised application, from block 2 or from your team.',
-		blockLabel: 'Block',
-		toolsLabel: 'Tools',
-		blocks: [
-			{
-				name: 'CI pipeline and code audit',
-				summary: 'Bugs stay in the pull request.',
-				text: 'Every change goes through tests, lint and analysis before it reaches production, with security up front: dependencies with known vulnerabilities, secrets left in the code, and analysis of the code itself. Whatever is red does not get through.',
-				tools: ['SonarQube', 'Trivy'],
-			},
-			{
-				name: 'Containerisation',
-				summary: 'The application runs the same everywhere.',
-				text: "The application no longer depends on the environment it runs in. On a developer's laptop or in production, it behaves the same.",
-				tools: ['Docker'],
-			},
-			{
-				name: 'Scalable infrastructure',
-				summary: 'The infrastructure keeps up with the load.',
-				text: 'At two levels: serverless containers for medium volumes, Kubernetes when the load justifies it. With Infrastructure as Code, the infrastructure is described in code and can be recreated.',
-				tools: ['Kubernetes', 'Terraform'],
-			},
-			{
-				name: 'Observability',
-				summary: 'You see problems before your customers do.',
-				text: 'A real-time health dashboard and an immediate alert when there is an incident.',
-				tools: ['Grafana', 'Prometheus', "or your cloud's own tools"],
-			},
-		],
-	},
+	fr: { ...FRENCH, blockLabel: 'Bloc', toolsLabel: 'Outils' },
+	en: { ...FRENCH, blockLabel: 'Block', toolsLabel: 'Tools' },
 };
 
 /** Where the Visitor opens the page. */
@@ -236,11 +283,19 @@ const progressBar = (page: Page, language: Language) =>
 		.locator('p', { hasText: / \/ 4$/ })
 		.locator('span > span');
 
-/** Whether the whole card is on the screen. Pinned, the cards still to come are beyond its right edge. */
+/**
+ * Whether the whole card is on the screen. Pinned, the cards still to come are beyond its right edge.
+ * On a phone, a card taller than the screen is on it when it fills the screen.
+ */
 function isOnScreen(card: Locator) {
 	return card.evaluate((e) => {
 		const { left, right, top, bottom } = e.getBoundingClientRect();
-		return left >= 0 && right <= innerWidth && top >= 0 && bottom <= innerHeight;
+		// Within a pixel: the page scrolls by whole pixels, so the card may stop a fraction of one off.
+		const fits =
+			bottom - top > innerHeight
+				? top < 1 && bottom > innerHeight - 1
+				: top > -1 && bottom < innerHeight + 1;
+		return left >= 0 && right <= innerWidth && fits;
 	});
 }
 
@@ -252,8 +307,10 @@ async function scrollToCard(page: Page, language: Language, k: number, javaScrip
 	const card = cards(page, language).nth(k);
 	const top = await section(page, language).evaluate((s) => s.getBoundingClientRect().top);
 	if (top > 0) await scrollPage(page, top, javaScript);
+	// Not past the card's top: a card taller than the screen is on it only with its top at 0.
 	for (let step = 0; step < 100 && !(await isOnScreen(card)); step++) {
-		await scrollPage(page, 100, javaScript);
+		const cardTop = await card.evaluate((e) => e.getBoundingClientRect().top);
+		await scrollPage(page, cardTop >= 1 ? Math.min(Math.floor(cardTop), 100) : 100, javaScript);
 	}
 }
 
@@ -309,6 +366,13 @@ function runningAnimations(page: Page, language: Language) {
 const diagram = (page: Page, language: Language, k: number) =>
 	cards(page, language).nth(k).getByRole('img');
 
+/** What block 2's mini-diagram shows, for screen readers. */
+const CLEANUP_DIAGRAM: Record<Language, string> = {
+	fr: 'Un bug et du code en double disparaissent : le code raccourcit et le temps de réponse baisse.',
+	en: 'Un bug et du code en double disparaissent : le code raccourcit et le temps de réponse baisse.',
+	pt: 'Um bug e código duplicado desaparecem: o código fica mais curto e o tempo de resposta desce.',
+};
+
 /** The 4 mini-diagrams, in order. */
 const diagrams = (page: Page, language: Language) =>
 	[0, 1, 2, 3].map((k) => diagram(page, language, k));
@@ -318,12 +382,12 @@ inEachBuild((build) => {
 		const { prefix } = LANGUAGES[language];
 
 		test.describe(prefix, () => {
-			test('the note says any combination of Blocks, at most 30 days, and block 3 needs a containerised application', async ({
+			test('the introduction says the scope, priorities and order come after a diagnosis', async ({
 				page,
 			}) => {
 				await page.goto(prefix);
 				await expect(
-					section(page, language).getByText(EXPECTED[language].note, { exact: true }),
+					section(page, language).getByText(EXPECTED[language].intro, { exact: true }),
 				).toBeVisible();
 			});
 
@@ -454,25 +518,32 @@ inEachBuild((build) => {
 				});
 			}
 
-			test(`${DESKTOP.label}, the mini-diagrams move, and the pause button stops them`, async ({
-				page,
-			}) => {
-				const { pause, resume } = LANGUAGES[language];
-				await openPage(page, prefix, DESKTOP);
-				await scrollToCard(page, language, 0);
-				expect(await isMoving(diagram(page, language, 0)), 'before the pause').toBe(true);
-
-				await page.getByRole('button', { name: pause, exact: true }).click();
-				await expect
-					.poll(() => isMoving(diagram(page, language, 0)), {
-						message: 'paused',
-						timeout: 10_000,
-					})
-					.toBe(false);
-
-				await page.getByRole('button', { name: resume, exact: true }).click();
-				expect(await isMoving(diagram(page, language, 0)), 'after resuming').toBe(true);
+			test('the mini-diagram of block 2 shows the code being cleaned', async ({ page }) => {
+				await page.goto(prefix);
+				await expect(diagram(page, language, 1)).toHaveAccessibleName(CLEANUP_DIAGRAM[language]);
 			});
+
+			for (const k of [0, 1]) {
+				test(`${DESKTOP.label}, the mini-diagram of block ${k + 1} moves, and the pause button stops it`, async ({
+					page,
+				}) => {
+					const { pause, resume } = LANGUAGES[language];
+					await openPage(page, prefix, DESKTOP);
+					await scrollToCard(page, language, k);
+					expect(await isMoving(diagram(page, language, k)), 'before the pause').toBe(true);
+
+					await page.getByRole('button', { name: pause, exact: true }).click();
+					await expect
+						.poll(() => isMoving(diagram(page, language, k)), {
+							message: 'paused',
+							timeout: 10_000,
+						})
+						.toBe(false);
+
+					await page.getByRole('button', { name: resume, exact: true }).click();
+					expect(await isMoving(diagram(page, language, k)), 'after resuming').toBe(true);
+				});
+			}
 
 			test('paused before reaching the section, the mini-diagrams stay still when they come into view', async ({
 				page,
