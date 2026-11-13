@@ -572,8 +572,12 @@ inEachBuild((build) => {
 					await page.setViewportSize({ width: 359, height: 700 });
 					await expect(headerLink(page)).toHaveCount(0);
 					await page.getByRole('banner').locator('summary').filter({ visible: true }).click();
-					await expect(headerLink(page)).toBeVisible();
-					await expect(headerLink(page)).toHaveAttribute('href', target);
+					// In the menu, the leaf link and the resources' entry.
+					await expect(headerLink(page)).toHaveCount(2);
+					for (const link of await headerLink(page).all()) {
+						await expect(link).toBeVisible();
+						await expect(link).toHaveAttribute('href', target);
+					}
 				});
 			}
 

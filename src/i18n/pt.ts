@@ -72,6 +72,8 @@ export const pt = {
 		languages: 'Língua',
 		/** The button that opens the menu on mobile. */
 		menu: 'Menu',
+		/** The submenu of the pages that help a CTO decide. */
+		resources: 'Recursos',
 	},
 	/** The fixed button that pauses the automatic animations: its name says what a click does. */
 	animation: {
