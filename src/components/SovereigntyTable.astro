@@ -1,0 +1,192 @@
+---
+// The data sovereignty page's table: one row per provider, in alphabetical order, with the official
+// references of each value. On a phone only the table scrolls sideways, not the page; it takes the
+// keyboard focus so that the arrows can scroll it.
+import { HTML_CODES, type Language } from '../config/site';
+import {
+	EU_MEMBERS,
+	PROVIDERS,
+	type ColumnId,
+	type CountryCode,
+	type Provider,
+} from '../config/sovereignty';
+import { dictionaries } from '../i18n';
+import { withNonBreakingSpaces } from '../lib/spaces';
+
+interface Props {
+	language: Language;
+}
+
+const { language } = Astro.props;
+const t = dictionaries[language].sovereignty.table;
+const locale = HTML_CODES[language];
+const regionNames = new Intl.DisplayNames(locale, { type: 'region' });
+const countryName = (code: CountryCode) => regionNames.of(code)!;
+const countryList = (codes: CountryCode[]) =>
+	codes
+		.map(countryName)
+		.toSorted((a, b) => a.localeCompare(b, locale))
+		.join(', ');
+const dateFormat = new Intl.DateTimeFormat(locale, {
+	day: '2-digit',
+	month: '2-digit',
+	year: 'numeric',
+	timeZone: 'UTC',
+});
+/** A source's link text: the site it is on. */
+const hostnameOf = (url: string) => new URL(url).hostname.replace(/^www\./, '');
+/** "Label: text", with the language's colon. */
+const labelled = (label: string, text: string) =>
+	withNonBreakingSpaces(`${label}${t.colon} ${text}`);
+
+const COLUMNS: ColumnId[] = [
+	'headquarters',
+	'zones',
+	'contract',
+	'backups',
+	'logs',
+	'certifications',
+];
+
+/** Each cell's lines, «non communiqué» where no official source states the value. */
+function cells({ headquarters, zones, contract, backups, logs, certifications }: Provider) {
+	const or = <T,>(value: T | null, text: (value: T) => string) =>
+		value === null ? t.notDisclosed : text(value);
+	return [
+		headquarters.value
+			? [
+					countryName(headquarters.value.company),
+					...(headquarters.value.group
+						? [labelled(t.group, countryName(headquarters.value.group))]
+						: []),
+				]
+			: [t.notDisclosed],
+		zones.value
+			? [
+					[t.eu, zones.value.europe.filter((c) => EU_MEMBERS.includes(c))] as const,
+					[t.outsideEu, zones.value.europe.filter((c) => !EU_MEMBERS.includes(c))] as const,
+				]
+					.filter(([, codes]) => codes.length > 0)
+					.map(([label, codes]) => labelled(label, countryList(codes)))
+					.concat(zones.value.elsewhere ? [t.elsewhere] : [])
+			: [t.notDisclosed],
+		contract.value
+			? [
+					or(contract.value.entity, (entity) => entity),
+					or(contract.value.law, (law) => t.laws[law]),
+				]
+			: [t.notDisclosed],
+		[
+			labelled(
+				t.backups,
+				or(backups.value, (placement) => t.placements[placement]),
+			),
+			labelled(
+				t.logs,
+				or(logs.value, (placement) => t.placements[placement]),
+			),
+		],
+		certifications.value.map(({ name, offer, sites }) =>
+			offer ? `${name} (${offer})` : sites ? `${name} (${countryList(sites)})` : name,
+		),
+	];
+}
+
+/** The row's sources, each once, with the columns whose values it gives, and the days they were read. */
+function references(provider: Provider) {
+	const columns = new Map<string, ColumnId[]>();
+	for (const column of COLUMNS) {
+		for (const { url } of provider[column].sources) {
+			columns.set(url, [...(columns.get(url) ?? []), column]);
+		}
+	}
+	const days = new Set(COLUMNS.flatMap((column) => provider[column].sources.map((s) => s.read)));
+	return {
+		links: [...columns].map(([url, of]) => ({
+			url,
+			of: of.map((c) => t.references[c]).join(', '),
+		})),
+		read: `${t.read} ${[...days]
+			.sort()
+			.map((day) => dateFormat.format(new Date(day)))
+			.join(', ')}`,
+	};
+}
+---
+
+<div
+	role="region"
+	aria-labelledby="providers-caption"
+	tabindex="0"
+	class="overflow-x-auto rounded-lg border border-line-strong bg-surface"
+>
+	<table class="w-full min-w-[66rem] text-left text-sm">
+		<caption id="providers-caption" class="p-4 text-left text-foreground-secondary">
+			{withNonBreakingSpaces(t.caption)}
+		</caption>
+		<thead>
+			<tr>
+				{Object.values(t.columns).map((name) => (
+					<th scope="col">{name}</th>
+				))}
+			</tr>
+		</thead>
+		<tbody>
+			{PROVIDERS.map((provider) => (
+				<tr>
+					<th scope="row" class="font-semibold">
+						{provider.name}
+					</th>
+					{cells(provider).map((lines) => (
+						<td>
+							{lines.map((line) => (
+								<span class="block">{line}</span>
+							))}
+						</td>
+					))}
+					<td class="text-xs">
+						<ul class="grid gap-1.5">
+							{references(provider).links.map(({ url, of }) => (
+								<li>
+									{withNonBreakingSpaces(`${of}${t.colon}`)} <a href={url}>{hostnameOf(url)}</a>
+								</li>
+							))}
+						</ul>
+						<p class="mt-2 text-foreground-secondary">
+							{withNonBreakingSpaces(references(provider).read)}
+						</p>
+					</td>
+				</tr>
+			))}
+		</tbody>
+	</table>
+</div>
+
+<style>
+	th,
+	td {
+		padding: 0.875rem 1rem;
+		vertical-align: top;
+		border-top: 1px solid var(--color-line);
+	}
+	thead th {
+		font-size: 0.75rem;
+		font-weight: 500;
+		line-height: 1.4;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--color-green);
+		border-top-color: var(--color-line-strong);
+	}
+	/* The provider's name stays in view while the table scrolls sideways. */
+	tbody th {
+		position: sticky;
+		left: 0;
+		background: var(--color-surface);
+	}
+	td a {
+		color: var(--color-green);
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+</style>

@@ -187,6 +187,100 @@ export const pt: Dictionary = {
 		},
 		back: 'Voltar à página principal',
 	},
+	sovereignty: {
+		name: 'Soberania dos dados',
+		description:
+			'Alojar uma aplicação na Europa não basta para perceber por onde circulam os dados. A soberania constrói-se com escolhas técnicas, contratuais e organizacionais.',
+		title: 'Os teus dados estão mesmo sob o teu controlo?',
+		intro:
+			'Alojar uma aplicação na Europa não basta, por si só, para perceber por onde circulam os dados nem que prestadores lhes podem aceder. A soberania constrói-se com escolhas técnicas, contratuais e organizacionais.',
+		sections: [
+			{
+				title: 'Alojamento europeu: um primeiro passo, não uma resposta completa.',
+				text: 'A localização dos servidores conta, mas também é preciso olhar para a empresa que fornece o serviço, os subcontratantes, as cópias de segurança, a supervisão, os acessos de administração e os serviços externos usados pela aplicação.',
+			},
+			{
+				title: 'Os dados não ficam forçosamente onde corre o teu servidor.',
+				text: 'Uma ferramenta de análise, um sistema de logs, uma CDN, um serviço de autenticação, uma solução de e-mail ou uma API de inteligência artificial pode tratar alguns dados fora do teu alojamento principal. Mapear estes fluxos permite detetar as transferências e as dependências que facilmente se esquecem.',
+			},
+			{
+				title: 'Fornecedor francês, europeu ou internacional: que diferenças?',
+				text: 'A boa escolha depende das tuas obrigações, das funcionalidades necessárias e das garantias contratuais oferecidas. Um fornecedor europeu não oferece automaticamente todas as garantias esperadas, e uma região europeia de um fornecedor internacional não resolve, por si só, todas as questões jurídicas.',
+			},
+			{
+				title: 'Regulamentação, contratos e proteções técnicas.',
+				text: 'RGPD, transferências internacionais, regras de jurisdição, cifragem e controlo dos acessos devem ser analisados em conjunto. O CLOUD Act norte-americano pode contar na análise de alguns fornecedores, mas a sua existência não significa que todos os dados alojados nessas empresas sejam livremente acessíveis. As exigências setoriais, como o SecNumCloud quando se aplicam, devem ser verificadas nos referenciais oficiais.',
+			},
+			{
+				title: 'Uma arquitetura adaptada às tuas restrições de soberania.',
+				text: 'Ajudo-te a identificar as dependências técnicas, a comparar as opções de alojamento e a integrar na arquitetura as restrições de localização, de segurança e de reversibilidade. Para as conclusões jurídicas e regulamentares, a análise deve ser validada pelos especialistas competentes.',
+			},
+		],
+		cta: 'Vamos falar da soberania da tua infraestrutura',
+		switzerland: {
+			text: 'A Suíça não pertence à União Europeia. A Comissão Europeia reconhece, no entanto, que assegura um nível de proteção adequado dos dados pessoais: podem ser transferidos dados pessoais da UE para lá sem garantias adicionais. Isto não substitui o resto da análise: contrato, subcontratantes, acessos.',
+			sources: {
+				euMembers: 'União Europeia, os 27 países membros',
+				notMember: 'Confederação Suíça (DFAE), acordos bilaterais',
+				adequacy: 'Comissão Europeia, decisões de adequação',
+				decision: 'Decisão 2000/518/CE',
+			},
+		},
+		cloudAct: {
+			text: 'O CLOUD Act e o Patriot Act não são sinónimos. O Patriot Act é uma lei antiterrorista norte-americana de 2001. O CLOUD Act, adotado em 2018, prevê que um fornecedor sujeito ao direito norte-americano deve comunicar, mediante pedido legal das autoridades norte-americanas, os dados que tem em sua posse ou sob o seu controlo, estejam guardados nos Estados Unidos ou noutro país. Uma empresa não norte-americana também pode estar sujeita, se tiver ligações suficientes aos Estados Unidos: isso avalia-se caso a caso.',
+			sources: {
+				statute: '18 U.S.C. § 2713 (CLOUD Act)',
+				whitePaper: 'Departamento de Justiça dos Estados Unidos, livro branco sobre o CLOUD Act',
+				patriotAct: 'Public Law 107-56 (USA PATRIOT Act)',
+			},
+		},
+		sources: 'Fontes',
+		table: {
+			caption:
+				'O que dizem as fontes oficiais sobre a cloud pública padrão de alguns fornecedores, por ordem alfabética. Não é uma classificação: verifica cada ponto para a tua oferta e o teu contrato.',
+			columns: {
+				provider: 'Fornecedor',
+				headquarters: 'País da sede',
+				zones: 'Zonas de alojamento',
+				contract: 'Jurisdição do contrato',
+				backupsAndLogs: 'Cópias de segurança e logs',
+				certifications: 'Certificações da oferta',
+				references: 'Referências oficiais',
+			},
+			colon: ':',
+			notDisclosed: 'não divulgado',
+			group: 'Grupo',
+			eu: 'UE',
+			outsideEu: 'Fora da UE',
+			elsewhere: 'Também fora da Europa',
+			laws: {
+				CH: 'Direito suíço',
+				DE: 'Direito alemão',
+				FR: 'Direito francês',
+				IE: 'Direito irlandês',
+				LU: 'Direito luxemburguês',
+				'US-CA': 'Direito da Califórnia (Estados Unidos)',
+			},
+			backups: 'Cópias de segurança',
+			logs: 'Logs',
+			placements: {
+				chosenRegion: 'na região escolhida (noutro sítio só se o configurares)',
+				chosenCountry: 'no país escolhido',
+				inEu: 'na UE se a localização escolhida lá estiver, por vezes noutro local',
+				otherRegionByDefault: 'por omissão, também noutra região (configurável)',
+				partlyElsewhere: 'uma parte pode estar fora da localização escolhida',
+			},
+			read: 'Consultadas a',
+			references: {
+				headquarters: 'Sede',
+				zones: 'Zonas',
+				contract: 'Contrato',
+				backups: 'Cópias de segurança',
+				logs: 'Logs',
+				certifications: 'Certificações',
+			},
+		},
+	},
 	availability: {
 		title: 'Disponibilidade e condições',
 		description:

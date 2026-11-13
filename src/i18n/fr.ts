@@ -5,6 +5,7 @@ import type { AudienceId } from '../config/audiences';
 import type { LevelId } from '../config/availability';
 import type { CriterionId, ProviderId, Rating, ScenarioId } from '../config/cloud-providers';
 import type { SourceId } from '../config/ecology';
+import type { ColumnId, Law, NOTE_SOURCES, Placement } from '../config/sovereignty';
 
 const promise = 'Moins de bugs. Un code plus propre. Un SaaS prêt à grandir.';
 
@@ -177,6 +178,113 @@ export const fr = {
 			],
 		},
 		back: "Retour à la page d'accueil",
+	},
+	/** The data sovereignty page, in «Ressources». */
+	sovereignty: {
+		/** The page's name, in «Ressources» and in its title. */
+		name: 'Souveraineté des données',
+		description:
+			'Héberger une application en Europe ne suffit pas à comprendre où circulent les données. La souveraineté se construit par des choix techniques, contractuels et organisationnels.',
+		title: 'Tes données sont-elles vraiment sous ton contrôle ?',
+		intro:
+			'Héberger une application en Europe ne suffit pas, à lui seul, à comprendre où circulent les données ni quels prestataires peuvent y accéder. La souveraineté se construit par des choix techniques, contractuels et organisationnels.',
+		sections: [
+			{
+				title: 'Hébergement européen : une première étape, pas une réponse complète.',
+				text: "La localisation des serveurs compte, mais il faut aussi regarder la société qui fournit le service, les sous-traitants, les sauvegardes, la supervision, les accès d'administration et les services externes utilisés par l'application.",
+			},
+			{
+				title: 'Les données ne restent pas forcément là où tourne ton serveur.',
+				text: "Un outil d'analyse, un système de logs, un CDN, un service d'authentification, une solution d'e-mail ou une API d'intelligence artificielle peut traiter certaines données hors de ton hébergement principal. Cartographier ces flux permet de détecter les transferts et les dépendances que l'on oublie facilement.",
+			},
+			{
+				title: 'Fournisseur français, européen ou international : quelles différences ?',
+				text: "Le bon choix dépend de tes obligations, des fonctionnalités nécessaires et des garanties contractuelles offertes. Un fournisseur européen n'offre pas automatiquement toutes les garanties attendues, et une région européenne d'un fournisseur international ne règle pas à elle seule toutes les questions juridiques.",
+			},
+			{
+				title: 'Réglementation, contrats et protections techniques.',
+				text: "RGPD, transferts internationaux, règles de juridiction, chiffrement et contrôle des accès doivent être examinés ensemble. Le CLOUD Act américain peut compter dans l'analyse de certains fournisseurs, mais son existence ne signifie pas que toutes les données hébergées auprès de ces entreprises sont librement accessibles. Les exigences sectorielles, comme SecNumCloud lorsqu'elles s'appliquent, doivent être vérifiées dans les référentiels officiels.",
+			},
+			{
+				title: 'Une architecture adaptée à tes contraintes de souveraineté.',
+				text: "Je t'aide à identifier les dépendances techniques, à comparer les options d'hébergement et à intégrer les contraintes de localisation, de sécurité et de réversibilité dans l'architecture. Pour les conclusions juridiques et réglementaires, l'analyse doit être validée par les spécialistes compétents.",
+			},
+		] satisfies [Card, Card, Card, Card, Card],
+		/** The booking button at the end of the page. */
+		cta: 'Parlons de la souveraineté de ton infrastructure',
+		/** Under the table: Switzerland and the European Union. Legal content, reviewed before release. */
+		switzerland: {
+			text: "La Suisse ne fait pas partie de l'Union européenne. La Commission européenne reconnaît toutefois qu'elle assure un niveau de protection adéquat des données personnelles : des données personnelles peuvent y être transférées depuis l'UE sans garantie supplémentaire. Cela ne remplace pas le reste de l'analyse : contrat, sous-traitants, accès.",
+			sources: {
+				euMembers: 'Union européenne, les 27 pays membres',
+				notMember: 'Confédération suisse (DFAE), accords bilatéraux',
+				adequacy: "Commission européenne, décisions d'adéquation",
+				decision: 'Décision 2000/518/CE',
+			} satisfies Record<keyof typeof NOTE_SOURCES.switzerland, string>,
+		},
+		/** In the fourth section: the CLOUD Act and the Patriot Act. Legal content, reviewed before release. */
+		cloudAct: {
+			text: "Le CLOUD Act et le Patriot Act ne sont pas synonymes. Le Patriot Act est une loi antiterroriste américaine de 2001. Le CLOUD Act, adopté en 2018, prévoit qu'un fournisseur soumis au droit américain doit communiquer, sur demande légale des autorités américaines, les données qu'il a en sa possession ou sous son contrôle, qu'elles soient stockées aux États-Unis ou ailleurs. Une entreprise non américaine peut aussi y être soumise si elle a des liens suffisants avec les États-Unis : cela s'apprécie au cas par cas.",
+			sources: {
+				statute: '18 U.S.C. § 2713 (CLOUD Act)',
+				whitePaper: 'Département de la Justice des États-Unis, livre blanc sur le CLOUD Act',
+				patriotAct: 'Public Law 107-56 (USA PATRIOT Act)',
+			} satisfies Record<keyof typeof NOTE_SOURCES.cloudAct, string>,
+		},
+		/** Before the sources of a note. */
+		sources: 'Sources',
+		/** The table of providers, in the third section. */
+		table: {
+			caption:
+				"Ce que disent les sources officielles sur le cloud public standard de quelques fournisseurs, par ordre alphabétique. Ce n'est pas un classement : vérifie chaque point pour ton offre et ton contrat.",
+			columns: {
+				provider: 'Fournisseur',
+				headquarters: 'Pays du siège',
+				zones: "Zones d'hébergement",
+				contract: 'Juridiction du contrat',
+				backupsAndLogs: 'Sauvegardes et logs',
+				certifications: "Certifications de l'offre",
+				references: 'Références officielles',
+			},
+			/** After a label, before what it introduces: French puts a space before it. */
+			colon: ' :',
+			/** A value no official source states. */
+			notDisclosed: 'non communiqué',
+			/** Before the country of the provider's group. */
+			group: 'Groupe',
+			eu: 'UE',
+			outsideEu: 'Hors UE',
+			/** When the provider also has regions outside Europe. */
+			elsewhere: "Aussi hors d'Europe",
+			laws: {
+				CH: 'Droit suisse',
+				DE: 'Droit allemand',
+				FR: 'Droit français',
+				IE: 'Droit irlandais',
+				LU: 'Droit luxembourgeois',
+				'US-CA': 'Droit de la Californie (États-Unis)',
+			} satisfies Record<Law, string>,
+			backups: 'Sauvegardes',
+			logs: 'Logs',
+			placements: {
+				chosenRegion: 'dans la région choisie (ailleurs seulement si tu le configures)',
+				chosenCountry: 'dans le pays choisi',
+				inEu: "dans l'UE si l'emplacement choisi y est, parfois sur un autre site",
+				otherRegionByDefault: 'par défaut, aussi dans une autre région (modifiable)',
+				partlyElsewhere: "une partie peut être hors de l'emplacement choisi",
+			} satisfies Record<Placement, string>,
+			/** Before the days the row's sources were read. */
+			read: 'Consultées le',
+			/** Before each reference: the columns whose values it gives. */
+			references: {
+				headquarters: 'Siège',
+				zones: 'Zones',
+				contract: 'Contrat',
+				backups: 'Sauvegardes',
+				logs: 'Logs',
+				certifications: 'Certifications',
+			} satisfies Record<ColumnId, string>,
+		},
 	},
 	/** The availability page (§2 of Julien's document): the levels, the calculator and the guarantee. */
 	availability: {

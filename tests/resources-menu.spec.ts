@@ -18,6 +18,14 @@ const CHALLENGES: Record<Language, string> = {
 const ENTRIES: { slug: string; name: Record<Language, string> }[] = [
 	{ slug: 'ecology/', name: { fr: 'Écologie', en: 'Ecology', pt: 'Ecologia' } },
 	{
+		slug: 'sovereignty/',
+		name: {
+			fr: 'Souveraineté des données',
+			en: 'Souveraineté des données',
+			pt: 'Soberania dos dados',
+		},
+	},
+	{
 		slug: 'availability/',
 		name: {
 			fr: 'Disponibilité & conditions',
