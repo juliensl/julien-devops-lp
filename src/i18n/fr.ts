@@ -13,6 +13,7 @@ export const fr: Dictionary = {
 		logoTarget: "page d'accueil",
 		languages: 'Langue',
 		menu: 'Menu',
+		resources: 'Ressources',
 	},
 	animation: {
 		pause: "Mettre l'animation en pause",
