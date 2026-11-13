@@ -1,25 +1,39 @@
 // The home page sections that need no JavaScript (#63): "Para quem é", "Hoje, e depois", the
 // Guarantee, "Quem é o Julien" and the final CTA.
-import { expect, test, type Locator } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import { inEachBuild } from './builds';
 import { LANGUAGES, LINKEDIN, NAME, BOOKING_PAGE, type Language } from './expected';
 
 // The expected values, taken from the spec (#54). In Portuguese, the approved texts are exactly as
 // the spec gives them; French and English are translations the intern reviews before the Commercial
 // launch (#75). The booking page is in French: the notice only appears in the other languages.
+// The new offer's texts are Julien's, in French; English keeps them until it is translated.
+const FRENCH = {
+	whoItsFor: {
+		title: 'Pour qui ?',
+		intro:
+			"Tu développes un SaaS ou une application web, seul ou avec une équipe ? Je m'adapte à ton stade de développement, à ton organisation et à tes contraintes techniques.",
+		situations: [
+			'Tu prépares un lancement et tu veux partir sur des bases solides.',
+			'Ton produit est déjà en ligne et les bugs ou la maintenance ralentissent les nouveautés.',
+			'Tu anticipes une montée en charge et tu veux éviter les mauvaises surprises.',
+		],
+		button: 'Parlons de ton projet',
+	},
+};
+
 const EXPECTED = {
 	pt: {
 		whoItsFor: {
-			title: 'Para quem é',
-			profile: [
-				'Um SaaS web ou mobile, já lançado.',
-				'A passar de dezenas ou centenas para milhares de utilizadores recorrentes.',
-				'Uma equipa de normalmente 5 a 20 pessoas, com pelo menos 3 devs.',
+			title: 'Para quem é?',
+			intro:
+				'Desenvolves um SaaS ou uma aplicação web, sozinho ou com uma equipa? Adapto-me à tua fase de desenvolvimento, à tua organização e às tuas restrições técnicas.',
+			situations: [
+				'Estás a preparar um lançamento e queres começar com bases sólidas.',
+				'O teu produto já está online e os bugs ou a manutenção atrasam as novidades.',
+				'Prevês um aumento de carga e queres evitar surpresas desagradáveis.',
 			],
-			notLaunchedYet: {
-				text: 'O teu SaaS ainda não foi lançado? Podes marcar a Conversa na mesma.',
-				link: 'marcar a Conversa',
-			},
+			button: 'Vamos falar do teu projeto',
 		},
 		todayAndAfter: {
 			title: 'Hoje, e depois.',
@@ -56,18 +70,7 @@ const EXPECTED = {
 		},
 	},
 	fr: {
-		whoItsFor: {
-			title: 'Pour qui',
-			profile: [
-				'Un SaaS web ou mobile, déjà lancé.',
-				"Qui passe de quelques dizaines ou centaines à plusieurs milliers d'utilisateurs récurrents.",
-				'Une équipe de 5 à 20 personnes en général, dont au moins 3 devs.',
-			],
-			notLaunchedYet: {
-				text: "Ton SaaS n'est pas encore lancé ? Tu peux réserver l'Échange quand même.",
-				link: "réserver l'Échange",
-			},
-		},
+		whoItsFor: FRENCH.whoItsFor,
 		todayAndAfter: {
 			title: "Aujourd'hui, et après.",
 			lists: ["Aujourd'hui", 'Après'],
@@ -105,18 +108,7 @@ const EXPECTED = {
 		},
 	},
 	en: {
-		whoItsFor: {
-			title: "Who it's for",
-			profile: [
-				'A web or mobile SaaS, already launched.',
-				'Growing from tens or hundreds to thousands of recurring users.',
-				'A team of usually 5 to 20 people, with at least 3 devs.',
-			],
-			notLaunchedYet: {
-				text: "Haven't launched your SaaS yet? You can still book the conversation.",
-				link: 'book the conversation',
-			},
-		},
+		whoItsFor: FRENCH.whoItsFor,
 		todayAndAfter: {
 			title: 'Today, and after.',
 			lists: ['Today', 'After'],
@@ -183,35 +175,24 @@ inEachBuild((build) => {
 				await expect(whoItsForSection.getByRole('link', { name: button })).toHaveCount(0);
 			});
 
-			test(`"${whoItsFor.title}" shows only the profile, with the sentence for those not launched yet below the first statement`, async ({
+			test(`"${whoItsFor.title}": the introduction, the three situations and "${whoItsFor.button}", which leads to the booking page`, async ({
 				page,
 			}) => {
 				await page.goto(prefix);
 				const section = page.getByRole('region', { name: whoItsFor.title });
-				await expect(section.getByRole('list')).toHaveCount(1);
 				await expect(section.getByRole('heading')).toHaveCount(1);
-				const items = section.getByRole('listitem');
-				await expect(items).toHaveCount(whoItsFor.profile.length);
-				for (const [k, statement] of whoItsFor.profile.entries()) {
-					await expect(items.nth(k).getByText(statement, { exact: true })).toBeVisible();
-				}
+				await expect(section.getByText(whoItsFor.intro, { exact: true })).toBeVisible();
+				await expect(section.getByRole('list')).toHaveCount(1);
+				await expect(section.getByRole('listitem')).toHaveText(whoItsFor.situations);
 
-				// In the first item, below its statement and in smaller type.
-				const statement = items.first().getByText(whoItsFor.profile[0], { exact: true });
-				const sentence = items.first().getByText(whoItsFor.notLaunchedYet.text, { exact: true });
-				await expect(sentence).toBeVisible();
-				const above = (await statement.boundingBox())!;
-				expect((await sentence.boundingBox())!.y).toBeGreaterThanOrEqual(above.y + above.height);
-				const fontSize = (text: Locator) =>
-					text.evaluate((e) => parseFloat(getComputedStyle(e).fontSize));
-				expect(await fontSize(sentence)).toBeLessThan(await fontSize(statement));
-
-				// Only its words lead to the booking page, in the same tab.
+				// One button, below the situations, to the booking page in the same tab.
 				const link = section.getByRole('link');
 				await expect(link).toHaveCount(1);
-				await expect(sentence.getByRole('link')).toHaveText(whoItsFor.notLaunchedYet.link);
+				await expect(link).toHaveAccessibleName(whoItsFor.button);
 				await expect(link).toHaveAttribute('href', BOOKING_PAGE);
 				await expect(link).not.toHaveAttribute('target');
+				const list = (await section.getByRole('list').boundingBox())!;
+				expect((await link.boundingBox())!.y).toBeGreaterThanOrEqual(list.y + list.height);
 			});
 
 			test(`"${todayAndAfter.title}": only what the CTO lives with and the change, with no numbers`, async ({

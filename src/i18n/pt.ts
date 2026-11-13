@@ -163,16 +163,15 @@ export const pt: Dictionary = {
 			note: '45 min por Google Meet. Gratuita e sem compromisso.',
 		},
 		whoItsFor: {
-			title: 'Para quem é',
-			profile: [
-				'Um SaaS web ou mobile, já lançado.',
-				'A passar de dezenas ou centenas para milhares de utilizadores recorrentes.',
-				'Uma equipa de normalmente 5 a 20 pessoas, com pelo menos 3 devs.',
+			title: 'Para quem é?',
+			intro:
+				'Desenvolves um SaaS ou uma aplicação web, sozinho ou com uma equipa? Adapto-me à tua fase de desenvolvimento, à tua organização e às tuas restrições técnicas.',
+			situations: [
+				'Estás a preparar um lançamento e queres começar com bases sólidas.',
+				'O teu produto já está online e os bugs ou a manutenção atrasam as novidades.',
+				'Prevês um aumento de carga e queres evitar surpresas desagradáveis.',
 			],
-			notLaunchedYet: {
-				text: 'O teu SaaS ainda não foi lançado? Podes marcar a Conversa na mesma.',
-				link: 'marcar a Conversa',
-			},
+			button: 'Vamos falar do teu projeto',
 		},
 		todayAndAfter: {
 			title: 'Hoje, e depois.',

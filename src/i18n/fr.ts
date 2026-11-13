@@ -183,17 +183,16 @@ export const fr = {
 			note: '45 min sur Google Meet. Gratuit et sans engagement.',
 		},
 		whoItsFor: {
-			title: 'Pour qui',
-			profile: [
-				'Un SaaS web ou mobile, déjà lancé.',
-				"Qui passe de quelques dizaines ou centaines à plusieurs milliers d'utilisateurs récurrents.",
-				'Une équipe de 5 à 20 personnes en général, dont au moins 3 devs.',
+			title: 'Pour qui ?',
+			intro:
+				"Tu développes un SaaS ou une application web, seul ou avec une équipe ? Je m'adapte à ton stade de développement, à ton organisation et à tes contraintes techniques.",
+			situations: [
+				'Tu prépares un lancement et tu veux partir sur des bases solides.',
+				'Ton produit est déjà en ligne et les bugs ou la maintenance ralentissent les nouveautés.',
+				'Tu anticipes une montée en charge et tu veux éviter les mauvaises surprises.',
 			],
-			/** Below the first statement: `link` is the part of `text` that leads to the booking page. */
-			notLaunchedYet: {
-				text: "Ton SaaS n'est pas encore lancé ? Tu peux réserver l'Échange quand même.",
-				link: "réserver l'Échange",
-			},
+			/** The booking button below the situations. */
+			button: 'Parlons de ton projet',
 		},
 		todayAndAfter: {
 			title: "Aujourd'hui, et après.",
