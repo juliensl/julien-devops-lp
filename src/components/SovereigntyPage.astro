@@ -16,10 +16,9 @@ interface Props {
 
 const { language } = Astro.props;
 const page = dictionaries[language].sovereignty;
-// The sections, by their place: «Fournisseur français, européen ou international», «Réglementation,
-// contrats et protections techniques» and the last one.
-const PROVIDERS = 2;
-const REGULATION = 3;
+// The places of the sections that hold the table of providers and the note on the CLOUD Act.
+const TABLE_SECTION = 2;
+const CLOUD_ACT_SECTION = 3;
 const last = page.sections.length - 1;
 ---
 
@@ -43,14 +42,14 @@ const last = page.sections.length - 1;
 				</h2>
 				<div class="grid content-start gap-6">
 					<p class="text-foreground-secondary">{withNonBreakingSpaces(text)}</p>
-					{k === REGULATION && <SovereigntyNote language={language} note="cloudAct" />}
+					{k === CLOUD_ACT_SECTION && <SovereigntyNote language={language} note="cloudAct" />}
 					{k === last && (
 						<div>
 							<BookingButton text={page.cta} />
 						</div>
 					)}
 				</div>
-				{k === PROVIDERS && (
+				{k === TABLE_SECTION && (
 					<div class="mt-4 grid gap-6 lg:col-span-2">
 						<SovereigntyTable language={language} />
 						<div class="max-w-3xl">
