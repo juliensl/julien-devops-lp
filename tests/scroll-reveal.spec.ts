@@ -126,7 +126,7 @@ inEachBuild((build) => {
 	});
 
 	test('a block the questions filter brings up shows, without any scroll', async ({ page }) => {
-		await openPage(page, pages.questions, { width: 375, height: 700 });
+		await openPage(page, pages.questions, { width: 375, height: 812 });
 		const lastAudience = page.locator('[data-audience]').last().locator('[data-reveal]').first();
 		await expect(lastAudience).toHaveAttribute('data-pending');
 		await page.locator('input[name="audience"]').last().check();
