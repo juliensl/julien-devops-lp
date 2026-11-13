@@ -17,6 +17,14 @@ const CHALLENGES: Record<Language, string> = {
 /** The submenu's entries, in order: the page's slug and the entry's name in each language. */
 const ENTRIES: { slug: string; name: Record<Language, string> }[] = [
 	{ slug: 'ecology/', name: { fr: 'Écologie', en: 'Ecology', pt: 'Ecologia' } },
+	{
+		slug: 'availability/',
+		name: {
+			fr: 'Disponibilité & conditions',
+			en: 'Disponibilité & conditions',
+			pt: 'Disponibilidade e condições',
+		},
+	},
 ];
 
 /** The submenu's button: the `<summary>` of its `<details>`. */

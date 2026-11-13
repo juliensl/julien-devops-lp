@@ -187,6 +187,108 @@ export const pt: Dictionary = {
 		},
 		back: 'Voltar à página principal',
 	},
+	availability: {
+		title: 'Disponibilidade e condições',
+		description:
+			'Compara os níveis de disponibilidade, calcula o teu tempo de indisponibilidade teórico e consulta as condições da garantia de conformidade.',
+		heading: 'Que nível de disponibilidade para o teu SaaS?',
+		intro:
+			'Um objetivo de disponibilidade escolhe-se de acordo com o impacto real de uma interrupção no teu negócio. Quanto mais alto for o objetivo, mais exigentes e dispendiosas se podem tornar a arquitetura, a redundância e a operação. Compara os níveis antes de decidir.',
+		calculator: {
+			title: 'Calcula o teu tempo de indisponibilidade teórico',
+			text: 'Escolhe um objetivo de disponibilidade e descobre o que representa em minutos por mês e em horas por ano. Estes valores são indicativos: um objetivo de arquitetura não garante, por si só, a disponibilidade de toda a aplicação.',
+			objective: 'Objetivo de disponibilidade',
+			month: 'Duração do mês',
+			days: 'dias',
+			result: 'Indisponibilidade máxima teórica',
+			perMonth: 'Por mês',
+			perYear: 'Equivalente anual',
+			about: 'cerca de',
+			formula:
+				'Fórmula, para uma medição 24 h/24: (1 − objetivo / 100) × duração do período em segundos, no mês escolhido ou num ano de 365 dias.',
+		},
+		levels: {
+			essential: {
+				title: 'Disponibilidade essencial',
+				text: 'Para uma aplicação que pode tolerar interrupções ocasionais. Uma infraestrutura simples pode bastar, consoante as dependências e os riscos aceites.',
+			},
+			reinforced: {
+				title: 'Disponibilidade reforçada',
+				text: 'Para reduzir as interrupções e proteger melhor os serviços críticos. A monitorização e a limitação dos pontos únicos de falha passam a ser prioritárias.',
+			},
+			high: {
+				title: 'Alta disponibilidade',
+				text: 'Para serviços em que uma interrupção prolongada tem um impacto importante. Uma redundância adequada, mecanismos de comutação e testes de recuperação podem ser necessários.',
+			},
+			veryHigh: {
+				title: 'Disponibilidade muito elevada',
+				text: 'Para utilizações particularmente sensíveis a interrupções. A arquitetura e os procedimentos de operação devem ser estudados caso a caso.',
+			},
+		},
+		architecture: {
+			title: 'O que o objetivo exige da arquitetura',
+			intro:
+				'Quanto mais alto for o objetivo, mais a arquitetura tem de limitar os pontos únicos de falha e recuperar depressa de uma avaria. As escolhas abaixo podem contribuir para isso, consoante o nível escolhido, mas nenhuma topologia garante, por si só, uma percentagem de disponibilidade.',
+			cards: [
+				{
+					title: 'Redundância',
+					text: 'Várias instâncias da aplicação, para que uma instância avariada não pare todo o serviço. Nos níveis menos exigentes, uma infraestrutura simples pode bastar.',
+				},
+				{
+					title: 'Backups',
+					text: 'Backups regulares, com restauros testados, seja qual for o nível. Permitem recomeçar depois de um incidente, sem impedir a interrupção.',
+				},
+				{
+					title: 'Base de dados',
+					text: 'Muitas vezes, o ponto único de falha mais delicado. Quando o objetivo sobe, uma réplica pronta a assumir o lugar pode tornar-se necessária.',
+				},
+				{
+					title: 'Multi-AZ',
+					text: 'Distribuir os recursos por várias zonas de disponibilidade da mesma região, para que a avaria de uma zona não pare todo o serviço.',
+				},
+				{
+					title: 'Comutação (failover)',
+					text: 'Mecanismos que redirecionam o tráfego para um recurso saudável, e testes de recuperação para verificar que funcionam.',
+				},
+				{
+					title: 'Monitorização',
+					text: 'Alertas para detetar uma interrupção e reagir depressa. Passa a ser prioritária a partir de 99,9 %.',
+				},
+			],
+		},
+		commitment: {
+			title: 'Um objetivo de disponibilidade não é um serviço de piquete.',
+			text: 'Concebo, configuro e verifico a infraestrutura para responder ao nível de disponibilidade escolhido na proposta de intervenção. O fornecedor cloud continua responsável pelos seus próprios compromissos de serviço. Depois da entrega, a monitorização diária e a resposta a incidentes cabem à organização prevista com a tua equipa ou com o teu prestador de operação. Não está incluída uma intervenção humana 24 h/24.',
+		},
+		guarantee: {
+			title: 'Três meses de garantia de conformidade técnica.',
+			text: 'Quando os quatro blocos são realizados no âmbito de uma prestação completa, os defeitos de conceção ou de configuração da infraestrutura que me sejam diretamente imputáveis podem ser comunicados durante os três meses seguintes à entrega. A sua análise e correção são asseguradas de acordo com o âmbito e as modalidades definidos no contrato. Esta garantia não cobre automaticamente os bugs da aplicação, as avarias externas nem as alterações não validadas.',
+		},
+		conditions: {
+			title: 'Condições e limites da garantia de conformidade',
+			intro:
+				'As condições contratuais da proposta de intervenção fazem fé. Os princípios abaixo explicam o funcionamento da garantia e não substituem o contrato assinado.',
+			items: [
+				{
+					title: 'O que está coberto',
+					text: 'Os defeitos de conceção, de parametrização ou de implementação da infraestrutura diretamente ligados aos trabalhos entregues e incluídos no âmbito contratual, comunicados nos três meses seguintes à entrega da prestação completa que cobre os quatro blocos.',
+				},
+				{
+					title: 'O que não está coberto',
+					text: 'As indisponibilidades próprias dos fornecedores cloud ou de serviços de terceiros, exceto quando revelam uma falha de conceção ou de configuração que caiba na minha prestação; os bugs e as evoluções da aplicação fora do âmbito corrigido; as alterações de código, de configuração ou de infraestrutura feitas sem validação e que estejam na origem do mau funcionamento; a utilização fora dos pressupostos de dimensionamento acordados; o incumprimento dos pré-requisitos ou das recomendações críticas documentados; os incidentes devidos a acessos, autorizações ou informações indisponíveis do lado do cliente.',
+				},
+				{
+					title: 'Responsabilidades',
+					text: 'O cliente mantém a responsabilidade pela operação corrente, pela validação das alterações e pela organização da resposta a incidentes, salvo prestação adicional explicitamente prevista. A garantia não inclui serviço de piquete 24 h/24, prazo de reação imediato nem compensação financeira automática.',
+				},
+				{
+					title: 'Como comunicar um defeito',
+					text: 'Durante o período coberto, o cliente envia uma descrição do problema e as informações úteis para o diagnóstico. Quando a não conformidade entra no âmbito da prestação, as modalidades de correção são acordadas de acordo com a sua natureza e o seu impacto.',
+				},
+			],
+		},
+		button: 'Vamos definir o objetivo de disponibilidade adequado ao teu projeto',
+	},
 	homePage: {
 		description: `${promise} Automatizo a qualidade do código, reduzo a dívida técnica e construo uma infraestrutura capaz de acompanhar o teu crescimento.`,
 		hero: {
