@@ -36,7 +36,7 @@ export const CRITERIA: { id: CriterionId; opinion?: true }[] = [
 	{ id: 'costs', opinion: true },
 ];
 
-/** In the order of Julien's document. */
+/** In the order the chart shows them. */
 export const SCENARIOS: { id: ScenarioId; weights: Partial<Record<CriterionId, number>> }[] = [
 	{ id: 'beforeLaunch', weights: { paas: 3, containers: 2, costs: 2 } },
 	{ id: 'growth', weights: { kubernetes: 2, containers: 2, euRegions: 1, costs: 1 } },

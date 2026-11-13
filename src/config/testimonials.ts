@@ -19,8 +19,8 @@ interface Testimonial {
 	translations: Record<TranslatedLanguage, { text: string[]; approved: boolean }>;
 }
 
-/** The authorisations cover every language (#51). The English translations are drafts. */
-// The page shows them in this order, the one Julien chose.
+/** In the order the page shows them. The authorisations cover every language (#51). The English
+ * translations are drafts. */
 const TESTIMONIALS: Testimonial[] = [
 	{
 		firstName: 'Thibaud',

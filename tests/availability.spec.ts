@@ -50,7 +50,7 @@ const FRENCH = {
 			"Pour des usages particulièrement sensibles aux interruptions. L'architecture et les procédures d'exploitation doivent être étudiées au cas par cas.",
 		],
 	],
-	// Not in Julien's document: written from the levels' texts, for Julien to review.
+	// Not in Julien's document: written from the levels' texts.
 	architecture: {
 		title: "Ce que l'objectif demande à l'architecture",
 		intro:

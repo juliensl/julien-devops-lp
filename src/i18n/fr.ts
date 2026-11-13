@@ -138,7 +138,7 @@ export const fr = {
 				"Les faits viennent des pages officielles des fournisseurs et de l'ANSSI. Les poids de chaque scénario et le critère « Visibilité et maîtrise des coûts » reflètent l'avis de Julien.",
 			/** Before the day the facts were checked. */
 			verified: 'Faits vérifiés le',
-			/** What each fact says, in words. No legal claims (#54). */
+			/** What each fact says, in words. No legal claims. */
 			notes: {
 				aws: {
 					paas: 'App Runner est fermé aux nouveaux clients depuis le 30/04/2026.',
@@ -207,8 +207,7 @@ export const fr = {
 			} satisfies Record<ProviderId, string>,
 		},
 	},
-	/** The ecology page, and the links that lead to it. The texts of #54 are as validated there; the
-	 * others come from prototype v3. */
+	/** The ecology page, and the links that lead to it. */
 	ecology: {
 		/** The links to the page, with the leaf, in the header and the footer. */
 		link: 'Écologie',
@@ -233,7 +232,7 @@ export const fr = {
 				calculated: 'résultat des deux précédents',
 			},
 		},
-		/** The only three badges (#54). */
+		/** The only three badges. */
 		badges: { published: 'Publié', assumption: 'Hypothèse', calculated: 'Calculé' },
 		estimator: {
 			label: 'Estimer une charge',
@@ -269,7 +268,7 @@ export const fr = {
 			wattsSource: 'Cloud Carbon Footprint, processeur inconnu',
 			/** The kind of intensity, after the country and Ember's year. */
 			lifeCycle: 'cycle de vie',
-			/** After the emissions result: the method's name, in English in every language (#54). */
+			/** After the emissions result: the method's name, in English in every language. */
 			locationBased: 'location-based',
 		},
 		method: {
@@ -290,7 +289,7 @@ export const fr = {
 				},
 			] satisfies [Card, Card, Card],
 		},
-		/** What infrastructure can change: the title and the 4 cards validated in #54. */
+		/** What infrastructure can change: the title and the 4 cards. */
 		levers: {
 			label: "Ce que l'infrastructure peut changer",
 			title: "Plus d'efficacité, plus de visibilité.",
@@ -438,7 +437,7 @@ export const fr = {
 			} satisfies Record<ColumnId, string>,
 		},
 	},
-	/** The availability page (§2 of Julien's document): the levels, the calculator and the guarantee. */
+	/** The availability page: the levels, the calculator and the guarantee. */
 	availability: {
 		/** In the «Ressources» menu, above the heading and in the browser's title. */
 		title: 'Disponibilité & conditions',
@@ -484,8 +483,7 @@ export const fr = {
 				text: "Pour des usages particulièrement sensibles aux interruptions. L'architecture et les procédures d'exploitation doivent être étudiées au cas par cas.",
 			},
 		} satisfies Record<LevelId, Card>,
-		/** Written from the levels' texts: not in Julien's document. Never says that a topology
-		 * guarantees a percentage. */
+		/** Never says that a topology guarantees a percentage. */
 		architecture: {
 			title: "Ce que l'objectif demande à l'architecture",
 			intro:
